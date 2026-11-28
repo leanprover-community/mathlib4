@@ -42,6 +42,8 @@ For `a b : ℤ`, this file proves that `QuadraticAlgebra ℚ a b` is the fractio
   of `ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
 * `QuadraticAlgebra.Int.isIntegrallyClosed_iff`: `QuadraticAlgebra ℤ a b` is integrally closed iff
   `discr a b` is a fundamental discriminant.
+* `QuadraticAlgebra.Int.isUnit_iff_eq_one_or_neg_one`: if `discr a b < -4`, the only units of
+  `QuadraticAlgebra ℤ a b` are `1` and `-1`.
 
 ## Tags
 
@@ -303,6 +305,19 @@ theorem algebraMap_algEquivIntegralClosure_symm_apply (h : Int.IsFundamentalDisc
     algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)
       ((algEquivIntegralClosure h).symm y) = y := by
   rw [← coe_algEquivIntegralClosure_apply h, AlgEquiv.apply_symm_apply]
+
+/-- If `discr a b < -4`, the only units of `QuadraticAlgebra ℤ a b` are `1` and `-1`. -/
+theorem isUnit_iff_eq_one_or_neg_one (h : discr a b < -4) {x : QuadraticAlgebra ℤ a b} :
+    IsUnit x ↔ x = 1 ∨ x = -1 := by
+  rw [isUnit_iff_norm_isUnit, Int.isUnit_iff_abs_eq]
+  refine ⟨fun hx ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
+  have him : x.im = 0 := by
+    by_contra him
+    obtain _ | _ := (abs_eq zero_le_one).mp hx <;>
+    nlinarith [four_mul_norm_eq x, mul_self_pos.mpr him]
+  rw [← re_smul_add_im_smul x, him, zero_smul, add_zero, zsmul_eq_mul, mul_one, ← Int.cast_one,
+    ← Int.cast_neg, Int.cast_one, Int.cast_inj]
+  simpa [norm_def, him, ← pow_two] using hx
 
 end Int
 
