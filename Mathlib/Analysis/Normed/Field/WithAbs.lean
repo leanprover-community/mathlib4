@@ -52,6 +52,12 @@ instance [Module T R] [FiniteDimensional T R] :
     FiniteDimensional T (WithAbs v) :=
   Module.Finite.equiv (linearEquiv T v).symm
 
+instance [Algebra R T] [Algebra.IsAlgebraic R T] : Algebra.IsAlgebraic (WithAbs v) T :=
+  ‹Algebra.IsAlgebraic R T›.tower_top (WithAbs v)
+
+instance [Algebra T R] [Algebra.IsAlgebraic T R] : Algebra.IsAlgebraic T (WithAbs v) :=
+  (algEquiv T v).symm.isAlgebraic
+
 instance [Algebra R T] [Algebra.IsSeparable R T] :
     Algebra.IsSeparable (WithAbs v) T :=
   .of_equiv_equiv (equiv v).symm (.refl T) (by ext; simp [algebraMap_left_apply])

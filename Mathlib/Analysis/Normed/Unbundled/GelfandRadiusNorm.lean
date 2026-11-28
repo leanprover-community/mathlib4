@@ -6,7 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Matrix.GelfandRadius
+public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 set_option doc.verso true
@@ -24,6 +26,8 @@ field. Let `K` be a normed field, let `L` be an extension of `K`, and let `x : L
   over `K` is the Gelfand radius of multiplication by `x` on any finite subextension containing `x`.
   If `x` is not algebraic over `K`, then the Gelfand radius norm of `x` over `K` is defined as `0`.
 * `gelfandRadiusAlgNorm K L`: The Gelfand radius norm as an algebra norm when `L/K` is algebraic.
+* `AbsoluteValue.extension v L`: The unique extension of a complete absolute value `v` on a field
+  `K` to an algebraic extension `L` of `K`.
 
 ## Main statements
 
@@ -346,5 +350,26 @@ theorem isPowMul_gelfandRadiusAlgNorm : IsPowMul (gelfandRadiusAlgNorm K L) :=
   isPowMul_gelfandRadiusNorm K L
 
 end gelfandRadiusAlgNorm
+
+namespace AbsoluteValue
+
+variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ) (L : Type*) [Field L] [Algebra K L]
+  [Algebra.IsAlgebraic K L] [CompleteSpace (WithAbs v)]
+
+/-- The unique extension of a complete absolute value to an algebraic extension. -/
+noncomputable def extension : AbsoluteValue L ℝ :=
+  ((gelfandRadiusAlgNorm (WithAbs v) L).toMulAlgebraNorm
+    (isPowMul_gelfandRadiusAlgNorm (WithAbs v) L)).toAbsoluteValue
+
+theorem extension_def (x : L) : v.extension L x = gelfandRadiusNorm (WithAbs v) L x := by
+  rfl
+
+instance : (v.extension L).LiesOver v where
+  under_eq := by
+    ext x
+    simp [extension_def, IsScalarTower.algebraMap_apply K (WithAbs v) L,
+      WithAbs.algebraMap_right_apply, WithAbs.norm_toAbs_eq]
+
+end AbsoluteValue
 
 end
