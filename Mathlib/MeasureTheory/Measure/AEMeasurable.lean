@@ -104,10 +104,14 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     refine (piecewise_eq_of_notMem _ _ _ ?_).symm
     exact fun h => hx (mem_iInter.1 h i)
 
+theorem of_measureSum {μ : ι → Measure α} {i : ι} (h : AEMeasurable f (sum μ)) :
+    AEMeasurable f (μ i) :=
+  h.mono_measure (le_sum _ _)
+
 @[simp]
 theorem _root_.aemeasurable_sum_measure_iff [Countable ι] {μ : ι → Measure α} :
     AEMeasurable f (sum μ) ↔ ∀ i, AEMeasurable f (μ i) :=
-  ⟨fun h _ => h.mono_measure (le_sum _ _), sum_measure⟩
+  ⟨fun h _ => h.of_measureSum, sum_measure⟩
 
 @[simp]
 theorem _root_.aemeasurable_add_measure_iff :
