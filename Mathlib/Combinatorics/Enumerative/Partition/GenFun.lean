@@ -160,7 +160,7 @@ theorem hasSum_genFunFactor (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
   · simp [genFunFactor, hi, monomial_eq_C_mul_X_pow, smul_eq_C_mul]
   intro n h
   suffices ¬(n ≠ 0 ∧ i ∣ n) by simp [genFunFactor, this]
-  contrapose! h
+  contrapose h
   obtain ⟨h0, k, rfl⟩ := h
   have : k ≠ 0 := fun h ↦ by simp [h] at h0
   obtain ⟨j, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero this
