@@ -19,6 +19,8 @@ file used by the library's own linters.
 
 ## Current scripts and their purpose
 
+The `tests` directory contains regression tests for these maintenance scripts.
+
 **Repository analysis and reporting**
 - `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
@@ -224,7 +226,9 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Usage: `lake build 2>&1 | scripts/fix_unused_simp_args.py`
 
 - `fix_long_lines.py`
-  Breaks a too-long line at the last comma before column 100 and indents the continuation.
+  Breaks a too-long line at the last code comma before column 100 and indents the continuation.
+  It skips comments and literals. If a string may contain a complex interpolation, later commas
+  in the file are left alone.
   Takes `path:line` pairs as arguments; intended as a follow-up to scripts that rewrite simp
   lists (which occasionally leave lines over the 100-char limit).
   Usage: `scripts/fix_long_lines.py path:line ...`
