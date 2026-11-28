@@ -137,7 +137,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     · simp
     dsimp
     rw [← apply_ite, ← apply_ite]
-    split_ifs <;> grind -- Without `split_ifs`, `to_dual` gives an error.
+    grind
 
 variable [DecidableEq α]
 
