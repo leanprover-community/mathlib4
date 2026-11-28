@@ -400,10 +400,6 @@ lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensM
     (f : X →ᵇ ℝ≥0) : Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=
   continuous_iff_forall_continuous_lintegral.1 continuous_id _
 
-lemma continuous_integral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
-    (f : X →ᵇ ℝ) : Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
-  continuous_iff_forall_continuous_integral.1 continuous_id _
-
 variable [CompactSpace Ω]
 
 /-- The characterization of weak convergence of probability measures by the condition that the
@@ -426,11 +422,82 @@ lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapCla
     Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=
   continuous_iff_forall_continuousMap_continuous_lintegral.1 continuous_id ⟨f, map_continuous f⟩
 
-lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F X ℝ] (f : F) :
-    Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
-  continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
-
 end convergence_in_distribution -- section
+
+
+section IntegralConvergence
+
+variable {X E : Type*} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {ι : Type*} {F : Filter ι} {μs : ι → ProbabilityMeasure X} {ν : ProbabilityMeasure X}
+  {T : Type*} [FunLike T X E] [BoundedContinuousMapClass T X E]
+  {T' : Type*} [FunLike T' X E] [ContinuousMapClass T' X E]
+
+/-- The integral of a bounded continuous function with values in a normed space converges along a
+converging family of probability measures.
+This general version assumes that the function is ae strongly measurable for all the
+probability measures we consider. See `tendsto_integral` and its neighbors for more specialized
+versions where ae strong measurability is deduced from typeclass assumptions on the spaces. -/
+theorem tendsto_integral_of_aestronglyMeasurable (g : T)
+    (hμ : Tendsto μs F (𝓝 ν)) (hmeas : ∀ i, AEStronglyMeasurable g (μs i))
+    (hmeasν : AEStronglyMeasurable g ν) :
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i)) F (𝓝 (∫ x, g x ∂ν)) := by
+  apply FiniteMeasure.tendsto_integral_of_aestronglyMeasurable
+    g (μs := fun i ↦ (μs i).toFiniteMeasure) (ν := ν.toFiniteMeasure) ?_ hmeas hmeasν
+  exact toFiniteMeasure_continuous.continuousAt.tendsto.comp hμ
+
+theorem tendsto_integral [SecondCountableTopologyEither X E] (g : T) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i)) F (𝓝 (∫ x, g x ∂ν)) :=
+  tendsto_integral_of_aestronglyMeasurable g hμ
+    (fun _ ↦ (g : X →ᵇ E).continuous.aestronglyMeasurable)
+    (g : X →ᵇ E).continuous.aestronglyMeasurable
+
+theorem tendsto_integral_of_compactSpace [CompactSpace X] (g : T') (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i)) F (𝓝 (∫ x, g x ∂ν)) :=
+  tendsto_integral_of_aestronglyMeasurable
+    (ContinuousMap.equivBoundedOfCompact X E (g : C(X, E))) hμ
+    (fun _ ↦ (g : C(X, E)).continuous.aestronglyMeasurable_of_compactSpace)
+    (g : C(X, E)).continuous.aestronglyMeasurable_of_compactSpace
+
+theorem tendsto_integral_of_continuous_of_norm_le [SecondCountableTopologyEither X E]
+    (C : ℝ) {f : X → E} (hf : Continuous f) (h'f : ∀ x, ‖f x‖ ≤ C) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) F (𝓝 (∫ x, f x ∂ν)) :=
+  tendsto_integral (BoundedContinuousFunction.ofNormedAddCommGroup f hf C h'f) hμ
+
+theorem tendsto_integral_of_continuous_of_compactSpace [CompactSpace X]
+    {f : X → E} (hf : Continuous f) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) F (𝓝 (∫ x, f x ∂ν)) :=
+  tendsto_integral_of_compactSpace (⟨f, hf⟩ : C(X, E)) hμ
+
+@[fun_prop]
+theorem continuous_integral [SecondCountableTopologyEither X E] (g : T) :
+    Continuous (fun (μ : ProbabilityMeasure X) ↦ ∫ x, g x ∂μ) :=
+  continuous_iff_continuousAt.2 (fun _ ↦ tendsto_integral _ tendsto_id)
+
+@[deprecated (since := "2026-11-11")]
+alias continuous_integral_boundedContinuousFunction := continuous_integral
+
+@[fun_prop]
+theorem continuous_integral_of_compactSpace [CompactSpace X] (g : T') :
+    Continuous (fun (μ : ProbabilityMeasure X) ↦ ∫ x, g x ∂μ) :=
+  continuous_iff_continuousAt.2 (fun _ ↦ tendsto_integral_of_compactSpace _ tendsto_id)
+
+@[deprecated (since := "2026-11-11")]
+alias continuous_integral_continuousMap := continuous_integral_of_compactSpace
+
+theorem continuous_integral_of_continuous_of_norm_le [SecondCountableTopologyEither X E]
+    (C : ℝ) {f : X → E} (hf : Continuous f) (h'f : ∀ x, ‖f x‖ ≤ C) :
+    Continuous (fun (μ : ProbabilityMeasure X) ↦ ∫ x, f x ∂μ) :=
+  continuous_iff_continuousAt.2
+    (fun _ ↦ tendsto_integral_of_continuous_of_norm_le C hf h'f tendsto_id)
+
+theorem continuous_integral_of_continuous_of_compactSpace [CompactSpace X]
+    {f : X → E} (hf : Continuous f) :
+    Continuous (fun (μ : ProbabilityMeasure X) ↦ ∫ x, f x ∂μ) :=
+  continuous_iff_continuousAt.2
+    (fun _ ↦ tendsto_integral_of_continuous_of_compactSpace hf tendsto_id)
+
+end IntegralConvergence
 
 section Hausdorff
 

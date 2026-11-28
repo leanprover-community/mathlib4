@@ -66,13 +66,13 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   refine closure_minimal (Set.forall_mem_range.2 fun x ↦ ?_) this (hg_ker hy)
   /- Finally, for `y = f x - x` the average is equal to the difference between averages
   along the orbits of `f x` and `x`, and most of the terms cancel. -/
-  have : IsBounded (Set.range (_root_.id <| f^[·] x)) :=
-    isBounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_mem_range.2 fun n ↦ by
-      have H : f^[n] 0 = 0 := iterate_map_zero (f : E →+ E) n
-      simpa [H] using (hf.iterate n).dist_le_mul x 0⟩
+  have : IsBounded (Set.range (fun (p : ℕ × ℕ) ↦ _root_.id (f^[p.1] x))) :=
+    isBounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_mem_range.2 fun p ↦ by
+      have H : f^[p.1] 0 = 0 := iterate_map_zero (f : E →+ E) p.1
+      simpa [H] using (hf.iterate p.1).dist_le_mul x 0⟩
   have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := iterate_map_sub (f : E →+ E)
   simpa [birkhoffAverage, birkhoffSum, Finset.sum_sub_distrib, smul_sub, H]
-    using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 this
+    using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 _ (fun (n : ℕ) ↦ x) this tendsto_id
 
 variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
