@@ -238,7 +238,7 @@ This definition does not depend on the choice of `bₘ`
 noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <|
-    (RingHomClass.toRingHom <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end))
+    (RingHom.ofClass <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end))
 
 set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
@@ -366,7 +366,7 @@ def polyCharpoly : Polynomial (MvPolynomial ι R) :=
 
 lemma polyCharpoly_eq_of_basis [DecidableEq ιM] (bₘ : Basis ιM R M) :
     polyCharpoly φ b = (charpoly.univ R ιM).map
-      (RingHomClass.toRingHom <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end)) := by
+      (RingHom.ofClass <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end)) := by
   rw [polyCharpoly, φ.polyCharpolyAux_basisIndep b (Module.Free.chooseBasis R M) bₘ,
     polyCharpolyAux]
 

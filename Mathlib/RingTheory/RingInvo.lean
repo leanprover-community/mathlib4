@@ -50,9 +50,11 @@ class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
 /-- Turn an element of a type `F` satisfying `RingInvoClass F R` into an actual
 `RingInvo`. This is declared as the default coercion from `F` to `RingInvo R`. -/
 @[coe]
-def RingInvoClass.toRingInvo {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ] [RingInvoClass F R] (f : F) :
+def RingInvo.ofClass {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ] [RingInvoClass F R] (f : F) :
     RingInvo R :=
   { RingEquiv.ofClass f with involution' := RingInvoClass.involution f }
+
+@[deprecated (since := "2026-11-21")] alias RingInvoClass.toRingInvo := RingInvo.ofClass
 
 namespace RingInvo
 
@@ -61,7 +63,7 @@ variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 /-- Any type satisfying `RingInvoClass` can be cast into `RingInvo` via
 `RingInvoClass.toRingInvo`. -/
 instance [RingInvoClass F R] : CoeTC F (RingInvo R) :=
-  ⟨RingInvoClass.toRingInvo⟩
+  ⟨RingInvo.ofClass⟩
 
 @[macro_inline]
 instance : EquivLike (RingInvo R) R Rᵐᵒᵖ where

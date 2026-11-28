@@ -340,7 +340,7 @@ instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_
 
 instance top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
   have : RingHomSurjective (Subsemiring.topEquiv (R := R)).symm.toRingHom :=
-    RingHomSurjective.instToRingHomRingEquiv Subsemiring.topEquiv.symm
+    Subsemiring.topEquiv.symm.instRingHomSurjective
   of_surjective (σ := (Subsemiring.topEquiv (R := R)).symm.toRingHom)
       ⟨⟨id, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ Function.surjective_id
 

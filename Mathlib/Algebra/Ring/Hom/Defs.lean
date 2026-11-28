@@ -347,12 +347,14 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
 `RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def RingHomClass.toRingHom (f : F) : α →+* β :=
+def RingHom.ofClass (f : F) : α →+* β :=
   { (f : α →* β), (f : α →+ β) with }
+
+@[deprecated (since := "2026-11-21")] alias RingHomClass.toRingHom := RingHom.ofClass
 
 /-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
 instance : CoeTC F (α →+* β) :=
-  ⟨RingHomClass.toRingHom⟩
+  ⟨RingHom.ofClass⟩
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }

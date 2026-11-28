@@ -81,7 +81,7 @@ This polynomial is captured in `lieCharpoly R M x y`. -/
 private noncomputable
 def lieCharpoly : Polynomial R[X] :=
   letI bL := chooseBasis R L
-  (polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
+  (polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHom.ofClass <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
 set_option backward.privateInPublic true in

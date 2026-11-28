@@ -751,7 +751,7 @@ the morphism `Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to t
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_inv_snd :
     (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ =
-      Spec.map (ofHom (R := T) (S := S ⊗[R] T) (toRingHom includeRight)) :=
+      Spec.map (ofHom (R := T) (S := S ⊗[R] T) (.ofClass includeRight)) :=
   limit.isoLimitCone_inv_π _ _
 
 /--
@@ -778,7 +778,7 @@ is the second projection.
 -/
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_snd :
-    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (.ofClass includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
 @[reassoc (attr := simp)]

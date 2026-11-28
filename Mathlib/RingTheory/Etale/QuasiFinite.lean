@@ -50,7 +50,7 @@ lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : p.primesOver S) :
     ((Ideal.fiberIsoOfBijectiveResidueField H).symm Q).val.comap
-      (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) = Q.val := by
+      (RingHom.ofClass Algebra.TensorProduct.includeRight) = Q.val := by
   ext x
   simp [Ideal.fiberIsoOfBijectiveResidueField,
     PrimeSpectrum.primesOverOrderIsoFiber, PrimeSpectrum.preimageOrderIsoFiber,
@@ -362,8 +362,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   refine RingHom.finite_algebraMap.mp ?_
   convert equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
-  dsimp [-AlgEquiv.symm_toRingEquiv,
-    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_ofClass]
+  dsimp [-AlgEquiv.symm_toRingEquiv, ← AlgEquiv.toAlgHom_toRingHom]
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--

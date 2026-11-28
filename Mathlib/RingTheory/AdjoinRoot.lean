@@ -450,7 +450,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
     (mapAlgHom f p q h.symm.dvd)
     (mapAlgHom f.symm q p <| by
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
-      have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
+      have : (RingHom.ofClass f.toRingEquiv.symm).comp (RingHom.ofClass f) =
         .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, -RingEquiv.symm_mk, this] using! map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
@@ -461,7 +461,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
 @[simp] lemma symm_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
     (mapAlgEquiv f p q h).symm = mapAlgEquiv f.symm q p (by
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
-      have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
+      have : (RingHom.ofClass f.toRingEquiv.symm).comp (RingHom.ofClass f) =
         .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, -RingEquiv.symm_mk, this]
         using! associated_map_map f.symm.toRingHom h.symm) := rfl
@@ -1088,7 +1088,7 @@ def tensorAlgEquiv (p : S[X]) (q : (T ⊗[R] S)[X]) (h : p.map includeRight.toRi
     change Polynomial.eval₂ ((Algebra.TensorProduct.map (AlgHom.id R T) _).comp _).toRingHom _ _ = _
     simp only [map_comp_includeRight, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
       AlgHom.coe_restrictScalars, ← Polynomial.eval₂_map]
-    change Polynomial.eval₂ _ ((RingHomClass.toRingHom includeRight) (root p)) (p.map (of _)) = _
+    change Polynomial.eval₂ _ ((RingHom.ofClass includeRight) (root p)) (p.map (of _)) = _
     rw [Polynomial.eval₂_hom]
     simp [Polynomial.eval_map]
   · ext

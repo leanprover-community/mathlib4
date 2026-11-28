@@ -235,10 +235,10 @@ instance isCommMonObj_spec_asOver_spec [Bialgebra R A] [IsCocomm R A] :
       $(Bialgebra.comm_comp_comulBialgHom (R := R) (A := A))).hom.left)
     dsimp [commBialgCatEquivComonCommAlgCat] at this ⊢
     have h₁ : (Algebra.TensorProduct.includeRight : A →ₐ[R] A ⊗[R] A) =
-      (RingHomClass.toRingHom (Bialgebra.TensorProduct.comm R A A)).comp
+      (RingHom.ofClass (Bialgebra.TensorProduct.comm R A A)).comp
         Algebra.TensorProduct.includeLeftRingHom := rfl
     have h₂ : (Algebra.TensorProduct.includeLeftRingHom) =
-      (RingHomClass.toRingHom (Bialgebra.TensorProduct.comm R A A)).comp
+      (RingHom.ofClass (Bialgebra.TensorProduct.comm R A A)).comp
        (Algebra.TensorProduct.includeRight : A →ₐ[R] A ⊗[R] A) := rfl
     convert! this using 1
     simp only [mul_spec_asOver_spec_left, ← Category.assoc, algSpec, Equivalence.op_functor,
@@ -362,14 +362,14 @@ lemma pullbackSpecIso'_symmetry [Algebra R T] :
       Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.comm R S T)) := by
   simp_rw [Iso.trans_hom, ← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
   ext
-  · have : (RingHomClass.toRingHom (Algebra.TensorProduct.comm R S T)).comp
+  · have : (RingHom.ofClass (Algebra.TensorProduct.comm R S T)).comp
       Algebra.TensorProduct.includeLeftRingHom =
-      RingHomClass.toRingHom Algebra.TensorProduct.includeRight := rfl
+      RingHom.ofClass Algebra.TensorProduct.includeRight := rfl
     rw [Category.assoc, pullbackSymmetry_hom_comp_fst]
     simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_snd, Category.assoc,
       pullbackSpecIso_inv_fst, ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
-  have : (RingHomClass.toRingHom (Algebra.TensorProduct.comm R S T)).comp
-      (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
+  have : (RingHom.ofClass (Algebra.TensorProduct.comm R S T)).comp
+      (RingHom.ofClass Algebra.TensorProduct.includeRight) =
       Algebra.TensorProduct.includeLeftRingHom := rfl
   rw [Category.assoc, pullbackSymmetry_hom_comp_snd]
   simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_fst, Category.assoc,
