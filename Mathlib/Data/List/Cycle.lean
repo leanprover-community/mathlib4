@@ -909,3 +909,21 @@ theorem forall_eq_of_chain [IsTrans α r] [Std.Antisymm r] (hs : Chain r s) {a b
   exact antisymm (hs a ha b hb) (hs b hb a ha)
 
 end Cycle
+
+namespace List
+
+variable {l : List Prop}
+
+theorem cycle_chain_iff_tfae : (l : Cycle Prop).Chain (· ↔ ·) ↔ l.TFAE := by
+  simp [Cycle.chain_iff_pairwise, TFAE]
+
+alias ⟨_root_.Cycle.Chain.tfae_of_iff, TFAE.cycle_chain⟩ := cycle_chain_iff_tfae
+
+theorem cycle_chain_imp_iff_tfae : (l : Cycle Prop).Chain (· → ·) ↔ l.TFAE := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.cycle_chain.imp fun _ _ ↦ Iff.mp⟩
+  rw [Cycle.chain_iff_pairwise] at h
+  exact fun a ha b hb ↦ ⟨h a ha b hb, h b hb a ha⟩
+
+alias ⟨_root_.Cycle.Chain.tfae_of_imp, TFAE.cycle_chain_imp⟩ := cycle_chain_imp_iff_tfae
+
+end List

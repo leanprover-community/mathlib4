@@ -168,12 +168,25 @@ theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
     TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
   simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
 
+/-- To show `(l₁ ++ l₂).TFAE` from `l₁.TFAE` and `l₂.TFAE`, it suffices to show `a → b` and `c → d`
+for some `a, d ∈ l₁` and `b, c ∈ l₂`. -/
+theorem TFAE.append {c d : Prop} (h₁ : TFAE l₁) (h₂ : TFAE l₂) (hab : a → b) (hcd : c → d)
+    (ha : a ∈ l₁ := by simp) (hb : b ∈ l₂ := by simp) (hc : c ∈ l₂ := by simp)
+    (hd : d ∈ l₁ := by simp) : TFAE (l₁ ++ l₂) :=
+  (tfae_append_of_mem ha hb).mpr ⟨⟨hab, fun h ↦ h₁.mp hd ha <| hcd <| h₂.mp hb hc h⟩, h₁, h₂⟩
+
 theorem tfae_cons (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
 
 @[simp]
 theorem tfae_cons_of_mem (h : a ∈ l) : TFAE (a :: l) ↔ TFAE l := by
   simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
+
+/-- To extend `l.TFAE` to `(a :: l).TFAE`, it suffices to show that `a → b` and `c → a` for some
+`b, c ∈ l`. See also `List.tfae_cons`. -/
+theorem TFAE.cons {c : Prop} (hl : TFAE l) (hab : a → b) (hca : c → a)
+    (hb : b ∈ l := by simp) (hc : c ∈ l := by simp) : TFAE (a :: l) :=
+  (tfae_cons hb).mpr ⟨⟨hab, fun h ↦ hca (hl.mp hb hc h)⟩, hl⟩
 
 theorem tfae_concat (h : b ∈ l) : TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
@@ -182,8 +195,18 @@ theorem tfae_concat (h : b ∈ l) : TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := 
 theorem tfae_concat_of_mem (h : a ∈ l) : TFAE (l ++ [a]) ↔ TFAE l := by
   simp [tfae_concat h]
 
+/-- To extend `l.TFAE` to `(l ++ [a]).TFAE`, it suffices to show that `a → b` and `c → a` for some
+`b, c ∈ l`. See also `List.tfae_concat`. -/
+theorem TFAE.concat {c : Prop} (hl : TFAE l) (hab : a → b) (hca : c → a)
+    (hb : b ∈ l := by simp) (hc : c ∈ l := by simp) : TFAE (l ++ [a]) :=
+  (perm_append_singleton a l).tfae_iff.mpr <| hl.cons hab hca hb hc
+
 theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons (Mem.head _)
+
+@[simp]
+theorem tfae_pair : TFAE [a, b] ↔ (a ↔ b) := by
+  simp [tfae_cons_cons]
 
 @[deprecated tfae_cons_of_mem +typeChanged (since := "2026-08-14")]
 theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp

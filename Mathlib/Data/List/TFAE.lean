@@ -34,6 +34,16 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
+/-- A variant of `List.TFAE.out` which takes membership proofs instead of indices. -/
+theorem TFAE.iff (hl : TFAE l) (ha : a ∈ l := by simp) (hb : b ∈ l := by simp) : a ↔ b :=
+  hl a ha b hb
+
+theorem TFAE.mp (hl : TFAE l) (ha : a ∈ l := by simp) (hb : b ∈ l := by simp) : a → b :=
+  (hl.iff ha hb).mp
+
+theorem TFAE.mpr (hl : TFAE l) (ha : a ∈ l := by simp) (hb : b ∈ l := by simp) : b → a :=
+  (hl.iff ha hb).mpr
+
 theorem TFAE.subset (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
