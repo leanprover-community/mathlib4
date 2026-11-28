@@ -89,7 +89,7 @@ lemma equiv_apply_apply (y : F) (x : E) : equiv B y x = B x y :=
 lemma apply_equiv_symm_apply (f : StrongDual 𝕜 E) (x : E) : B x ((equiv B).symm f) = f x := by
   rw [← equiv_apply_apply, LinearEquiv.apply_symm_apply]
 
-lemma separatingRight : B.SeparatingRight := fun y hy ↦
+protected lemma separatingRight : B.SeparatingRight := fun y hy ↦
   hB.flip_injective <| by ext x; simpa using hy x
 
 lemma equiv_eq (e : F ≃ₗ[𝕜] StrongDual 𝕜 E) (he : ∀ x y, e y x = B x y) : equiv B = e :=
