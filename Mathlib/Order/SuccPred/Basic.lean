@@ -138,7 +138,7 @@ element less than `a`. If `a` is minimal, then `pred a = a`. -/]
 def succ : α → α :=
   SuccOrder.succ
 
-@[to_dual pred_le]
+@[to_dual (attr := simp) pred_le]
 theorem le_succ : ∀ a : α, a ≤ succ a :=
   SuccOrder.le_succ
 

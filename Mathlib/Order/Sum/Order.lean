@@ -319,15 +319,19 @@ theorem le_def [LE α] [LE β] {a b : α ⊕ₗ β} : a ≤ b ↔ Lex (· ≤ ·
 theorem lt_def [LT α] [LT β] {a b : α ⊕ₗ β} : a < b ↔ Lex (· < ·) (· < ·) (ofLex a) (ofLex b) :=
   Iff.rfl
 
+@[to_dual self]
 theorem inl_le_inl_iff [LE α] [LE β] {a b : α} : toLex (inl a : α ⊕ β) ≤ toLex (inl b) ↔ a ≤ b :=
   lex_inl_inl
 
+@[to_dual self]
 theorem inr_le_inr_iff [LE α] [LE β] {a b : β} : toLex (inr a : α ⊕ β) ≤ toLex (inr b) ↔ a ≤ b :=
   lex_inr_inr
 
+@[to_dual self]
 theorem inl_lt_inl_iff [LT α] [LT β] {a b : α} : toLex (inl a : α ⊕ β) < toLex (inl b) ↔ a < b :=
   lex_inl_inl
 
+@[to_dual self]
 theorem inr_lt_inr_iff [LT α] [LT β] {a b : β} : toLex (inr a : α ⊕ₗ β) < toLex (inr b) ↔ a < b :=
   lex_inr_inr
 
@@ -342,6 +346,14 @@ theorem not_inr_le_inl [LE α] [LE β] {a : α} {b : β} : ¬toLex (inr b) ≤ t
 
 theorem not_inr_lt_inl [LT α] [LT β] {a : α} {b : β} : ¬toLex (inr b) < toLex (inl a) :=
   lex_inr_inl
+
+@[simp]
+theorem isMax_inr_iff [LE α] [LE β] {b : β} : IsMax (toLex (inr (α := α) b)) ↔ IsMax b := by
+  simp [IsMax]
+
+@[simp]
+theorem isMin_inl_iff [LE α] [LE β] {a : α} : IsMin (toLex (inl (β := β) a)) ↔ IsMin a := by
+  simp [IsMin]
 
 /-- `toLex` promoted to a `RelIso` between `<` relations. -/
 def toLexRelIsoLT [LT α] [LT β] :

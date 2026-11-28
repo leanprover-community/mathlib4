@@ -157,6 +157,23 @@ theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
   · exact right _ (Prod.mk_lt_mk_iff_right.1 h)
   · exact left _ _ ha
 
+@[to_dual (attr := simp)]
+theorem isMax_iff {x : α ×ₗ β} : IsMax x ↔ IsMax (ofLex x).1 ∧ IsMax (ofLex x).2 := by
+  revert x
+  rw [Lex.forall, Prod.forall]
+  intro a b
+  dsimp
+  refine ⟨fun h ↦ ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩, fun ⟨ha, hb⟩ ↦ ?_⟩
+  · have := @h (toLex (x, b)) (toLex_mono (Prod.mk_le_mk.1 (by simpa)))
+    exact monotone_fst_ofLex this
+  · have := @h (toLex (a, x)) (toLex_mono (Prod.mk_le_mk.1 (by simpa)))
+    simpa [le_iff'] using this
+  · rw [IsMax, Lex.forall, Prod.forall]
+    simp_rw [toLex_le_toLex']
+    refine fun c d ⟨hac, hac'⟩ ↦ ⟨ha hac, ?_⟩
+    rintro rfl
+    exact hb (hac' rfl)
+
 end PartialOrderPreorder
 
 /-- Dictionary / lexicographic partial order for pairs. -/
