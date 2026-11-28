@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Countable
+public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Order.Filter.Curry
 
 set_option doc.verso true
@@ -123,6 +124,27 @@ theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Count
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
   (EventuallySubset.countable_bInter hS fun i hi => (h i hi).subset).antisymm
     (EventuallySubset.countable_bInter hS fun i hi => (h i hi).symm.subset)
+
+/-- Converse of `Filter.Tendsto.curry` when the target filter `lb` is countably generated. -/
+theorem Tendsto.eventually_of_curry {γ : Type*} {la : Filter β} {lb : Filter γ}
+    [lb.IsCountablyGenerated] {u : α → β → γ} (h : Tendsto ↿u (l.curry la) lb) :
+    ∀ᶠ x in l, Tendsto (u x) la lb := by
+  obtain ⟨t, ht⟩ := lb.exists_antitone_basis
+  filter_upwards [eventually_countable_forall.2 fun i ↦
+    eventually_curry_iff.1 (ht.tendsto_right_iff.1 h i trivial)] with x hx
+  exact ht.tendsto_right_iff.2 fun i _ ↦ hx i
+
+theorem tendsto_curry_iff {γ : Type*} {la : Filter β} {lb : Filter γ}
+    [lb.IsCountablyGenerated] {u : α → β → γ} :
+    Tendsto ↿u (l.curry la) lb ↔ ∀ᶠ x in l, Tendsto (u x) la lb :=
+  ⟨Tendsto.eventually_of_curry, Tendsto.curry⟩
+
+theorem HasBasis.eventually_tendsto_right_iff {γ ι' : Type*} {la : Filter β} {lb : Filter γ}
+    [lb.IsCountablyGenerated] {p : ι' → Prop} {s : ι' → Set γ} (hlb : lb.HasBasis p s)
+    {u : α → β → γ} :
+    (∀ᶠ x in l, Tendsto (u x) la lb) ↔ ∀ i, p i → ∀ᶠ x in l, ∀ᶠ n in la, u x n ∈ s i := by
+  simp_rw [← tendsto_curry_iff, hlb.tendsto_right_iff, eventually_curry_iff]
+  rfl
 
 @[deprecated (since := "2026-08-14")]
 alias EventuallyLE.countable_iUnion := EventuallySubset.countable_iUnion
