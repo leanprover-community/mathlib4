@@ -123,7 +123,13 @@ def fromInducedCoreMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful
       left_unitality := fun _ ↦ by simp [fData.leftUnitor_eq]
       right_unitality := fun _ ↦ by simp [fData.rightUnitor_eq] }
 
-instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
+/-- A faithful functor equipped with a `InducingFunctorData` structure is monoidal.
+
+This is not a global instance: its conclusion unifies with any goal of the form `F.Monoidal`
+(the monoidal structure `induced F fData` on the source is determined by proofs only),
+so as an instance it would trigger a search for `F.Faithful` on every such goal. -/
+@[instance_reducible]
+def fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     letI := induced F fData
     F.Monoidal :=
@@ -195,7 +201,7 @@ abbrev equivalenceTransported : C ≌ Transported e := e
 
 instance : (equivalenceTransported e).inverse.Monoidal := by
   dsimp +instances only [Transported.instMonoidalCategory]
-  infer_instance
+  exact fromInducedMonoidal ..
 
 instance : (equivalenceTransported e).symm.functor.Monoidal :=
   inferInstanceAs (equivalenceTransported e).inverse.Monoidal

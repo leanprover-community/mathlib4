@@ -120,34 +120,39 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
+/-- The data needed to induce a `MonoidalCategory` structure via
+`QuadraticModuleCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
+abbrev MonoidalCategory.inducingFunctorData :
+    Monoidal.InducingFunctorData (forget₂ (QuadraticModuleCat.{u} R) (ModuleCat R)) where
+  μIso := fun _ _ => Iso.refl _
+  εIso := Iso.refl _
+  leftUnitor_eq := fun X => by
+    simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
+      Iso.refl_hom, MonoidalCategory.tensorIso_hom, MonoidalCategory.tensorHom_id]
+    dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+    erw [MonoidalCategory.id_whiskerRight]
+    simp
+    rfl
+  rightUnitor_eq := fun X => by
+    simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
+      Iso.refl_hom, MonoidalCategory.tensorIso_hom, MonoidalCategory.id_tensorHom]
+    dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+    erw [MonoidalCategory.whiskerLeft_id]
+    simp
+    rfl
+  associator_eq := fun X Y Z => by
+    dsimp only [forget₂_obj, forget₂_map_associator_hom]
+    simp only [Iso.refl_symm, Iso.trans_hom,
+      MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.id_tensorHom_id]
+    dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+    rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.id_tensorHom_id,
+      Category.id_comp]
+
 instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
-  Monoidal.induced
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    { μIso := fun _ _ => Iso.refl _
-      εIso := Iso.refl _
-      leftUnitor_eq := fun X => by
-        simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
-          Iso.refl_hom, MonoidalCategory.tensorIso_hom, MonoidalCategory.tensorHom_id]
-        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
-        erw [MonoidalCategory.id_whiskerRight]
-        simp
-        rfl
-      rightUnitor_eq := fun X => by
-        simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
-          Iso.refl_hom, MonoidalCategory.tensorIso_hom, MonoidalCategory.id_tensorHom]
-        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
-        erw [MonoidalCategory.whiskerLeft_id]
-        simp
-        rfl
-      associator_eq := fun X Y Z => by
-        dsimp only [forget₂_obj, forget₂_map_associator_hom]
-        simp only [Iso.refl_symm, Iso.trans_hom,
-          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.id_tensorHom_id]
-        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
-        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.id_tensorHom_id,
-          Category.id_comp] }
+  Monoidal.induced _ MonoidalCategory.inducingFunctorData
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a monoidal functor. -/
-example : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Monoidal := inferInstance
+instance : (forget₂ (QuadraticModuleCat.{u} R) (ModuleCat R)).Monoidal :=
+  Monoidal.fromInducedMonoidal _ MonoidalCategory.inducingFunctorData
 
 end QuadraticModuleCat

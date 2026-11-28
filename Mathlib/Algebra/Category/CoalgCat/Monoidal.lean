@@ -64,4 +64,8 @@ noncomputable def MonoidalCategory.inducingFunctorData :
 noncomputable instance instMonoidalCategory : MonoidalCategory (CoalgCat R) :=
   Monoidal.induced (forget₂ _ (ModuleCat R)) (MonoidalCategory.inducingFunctorData R)
 
+/-- `forget₂ (CoalgCat R) (ModuleCat R)` as a monoidal functor. -/
+noncomputable instance : (forget₂ (CoalgCat R) (ModuleCat R)).Monoidal :=
+  Monoidal.fromInducedMonoidal _ (MonoidalCategory.inducingFunctorData R)
+
 end CoalgCat
