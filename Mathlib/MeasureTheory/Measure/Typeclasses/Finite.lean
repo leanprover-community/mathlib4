@@ -588,65 +588,44 @@ noncomputable def MeasureTheory.Measure.finiteSpanningSetsInCompact
   finite n := (isCompact_compactCovering α n).measure_lt_top
   spanning := iUnion_compactCovering α
 
-/-- A locally finite measure on a `σ`-compact topological space admits a finite spanning sequence
-of open sets. -/
--- Note: `Set` has no computational content, but Lean still attempts to compile it.
--- See https://github.com/leanprover/lean4/issues/14084.
-noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen
-    [TopologicalSpace α] [SigmaCompactSpace α]
-    {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
-    μ.FiniteSpanningSetsIn { K | IsOpen K } where
-  set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
-  set_mem n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.1
-  finite n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.2
-  spanning :=
-    eq_univ_of_subset
-      (iUnion_mono fun n =>
-        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.1)
-      (iUnion_compactCovering α)
-
 open TopologicalSpace
 
-/-- A locally finite measure on a second countable topological space admits a finite spanning
-sequence of open sets. -/
-@[no_expose] noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpace α]
-  [SecondCountableTopology α] {m : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
-  μ.FiniteSpanningSetsIn { K | IsOpen K } := by
-  suffices H : Nonempty (μ.FiniteSpanningSetsIn { K | IsOpen K }) from H.some
-  cases isEmpty_or_nonempty α
-  · exact
-      ⟨{  set := fun _ => ∅
-          set_mem := fun _ => by simp
-          finite := fun _ => by simp
-          spanning := by simp [eq_iff_true_of_subsingleton] }⟩
-  inhabit α
-  let S : Set (Set α) := { s | IsOpen s ∧ μ s < ∞ }
-  obtain ⟨T, T_count, TS, hT⟩ : ∃ T : Set (Set α), T.Countable ∧ T ⊆ S ∧ ⋃₀ T = ⋃₀ S :=
-    isOpen_sUnion_countable S fun s hs => hs.1
-  rw [μ.isTopologicalBasis_isOpen_lt_top.sUnion_eq] at hT
-  have T_ne : T.Nonempty := by
-    by_contra h'T
-    rw [not_nonempty_iff_eq_empty.1 h'T, sUnion_empty] at hT
-    simpa only [← hT] using! mem_univ (default : α)
-  obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f := T_count.exists_eq_range T_ne
-  have fS : ∀ n, f n ∈ S := by
-    intro n
-    apply TS
-    rw [hf]
-    exact mem_range_self n
-  refine
-    ⟨{  set := f
-        set_mem := fun n => (fS n).1
-        finite := fun n => (fS n).2
-        spanning := ?_ }⟩
-  refine eq_univ_of_forall fun x => ?_
-  obtain ⟨t, tT, xt⟩ : ∃ t : Set α, t ∈ range f ∧ x ∈ t := by
-    have : x ∈ ⋃₀ T := by simp only [hT, mem_univ]
-    simpa only [mem_sUnion, exists_prop, ← hf]
-  obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using! tT
-  exact mem_iUnion_of_mem _ xt
+private theorem exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ [TopologicalSpace α]
+    [LindelofSpace α] {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
+    ∃ U : ℕ → Set α, Monotone U ∧ (∀ n, IsOpen (U n)) ∧ (∀ n, μ (U n) < ∞) ∧
+      ⋃ n, U n = univ := by
+  obtain ⟨V, hV, hVU⟩ :
+      ∃ V : ℕ → Set α, (∀ n, IsOpen (V n) ∧ μ (V n) < ∞) ∧ ⋃ n, V n = univ := by
+    rw [exists_seq_cover_iff_countable (p := fun s ↦ IsOpen s ∧ μ s < ∞) ⟨∅, by simp⟩]
+    choose U hxU hUo hμU using μ.exists_isOpen_measure_lt_top
+    obtain ⟨t, htc, ht⟩ := LindelofSpace.elim_nhds_subcover U fun x ↦ (hUo x).mem_nhds (hxU x)
+    refine ⟨U '' t, htc.image _, forall_mem_image.2 fun x _ ↦ ⟨hUo x, hμU x⟩, ?_⟩
+    rwa [sUnion_image]
+  choose hVo hμV using hV
+  refine ⟨accumulate V, monotone_accumulate, fun n ↦ isOpen_biUnion (s := Iic n) fun n _ ↦ hVo n,
+    fun n ↦ measure_biUnion_lt_top (s := Iic n) (finite_Iic n) fun k _ ↦ hμV k, ?_⟩
+  rw [iUnion_accumulate, hVU]
+
+/-- A locally finite measure on a Lindelöf topological space (e.g., a `σ`-compact space or a second
+countable space) admits a monotone finite spanning sequence of open sets,
+see `MeasureTheory.Measure.monotone_finiteSpanningSetsInOpen` for monotonicity. -/
+@[no_expose] noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen
+    [TopologicalSpace α] [LindelofSpace α] {_ : MeasurableSpace α} (μ : Measure α)
+    [IsLocallyFiniteMeasure μ] : μ.FiniteSpanningSetsIn { K | IsOpen K } where
+  set := (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose
+  set_mem := (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose_spec.2.1
+  finite := (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose_spec.2.2.1
+  spanning := (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose_spec.2.2.2
+
+@[gcongr]
+theorem MeasureTheory.Measure.monotone_finiteSpanningSetsInOpen [TopologicalSpace α]
+    [LindelofSpace α] {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
+    Monotone μ.finiteSpanningSetsInOpen.set :=
+  (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose_spec.1
+
+@[deprecated (since := "2026-11-21")]
+alias MeasureTheory.Measure.finiteSpanningSetsInOpen' :=
+  MeasureTheory.Measure.finiteSpanningSetsInOpen
 
 section MeasureIxx
 

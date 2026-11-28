@@ -745,7 +745,7 @@ theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : I
     A minor technical inconvenience is that constants are not integrable, so to apply previous
     lemmas we need to replace `c` with the restriction of `c` to a finite measure set `A n` in the
     above sketch. -/
-  let A := MeasureTheory.Measure.finiteSpanningSetsInOpen' μ
+  let A := MeasureTheory.Measure.finiteSpanningSetsInOpen μ
   rcases h'f.isSeparable_range with ⟨t, t_count, ht⟩
   have main :
     ∀ᵐ x ∂μ,
