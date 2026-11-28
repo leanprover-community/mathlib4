@@ -51,37 +51,6 @@ def constToHtml (n : Name) : MetaM ProofWidgets.Html := do
   }
   return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt}/>}
 
-/-- Display `fmt` with a docstring as if it is the constant `n`. -/
-def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM ProofWidgets.Html := do
-  let tag := 0
-  -- Hack: use `.ofCommandInfo` instead of `.ofTacticInfo` to avoid printing `n` and its type.
-  -- Unfortunately, there is still a loose dangling ` : `.
-  let infos := .insert ∅ tag <| .ofCommandInfo
-    { elaborator := `ClickSuggestions, stx := .node .none n #[] }
-  let tt := TaggedText.prettyTagged <| .tag tag fmt
-  let ctx := {
-    env           := (← getEnv)
-    mctx          := (← getMCtx)
-    options       := (← getOptions)
-    currNamespace := (← getCurrNamespace)
-    openDecls     := (← getOpenDecls)
-    fileMap       := default
-    ngen          := (← getNGen)
-  }
-  -- TODO: I would love to print this using the same keyword colour used by the editor,
-  -- but I don't think this is possible. Additionally, `InteractiveCode` already overwrites the
-  -- colour and style of the text (namely the expression style)
-  return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt} />}
-
-
-/-- Pretty print a tactic with its docstring as hover info.
-
-I would love to print `tac` with another colour, e.g. the keyword highlighting used by the editor,
-but I have no idea how to do this.
--/
-def tacticToHtml (tac : TSyntax `tactic) : MetaM ProofWidgets.Html := do
-  formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.raw.getKind
-
 end
 
 /-- Let `#click_suggestions` show the candidate lemmas that failed to apply. -/
@@ -383,6 +352,35 @@ def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
     </summary>
     {.element "div" #[] (← get).solvedSuggestions}
     </details>}
+
+/--
+Incrementally generate a sequence of HTMLs by running `k` in a separate thread.
+The resulting HTML starts out empty.
+Every time when `k` calls its argument with some HTML,
+it is appended to the HTML sequence and this sequence is displayed immediately,
+inside a drop-down section titled `title`.
+-/
+def mkIncrementalSuggestions (title : String)
+    (k : (ProofWidgets.Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) :
+    ClickSuggestionsM ProofWidgets.Html :=
+  mkRefreshComponentM (.text "") fun token ↦
+    trackingComputation title do
+      let htmls ← IO.mkRef #[]
+      k fun html ↦ do
+        markProgress
+        htmls.modify (·.push html)
+        token.update jsx%{<details open={true}>
+            <summary className="mv2 pointer">{.text title}⏳️</summary>
+            {.element "div" #[] (← htmls.get)}
+          </details>}
+      let htmls ← htmls.get
+      -- If the HTMLs are nonempty, then remove the `⏳️` emoji.
+      -- Otherwise, leave the ouput empty.
+      unless htmls.isEmpty do
+        token.update jsx%{<details open={true}>
+            <summary className="mv2 pointer">{.text title}</summary>
+            {.element "div" #[] htmls}
+          </details>}
 
 end Widget
 
