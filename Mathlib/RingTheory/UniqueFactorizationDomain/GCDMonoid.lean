@@ -49,7 +49,7 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoid
   lcm_zero_right a := by simp
   gcd_mul_lcm a b := by
     rw [← mk_eq_mk_iff_associated, ← Associates.mk_mul_mk, ← associated_iff_eq, Associates.quot_out,
-      Associates.quot_out, mul_comm, sup_mul_inf, Associates.mk_mul_mk]
+      Associates.quot_out, mul_comm, Associates.sup_mul_inf, Associates.mk_mul_mk]
 
 instance (priority := 100) (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     IsGCDMonoid α := ⟨toGCDMonoid α⟩
@@ -73,7 +73,7 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     lcm_zero_left := fun a => show (⊤ ⊔ Associates.mk a).out = 0 by simp
     lcm_zero_right := fun a => show (Associates.mk a ⊔ ⊤).out = 0 by simp
     gcd_mul_lcm := fun a b => (out_mul' ..).symm.trans <| by
-      rw [mul_comm, sup_mul_inf, mk_mul_mk, out_mk]
+      rw [mul_comm, Associates.sup_mul_inf, mk_mul_mk, out_mk]
       exact normalize_associated (a * b)
     normalize_gcd := fun a b => by apply normalize_out _
     normalize_lcm := fun a b => by apply normalize_out _ }

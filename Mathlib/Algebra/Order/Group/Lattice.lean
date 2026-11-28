@@ -45,59 +45,51 @@ section Group
 variable [Lattice α] [Group α]
 
 -- Special case of Bourbaki A.VI.9 (1)
-@[to_additive]
-lemma mul_sup [MulLeftMono α] (a b c : α) :
-    c * (a ⊔ b) = c * a ⊔ c * b :=
+@[to_dual (attr := to_additive)]
+lemma mul_sup [MulLeftMono α] (a b c : α) : c * (a ⊔ b) = c * a ⊔ c * b :=
   (OrderIso.mulLeft _).map_sup _ _
 
-@[to_additive]
-lemma sup_mul [MulRightMono α] (a b c : α) :
-    (a ⊔ b) * c = a * c ⊔ b * c :=
+attribute [to_dual existing] add_sup
+
+@[to_dual (attr := to_additive)]
+lemma sup_mul [MulRightMono α] (a b c : α) : (a ⊔ b) * c = a * c ⊔ b * c :=
   (OrderIso.mulRight _).map_sup _ _
 
-@[to_additive]
-lemma mul_inf [MulLeftMono α] (a b c : α) :
-    c * (a ⊓ b) = c * a ⊓ c * b :=
-  (OrderIso.mulLeft _).map_inf _ _
+attribute [to_dual existing] sup_add
 
-@[to_additive]
-lemma inf_mul [MulRightMono α] (a b c : α) :
-    (a ⊓ b) * c = a * c ⊓ b * c :=
-  (OrderIso.mulRight _).map_inf _ _
-
-@[to_additive]
-lemma sup_div [MulRightMono α] (a b c : α) :
-    (a ⊔ b) / c = a / c ⊔ b / c :=
+@[to_dual (attr := to_additive)]
+lemma sup_div [MulRightMono α] (a b c : α) : (a ⊔ b) / c = a / c ⊔ b / c :=
   (OrderIso.divRight _).map_sup _ _
 
-@[to_additive]
-lemma inf_div [MulRightMono α] (a b c : α) :
-    (a ⊓ b) / c = a / c ⊓ b / c :=
-  (OrderIso.divRight _).map_inf _ _
+attribute [to_dual existing] sup_sub
 
 section
 variable [MulLeftMono α] [MulRightMono α]
 
-@[to_additive] lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ := (OrderIso.inv α).map_sup _ _
+@[to_dual (attr := to_additive)]
+lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ := (OrderIso.inv α).map_sup _ _
 
-@[to_additive] lemma inv_inf (a b : α) : (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ := (OrderIso.inv α).map_inf _ _
+attribute [to_dual existing] neg_sup
 
-@[to_additive]
+@[to_dual (attr := to_additive)]
 lemma div_sup (a b c : α) : c / (a ⊔ b) = c / a ⊓ c / b := (OrderIso.divLeft c).map_sup _ _
 
-@[to_additive]
-lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b := (OrderIso.divLeft c).map_inf _ _
+attribute [to_dual existing] sub_sup
 
 -- In fact 0 ≤ n•a implies 0 ≤ a, see L. Fuchs, "Partially ordered algebraic systems"
 -- Chapter V, 1.E
 -- See also `one_le_pow_iff` for the existing version in linear orders
-@[to_additive]
-lemma pow_two_semiclosed
-    {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
+@[to_dual (attr := to_additive) le_one_of_le_one_pow_two]
+lemma one_le_of_one_le_pow_two {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
     rwa [← inf_eq_right, ← mul_eq_left]
   rw [mul_inf, inf_mul, ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
     inf_assoc, inf_of_le_left ha]
+
+attribute [to_dual existing nonpos_of_nonpos_nsmul_two] nonneg_of_nonneg_nsmul_two
+
+@[to_additive (attr := deprecated (since := "2026-11-21"))]
+alias pow_two_semiclosed := one_le_of_one_le_pow_two
 
 end
 
@@ -114,6 +106,10 @@ lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
       rw [mul_sup b⁻¹ a⁻¹ (a * b), mul_inv_cancel_right, mul_inv_cancel_comm]
     _ = (a ⊓ b) * (a * b * (a ⊓ b)⁻¹) := by rw [inv_inf, sup_comm]
     _ = a * b := by rw [mul_comm, inv_mul_cancel_right]
+
+@[to_additive (attr := to_dual existing)]
+lemma sup_mul_inf [MulLeftMono α] (a b : α) : (a ⊔ b) * (a ⊓ b) = a * b := by
+  rw [mul_comm, inf_mul_sup]
 
 /-- Every lattice ordered commutative group is a distributive lattice. -/
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
