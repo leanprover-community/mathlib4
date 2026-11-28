@@ -71,13 +71,13 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       rw [← e]
       refine inductionOn a ?_
       intro α r _
-      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein r⟩
+      exact lift_type_lt'.{u, u + 1, max (u + 1) v}.2 ⟨typein r⟩
     · rw [← lift_id (type s)] at h ⊢
-      obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
+      obtain ⟨f⟩ := lift_type_lt'.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
       induction a using inductionOn with | type α r
-      refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
+      refine lift_type_eq'.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
       · refine fun a b h => (typein_lt_typein r).1 ?_
