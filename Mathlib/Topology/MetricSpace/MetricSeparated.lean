@@ -59,6 +59,16 @@ nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSe
 
 lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst
 
+/-- The closed balls of radius `ε / 2` around the points of an `ε`-separated set are pairwise
+disjoint. -/
+lemma IsSeparated.pairwiseDisjoint_closedEBall (hs : IsSeparated ε s) :
+    s.PairwiseDisjoint (closedEBall · (ε / 2)) := by
+  refine fun x hx y hy hxy ↦ disjoint_left.mpr fun z hzx hzy ↦ (hs hx hy hxy).not_ge ?_
+  calc edist x y
+  _ ≤ edist x z + edist y z := edist_triangle_right x y z
+  _ ≤ ε / 2 + ε / 2 := by grw [mem_closedEBall'.1 hzx, mem_closedEBall'.1 hzy]
+  _ = ε := ENNReal.add_halves ε
+
 lemma isSeparated_insert :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
   have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
