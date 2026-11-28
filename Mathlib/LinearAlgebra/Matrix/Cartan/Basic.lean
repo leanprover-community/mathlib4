@@ -480,7 +480,7 @@ end Properties
 end CartanMatrix
 
 /-- The proposition that a matrix is a generalized Cartan matrix. -/
-structure Matrix.IsGeneralizedCartan {ι : Type*}
+structure Matrix.IsKacMoodyCartan {ι : Type*}
     (M : Matrix ι ι ℤ) : Prop where
   diag (i : ι) : M i i = 2
   offDiag_nonpos (i j : ι) : i ≠ j → M i j ≤ 0
@@ -488,8 +488,8 @@ structure Matrix.IsGeneralizedCartan {ι : Type*}
 
 /-- The proposition that a matrix is a finite-type Cartan matrix. -/
 structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
-    extends IsGeneralizedCartan M where
-  exists_posDef' : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d * M) *ᵥ x)
+    extends IsKacMoodyCartan M where
+  exists_isStrictlyAccretive : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ M.IsStrictlyAccretive
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
 
@@ -503,7 +503,7 @@ lemma mk_of_exists_posDef (diag : ∀ i, M i i = 2) (offDiag_nonpos : ∀ i j, i
   zero_comm i j := by
     obtain ⟨_, _, h⟩ := exists_posDef
     grind [h.isHermitian.apply i j, diagonal_mul, star_trivial, mul_eq_zero]
-  exists_posDef' := by
+  exists_isStrictlyAccretive := by
     obtain ⟨d, hd, hd'⟩ := exists_posDef
     exact ⟨d, hd, fun x hx ↦ by simpa using hd'.dotProduct_mulVec_pos hx⟩
 
@@ -513,7 +513,7 @@ include hM
 lemma eq_zero_iff_forall {x : ι → ℤ} :
     x = 0 ↔ ∀ i, x i * (M *ᵥ x) i ≤ 0 := by
   refine ⟨by rintro rfl; simp, fun h ↦ ?_⟩
-  obtain ⟨d, hd, hd'⟩ := hM.exists_posDef'
+  obtain ⟨d, hd, hd'⟩ := hM.exists_isStrictlyAccretive
   by_contra hx
   refine (hd' x hx).not_ge ?_
   simp_rw [dotProduct_diagonal_mul_mulVec]
@@ -538,8 +538,8 @@ protected theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ �
   diag i := hM.diag (f i)
   offDiag_nonpos i j h := hM.offDiag_nonpos (f i) (f j) (hf.ne h)
   zero_comm i j := hM.zero_comm (f i) (f j)
-  exists_posDef' := by
-    obtain ⟨d, hd, h⟩ := hM.exists_posDef'
+  exists_isStrictlyAccretive := by
+    obtain ⟨d, hd, h⟩ := hM.exists_isStrictlyAccretive
     refine ⟨d ∘ f, fun i ↦ hd (f i), fun x hx ↦ ?_⟩
     let y := extend f x 0
     have hy : y ∘ f = x := extend_comp hf x 0
@@ -670,7 +670,7 @@ protected lemma transpose :
     { diag i := by simpa using hM.diag i
       offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
       zero_comm i j := by simpa using hM.zero_comm j i
-      exists_posDef' := ⟨d', hd'_pos, this⟩ }
+      exists_isStrictlyAccretive := ⟨d', hd'_pos, this⟩ }
   set C : ℤ := ∏ j, d j with hC
   have hCd (i : ι) : d i * d' i = C := Finset.mul_prod_erase _ _ (Finset.mem_univ i)
   have hsymm (i j : ι) : d' i * M j i = d' j * M i j := by

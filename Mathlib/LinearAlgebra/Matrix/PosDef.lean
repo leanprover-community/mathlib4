@@ -6,14 +6,15 @@ Authors: Alexander Bentkamp, Mohanad Ahmed
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Basic.Real.Star
+public import Mathlib.LinearAlgebra.Matrix.Accretive
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
-public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
+import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Int.Interval
+import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-! # Positive Definite Matrices
@@ -61,15 +62,12 @@ variable [CommRing R'] [PartialOrder R'] [StarRing R']
 /-- A matrix `M : Matrix n n R` is positive semidefinite if it is Hermitian and `xᴴ * M * x` is
 nonnegative for all `x` of finite support. -/
 def PosSemidef (M : Matrix n n R) : Prop :=
-  M.IsHermitian ∧ ∀ x : n →₀ R, 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * M i j * xj
+  M.IsHermitian ∧ M.IsAccretive
 
 protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
-    PosSemidef (diagonal d) where
-  left := isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i)
-  right x := by
-    -- TODO: positivity
-    refine Finsupp.sum_nonneg fun i _ ↦ Finsupp.sum_nonneg fun j _ ↦ ?_
-    simp +contextual [diagonal, apply_ite, star_left_conjugate_nonneg (h _)]
+    PosSemidef (diagonal d) :=
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
+    IsAccretive.diagonal h⟩
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 @[simp] lemma posSemidef_diagonal_iff [StarOrderedRing R] [DecidableEq n] {d : n → R} :
@@ -81,16 +79,15 @@ namespace PosSemidef
 theorem isHermitian {M : Matrix n n R} (hM : M.PosSemidef) : M.IsHermitian :=
   hM.1
 
-theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
-    (M.submatrix e e).PosSemidef := by
-  refine ⟨hM.1.submatrix _, fun x ↦ ?_⟩
-  simpa [Finsupp.sum_mapDomain_index, add_mul, mul_add] using hM.2 <| x.mapDomain e
+theorem isAccretive {M : Matrix n n R} (hM : M.PosSemidef) : M.IsAccretive :=
+  hM.2
 
-theorem transpose {M : Matrix n n R'} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
-  have (a b c : R') : a * b * c = c * b * a := by ring
-  refine ⟨hM.1.transpose, fun x => ?_⟩
-  rw [Finsupp.sum_comm]
-  simpa [Finsupp.sum_mapRange_index, this] using hM.2 (Finsupp.mapRange star (star_zero R') x)
+theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
+    (M.submatrix e e).PosSemidef :=
+  ⟨hM.1.submatrix _, hM.2.submatrix _⟩
+
+theorem transpose {M : Matrix n n R'} (hM : M.PosSemidef) : Mᵀ.PosSemidef :=
+  ⟨hM.1.transpose, hM.2.transpose⟩
 
 @[simp]
 theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R'} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
@@ -105,8 +102,7 @@ theorem _root_.Matrix.posSemidef_conjTranspose_iff {M : Matrix n n R} :
 
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
-  ⟨hA.isHermitian.add hB.isHermitian, fun x => by
-    simpa [mul_add, add_mul] using add_nonneg (hA.2 x) (hB.2 x)⟩
+  ⟨hA.isHermitian.add hB.isHermitian, hA.2.add hB.2⟩
 
 protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulMono α R] {x : Matrix n n R}
@@ -114,7 +110,7 @@ protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRin
   refine ⟨IsSelfAdjoint.smul (.of_nonneg ha) hx.1, fun y => ?_⟩
   simpa [mul_smul_comm, smul_mul_assoc, ← Finsupp.smul_sum] using smul_nonneg ha (hx.2 _)
 
-protected lemma zero : PosSemidef (0 : Matrix n n R) := ⟨isHermitian_zero, by simp⟩
+protected lemma zero : PosSemidef (0 : Matrix n n R) := ⟨isHermitian_zero, .zero⟩
 
 protected lemma one [StarOrderedRing R] [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x => Finsupp.sum_nonneg fun i _ ↦ Finsupp.sum_nonneg fun j _ ↦ by
@@ -311,8 +307,7 @@ variable [Fintype n] [Fintype m]
 Hermitian and `xᴴ * M * x` is nonnegative for all `x`. -/
 theorem posSemidef_iff_dotProduct_mulVec {M : Matrix n n R} :
     M.PosSemidef ↔ M.IsHermitian ∧ ∀ x, 0 ≤ star x ⬝ᵥ (M *ᵥ x) := by
-  simp [PosSemidef, ← Finsupp.equivFunOnFinite.forall_congr_right, dotProduct, mulVec,
-    Finsupp.sum_fintype, Finset.mul_sum, mul_assoc]
+  simp [PosSemidef]
 
 namespace PosSemidef
 
