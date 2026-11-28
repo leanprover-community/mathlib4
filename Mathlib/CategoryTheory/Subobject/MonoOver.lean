@@ -65,6 +65,10 @@ namespace MonoOver
 
 instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.property
 
+instance {S T : MonoOver X} (f : S ⟶ T) :
+    Mono f.hom.left :=
+  mono_of_mono_fac f.hom.w
+
 /-- Construct a `MonoOver X`. -/
 @[simps]
 def mk {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where

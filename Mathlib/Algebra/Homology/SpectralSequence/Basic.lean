@@ -64,6 +64,12 @@ def pageXIsoOfEq (E : SpectralSequence C c r₀) (pq : κ) (r r' : ℤ) (h : r =
     (E.page r).X pq ≅ (E.page r').X pq :=
   eqToIso (by subst h; rfl)
 
+@[simp]
+lemma pageXIsoOfEq_eq_refl
+    (E : SpectralSequence C c r₀) (pq : κ) (r : ℤ)
+    (hr : r₀ ≤ r := by lia) :
+    E.pageXIsoOfEq pq r r rfl hr = Iso.refl _ := rfl
+
 attribute [reassoc (attr := simp)] Hom.comm
 
 @[simps! id_hom comp_hom]
@@ -83,6 +89,13 @@ lemma hom_ext {E E' : SpectralSequence C c r₀} {f f' : E ⟶ E'}
 
 attribute [simp] id_hom
 attribute [reassoc, simp] comp_hom
+
+@[reassoc (attr := simp)]
+lemma Hom.comm' {E E' : SpectralSequence C c r₀} (f : E ⟶ E')
+    (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
+    (E.iso r r' pq hrr' hr).inv ≫ HomologicalComplex.homologyMap (f.hom r) pq =
+    (f.hom r').f pq  ≫ (E'.iso r r' pq hrr' hr).inv := by
+  simp [← cancel_mono (E'.iso r r' pq hrr' hr).hom, f.comm r r' pq hrr' hr]
 
 variable (C c r₀)
 

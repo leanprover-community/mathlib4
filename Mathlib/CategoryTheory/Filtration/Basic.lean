@@ -54,6 +54,10 @@ variable {X : C} {I : Type*} [Category I]
 abbrev diagram (F : Filtration X I) : I ⥤ C :=
   F.toMonoOver ⋙ MonoOver.forget _ ⋙ Over.forget _
 
+instance (F : Filtration X I) {i j : I} (f : i ⟶ j) : Mono (F.diagram.map f) := by
+  dsimp
+  infer_instance
+
 /-- The object at index `i` (domain of the mono into `X`). -/
 abbrev obj (F : Filtration X I) (i : I) : C :=
   F.diagram.obj i
@@ -62,6 +66,18 @@ abbrev obj (F : Filtration X I) (i : I) : C :=
 @[implicit_reducible, simps -isSimp]
 def ι (F : Filtration X I) : F.diagram ⟶ (Functor.const _).obj X where
   app i := (F.toMonoOver.obj i).obj.hom
+
+instance (F : Filtration X I) (i : I) : Mono (F.ι.app i) := by
+  simp only [ι_app]
+  infer_instance
+
+instance (F : Filtration X I) : Mono F.ι :=
+  NatTrans.mono_of_mono_app _
+
+@[reassoc (attr := simp)]
+lemma w (F : Filtration X I) {i j : I} (f : i ⟶ j) :
+    dsimp% F.diagram.map f ≫ F.ι.app j = F.ι.app i :=
+  ((MonoOver.forget _).map (F.toMonoOver.map f)).w
 
 instance (F : Filtration X I) (i : I) : Mono (F.ι.app i) := by
   dsimp [ι_app]
