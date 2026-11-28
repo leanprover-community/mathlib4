@@ -75,6 +75,10 @@ protected theorem mem_span (x : M) : x ∈ span R (range b) :=
 protected theorem span_eq : span R (range b) = ⊤ :=
   eq_top_iff.mpr fun x _ => b.mem_span x
 
+theorem span_range_coe {N : Submodule R M} (b : Basis ι R N) :
+    span R (range fun i ↦ (b i : M)) = N :=
+  (span_range_subtype_eq_top_iff N fun i ↦ (b i).property).1 b.span_eq
+
 theorem _root_.Submodule.eq_top_iff_forall_basis_mem {p : Submodule R M} :
     p = ⊤ ↔ ∀ i, b i ∈ p := by
   refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
