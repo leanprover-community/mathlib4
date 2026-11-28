@@ -131,6 +131,10 @@ version is important as it satisfies `IsStarProjection`. -/
 def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjectionOnto
 
+lemma starProjection_def (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    U.starProjection = U.subtypeL ∘L U.orthogonalProjectionOnto :=
+  rfl
+
 /-- The orthogonal projection onto a complete subspace, as an
 unbundled function. This definition is only intended for use in
 setting up the bundled version `orthogonalProjection` and should not
