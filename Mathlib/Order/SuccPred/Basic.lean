@@ -700,6 +700,30 @@ end Order
 
 open Order
 
+section MonotoneSucc
+
+variable {ι α : Type*} [LinearOrder ι] [SuccOrder ι] [Preorder α] {f : ι → α}
+
+/-- If `f` is a monotone function from a linear successor order to a preorder, and `x` lies
+strictly between `f n` and `f (succ n)`, then `x` is not in the range of `f`.
+
+This generalizes `Monotone.ne_of_lt_of_lt_nat` and `Monotone.ne_of_lt_of_lt_int`. -/
+theorem Monotone.ne_of_lt_of_lt_succ (hf : Monotone f) (n : ι) {x : α} (h1 : f n < x)
+    (h2 : x < f (succ n)) (a : ι) : f a ≠ x := by
+  rintro rfl
+  exact (hf.reflect_lt h2).not_ge (succ_le_of_lt (hf.reflect_lt h1))
+
+/-- If `f` is an antitone function from a linear successor order to a preorder, and `x` lies
+strictly between `f (succ n)` and `f n`, then `x` is not in the range of `f`.
+
+This generalizes `Antitone.ne_of_lt_of_lt_nat` and `Antitone.ne_of_lt_of_lt_int`. -/
+theorem Antitone.ne_of_lt_of_lt_succ (hf : Antitone f) (n : ι) {x : α} (h1 : f (succ n) < x)
+    (h2 : x < f n) (a : ι) : f a ≠ x := by
+  rintro rfl
+  exact (hf.reflect_lt h1).not_ge (succ_le_of_lt (hf.reflect_lt h2))
+
+end MonotoneSucc
+
 /-! ### `WithBot`, `WithTop`
 Adding a greatest/least element to a `SuccOrder` or to a `PredOrder`.
 
