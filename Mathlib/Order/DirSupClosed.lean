@@ -5,9 +5,11 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
@@ -189,6 +191,56 @@ theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupC
 theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) := by
   simpa using hs.dirSupInaccOn.inter isLowerSet_univ ht.dirSupInaccOn
 
+protected theorem DirSupClosedOn.sUnion {s : Set (Set α)} (hD : IsLowerSet D) (hs : s.Finite)
+    (h : ∀ t ∈ s, DirSupClosedOn D t) : DirSupClosedOn D (⋃₀ s) :=
+  hs.induction_on_subset s (by simp) fun {a} _ hmem _ _ ↦ by simpa using h a hmem |>.union hD
+
+protected theorem DirSupInaccOn.sInter {s : Set (Set α)} (hD : IsLowerSet D) (hs : s.Finite)
+    (h : ∀ t ∈ s, DirSupInaccOn D t) : DirSupInaccOn D (⋂₀ s) :=
+  hs.induction_on_subset s (by simp) fun {a} _ hmem _ _ ↦ by simpa using h a hmem |>.inter hD
+
+protected theorem DirSupClosedOn.iUnion {ι : Sort*} [Finite ι] {s : ι → Set α} (hD : IsLowerSet D)
+    (h : ∀ i, DirSupClosedOn D (s i)) : DirSupClosedOn D (⋃ i, s i) :=
+  .sUnion hD (Set.finite_range s) (by simpa)
+
+protected theorem DirSupInaccOn.iInter {ι : Sort*} [Finite ι] {s : ι → Set α} (hD : IsLowerSet D)
+    (h : ∀ i, DirSupInaccOn D (s i)) : DirSupInaccOn D (⋂ i, s i) :=
+  .sInter hD (Set.finite_range s) (by simpa)
+
+protected theorem DirSupClosedOn.iUnion₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (hD : IsLowerSet D) (h : ∀ i j, DirSupClosedOn D (s i j)) :
+    DirSupClosedOn D (⋃ (i) (j), s i j) :=
+  .iUnion hD (.iUnion hD <| h ·)
+
+protected theorem DirSupInaccOn.iInter₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (hD : IsLowerSet D) (h : ∀ i j, DirSupInaccOn D (s i j)) :
+    DirSupInaccOn D (⋂ (i) (j), s i j) :=
+  .iInter hD (.iInter hD <| h ·)
+
+protected theorem DirSupClosed.sUnion {s : Set (Set α)} (hs : s.Finite)
+    (h : ∀ t ∈ s, DirSupClosed t) : DirSupClosed (⋃₀ s) :=
+  dirSupClosedOn_univ.mp <| .sUnion isLowerSet_univ hs (h · · |>.dirSupClosedOn)
+
+protected theorem DirSupInacc.sInter {s : Set (Set α)} (hs : s.Finite)
+    (h : ∀ t ∈ s, DirSupInacc t) : DirSupInacc (⋂₀ s) :=
+  dirSupInaccOn_univ.mp <| .sInter isLowerSet_univ hs (h · · |>.dirSupInaccOn)
+
+protected theorem DirSupClosed.iUnion {ι : Sort*} [Finite ι] {s : ι → Set α}
+    (h : ∀ i, DirSupClosed (s i)) : DirSupClosed (⋃ i, s i) :=
+  .sUnion (Set.finite_range s) (by simpa)
+
+protected theorem DirSupInacc.iInter {ι : Sort*} [Finite ι] {s : ι → Set α}
+    (h : ∀ i, DirSupInacc (s i)) : DirSupInacc (⋂ i, s i) :=
+  .sInter (Set.finite_range s) (by simpa)
+
+protected theorem DirSupClosed.iUnion₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (h : ∀ i j, DirSupClosed (s i j)) : DirSupClosed (⋃ (i) (j), s i j) :=
+  .iUnion (.iUnion <| h ·)
+
+protected theorem DirSupInacc.iInter₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (h : ∀ i j, DirSupInacc (s i j)) : DirSupInacc (⋂ (i) (j), s i j) :=
+  .iInter (.iInter <| h ·)
+
 theorem DirSupInaccOn.of_inter_subset
     (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInaccOn D s := by
@@ -293,6 +345,17 @@ theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
 
 theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
   (dirSupClosed_singleton a).dirSupClosedOn
+
+theorem Set.Finite.dirSupClosed {s : Set α} (h : s.Finite) : DirSupClosed s := by
+  rw [← s.iUnion_of_singleton_coe]
+  have := h.to_subtype
+  exact .iUnion (dirSupClosed_singleton ·.val)
+
+theorem Set.Finite.dirSupClosedOn (hD : IsLowerSet D) {s : Set α} (h : s.Finite) :
+    DirSupClosedOn D s := by
+  rw [← s.iUnion_of_singleton_coe]
+  have := h.to_subtype
+  exact .iUnion hD (dirSupClosedOn_singleton ·.val)
 
 end PartialOrder
 
