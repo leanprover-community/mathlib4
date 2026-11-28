@@ -88,10 +88,9 @@ theorem sign_top : sign (⊤ : EReal) = 1 := rfl
 
 theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
-  simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
+  simp [sign_apply]
 
 @[simp, norm_cast]
 theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> rfl
@@ -130,9 +129,9 @@ theorem sign_eq_and_abs_eq_iff_eq {x y : EReal} :
 
 theorem le_iff_sign {x y : EReal} :
     x ≤ y ↔ sign x < sign y ∨
-      sign x = SignType.neg ∧ sign y = SignType.neg ∧ y.abs ≤ x.abs ∨
-        sign x = SignType.zero ∧ sign y = SignType.zero ∨
-          sign x = SignType.pos ∧ sign y = SignType.pos ∧ x.abs ≤ y.abs := by
+      sign x = -1 ∧ sign y = -1 ∧ y.abs ≤ x.abs ∨
+        sign x = 0 ∧ sign y = 0 ∨
+          sign x = 1 ∧ sign y = 1 ∧ x.abs ≤ y.abs := by
   constructor
   · intro h
     refine (sign.monotone h).lt_or_eq.imp_right (fun hs => ?_)
