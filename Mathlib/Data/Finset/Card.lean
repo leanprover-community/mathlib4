@@ -667,7 +667,7 @@ theorem card_filter_add_card_filter_not
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
-lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #t) :
+lemma exists_superset_subset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #t) :
     ∃ u, s ⊆ u ∧ u ⊆ t ∧ #u = n := by
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
@@ -675,9 +675,12 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
   obtain ⟨a, ha⟩ : (u \ s).Nonempty := by grind
   exact ⟨u.erase a, by grind⟩
 
+@[deprecated (since := "2026-11-23")]
+alias exists_subsuperset_card_eq := exists_superset_subset_card_eq
+
 /-- We can shrink a set to any smaller size. -/
 lemma exists_subset_card_eq (hns : n ≤ #s) : ∃ t ⊆ s, #t = n := by
-  simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
+  simpa using exists_superset_subset_card_eq s.empty_subset (by simp) hns
 
 theorem le_card_iff_exists_subset_card : n ≤ #s ↔ ∃ t ⊆ s, #t = n := by
   refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩

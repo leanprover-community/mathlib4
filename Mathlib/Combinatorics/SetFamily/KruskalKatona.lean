@@ -313,7 +313,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
       rw [mem_powersetCard, mem_shadow_iterate_iff_exists_sdiff]
       constructor
       · rintro ⟨hBk, hB⟩
-        have := exists_subsuperset_card_eq hBk (Nat.le_add_left _ i) <| by
+        have := exists_superset_subset_card_eq hBk (Nat.le_add_left _ i) <| by
           rwa [hB, card_attachFin, card_range, ← Nat.add_sub_assoc hir, Nat.add_sub_cancel_left]
         obtain ⟨C, BsubC, hCrange, hcard⟩ := this
         rw [hB, ← Nat.add_sub_assoc hir, Nat.add_sub_cancel_left] at hcard
