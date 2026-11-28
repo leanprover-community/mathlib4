@@ -19,7 +19,10 @@ In this file, we define a bijection `SSet.prodStdSimplex₁.nonDegenerateEquiv`
 between `Fin (p + 1)` and the type of nondegenerate `(p + 1)`-simplices
 of `Δ[p] ⊗ Δ[1]`. We use this enumeration of the nondegenerate simplices
 in order to define a filtration `SSet.prodStdSimplex₁.filtration`
-of `Δ[p] ⊗ Δ[1]` by subcomplexes.
+of `Δ[p] ⊗ Δ[1]` by subcomplexes. This filtration is used in order to
+construct morphisms from `Δ[p] ⊗ Δ[1]` by specifying the images of
+nondegenerate simplices.
+
 -/
 
 @[expose] public section
@@ -319,6 +322,76 @@ lemma filtration.isPushout (j : Fin p) :
     simp [SimplicialObject.δ, CosimplicialObject.δ, ← dsimp% yonedaEquiv_symm_map (X := _ ⊗ _)]
   · simp
   · cat_disch
+
+lemma filtration.exists_desc
+    {X : SSet.{u}} {j : Fin (p + 1)}
+    (α : ∀ (i : Fin (p + 1)) (_ : i ≤ j), Δ[p + 1] ⟶ X)
+    (hα : ∀ (i : Fin p) (hi : i.succ ≤ j),
+      stdSimplex.δ i.succ.castSucc ≫
+        α i.castSucc (i.castSucc_le_succ.trans hi) =
+      stdSimplex.δ i.succ.castSucc ≫ α i.succ hi) :
+    ∃ (φ : (filtration j : SSet.{u}) ⟶ X),
+      ∀ (i : Fin (p + 1)) (hi : i ≤ j), ι hi ≫ φ = α i hi := by
+  induction j using Fin.induction with
+  | zero =>
+    refine ⟨(Subcomplex.eqToIso (filtration_zero p)).hom ≫
+      (stdSimplex.isoOfRepresentableBy
+        (Subcomplex.ofSimplexRepresentableBy _)).inv ≫ α 0 (by rfl), fun i hi ↦ ?_⟩
+    obtain rfl : i = 0 := le_antisymm hi bot_le
+    rw [← Category.id_comp (α 0 hi), ← Category.assoc, ← Category.assoc]
+    congr 1
+    simp [← cancel_mono (stdSimplex.isoOfRepresentableBy
+      (Subcomplex.ofSimplexRepresentableBy (nonDegenerateEquiv 0).val)).hom]
+    rfl
+  | succ j hj  =>
+    obtain ⟨β, hβ⟩ := hj (fun i hi ↦ α i (hi.trans j.castSucc_le_succ)) (fun _ _ ↦ hα _ _)
+    obtain ⟨φ, hφ₁, hφ₂⟩ := (isPushout j).exists_desc β (α j.succ (by rfl))
+      (by rw [Category.assoc, hβ, hα])
+    refine ⟨φ, fun i hi ↦ ?_⟩
+    obtain hi | rfl := hi.lt_or_eq
+    · rw [← Fin.le_castSucc_iff] at hi
+      rw [← hβ i hi, ← hφ₁]
+      rfl
+    · exact hφ₂
+
+/-- For `i : Fin (p + 1)`, this is the inclusion `Δ[p + 1] ⟶ Δ[p] ⊗ Δ[1]`
+of the `i`th nondegenerate `(p + 1)`-simplex of `Δ[p] ⊗ Δ[1]` in
+the enumeration `nonDegenerateEquiv`. -/
+noncomputable def ι (i : Fin (p + 1)) : (Δ[p + 1] : SSet.{u}) ⟶ Δ[p] ⊗ Δ[1] :=
+  yonedaEquiv.symm (nonDegenerateEquiv i)
+
+@[simp]
+lemma yonedaEquiv_ι (i : Fin (p + 1)) :
+    yonedaEquiv (ι.{u} i) = nonDegenerateEquiv i := rfl
+
+instance (i : Fin (p + 1)) : Mono (ι.{u} i) := Nonsingular.mono _
+
+@[ext]
+lemma hom_ext {X : SSet.{u}} {f g : Δ[p] ⊗ Δ[1] ⟶ X}
+    (h : ∀ (i : Fin (p + 1)), ι i ≫ f = ι i ≫ g) :
+    f = g := by
+  ext ⟨⟨m⟩⟩ x
+  have hx : x ∈ (⊤ : SSet.Subcomplex _).obj _ := by simp
+  simp only [← filtration_last.{u} p, filtration, Subfunctor.iSup_obj,
+    Set.mem_iUnion, Subtype.exists, exists_prop,
+    Subcomplex.mem_ofSimplex_obj_iff] at hx
+  obtain ⟨i, _, ⟨s, rfl⟩⟩ := hx
+  exact congr(($(h i).app _).hom _)
+
+/-- In order to construct a morphism `Δ[p] ⊗ Δ[1] ⟶ X`, it suffices to provide
+a family of morphisms `α : Fin (p + 1) → (Δ[p + 1] ⟶ X)` (which correspond
+to the restrictions to the nondegenerate `p + 1`-simplices of `Δ[p] ⊗ Δ[1]`)
+and to check compatibilities on faces. -/
+lemma exists_desc
+    {X : SSet.{u}} (α : Fin (p + 1) → (Δ[p + 1] ⟶ X))
+    (hα : ∀ (i : Fin p),
+      stdSimplex.δ i.succ.castSucc ≫ α i.castSucc =
+        stdSimplex.δ i.succ.castSucc ≫ α i.succ) :
+    ∃ (φ : Δ[p] ⊗ Δ[1] ⟶ X),
+      ∀ (i : Fin (p + 1)), ι i ≫ φ = α i := by
+  obtain ⟨ψ, hψ⟩ := filtration.exists_desc (fun i hi ↦ α i) (fun i _ ↦ hα i)
+  exact ⟨(Subcomplex.topIso _).inv ≫ (Subcomplex.eqToIso (filtration_last p)).inv ≫ ψ,
+    fun i ↦ by rw [← hψ i (Fin.le_last i)]; rfl⟩
 
 end prodStdSimplex₁
 
