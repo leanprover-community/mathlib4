@@ -134,6 +134,13 @@ to_dual_for LocallyFiniteOrder.mk := {
   finset_mem_Ioo := by grind
 }
 
+attribute [to_dual self (reorder := 4 5)] LocallyFiniteOrder.finsetIcc LocallyFiniteOrder.finsetIoo
+attribute [to_dual existing (reorder := 4 5)] LocallyFiniteOrder.finsetIoc
+to_dual_for LocallyFiniteOrder.finset_mem_Icc := by grind [LocallyFiniteOrder.finset_mem_Icc]
+to_dual_for LocallyFiniteOrder.finset_mem_Ico := by grind [LocallyFiniteOrder.finset_mem_Ioc]
+to_dual_for LocallyFiniteOrder.finset_mem_Ioc := by grind [LocallyFiniteOrder.finset_mem_Ico]
+to_dual_for LocallyFiniteOrder.finset_mem_Ioo := by grind [LocallyFiniteOrder.finset_mem_Ioo]
+
 /-- This mixin class describes an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
 class LocallyFiniteOrderTop (α : Type*) [Preorder α] where

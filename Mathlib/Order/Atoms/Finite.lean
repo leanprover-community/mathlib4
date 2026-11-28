@@ -15,11 +15,6 @@ import Mathlib.Order.Preorder.Finite
 # Atoms, Coatoms, Simple Lattices, and Finiteness
 
 This module contains some results on atoms and simple lattices in the finite context.
-
-## Main results
-
-* `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
-  are atomic resp. coatomic.
 -/
 
 public section
@@ -75,24 +70,21 @@ instance : IsSimpleOrder Bool :=
 
 end Bool
 
-section Fintype
-
--- see Note [lower instance priority]
+@[deprecated WellFoundedGT.isStronglyCoatomic +typeChanged (since := "2026-11-11")]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
     IsCoatomic α :=
-  IsStronglyCoatomic.toIsCoatomic α
+  inferInstance
 
--- see Note [lower instance priority]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-11-11")]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :
     IsAtomic α :=
-  isCoatomic_dual_iff_isAtomic.mp Finite.to_isCoatomic
-
-end Fintype
+  inferInstance
 
 section LocallyFinite
 
 variable [Preorder α] [LocallyFiniteOrder α]
 
+@[to_dual]
 instance : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨x, hx, hxmin⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
@@ -100,28 +92,20 @@ instance : IsStronglyAtomic α where
     simp only [LocallyFiniteOrder.finset_mem_Ioc] at hx hxmin
     exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_ge <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
 
-instance : IsStronglyCoatomic α := by
-  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
-
 end LocallyFinite
 
 section IsStronglyAtomic
 
 variable [PartialOrder α] {a : α}
 
+@[to_dual]
 theorem exists_covby_infinite_Ici_of_infinite_Ici [IsStronglyAtomic α]
     (ha : (Set.Ici a).Infinite) (hfin : {x | a ⋖ x}.Finite) :
     ∃ b, a ⋖ b ∧ (Set.Ici b).Infinite := by
   by_contra! h
   refine ((hfin.biUnion (t := Set.Ici) (by simpa using h)).subset (fun b hb ↦ ?_)).not_infinite
     (ha.sdiff (Set.finite_singleton a))
-  obtain ⟨x, hax, hxb⟩ := ((show a ≤ b from hb.1).lt_of_ne (Ne.symm hb.2)).exists_covby_le
+  obtain ⟨x, hax, hxb⟩ := (hb.1.lt_of_ne' hb.2).exists_covby_le
   exact Set.mem_biUnion hax hxb
-
-theorem exists_covby_infinite_Iic_of_infinite_Iic [IsStronglyCoatomic α]
-    (ha : (Set.Iic a).Infinite) (hfin : {x | x ⋖ a}.Finite) :
-    ∃ b, b ⋖ a ∧ (Set.Iic b).Infinite := by
-  simp_rw [← toDual_covBy_toDual_iff (α := α)] at hfin ⊢
-  exact exists_covby_infinite_Ici_of_infinite_Ici (α := αᵒᵈ) ha hfin
 
 end IsStronglyAtomic
