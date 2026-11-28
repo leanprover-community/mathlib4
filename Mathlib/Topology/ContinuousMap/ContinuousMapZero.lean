@@ -303,6 +303,35 @@ instance instIsScalarTower {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMu
 
 end AddCommMonoid
 
+section Single
+
+variable [DiscreteTopology X] [DecidableEq X]
+
+/-- The analogue of `Pi.single i x` in `C(X, R)₀` for a discrete space `X`: the function which is
+`x` at `i` and `0` elsewhere, except that it is always `0` at `0` (so `single 0 x = 0`). -/
+noncomputable def single [Zero R] (i : X) (x : R) : C(X, R)₀ where
+  toFun j := if j = 0 then 0 else (Pi.single i x : X → R) j
+  map_zero' := by simp
+
+@[simp]
+lemma single_apply [Zero R] (i : X) (x : R) (j : X) :
+    single i x j = if j = 0 then 0 else (Pi.single i x : X → R) j :=
+  rfl
+
+lemma smul_single {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R]
+    (c : M) (i : X) (x : R) : c • single i x = single i (c • x) := by
+  ext j
+  by_cases hj : j = 0 <;> by_cases hi : j = i <;> simp [hj, hi]
+
+/-- A function in `C(X, R)₀` on a finite discrete space is the sum of its values placed at each
+point. -/
+lemma univ_sum_single [Fintype X] [AddCommMonoid R] [ContinuousAdd R] (f : C(X, R)₀) :
+    ∑ i, single i (f i) = f := by
+  ext j
+  by_cases hj : j = 0 <;> simp [hj, Pi.single_apply]
+
+end Single
+
 section AddCommGroup
 
 variable [AddCommGroup R] [IsTopologicalAddGroup R]
