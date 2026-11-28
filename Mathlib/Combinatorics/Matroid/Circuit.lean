@@ -490,13 +490,15 @@ lemma IsCircuit.strong_multi_elimination_set (hC₀ : M.IsCircuit C₀) (X : Set
   simpa using fun e heX heC ↦ hz _ (hC.1 e heX) heC
 
 /-- The strong isCircuit elimination axiom. For any pair of distinct circuits `C₁, C₂` and all
-`e ∈ C₁ ∩ C₂` and `f ∈ C₁ \ C₂`, there is a circuit `C` with `f ∈ C ⊆ (C₁ ∪ C₂) \ {e}`. -/
-lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂) (heC₁ : e ∈ C₁)
+`e ∈ C₂` and `f ∈ C₁ \ C₂`, there is a circuit `C` with `f ∈ C ⊆ (C₁ ∪ C₂) \ {e}`. -/
+lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂)
     (heC₂ : e ∈ C₂) (hfC₁ : f ∈ C₁) (hfC₂ : f ∉ C₂) :
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.IsCircuit C ∧ f ∈ C := by
-  obtain ⟨C, hCs, hC, hfC⟩ := hC₁.strong_multi_elimination (fun i : Unit ↦ e) (fun _ ↦ C₂) f
-    (by simpa) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
-  exact ⟨C, hCs.trans (sdiff_subset_sdiff (by simp) (by simp)), hC, hfC⟩
+  by_cases heC₁ : e ∈ C₁
+  · obtain ⟨C, hCs, hC, hfC⟩ := hC₁.strong_multi_elimination (fun i : Unit ↦ e) (fun _ ↦ C₂) f
+      (by simpa) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
+    exact ⟨C, hCs.trans (sdiff_subset_sdiff (by simp) (by simp)), hC, hfC⟩
+  · exact ⟨C₁, subset_sdiff_singleton subset_union_left heC₁, hC₁, hfC₁⟩
 
 /-- The circuit elimination axiom : for any pair of distinct circuits `C₁, C₂` and any `e`,
 some circuit is contained in `(C₁ ∪ C₂) \ {e}`.
@@ -507,12 +509,10 @@ lemma IsCircuit.elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.IsCircuit C := by
   have hnss : ¬ (C₁ ⊆ C₂) := fun hss ↦ h <| hC₁.eq_of_subset_isCircuit hC₂ hss
   obtain ⟨f, hf₁, hf₂⟩ := not_subset.1 hnss
-  by_cases he₁ : e ∈ C₁
-  · by_cases he₂ : e ∈ C₂
-    · obtain ⟨C, hC, hC', -⟩ := hC₁.strong_elimination hC₂ he₁ he₂ hf₁ hf₂
-      exact ⟨C, hC, hC'⟩
-    exact ⟨C₂, subset_sdiff_singleton subset_union_right he₂, hC₂⟩
-  exact ⟨C₁, subset_sdiff_singleton subset_union_left he₁, hC₁⟩
+  by_cases he : e ∈ C₂
+  · obtain ⟨C, hC, hC', -⟩ := hC₁.strong_elimination hC₂ he hf₁ hf₂
+    exact ⟨C, hC, hC'⟩
+  exact ⟨C₂, subset_sdiff_singleton subset_union_right he, hC₂⟩
 
 end Elimination
 
