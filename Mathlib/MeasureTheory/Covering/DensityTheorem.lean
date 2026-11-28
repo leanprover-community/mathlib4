@@ -63,7 +63,7 @@ def vitaliFamily (K : ℝ) : VitaliFamily μ := by
     refine ⟨min ε R, hε ⟨lt_min εpos Rpos, min_le_left _ _⟩, ?_⟩
     exact measure_mul_le_scalingConstantOf_mul μ
       ⟨zero_lt_three, le_max_right _ _⟩ (min_le_right _ _)
-  exact (Vitali.vitaliFamily μ (scalingConstantOf μ (max (4 * K + 3) 3)) A).enlarge (R / 4)
+  exact (Vitali.vitaliFamily μ (fun _ ↦ scalingConstantOf μ (max (4 * K + 3) 3)) A).enlarge (R / 4)
     (by linarith)
 
 /-- In the Vitali family `IsUnifLocDoublingMeasure.vitaliFamily K`, the sets based at `x`

@@ -55,7 +55,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   let s := {x ∈ Ioo d b | HasDerivAt f (f' x) x}
   obtain ⟨u, ⟨hu₁, hu₂, hu₃, hu₄⟩⟩ : ∃ u ⊆ t, u.Countable ∧
       u.PairwiseDisjoint (fun z ↦ Icc z.1 z.2) ∧ volume (s \ ⋃ z ∈ u, Icc z.1 z.2) = 0 := by
-    apply Vitali.exists_disjoint_covering_ae' volume s t 6 (Prod.snd - Prod.fst) Prod.fst
+    apply Vitali.exists_disjoint_covering_ae' volume s t (fun _ ↦ 6) (Prod.snd - Prod.fst) Prod.fst
       (fun z ↦ Icc z.1 z.2)
     · grind [Metric.closedBall, Real.dist_eq, Pi.sub_apply, abs_le']
     · intro A hA
