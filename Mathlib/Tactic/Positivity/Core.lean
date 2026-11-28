@@ -36,19 +36,50 @@ matches `t` perfectly: validate the form of the expression (using e.g.
 `let .app ... ← withReducible (whnf e) | throwError ...` lines in the example below.
 
 An extension can call `Mathlib.Meta.Positivity.core` to recursively solve subgoals.
+`core` fails if it cannot prove anything about the subexpression; wrap the call in `catchNone` to
+get `Strictness.none` instead.
+
+Extensions run in `PositivityM`, which is `MetaM` together with a cache of the results of earlier
+`core` calls. `MetaM` code can be used in an extension without change. An extension may fail
+freely: this does not discard the cache.
 
 Example:
 ```lean
-@[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
-    ← withReducible (whnf e) | throwError "not ite"
-  haveI' : $e =Q ite $p $a $b := ⟨⟩
-  guard <| ← withNewMCtxDepth <| isDefEq f q(ite (α := $α))
-  let ra ← core zα pα a; let rb ← core zα pα b
+@[positivity min _ _] def evalMin : PositivityExt where eval {u α} zα pα? e := do
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+    | throwError "not min"
+  let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(min)
+  match ← core zα pα? a, ← core zα pα? b with
   ...
 ```
 -/
 syntax (name := positivity) "positivity " term,+ : attr
+
+/-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to
+prove `f x₁ ... xₙ > 0`, `f x₁ ... xₙ ≥ 0`, or `f x₁ ... xₙ ≠ 0`
+(or the forms `0 < f x₁ ... xₙ`, `0 ≤ f x₁ ... xₙ`, and `0 ≠ f x₁ ... xₙ`).
+The head `f` must be a constant. For example:
+```lean
+attribute [positivity_lemma] ite_pos ite_nonneg ite_ne_zero
+```
+
+Each non-typeclass propositional premise must also have one of these positivity forms
+for a direct argument `xᵢ`, and the conclusion must not depend on it.
+All other arguments, except for typeclass arguments, must appear in the conclusion.
+
+`positivity` tries to prove
+these premises recursively and may use a matching local hypothesis.
+
+Lemmas are tried in order of priority, then in the order `<`, `≤`, `≠`,
+then in the order in which they were tagged, until `0 < f x₁ ... xₙ` is proved.
+Their results are combined: for example `0 ≤ f x` and `f x ≠ 0` give `0 < f x`.
+Without a `PartialOrder`, only the lemmas proving `≠` are used.
+
+Other propositional premises are not yet supported.
+-/
+syntax (name := positivityLemma) "positivity_lemma" (ppSpace prio)? : attr
 
 lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
@@ -88,16 +119,174 @@ def Strictness.toNonzero {e pα?} : Strictness zα e pα? → Option Q($e ≠ 0)
   | .nonzero pf => some pf
   | _ => .none
 
+/-- The strictness kind of an inequality/disequality with `0`. -/
+inductive OrderRel : Type
+  | le -- `0 ≤ a`
+  | lt -- `0 < a`
+  | ne -- `a ≠ 0`
+  | ne' -- `0 ≠ a`
+  deriving Inhabited
+
+/-- If `e` is of the form `a [</≤/≠] 0` or `0 [</≤/≠] a`,
+return `(a, [.le/.lt/.ne/.ne'])`.
+Note: we assume that `e` does not have an `Expr.mdata` annotation. -/
+def getPositivity (e : Expr) : MetaM (Option (Expr × OrderRel)) := do
+  let isZero (e : Expr) : MetaM Bool := do
+    let ⟨_, α, e⟩ ← inferTypeQ' e
+    let _zα ← synthInstanceQ q(Zero $α)
+    withReducible <| isDefEq e q(0 : $α)
+  match e.getAppFn.constName?, e.getAppArgs with
+  | some ``LT.lt, #[_, _, lhs, rhs] =>
+    if ← isZero lhs then return some (rhs, .lt)
+    return none
+  | some ``LE.le, #[_, _, lhs, rhs] =>
+    if ← isZero lhs then return some (rhs, .le)
+    return none
+  | some ``GT.gt, #[_, _, lhs, rhs] =>
+    if ← isZero rhs then return some (lhs, .lt)
+    return none
+  | some ``GE.ge, #[_, _, lhs, rhs] =>
+    if ← isZero rhs then return some (lhs, .le)
+    return none
+  | some ``Ne, #[_, lhs, rhs] =>
+    if ← isZero rhs then return some (lhs, .ne)
+    if ← isZero lhs then return some (rhs, .ne')
+    return none
+  | _, _ => return none
+
+/-- A `Strictness` result with its type information erased, as stored in the `positivity` cache. -/
+inductive CachedResult where
+  | positive (pf : Expr)
+  | nonnegative (pf : Expr)
+  | nonzero (pf : Expr)
+  /-- `positivity` failed, so it should not be tried again. -/
+  | none
+
+variable {zα} in
+/-- Erase the type information of a `Strictness` result, to store it in the cache. -/
+def Strictness.toCached {e pα?} : Strictness zα e pα? → CachedResult
+  | .positive pf => .positive pf
+  | .nonnegative pf => .nonnegative pf
+  | .nonzero pf => .nonzero pf
+  | .none => .none
+
+/-- Recover a `Strictness` result from the cache. This is only meaningful for an entry that was
+stored for the same expression `e` and the same kind of `pα?`. -/
+def CachedResult.toStrictness (pα? : Option Q(PartialOrder $α)) (e : Q($α)) (r : CachedResult) :
+    Strictness zα e pα? :=
+  match pα?, r with
+  | _, .nonzero pf => .nonzero pf
+  | .some _, .positive pf => .positive pf
+  | .some _, .nonnegative pf => .nonnegative pf
+  | _, _ => .none
+
+/-- The state of the `positivity` tactic. -/
+structure State where
+  /-- The results of earlier `Positivity.core` calls, including failures.
+
+  The key is the expression together with whether `core` was given a `PartialOrder` instance.
+  Without one, `core` can only prove `e ≠ 0`, and it does not use hypotheses such as `0 < e`. So a
+  result found without an order must not be reused when there is one, nor the other way around,
+  even for the same expression: `evalNatCast` runs `core` without an order on terms of type `ℕ`. -/
+  cache : Std.HashMap (Expr × Bool) CachedResult := {}
+
+/-- The monad in which `positivity` and its extensions run: `MetaM` together with a cache of the
+results of `Positivity.core`.
+
+The cache does not record the local context. An extension that calls `core` in an extended local
+context may add new variables (as the extensions for `∑` and `∫` do), but it must not add
+hypotheses that `core` could use, such as `0 < x`: a result found before the hypothesis was added
+would be reused, and a proof using the hypothesis could be reused outside its scope. -/
+abbrev PositivityM := StateRefT State MetaM
+
+section AssertInstancesCommute
+open Qq.Impl
+
+/-- A variant of the implementation of `assertInstancesCommute` in `Qq` which works in any monad
+that `MetaM` lifts to, and not only in `MetaM`. The only difference is the `monadLift`. -/
+syntax "assertInstancesCommuteLiftImpl" term : term
+
+elab_rules : term <= expectedType | `(assertInstancesCommuteLiftImpl $cont) => do
+  match ← findRedundantLocalInstQuoted? with
+  | some ⟨fvar, _, _, lhs, rhs⟩ =>
+    let n ← mkFreshUserName ((← fvar.getUserName).eraseMacroScopes.appendAfter "_eq")
+    let cmd := q(withNewMCtxDepth do withDefault do assertDefEqQ $lhs $rhs)
+    elabTerm (← `(monadLift (m := MetaM) $(← exprToSyntax cmd) >>=
+        fun __defeqres =>
+          have $(mkIdent n) := __defeqres.1
+          assertInstancesCommuteLiftImpl $cont))
+      expectedType
+  | none => elabTerm cont expectedType
+
+/-- `assertInstancesCommute` expands to a bind in `MetaM`, so by itself it cannot be used in a
+`do` block in `PositivityM`. While `Mathlib.Meta.Positivity` is open, we expand it to the lifted
+variant above instead, so that `positivity` extensions can keep using it.
+
+TODO: remove this override once leanprover-community/quote4#181 is available in Mathlib. -/
+scoped macro_rules
+  | `(assert! assertInstancesCommuteDummy; $cont) => `(assertInstancesCommuteLiftImpl $cont)
+
+end AssertInstancesCommute
+
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
   eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
-    MetaM (Strictness zα e pα?)
+    PositivityM (Strictness zα e pα?)
 
 /-- Read a `positivity` extension from a declaration of the right type. -/
 def mkPositivityExt (n : Name) : ImportM PositivityExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck PositivityExt opts ``PositivityExt n
+
+/-- `PositivityKey` is the key used for looking up `positivity` lemmas. -/
+structure PositivityKey where
+  /-- The name of the head function in the conclusion. -/
+  head : Name
+  /-- The number of arguments that `head` is applied to in the conclusion. -/
+  arity : Nat
+  deriving Inhabited, BEq
+
+instance : Ord PositivityKey where
+  compare a b := a.head.quickCmp b.head |>.then (compare a.arity b.arity)
+
+/-- Structure recording the data for a `positivity` lemma. -/
+structure PositivityLemma where
+  /-- The key under which the lemma is stored. -/
+  key : PositivityKey
+  /-- The name of the lemma. -/
+  declName : Name
+  /-- `premises` are the premises on which `positivity` will be recursively called. They store
+  - the index of the argument of the conclusion to which the premise refers
+  - the strictness kind required of that argument. -/
+  premises : Array (Nat × OrderRel)
+  /-- The given priority of the lemma, for example as `@[positivity_lemma high]`. -/
+  prio : Nat
+  /-- The strictness kind concluded by the lemma. -/
+  kind : OrderRel
+  deriving Inhabited
+
+/-- A collection of `positivity` lemmas, to be stored in the environment extension. -/
+abbrev PositivityLemmas : Type :=
+  Std.TreeMap PositivityKey (List PositivityLemma)
+
+/-- Lemmas with the same priority are tried in the order `<`, `≤`, `≠`. -/
+def OrderRel.rank : OrderRel → Nat
+  | .lt => 0
+  | .le => 1
+  | .ne | .ne' => 2
+
+/-- Return `true` if `a` should be tried before `b`: it has a higher priority, or the same priority
+and a stronger conclusion. -/
+def PositivityLemma.before (a b : PositivityLemma) : Bool :=
+  a.prio > b.prio || a.prio == b.prio && a.kind.rank < b.kind.rank
+
+/-- Insert a positivity lemma in a collection of lemmas, after the lemmas that are tried before it
+or in the same place. So lemmas that are otherwise equal are tried in the order they were tagged. -/
+def addPositivityLemmaEntry (m : PositivityLemmas) (l : PositivityLemma) : PositivityLemmas :=
+  m.alter l.key fun
+  | none    => [l]
+  | some ls => ls.insertP (l.before ·) l
 
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
@@ -118,6 +307,64 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
     addEntryFn := fun (entries, s) ((kss, n), ext) => ((kss, n) :: entries, insert kss ext s)
     exportEntriesFn := fun s => s.1.reverse.toArray
   }
+
+/-- Environment extension for positivity lemmas. -/
+initialize positivityLemmaExt : SimpleScopedEnvExtension PositivityLemma PositivityLemmas ←
+  registerSimpleScopedEnvExtension {
+    addEntry := addPositivityLemmaEntry
+    initial := {}
+  }
+
+/-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
+def getConstHeadAndArgs? (e : Expr) : Option (Name × Array Expr) :=
+  e.cleanupAnnotations.withApp fun f args => f.constName?.map (·, args)
+
+/-- Try to construct the `PositivityLemma` for a lemma with hypotheses `hyps` and
+conclusion `target`. This is used by `@[positivity_lemma]`. -/
+def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
+    MetaM PositivityLemma := do
+  let fail {α} (m : MessageData) : MetaM α := throwError "\
+    @[positivity_lemma] attribute only applies to lemmas \
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.\n\
+    {m}"
+  let findArg? (args : Array Expr) (arg : Expr) : MetaM (Option Nat) := do
+    for _h : i in [:args.size] do
+      if ← isDefEq args[i] arg then
+        return some i
+    return none
+  let some (targetVal, kind) ← getPositivity target
+    | fail m!"The conclusion {target} is not a positivity proposition"
+  let some (head, args) := getConstHeadAndArgs? targetVal
+    | fail m!"The conclusion {target} does not have a constant head"
+  let key := { head, arity := args.size }
+  let mut premises := #[]
+  for hyp in hyps do
+    unless (← hyp.fvarId!.getDecl).binderInfo == .instImplicit do
+      let hypType := (← inferType hyp).cleanupAnnotations
+      if ← isProp hypType then
+        if target.containsFVar hyp.fvarId! then
+          fail m!"The conclusion {target} depends on the premise {hyp}"
+        let some (hypVal, kind) ← getPositivity hypType
+          | fail m!"The premise {hypType} is not a positivity proposition"
+        let some i ← findArg? args hypVal
+          | fail m!"The premise {hypType} does not refer to a direct argument of the conclusion \
+            {target}"
+        premises := premises.push (i, kind)
+      else unless target.containsFVar hyp.fvarId! do
+        fail m!"The argument {hyp} does not appear in the conclusion {target}"
+  return { key, declName, premises, prio, kind }
+
+initialize registerBuiltinAttribute {
+  name := `positivityLemma
+  descr := "adds a positivity lemma"
+  add := fun declName stx kind => MetaM.run' do withReducible do
+    let prio ← getAttrParamOptPrio stx[1]
+    let cinfo ← getConstInfo declName
+    forallTelescope cinfo.type fun xs type => do
+      positivityLemmaExt.add (← makePositivityLemma xs type declName prio) kind
+    -- TODO: track what `[positivity_lemma]` decls are actually used at use sites
+    unless kind == .local do recordExtraRevUseOfCurrentModule
+}
 
 initialize registerBuiltinAttribute {
   name := `positivity
@@ -213,17 +460,21 @@ lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedR
     exact ne_iff_lt_or_gt.2 (Or.inl neg)
 
 variable {zα} in
-/-- Converts a `MetaM Strictness` which can fail
-into one that never fails and returns `.none` instead. -/
-def catchNone {e pα?} (t : MetaM (Strictness zα e pα?)) : MetaM (Strictness zα e pα?) :=
+/-- Converts a computation of a `Strictness` which can fail
+into one that never fails and returns `.none` instead.
+This works in `MetaM` and in `PositivityM`. -/
+def catchNone {m : Type → Type} [Monad m] [MonadExceptOf Exception m] [MonadLiftT MetaM m]
+    {e pα?} (t : m (Strictness zα e pα?)) : m (Strictness zα e pα?) :=
   try t catch e =>
-    trace[Tactic.positivity.failure] "{e.toMessageData}"
+    liftM (m := MetaM) (do trace[Tactic.positivity.failure] "{e.toMessageData}")
     pure .none
 
 variable {zα} in
-/-- Converts a `MetaM Strictness` which can return `.none`
-into one which never returns `.none` but fails instead. -/
-def throwNone {e pα?} (t : MetaM (Strictness zα e pα?)) : MetaM (Strictness zα e pα?) := do
+/-- Converts a computation of a `Strictness` which can return `.none`
+into one which never returns `.none` but fails instead.
+This works in `MetaM` and in `PositivityM`. -/
+def throwNone {m : Type → Type} [Monad m] [MonadError m]
+    {e pα?} (t : m (Strictness zα e pα?)) : m (Strictness zα e pα?) := do
   match ← t with
   | .none => throwError "Strictness result was `{.ofConstName ``Strictness.none}`."
   | r => pure r
@@ -346,6 +597,8 @@ def compareHypEq (pα : Q(PartialOrder $α)) (e x : Q($α)) (p₂ : Q($x = $e)) 
 
 initialize registerTraceClass `Tactic.positivity
 initialize registerTraceClass `Tactic.positivity.failure
+initialize registerTraceClass `Tactic.positivity.cache (inherited := true)
+initialize registerTraceClass `Tactic.positivity.lemma (inherited := true)
 
 /-- A variation on `assumption` which checks if the hypothesis `ldecl` is `a [</≤/=] e`
 where `a` is a numeral. -/
@@ -418,8 +671,8 @@ variable {zα} in
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
-def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Strictness zα e pα?)) :
-    MetaM (Strictness zα e pα?) :=
+def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : PositivityM (Strictness zα e pα?)) :
+    PositivityM (Strictness zα e pα?) :=
   match t₁ with
   | .none => catchNone t₂
   | p@(.positive _) => pure p
@@ -434,9 +687,113 @@ def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Str
     | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
     | _ => pure (.nonzero p₁)
 
-/-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
-def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) :=
-  withReducible do
+/-- Build a proof of `goalType` using `lem`, filling its positivity premises with `prePfs`. -/
+def mkProof (lem : PositivityLemma) (goalType : Q(Prop))
+    (prePfs : Array Expr) : MetaM Expr := do
+  let lmvars := (← getMCtx).lmvarCounter
+  let goal ← mkFreshExprMVar goalType
+  -- Instance transparency is needed so that e.g. an `[LE α]` argument of `lem` can be unified
+  -- with the `LE` instance coming from the `PartialOrder α` instance used by `positivity`.
+  let subgoals ← withReducibleAndInstances <|
+    goal.mvarId!.apply <|← mkConstWithFreshMVarLevels lem.declName
+  unless subgoals.length == prePfs.size do
+    throwError "unexpected number of subgoals when applying {lem.declName}: \
+      expected {prePfs.size}, got {subgoals.length}"
+  for subgoal in subgoals, prePf in prePfs do
+    subgoal.assign prePf
+  let pf ← instantiateMVars goal
+  if pf.hasLevelMVar then
+    let mctx ← getMCtx
+    if (collectLevelMVars {} pf).result.any (fun m => (mctx.getLevelDecl m).index ≥ lmvars) then
+      throwError "failed to instantiate all implicit arguments of {lem.declName}"
+  return pf
+
+/-- Try to use one registered positivity lemma to prove the strictness of `e`. -/
+def applyPositivityLemma (pα? : Option Q(PartialOrder $α)) (e : Q($α))
+    (lem : PositivityLemma) (prePfs : Array Expr) :
+    MetaM (Strictness zα e pα?) := do
+  match (dependent := true) pα? with
+  | some _ => (do
+      match lem.kind with
+      | .lt =>
+        return .positive <|← mkProof lem q(0 < $e) prePfs
+      | .le =>
+        return .nonnegative <|← mkProof lem q(0 ≤ $e) prePfs
+      | .ne =>
+        return .nonzero <|← mkProof lem q($e ≠ 0) prePfs
+      | .ne' =>
+        let pf : Q(0 ≠ $e) ← mkProof lem q(0 ≠ $e) prePfs
+        return .nonzero q(Ne.symm $pf)
+    )
+  | none => (do
+      match lem.kind with
+      | .ne =>
+        return .nonzero <|← mkProof lem q($e ≠ 0) prePfs
+      | .ne' =>
+        let pf : Q(0 ≠ $e) ← mkProof lem q(0 ≠ $e) prePfs
+        return .nonzero q(Ne.symm $pf)
+      | .lt | .le => return .none
+    )
+
+end Meta.Positivity
+namespace Meta.Positivity
+
+mutual
+
+/-- Try all registered positivity lemmas for `e`, unfolding its head if none match. -/
+partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
+    (pα? : Option Q(PartialOrder «$α»)) (e : Q(«$α»)) :
+    PositivityM (Strictness zα e pα?) := do
+  let mut result := .none
+  let lemMap := positivityLemmaExt.getState (← getEnv)
+  let hasLemma? (v : Expr) : Bool :=
+    (getConstHeadAndArgs? v).any fun (head, args) =>
+      lemMap.contains { head, arity := args.size }
+  let e' ← if hasLemma? e then pure e else
+    withReducible <| whnfHeadPred e fun v => pure !(hasLemma? v)
+  let some (head, args) := getConstHeadAndArgs? e' | return .none
+  let key := { head, arity := args.size }
+  let some lems := lemMap.get? key | return .none
+  let provePremise (i : Nat) (kind : OrderRel) : PositivityM (Option Expr) := do
+    let some arg := args[i]? | return none
+    let ⟨_, β, arg⟩ ← inferTypeQ' arg
+    let some zβ ← synthInstanceQ? q(Zero $β) | return none
+    match kind with
+    | .lt =>
+      let some pβ ← synthInstanceQ? q(PartialOrder $β) | return none
+      assumeInstancesCommute
+      return (← core (zα := zβ) (some pβ) arg).toPositive
+    | .le =>
+      let some pβ ← synthInstanceQ? q(PartialOrder $β) | return none
+      assumeInstancesCommute
+      return (← core (zα := zβ) (some pβ) arg).toNonneg
+    | .ne =>
+      let pβ? ← synthInstanceQ? q(PartialOrder $β)
+      assumeInstancesCommute
+      return (← core (zα := zβ) pβ? arg).toNonzero
+    | .ne' =>
+      let pβ? ← synthInstanceQ? q(PartialOrder $β)
+      assumeInstancesCommute
+      return (← core (zα := zβ) pβ? arg).toNonzero.map fun pf => q(Ne.symm $pf)
+  for lem in lems do
+    -- The premises are proved inside `orElse`, so that they are skipped once `result` is
+    -- `.positive`, and so that an error only discards this lemma.
+    result ← orElse result do
+      let r : Strictness zα e pα? ← catchNone do
+        let some prePfs ←
+          (lem.premises.mapM fun (i, kind) => OptionT.mk <| provePremise i kind).run
+          | return .none
+        applyPositivityLemma zα pα? e lem prePfs
+      trace[Tactic.positivity.lemma] "{.ofConstName lem.declName}: {e} => {r.toString}"
+      return r
+  return result
+
+/-- Run each registered `positivity` extension and lemma on an expression, without consulting or
+updating the cache, and return the best `Strictness` result found. This returns `.none` if nothing
+can be proved. Extensions should call `Positivity.core` instead. -/
+partial def coreUncached {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
+    (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
+    PositivityM (Strictness zα e pα?) := withReducible do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
@@ -445,6 +802,8 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
   trace[Tactic.positivity] "current result from positivity extensions: {result.toString}"
+  result ← orElse result <| applyPositivityLemmas zα pα? e
+  trace[Tactic.positivity] "current result from positivity lemmas: {result.toString}"
   match h : pα?, result with
   | some pα, res =>
     trace[Tactic.positivity] "{α} has some {pα}"
@@ -459,7 +818,7 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
       if !ldecl.isImplementationDetail then
         res ← orElse res <| compareHyp zα pα e ldecl
     trace[Tactic.positivity] "{e} => {res.toString}"
-    throwNone (pure (h ▸ res))
+    return h ▸ res
   | .none, _ =>
     trace[Tactic.positivity] "{α} has no PartialOrder"
     if let .nonzero _ := result then
@@ -469,14 +828,30 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
       if !ldecl.isImplementationDetail then
         result ← orElse result <| compareHypNonzero zα e ldecl
     trace[Tactic.positivity] "{e} => {result.toString}"
-    throwNone (pure result)
+    return result
 
+/-- Run each registered `positivity` extension and lemma on an expression `e`, and return the best
+`Strictness` result found. Results, including failures, are cached, so each expression is
+analysed only once per `positivity` call.
 
-private inductive OrderRel : Type
-| le : OrderRel -- `0 ≤ a`
-| lt : OrderRel -- `0 < a`
-| ne : OrderRel -- `a ≠ 0`
-| ne' : OrderRel -- `0 ≠ a`
+This fails if nothing can be proved about `e`: it never returns `.none`.
+Use `catchNone` to get `.none` instead of a failure. -/
+partial def core {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
+    (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : PositivityM (Strictness zα e pα?) := do
+  let key : Expr × Bool := (e, pα?.isSome)
+  let r ← do
+    if let some r := (← get).cache[key]? then
+      let r := r.toStrictness zα pα? e
+      trace[Tactic.positivity.cache] "hit: {e} => {r.toString}"
+      pure r
+    else
+      let r ← coreUncached zα pα? e
+      trace[Tactic.positivity.cache] "new: {e} => {r.toString}"
+      modify fun s => { s with cache := s.cache.insert key r.toCached }
+      pure r
+  throwNone (pure r)
+
+end
 
 end Meta.Positivity
 namespace Meta.Positivity
@@ -484,7 +859,7 @@ namespace Meta.Positivity
 /-- Given an expression `e`, use the core method of the `positivity` tactic to prove it positive,
 or, failing that, nonnegative; return a Boolean (signalling whether the strict or non-strict
 inequality was established) together with the proof as an expression. -/
-def bestResult (e : Expr) : MetaM (Bool × Expr) := do
+def bestResult (e : Expr) : PositivityM (Bool × Expr) := do
   let ⟨u, α, _⟩ ← inferTypeQ' e
   let zα ← synthInstanceQ q(Zero $α)
   let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
@@ -496,7 +871,7 @@ def bestResult (e : Expr) : MetaM (Bool × Expr) := do
 
 /-- Given an expression `e`, use the core method of the `positivity` tactic to prove it nonnegative.
 -/
-def proveNonneg (e : Expr) : MetaM Expr := do
+def proveNonneg (e : Expr) : PositivityM Expr := do
   let (strict, pf) ← bestResult e
   if strict then mkAppM ``le_of_lt #[pf] else pure pf
 
@@ -508,7 +883,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
     let zα ← synthInstanceQ q(Zero $α)
     let .true ← isDefEq z q(0 : $α) | throwError "not a positivity goal"
     let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
-    let r ← catchNone <| Meta.Positivity.core zα pα? e
+    let r ← (catchNone <| Meta.Positivity.core zα pα? e).run' {}
     let throw (a b : String) : MetaM Expr := throwError
       "failed to prove {a}, but it would be possible to prove {b} if desired"
     match (dependent := true) pα? with
@@ -568,11 +943,14 @@ goal or fails.
 For each subexpression `e`, `positivity` will try to:
 * try `@[positivity]`-tagged extensions to recursively prove `e` is positive/nonnegative/nonzero
   based on its subexpressions (see the `positivity` attribute for more details), or
+* apply `@[positivity_lemma]`-tagged lemmas such as `Real.exp_pos`, proving their premises
+  recursively (see the `positivity_lemma` attribute for more details), or
 * try the `norm_num` tactic to prove `e` is positive/nonnegative/nonzero, or
 * try showing `e : t` is nonnegative because there is a `CanonicallyOrderedAdd t` instance, or
 * use a local hypothesis of the form `0 ≤ e`, `0 < e` or `e ≠ 0`.
 
-This tactic is extensible. See the `positivity` attribute documentation for more details.
+This tactic is extensible. See the `positivity_lemma` and `positivity` attribute documentation
+for more details.
 
 * `positivity [t₁, …, tₙ]` first executes `have := t₁; …; have := tₙ` in the current goal,
   then runs `positivity`. This is useful when `positivity` needs derived premises such as `0 < y`
