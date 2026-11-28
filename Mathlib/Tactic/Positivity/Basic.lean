@@ -413,14 +413,32 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) :=
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative (pα := pα') pa')
 
-/-- The natural absolute value of a nonzero integer is positive. -/
-@[positivity_lemma]
-theorem int_natAbs_pos_of_ne_zero {n : ℤ} (hn : n ≠ 0) : 0 < n.natAbs :=
-  Int.natAbs_pos.mpr hn
-
-@[deprecated int_natAbs_pos_of_ne_zero +typeChanged (since := "2026-10-26")]
 theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn.ne'
+
+/-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.
+Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled by the default
+`positivity` tactic.
+-/
+@[positivity Int.natAbs _]
+meta def evalNatAbs : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Int.natAbs $a) =>
+    let zα' : Q(Zero Int) := q(inferInstance)
+    let pα' : Q(PartialOrder Int) := q(inferInstance)
+    assertInstancesCommute
+    let ra ← core zα' pα' a
+    match ra with
+    | .positive pa =>
+      pure (.positive q(int_natAbs_pos $pa))
+    | .nonzero pa =>
+      pure (.positive q(Int.natAbs_pos.mpr $pa))
+    | .nonnegative _pa =>
+      pure .none
+    | .none =>
+      pure .none
+  | _, _, _ => throwError "not Int.natAbs"
 
 /-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
 and positive when its input is. -/
@@ -490,10 +508,18 @@ attribute [positivity_lemma]
   Nat.gcd_pos_of_pos_right
   Nat.lcm_pos
 
-/-- The square root of a positive natural number is positive. -/
-@[positivity_lemma]
-theorem nat_sqrt_pos_of_pos {n : ℕ} (hn : 0 < n) : 0 < n.sqrt :=
-  Nat.sqrt_pos.mpr hn
+/-- Extension for `Nat.sqrt`. -/
+@[positivity Nat.sqrt _]
+meta def evalNatSqrt : PositivityExt where eval {u α} z p e :=
+  match p with | none => throwError "not PartialOrder ℕ" | some p => do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.sqrt $n) =>
+    match ← core z p n with
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Nat.sqrt_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.sqrt"
 
 attribute [positivity_lemma]
   Int.gcd_pos_of_ne_zero_left
