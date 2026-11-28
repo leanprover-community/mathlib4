@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluating a polynomial
 
@@ -20,6 +23,7 @@ public import Mathlib.Algebra.Polynomial.Basic
 * `Polynomial.map`: apply `f : R →+* S` to the coefficients of `p : R[X]`.
 
 We also provide the following bundled versions:
+
 * `Polynomial.eval₂AddMonoidHom`, `Polynomial.eval₂RingHom`
 * `Polynomial.evalRingHom`
 * `Polynomial.compRingHom`

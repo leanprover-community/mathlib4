@@ -11,10 +11,14 @@ public import Mathlib.Algebra.Group.ULift
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMonoid`.
 
 We introduce the bundled categories:
+
 * `MonCat`
 * `AddMonCat`
 * `CommMonCat`

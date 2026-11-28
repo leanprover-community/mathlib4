@@ -12,6 +12,10 @@ meta import Aesop.BuiltinRules
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Logic.Encodable.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # `Encodable` deriving handler
 

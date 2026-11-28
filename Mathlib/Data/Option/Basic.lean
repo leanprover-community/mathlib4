@@ -14,6 +14,9 @@ public import Mathlib.Logic.Relator
 
 import Batteries.Linter.Simp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Option of a type
 
@@ -22,6 +25,7 @@ This file develops the basic theory of option types.
 If `α` is a type, then `Option α` can be understood as the type with one more element than `α`.
 `Option α` has terms `some a`, where `a : α`, and `none`, which is the added element.
 This is useful in multiple ways:
+
 * It is the prototype of addition of terms to a type. See for example `WithBot α` which uses
   `none` as an element smaller than all others.
 * It can be used to define failsafe partial functions, which return `some the_result_we_expect`
