@@ -26,7 +26,7 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 * As discussed in this Zulip thread:
   https://leanprover.zulipchat.com/#narrow/stream/217875/topic/Multiplicity.20in.20the.20naturals
   We have lots of disparate ways of talking about the multiplicity of a prime
-  in a natural number, including `factors.count`, `padicValNat`, `multiplicity`,
+  in a natural number, including `factors.count`, `multiplicity`,
   and the material in `Data/PNat/Factors`.  Move some of this material to this file,
   prove results about the relationships between these definitions,
   and (where appropriate) choose a uniform canonical way of expressing these ideas.
