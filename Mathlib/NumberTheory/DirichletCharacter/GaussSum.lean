@@ -13,6 +13,13 @@ set_option doc.verso.suggestions false
 
 /-!
 # Gauss sums for Dirichlet characters
+
+## Main results
+
+* `DirichletCharacter.gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive`:
+  if `χ` is primitive but `e` is not, then `gaussSum χ e = 0`.
+* `DirichletCharacter.gaussSum_mulShift_of_isPrimitive`: if `χ` is primitive,
+  then `gaussSum χ (e.mulShift a) = χ⁻¹ a * gaussSum χ e`.
 -/
 
 public section
