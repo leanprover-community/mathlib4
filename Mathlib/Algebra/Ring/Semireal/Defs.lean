@@ -17,7 +17,7 @@ not.
 
 ## Main declaration
 
-- `IsSemireal`: the predicate asserting that a commutative ring `R` is semireal.
+- `IsSemireal`: typeclass stating that a ring is semireal.
 
 ## References
 
