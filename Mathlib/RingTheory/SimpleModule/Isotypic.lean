@@ -365,7 +365,7 @@ variable {ι : Type*} [DecidableEq ι] {N : ι → Submodule R M}
 /-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
 then `End R M` is isomorphic to `Πᵢ End R Nᵢ` as a ring. -/
 noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R (N i) where
-  toFun f i := f.restrict (invar i f)
+  toFun f i := f.restrict ((Module.End.mem_invtSubmodule_iff_mapsTo f).mp (invar i f))
   invFun f := letI e := ind.linearEquiv iSup_top; e ∘ₗ DFinsupp.mapRange.linearMap f ∘ₗ e.symm
   left_inv f := LinearMap.ext fun x ↦ by
     exact Submodule.iSup_induction _ (motive := (_ = f ·)) (iSup_top ▸ Submodule.mem_top (x := x))

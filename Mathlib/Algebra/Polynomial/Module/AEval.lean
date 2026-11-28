@@ -173,7 +173,9 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 noncomputable def restrict_equiv_mapSubmodule :
     (AEval R p <| (Algebra.lsmul R R M a).restrict hp) ≃ₗ[R[X]] mapSubmodule R M a ⟨p, hp⟩ :=
-  LinearEquiv.ofAEval ((Algebra.lsmul R R M a).restrict hp) (equiv_mapSubmodule a p hp)
+  LinearEquiv.ofAEval ((Algebra.lsmul R R M a).restrict
+    ((End.mem_invtSubmodule_iff_mapsTo ((Algebra.lsmul R R M) a)).mp hp))
+    (equiv_mapSubmodule a p hp)
     (fun x ↦ by simp [equiv_mapSubmodule, X_smul_of])
 
 end Submodule

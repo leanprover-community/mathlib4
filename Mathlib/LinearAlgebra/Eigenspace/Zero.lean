@@ -148,35 +148,17 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   have hVW : IsCompl V W := by
     rw [hV]
     exact LinearMap.isCompl_iSup_ker_pow_iInf_range_pow φ
-  have hφV : ∀ x ∈ V, φ x ∈ V := by
-    simp only [V, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero,
-      forall_exists_index]
-    intro x n hx
-    use n
-    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp, hx, map_zero]
-  have hφW : ∀ x ∈ W, φ x ∈ W := by
-    simp only [W, Submodule.mem_iInf, mem_range]
-    intro x H n
-    obtain ⟨y, rfl⟩ := H n
-    use φ y
-    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]
+  have hφV : Set.MapsTo φ V V := End.mapsTo_maxGenEigenspace_of_comm rfl 0
+  have hφW : Set.MapsTo φ W W  := by
+    refine Set.mapsTo_iff_image_subset.mpr fun x hx ↦ ?_
+    simp only [Submodule.coe_iInf, Set.mem_image, Set.mem_iInter, W] at ⊢ hx
+    intro n
+    obtain ⟨y, ⟨hy, rfl⟩⟩ := hx
+    obtain ⟨y', rfl⟩ := hy n
+    exact ⟨φ y', by rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]⟩
   let F := φ.restrict hφV
   let G := φ.restrict hφW
-  let ψ := F.prodMap G
-  let e := Submodule.prodEquivOfIsCompl V W hVW
-  let bV := chooseBasis K V
-  let bW := chooseBasis K W
-  let b := bV.prod bW
-  have hψ : ψ = e.symm.conj φ := by
-    apply b.ext
-    simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
-      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp,
-      LinearEquiv.coe_toLinearMap, Function.comp_apply, coprod_apply, Submodule.coe_subtype,
-      map_add, Sum.forall, Sum.elim_inl,
-      map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
-      Submodule.coe_prodEquivOfIsCompl', coe_restrict_apply, implies_true, Sum.elim_inr, zero_add,
-      e, V, W, ψ, F, G, b]
-  rw [← e.symm.charpoly_conj φ, ← hψ, charpoly_prodMap,
+  rw [φ.charpoly_eq_charpoly_restrict_mul_of_isCompl hVW hφV hφW,
     natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero

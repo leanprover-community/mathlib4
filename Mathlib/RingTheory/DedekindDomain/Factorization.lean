@@ -778,11 +778,12 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
       mul_comm I' J, ← mul_assoc, (mul_left_injective₀ _).eq_iff] at this
     rintro rfl
     exact hJ' (by simpa using h')
-  refine .ofBijective (Submodule.mapQ _ _ (LinearMap.restrict
-    (Algebra.lsmul R _ _ (I'.divMod I J')) ?_) ?_) ⟨?_, ?_⟩
-  · intro x hx
+  have hMaps : Set.MapsTo (Algebra.lsmul R R K (I'.divMod I J')) I I' := by
+    intro _ hx
     refine (divMod_spec h' hJ' hI).le ?_
     exact Submodule.mem_sup_right (mul_mem_mul (mem_spanSingleton_self _ _) hx)
+  refine .ofBijective (Submodule.mapQ _ _ (LinearMap.restrict
+    (Algebra.lsmul R _ _ (I'.divMod I J')) hMaps) ?_) ⟨?_, ?_⟩
   · rw [← Submodule.comap_comp, LinearMap.subtype_comp_restrict, LinearMap.domRestrict,
       Submodule.comap_comp]
     refine Submodule.comap_mono ?_

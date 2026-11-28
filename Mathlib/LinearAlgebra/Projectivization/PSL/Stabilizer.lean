@@ -97,7 +97,8 @@ private lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
     {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
     {v : V} {A : V →ₗ[R] V} (hAv : A v ∈ Submodule.span R {v}) :
     ∃ c : R, A v = c • v ∧ ∃ hcomap : Submodule.span R {v} ≤ (Submodule.span R {v}).comap A,
-      A.restrict hcomap = (c • LinearMap.id : Submodule.span R {v} →ₗ[R] _) := by
+      A.restrict ((Module.End.mem_invtSubmodule_iff_mapsTo A).mp hcomap) =
+      (c • .id : Submodule.span R {v} →ₗ[R] _) := by
   obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.1 hAv
   refine ⟨c, hc.symm, fun w hw ↦ ?_, LinearMap.ext fun ⟨w, hw⟩ ↦ ?_⟩
   <;> obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hw

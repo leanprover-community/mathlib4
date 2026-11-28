@@ -88,8 +88,8 @@ variable {σ ρ} in
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
 def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) where
   __ : _ →ₗ[k] _ := (f.toLinearMap.compLeft H).restrict fun x h ↦ by
-    simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
-      IntertwiningMap.toLinearMap_apply] at h ⊢
+    simp only [coe_coindV, Set.mem_ofPred_eq, LinearMap.compLeft_apply,
+      IntertwiningMap.coe_toLinearMap, Function.comp_apply] at h ⊢
     intro g h0
     simpa [h] using LinearMap.ext_iff.1 (f.isIntertwining' g) (x h0)
   isIntertwining' h := by ext; simp

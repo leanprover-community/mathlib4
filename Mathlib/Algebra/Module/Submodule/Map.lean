@@ -672,7 +672,7 @@ This is the linear version of `AddMonoidHom.addSubmonoidComap`
 and `AddMonoidHom.addSubgroupComap`. -/
 @[simps!]
 def submoduleComap (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂) : q.comap f →ₛₗ[σ₁₂] q :=
-  f.restrict fun _ ↦ Submodule.mem_comap.1
+  f.restrict (Set.mapsTo_preimage f q)
 
 theorem submoduleComap_surjective_of_surjective (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂)
     (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
@@ -690,7 +690,7 @@ TODO: Consider making this an `abbrev`, dropping its API, and renaming to someth
 `restrictSubmodule`. -/
 def submoduleMap [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     p →ₛₗ[σ₁₂] p.map f :=
-  f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
+  f.restrict (Submodule.map_coe f p ▸ Set.mapsTo_image ..)
 
 @[simp]
 theorem submoduleMap_coe_apply [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M}
@@ -729,15 +729,13 @@ theorem comap_domRestrict (p : Submodule R₂ M₂) (f : M₂ →ₛₗ[σ₂₁
     comap (domRestrict f p) p' = comap p.subtype (comap f p') :=
   comap_comp p.subtype f p'
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem map_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
-    {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
+    {f : M₂ →ₛₗ[σ₂₁] M} (h : MapsTo f p q) (p') :
     map (f.restrict h) p' = comap q.subtype (map f (map p.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, map_codRestrict, map_domRestrict]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem comap_restrict {p : Submodule R₂ M₂} {q : Submodule R M} {f : M₂ →ₛₗ[σ₂₁] M}
-    (h : ∀ x ∈ p, f x ∈ q) (p') :
+    (h : MapsTo f p q) (p') :
     comap (f.restrict h) p' = comap p.subtype (comap f (map q.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, comap_codRestrict, comap_domRestrict]
 

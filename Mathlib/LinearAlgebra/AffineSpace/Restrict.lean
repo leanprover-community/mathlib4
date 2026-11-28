@@ -39,14 +39,25 @@ instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 
+protected theorem AffineMap.restrict_linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
+    {F : AffineSubspace k P₂} (hEF : E.map φ ≤ F) : E.direction ≤ F.direction.comap φ.linear := by
+  rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
+  exact AffineSubspace.direction_le hEF
+
+@[deprecated (since := "2026-11-26")]
+alias AffineMap.restrict.linear_aux := AffineMap.restrict_linear_aux
+
+theorem AffineMap.restrict_mapsTo_linear {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
+    {F : AffineSubspace k P₂} (hEF : E.map φ ≤ F) :
+    Set.MapsTo φ.linear E.direction F.direction :=
+  Set.mapsTo_iff_subset_preimage.mpr (AffineMap.restrict_linear_aux hEF)
+
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
 def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F : AffineSubspace k P₂}
     [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) : E →ᵃ[k] F := by
   refine ⟨?_, ?_, ?_⟩
   · exact fun x => ⟨φ x, hEF <| AffineSubspace.mem_map.mpr ⟨x, x.property, rfl⟩⟩
-  · refine φ.linear.restrict (?_ : E.direction ≤ F.direction.comap φ.linear)
-    rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
-    exact AffineSubspace.direction_le hEF
+  · exact φ.linear.restrict (AffineMap.restrict_mapsTo_linear hEF)
   · intro p v
     simp only [Subtype.ext_iff, AffineSubspace.coe_vadd]
     apply AffineMap.map_vadd
@@ -59,17 +70,9 @@ theorem AffineMap.restrict_coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubsp
 @[deprecated (since := "2026-11-26")]
 alias AffineMap.restrict.coe_apply := AffineMap.restrict_coe_apply
 
-protected theorem AffineMap.restrict_linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
-    {F : AffineSubspace k P₂} (hEF : E.map φ ≤ F) : E.direction ≤ F.direction.comap φ.linear := by
-  rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
-  exact AffineSubspace.direction_le hEF
-
-@[deprecated (since := "2026-11-26")]
-alias AffineMap.restrict.linear_aux := AffineMap.restrict_linear_aux
-
 theorem AffineMap.restrict_linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
-    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict_linear_aux hEF) :=
+    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict_mapsTo_linear hEF) :=
   rfl
 
 @[deprecated (since := "2026-11-26")] alias AffineMap.restrict.linear := AffineMap.restrict_linear
