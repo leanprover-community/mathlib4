@@ -6,6 +6,7 @@ Authors: Moritz Firsching
 module
 
 public import Mathlib.Data.Fintype.Perm
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 set_option doc.verso true
@@ -113,5 +114,18 @@ theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R
     permanent (updateRow M j <| c • u) = c * permanent (updateRow M j u) := by
   rw [← permanent_transpose, ← updateCol_transpose, permanent_updateCol_smul,
     updateCol_transpose, permanent_transpose]
+
+theorem _root_.map_permanent {S F : Type*} [CommSemiring S] [FunLike F R S] [RingHomClass F R S]
+    (f : F) (M : Matrix n n R) : f M.permanent = (M.map f).permanent := by
+  simp [permanent]
+
+/-- The determinant and the permanent of a matrix are congruent modulo `2`. -/
+theorem two_dvd_det_sub_permanent {R : Type*} [CommRing R] (M : Matrix n n R) :
+    2 ∣ M.det - M.permanent := by
+  rw [det_apply, permanent, ← Finset.sum_sub_distrib]
+  refine Finset.dvd_sum fun σ _ ↦ ?_
+  obtain h | h := Int.units_eq_one_or (Equiv.Perm.sign σ)
+  · simp [h]
+  · simp [h, Ring.sub_eq_add_neg, ← two_mul]
 
 end Matrix

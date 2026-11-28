@@ -13,6 +13,9 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 import Mathlib.Analysis.SpecialFunctions.Log.Base
+import Mathlib.FieldTheory.Galois.IsGaloisGroup
+import Mathlib.LinearAlgebra.Matrix.Permanent
+import Mathlib.NumberTheory.Basic
 
 /-!
 # Number field discriminant
@@ -26,6 +29,9 @@ This file defines the discriminant of a number field.
 
 * `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
   finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
+
+* `NumberField.discr_emod_four_eq_zero_or_one`: **Stickelberger's theorem**. The discriminant of a
+  number field is congruent to `0` or `1` modulo `4`.
 
 ## Tags
 
@@ -73,6 +79,48 @@ theorem sign_discr :
   · grind [discr_ne_zero]
   · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
     rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
+
+/-- **Stickelberger's theorem**: the discriminant of a number field is congruent to `0` or `1`
+modulo `4`. -/
+theorem discr_emod_four_eq_zero_or_one : discr K % 4 = 0 ∨ discr K % 4 = 1 := by
+  rsuffices ⟨m, c, h⟩ : ∃ m c, discr K = m ^ 2 + 4 * c
+  · grind [Int.sq_emod_four]
+  let E := AlgebraicClosure ℚ
+  let e : Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] E) :=
+    Fintype.equivOfCardEq <| by
+      rw [AlgHom.card, ← RingOfIntegers.rank, Module.finrank_eq_card_chooseBasisIndex]
+  let M : Matrix _ _ (𝓞 E) :=
+    .of fun i j ↦ RingOfIntegers.mapRingHom (e j) (RingOfIntegers.basis K i)
+  have hM₀ : M.map (algebraMap (𝓞 E) E) =
+      Algebra.embeddingsMatrixReindex ℚ E (integralBasis K) e := by
+    ext
+    simp [M, Algebra.embeddingsMatrixReindex, integralBasis_apply]
+  have hM₁ : algebraMap ℤ (𝓞 E) (discr K) = M.det ^ 2 := by
+    apply FaithfulSMul.algebraMap_injective (𝓞 E) E
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply ℤ ℚ E, eq_intCast,
+      coe_discr, Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two _ _ _ e,
+      map_pow, RingHom.map_det, RingHom.mapMatrix_apply, hM₀]
+  obtain ⟨m, hm⟩ : M.permanent ∈ Set.range (algebraMap ℤ (𝓞 E)) := by
+    have hG : IsGaloisGroup Gal(E/ℚ) ℤ (𝓞 E) := .of_isFractionRing _ _ _ ℚ E
+    refine hG.isInvariant.isInvariant _ fun g ↦ ?_
+    apply FaithfulSMul.algebraMap_injective (𝓞 E) E
+    rw [algebraMap.smul', map_permanent, AlgEquiv.smul_def, hM₀, map_permanent, eq_comm,
+      ← Matrix.permanent_permute_rows (e.trans ((AlgEquiv.refl.arrowCongr g).trans e.symm))]
+    congr with _ _
+    simp [Algebra.embeddingsMatrixReindex]
+  obtain ⟨x, hx⟩ := dvd_sub_pow_of_dvd_sub M.two_dvd_det_sub_permanent 1
+  obtain ⟨c, hc⟩ : ∃ c : ℤ, (c : ℚ) = (discr K - m ^ 2) / 4 := by
+    have := congr_arg (algebraMap (𝓞 E) E) hx
+    simp only [pow_one, ← hM₁, algebraMap_int_eq, eq_intCast, ← hm, map_sub, map_intCast, map_pow,
+      Nat.cast_ofNat, Nat.reduceAdd, map_mul, map_ofNat, show (2 : E) ^ 2 = 4 by norm_num] at this
+    refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+    rw [← isIntegral_algHom_iff (IsScalarTower.toAlgHom ℤ ℚ E) (algebraMap ℚ E).injective,
+      IsScalarTower.toAlgHom_apply, map_div₀, map_sub, eq_ratCast, eq_ratCast, Rat.cast_pow,
+      Rat.cast_intCast, Rat.cast_intCast, this, map_ofNat, mul_div_cancel_left₀ _ (by norm_num)]
+    exact RingOfIntegers.isIntegral_coe x
+  refine ⟨m, c, ?_⟩
+  qify
+  grind
 
 section rootDiscr
 
