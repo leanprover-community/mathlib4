@@ -202,7 +202,7 @@ theorem dim_le_zero_iff_subsingleton [IsDomain R] [Module.IsTorsionFree R s.dire
     dim s ≤ 0 ↔ (s : Set A).Subsingleton := by
   by_cases hs : s = ⊥
   · simp [hs]
-  simp [dim_eq_rank, hs, rank_zero_iff, Submodule.subsingleton_iff_eq_bot]
+  simp [dim_eq_rank, hs, Module.rank_eq_zero_iff_subsingleton, Submodule.subsingleton_iff_eq_bot]
 
 @[simp]
 theorem finDim_le_zero_iff_subsingleton [StrongRankCondition R] [IsDomain R]
