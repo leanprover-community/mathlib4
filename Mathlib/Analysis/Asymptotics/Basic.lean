@@ -361,6 +361,26 @@ instance transIsLittleOIsLittleO :
     @Trans (α → E) (α → F) (α → G) (· =o[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := IsLittleO.trans
 
+@[gcongr]
+theorem isBigO_imp_isBigO {f₁ f₂ : α → E'} {g₁ g₂ : α → F'} (hf : f₁ =O[l] f₂)
+    (hg : g₁ =O[l] g₂) (h : f₂ =O[l] g₁) : f₁ =O[l] g₂ :=
+  hf.trans (h.trans hg)
+
+@[gcongr]
+theorem isLittleO_imp_isLittleO {f₁ f₂ : α → E'} {g₁ g₂ : α → F'} (hf : f₁ =O[l] f₂)
+    (hg : g₁ =O[l] g₂) (h : f₂ =o[l] g₁) : f₁ =o[l] g₂ :=
+  hf.trans_isLittleO (h.trans_isBigO hg)
+
+@[gcongr strict]
+theorem isBigO_imp_isLittleO_left {f₁ f₂ : α → E} {g : α → F'} (hf : f₁ =o[l] f₂) :
+    f₂ =O[l] g → f₁ =o[l] g :=
+  hf.trans_isBigO
+
+@[gcongr strict]
+theorem isBigO_imp_isLittleO_right {f : α → E} {g₁ g₂ : α → F'} (hg : g₁ =o[l] g₂) :
+    f =O[l] g₁ → f =o[l] g₂ :=
+  (·.trans_isLittleO hg)
+
 theorem _root_.Filter.Eventually.trans_isBigO {f : α → E} {g : α → F'} {k : α → G}
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) (hgk : g =O[l] k) : f =O[l] k :=
   (IsBigO.of_bound' hfg).trans hgk
@@ -561,3 +581,11 @@ alias ⟨IsLittleO.of_norm_norm, IsLittleO.norm_norm⟩ := isLittleO_norm_norm
 end Norm
 
 end Asymptotics
+
+namespace Mathlib.Tactic.GCongr
+
+/-- See if the term is `f =o[l] g` and the goal is `f =O[l] g`. -/
+@[gcongr_forward] meta def exactIsBigOOfIsLittleO : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``Asymptotics.IsLittleO.isBigO #[h])
+
+end Mathlib.Tactic.GCongr
