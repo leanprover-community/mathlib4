@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Homogeneous polynomials
@@ -43,6 +44,7 @@ open Finsupp
 
 /-- A multivariate polynomial `φ` is homogeneous of degree `n`
 if all monomials occurring in `φ` have degree `n`. -/
+@[wikidata Q1474074]
 def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
   IsWeightedHomogeneous 1 φ n
 
