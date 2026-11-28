@@ -172,6 +172,18 @@ end
 end nonAssocSemiring
 end mulLeftRight
 
+section EqRec
+
+variable {α R S N : Type*} [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid N] [Module S N]
+  (M : α → Type*) [∀ a, AddCommMonoid (M a)] [∀ a, Module R (M a)] {a b : α}
+
+/-- An analogue of `_root_.apply_eqRec` for semilinear maps. Note that the module family `M`
+must be supplied explicitly since it isn't reliably detected by unification. -/
+theorem eqRec_apply (f : M a →ₛₗ[σ] N) (x : M b) (h : a = b) : (h ▸ f) x = f (h.symm ▸ x) := by
+  cases h; rfl
+
+end EqRec
+
 end LinearMap
 
 namespace Sum

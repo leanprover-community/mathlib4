@@ -43,6 +43,17 @@ abbrev wedgePairing :
     ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] R :=
   (wedge R M k l).compr₂ (hkl ▸ vol)
 
+lemma wedgePairing_apply (x : ⋀[R]^k M) (y : ⋀[R]^l M) :
+    wedgePairing vol hkl x y =
+    vol ⟨x * y, hkl ▸ SetLike.GradedMonoid.toGradedMul.mul_mem x.2 y.2⟩ := by
+  simp only [wedgePairing, LinearMap.compr₂_apply]
+  change Eq.ndrec (motive := fun n => (⋀[R]^n M) →ₗ[R] R) vol hkl.symm (wedge R M k l x y) = _
+  rw [wedge, LinearMap.eqRec_apply (fun n : ℕ => ⋀[R]^n M)]
+  simp only [LinearEquiv.coe_coe, EmbeddingLike.apply_eq_iff_eq]
+  generalize Module.finrank R M = n at hkl ⊢
+  cases hkl
+  rfl
+
 /-- An auxiliary lemma for `exteriorPower.wedgePairing_eq_apply_topVector_smul`. -/
 private lemma apply_eqRec {N : Type*} [AddCommGroup N] [Module R N]
     (h : k = l) (f : ⋀[R]^l M →ₗ[R] N)
