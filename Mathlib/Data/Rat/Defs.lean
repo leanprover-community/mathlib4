@@ -29,7 +29,6 @@ once the `Field` class has been defined.
 ## Notation
 
 - `/.` is infix notation for `Rat.divInt`.
-
 -/
 
 @[expose] public section
@@ -196,11 +195,11 @@ instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
 instance semigroup : Semigroup ℚ := by infer_instance
 
-@[simp]
+@[deprecated neg_den (since := "2026-11-23")]
 theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
   rfl
 
-@[simp]
+@[deprecated neg_num (since := "2026-11-23")]
 theorem num_neg_eq_neg_num (q : ℚ) : (-q).num = -q.num :=
   rfl
 
@@ -221,7 +220,7 @@ theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
 theorem num_one : (1 : ℚ).num = 1 :=
   rfl
 
-@[simp]
+-- `Not `@[simp]` as `den_ofNat` is stronger.
 theorem den_one : (1 : ℚ).den = 1 :=
   rfl
 
@@ -252,20 +251,22 @@ theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x *
     simp
   rw [divInt_mul_divInt, x.mul_comm, divInt_mul_right hx]
 
-theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
+theorem intCast_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← num_divInt_den q, hq]
   rw [intCast_eq_divInt]
   rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_int_num_of_den_eq_one := intCast_num_of_den_eq_one
+
 lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
   rw [Rat.isInt, Nat.beq_eq_true_eq] at h
-  exact (Rat.coe_int_num_of_den_eq_one h).symm
+  exact (Rat.intCast_num_of_den_eq_one h).symm
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
-  ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
+  ⟨Rat.intCast_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
 
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
-  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+  ⟨fun q hq => ⟨q.num, intCast_num_of_den_eq_one hq⟩⟩
 
 @[deprecated (since := "2026-06-06")] alias coe_int_inj := intCast_inj
 

@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+import Mathlib.CategoryTheory.Preadditive.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Linear categories
@@ -24,11 +29,10 @@ to talk about a `Module R X` structure,
 we need `Preadditive C` as a prerequisite typeclass for `Linear R C`.
 This makes for longer signatures than would be ideal.
 
-## Future work
+## TODO
 
 It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.
-
 -/
 
 @[expose] public section
@@ -100,6 +104,21 @@ end End
 section
 
 variable {R : Type w} [Semiring R] [Linear R C]
+
+section oppositeCategory
+
+instance oppositeCategory : Linear R Cᵒᵖ where
+  homModule _ _ := AddEquiv.module R ({opEquiv _ _ with map_add' := fun _ _ ↦ rfl})
+  smul_comp _ _ _ _ f g := Quiver.Hom.unop_inj (comp_smul _ _ _ g.unop _ f.unop)
+  comp_smul _ _ _ f _ g := Quiver.Hom.unop_inj (smul_comp _ _ _ _ g.unop f.unop)
+
+@[simp]
+lemma unop_smul {X Y : Cᵒᵖ} (r : R) (f : X ⟶ Y) : (r • f).unop = r • f.unop := rfl
+
+@[simp]
+lemma op_smul {X Y : C} (r : R) (f : X ⟶ Y) : (r • f).op = r • f.op := rfl
+
+end oppositeCategory
 
 section InducedCategory
 

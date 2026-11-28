@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.Multiset.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a multiset in ordered groups
 
@@ -122,7 +125,7 @@ variable [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] [MulLeftStrict
 lemma prod_lt_prod (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨l⟩ := s
-  simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  simp only [quot_mk_to_coe', Multiset.map_coe, Multiset.prod_coe]
   exact List.prod_lt_prod f g hle hlt
 
 @[deprecated (since := "2026-09-01")] alias prod_lt_prod' := prod_lt_prod
@@ -162,7 +165,7 @@ lemma max_prod_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
     {s : Multiset ι} {f g : ι → α} :
     max (s.map f).prod (s.map g).prod ≤ (s.map fun i ↦ max (f i) (g i)).prod := by
   obtain ⟨l⟩ := s
-  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  simp_rw [quot_mk_to_coe', Multiset.map_coe, Multiset.prod_coe]
   apply List.max_prod_le
 
 @[to_additive]
@@ -170,7 +173,7 @@ lemma prod_min_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
     {s : Multiset ι} {f g : ι → α} :
     (s.map fun i ↦ min (f i) (g i)).prod ≤ min (s.map f).prod (s.map g).prod := by
   obtain ⟨l⟩ := s
-  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  simp_rw [quot_mk_to_coe', Multiset.map_coe, Multiset.prod_coe]
   apply List.prod_min_le
 
 lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Multiset α} :

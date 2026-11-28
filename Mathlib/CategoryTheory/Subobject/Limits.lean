@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specific subobjects
 
@@ -15,7 +18,6 @@ represented by the equalizer, kernel and image of (a pair of) morphism(s) and pr
 for `P.factors f`, where `P` is one of these special subobjects.
 
 TODO: an iff characterisation of `(imageSubobject f).Factors h`
-
 -/
 
 @[expose] public section
@@ -184,32 +186,28 @@ def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernelSubobjectMap sq ≫ (kernelSubobject f').arrow = (kernelSubobject f).arrow ≫ sq.left := by
   simp [kernelSubobjectMap]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
     kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
-    kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
+    kernel.map f f' sq.left sq.right sq.w.symm ≫ (kernelSubobjectIso _).inv =
       (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by cat_disch
 
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
-    (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.1 sq.2 sq.3.symm =
+    (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.left sq.right sq.w.symm =
       kernelSubobjectMap sq ≫ (kernelSubobjectIso _).hom := by
   simp [← Iso.comp_inv_eq, kernel_map_comp_kernelSubobjectIso_inv]
 
@@ -485,7 +483,6 @@ def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [Ha
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
@@ -495,7 +492,6 @@ theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y 
   rw [dsimp% image.map_ι sq]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     image.map sq ≫ (imageSubobjectIso _).inv =
@@ -503,7 +499,6 @@ theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasIma
   ext
   simpa using image.map_ι sq
 
-set_option backward.defeqAttrib.useBackward true in
 theorem imageSubobjectIso_comp_image_map {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     (imageSubobjectIso _).hom ≫ image.map sq =

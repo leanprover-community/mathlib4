@@ -37,7 +37,6 @@ These require `open Kronecker`:
 * `A ⊗ₖ B` for `kroneckerMap (*) A B`. Lemmas about this notation use the token `kronecker`.
 * `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.
   Lemmas about this notation use the token `kroneckerTMul`.
-
 -/
 
 @[expose] public section
@@ -220,7 +219,7 @@ theorem kroneckerMapBilinear_mul_mul [Semiring S] [Semiring R] [Fintype m] [Fint
     kroneckerMapBilinear f (A * B) (A' * B') =
       kroneckerMapBilinear f A A' * kroneckerMapBilinear f B B' := by
   ext ⟨i, i'⟩ ⟨j, j'⟩
-  simp only [kroneckerMapBilinear_apply_apply, mul_apply, ← Finset.univ_product_univ,
+  simp only [kroneckerMapBilinear_apply_apply, Matrix.mul_apply, ← Finset.univ_product_univ,
     Finset.sum_product, kroneckerMap_apply]
   simp_rw [map_sum f, LinearMap.sum_apply, map_sum, h_comm]
 
@@ -279,7 +278,6 @@ scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
 open scoped Kronecker
 
-@[simp]
 theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i₂ j₁ j₂) :
     (A ⊗ₖ B) (i₁, i₂) (j₁, j₂) = A i₁ j₁ * B i₂ j₂ :=
   rfl
@@ -446,7 +444,6 @@ scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (TensorProduct
 
 open scoped Kronecker
 
-@[simp]
 theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j₁ j₂) :
     (A ⊗ₖₜ B) (i₁, i₂) (j₁, j₂) = A i₁ j₁ ⊗ₜ[R] B i₂ j₂ :=
   rfl

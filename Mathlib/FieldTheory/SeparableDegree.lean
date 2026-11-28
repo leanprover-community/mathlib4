@@ -7,12 +7,12 @@ module
 
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 
-/-!
+import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 
+/-!
 # Separable degree
 
 This file contains basics about the separable degree of a field extension.
@@ -114,7 +114,6 @@ This file contains basics about the separable degree of a field extension.
 ## Tags
 
 separable degree, degree, polynomial
-
 -/
 
 @[expose] public section
@@ -271,7 +270,8 @@ instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infin
           fun i : ι ↦ (Polynomial.transcendental_X F).pow n.succ_pos
   refine Infinite.of_injective f fun m n h ↦ ?_
   replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
-    simpa [f, -map_pow] using congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
+    simpa [f, MvPolynomial.comp_aeval, -map_pow] using
+      congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
   simpa using congr(MvPolynomial.totalDegree $h)
 
 /-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
@@ -334,7 +334,7 @@ theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
 
 /-- A non-constant polynomial has non-zero separable degree. -/
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
-  rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
+  rw [natSepDegree, Finset.card_ne_zero]
   use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]
@@ -396,10 +396,13 @@ theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
   simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_C_mul _ hx]
 
 @[simp]
-theorem natSepDegree_smul_nonzero {x : F} (hx : x ≠ 0) :
+theorem natSepDegree_smul_of_ne_zero {x : F} (hx : x ≠ 0) :
     (x • f).natSepDegree = f.natSepDegree := by
   classical
-  simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_smul_nonzero _ hx]
+  simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_smul_of_ne_zero _ hx]
+
+@[deprecated (since := "2026-10-13")]
+alias natSepDegree_smul_nonzero := natSepDegree_smul_of_ne_zero
 
 @[simp]
 theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else f.natSepDegree := by

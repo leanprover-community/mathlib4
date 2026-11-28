@@ -8,10 +8,10 @@ module
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
-public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 /-!
 # Volume measure for Euclidean geometry
@@ -130,12 +130,12 @@ theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ 
 
 theorem Isometry.euclideanHausdorffMeasure_image {f : X → Y} {d : ℕ} (hf : Isometry f) (s : Set X) :
     μHE[d] (f '' s) = μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
   rw [Isometry.hausdorffMeasure_image hf (by simp)]
 
 theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf : Isometry f)
     (s : Set Y) : μHE[d] (f ⁻¹' s) = μHE[d] (s ∩ Set.range f) := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
   rw [Isometry.hausdorffMeasure_preimage hf (by simp)]
 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
@@ -153,8 +153,8 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {
     [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
     μHE[d] (r • s) = ‖r‖₊ ^ d • μHE[d] s := by
-  rw [euclideanHausdorffMeasure_def, Measure.smul_apply, hausdorffMeasure_smul₀ (by simp) hr,
-    Measure.smul_apply, smul_comm]
+  rw [euclideanHausdorffMeasure_def, smul_apply, hausdorffMeasure_smul₀ (by simp) hr, smul_apply,
+    smul_comm]
   simp
 
 section Homothety
@@ -164,13 +164,13 @@ variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddCommGroup V] [NormedSpa
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
   rw [hausdorffMeasure_homothety_image (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
   rw [hausdorffMeasure_homothety_preimage (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 end Homothety
@@ -225,11 +225,11 @@ omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
 
 theorem euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
-  isometry_subtype_coe.euclideanHausdorffMeasure_image _
+  isometry_subtypeVal.euclideanHausdorffMeasure_image _
 
 theorem euclideanHausdorffMeasure_preimage_coe (d : ℕ) {s : AffineSubspace ℝ P} {t : Set P} :
     μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] (t ∩ s) := by
-  rw [isometry_subtype_coe.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
+  rw [isometry_subtypeVal.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
 
 theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
     {t : Set P} (ht : t ⊆ s) :
@@ -299,13 +299,13 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
       ∂μHE[finrank ℝ s.direction] := by
   obtain p := hs.some
   rw [← (s.direction.measurePreserving_measurableEquivProd p.val).symm.measure_preimage_equiv,
-    volume_eq_prod, prod_apply (by measurability), euclideanHausdorffMeasure_eq,
+    volume_eq_prod, Measure.prod_apply (by measurability), euclideanHausdorffMeasure_eq,
     MeasurableEmbedding.lintegral_map
         (by simpa using (IsometryEquiv.vaddConst p).toHomeomorph.measurableEmbedding)]
   congr with x
   let u : Set (mk' (x +ᵥ p).val s.directionᗮ) := Subtype.val ⁻¹' (t ∩ mk' (x +ᵥ p).val s.directionᗮ)
   have hu : MeasurableSet u :=
-    (ht.inter (closed_of_finiteDimensional _).measurableSet).preimage measurable_subtype_coe
+    (ht.inter (isClosed_of_finiteDimensional _).measurableSet).preimage measurable_subtypeVal
   have hinter : t ∩ (mk' (x +ᵥ p).val s.directionᗮ) = Subtype.val '' u := by
     ext x
     simp [u]
@@ -319,8 +319,8 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
     Lucky we have just developed euclideanHausdorffMeasure, which allows us to move the measure to
     the global vector space. -/
   simp_rw [← InnerProductSpace.euclideanHausdorffMeasure_eq_volume]
-  conv_lhs => rw [← isometry_subtype_coe.euclideanHausdorffMeasure_image]
-  conv_rhs => rw [← isometry_subtype_coe.euclideanHausdorffMeasure_image]
+  conv_lhs => rw [← isometry_subtypeVal.euclideanHausdorffMeasure_image]
+  conv_rhs => rw [← isometry_subtypeVal.euclideanHausdorffMeasure_image]
   congrm μHE[$hrank] ?_
   ext y
   simp [u, vadd_vadd, add_comm]
@@ -374,7 +374,7 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral_of_subset (p : 
   let v' : s.direction := ⟨v, hvs⟩
   rw [← s.euclideanHausdorffMeasure_preimage_coe_of_subset _ hts,
     euclideanHausdorffMeasure_eq_lintegral (orthogonalProjection s p)
-      (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage measurable_subtype_coe)]
+      (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage measurable_subtypeVal)]
   congrm ‖v'‖ₑ * ∫⁻ (x : ℝ), ?_
   suffices mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ =
       comap s.subtype (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) from by

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugate root classes
 
@@ -86,13 +89,14 @@ theorem mk_neg (x : L) : - mk K x = mk K (-x) :=
 instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
+open scoped Pointwise in
 @[simp]
 theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
   simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 
 theorem exists_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
-    (∃ᵉ (a ∈ x.carrier) (b ∈ y.carrier), a + b = 0) ↔ x = -y := by
+    (∃ a ∈ x.carrier, ∃ b ∈ y.carrier, a + b = 0) ↔ x = -y := by
   simp_rw [mem_carrier]
   constructor
   · rintro ⟨a, rfl, b, rfl, h⟩
@@ -183,7 +187,7 @@ theorem nodup_aroots_minpoly (c : ConjRootClass K L) : (c.minpoly.aroots L).Nodu
   nodup_roots c.separable_minpoly.map
 
 theorem aroots_minpoly_eq_carrier_val (c : ConjRootClass K L) [Fintype c.carrier] :
-    c.minpoly.aroots L = c.carrier.toFinset.1 := by
+    c.minpoly.aroots L = c.carrier.toFinset.val := by
   classical
   simp_rw [← rootSet_minpoly_eq_carrier, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val,
     c.nodup_aroots_minpoly.dedup]

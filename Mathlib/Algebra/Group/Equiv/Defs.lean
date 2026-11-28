@@ -15,6 +15,7 @@ In this file we define two extensions of `Equiv` called `AddEquiv` and `MulEquiv
 datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`Group`s.
 
 ## Main definitions
+
 * `≃*` (`MulEquiv`), `≃+` (`AddEquiv`): bundled equivalences that preserve multiplication/addition
   (and are therefore monoid and group isomorphisms).
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
@@ -169,6 +170,10 @@ instance : CoeFun (M ≃* N) fun _ ↦ M → N where
 instance : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
 
+@[to_additive (attr := simp)]
+theorem coe_toMulEquiv [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    ⇑(f : M ≃* N) = f := rfl
+
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
 @[to_additive (attr := ext)
@@ -204,10 +209,12 @@ theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
 theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 
 /-- `simp`-normal form of `toFun_eq_coe`. -/
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `EquivLike.toEquiv`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while we have `toMulHom_eq_coe`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
@@ -418,6 +425,10 @@ theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 
+@[to_additive]
+theorem isMulCommutative (e : M ≃* N) : IsMulCommutative M ↔ IsMulCommutative N :=
+  ⟨fun _ ↦ e.surjective.isMulCommutative, fun _ ↦ e.symm.surjective.isMulCommutative⟩
+
 end trans
 
 /-- `MulEquiv.symm` defines an equivalence between `α ≃* β` and `β ≃* α`. -/
@@ -498,8 +509,9 @@ protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
 theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
+-- TODO: Make simp once `toEquiv` is simp nf
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
-@[to_additive (attr := simps! apply)
+@[to_additive (attr := simps! apply, simps -isSimp toEquiv)
 /-- A bijective `AddSemigroup` homomorphism is an isomorphism -/]
 noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     (f : F) (hf : Bijective f) : M ≃* N :=
@@ -517,7 +529,8 @@ as a multiplication-preserving function.
 def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while we have `toMonoidHom_eq_coe`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 
 @[to_additive (attr := simp)]

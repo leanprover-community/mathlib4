@@ -227,10 +227,11 @@ def lift₂ :
       (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
-      (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
+      (fun (a : α × α) (b : β × β) => f.val a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
-        exacts [rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
+        exacts [rfl, (f.property _ _ _ _).2, (f.property _ _ _ _).1,
+          (f.property _ _ _ _).1.trans (f.property _ _ _ _).2])
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
@@ -414,12 +415,15 @@ theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ 
   aesop
 
 @[congr]
-theorem map_congr {f g : α → β} {s : Sym2 α} (h : ∀ x ∈ s, f x = g x) : map f s = map g s := by
+theorem map_congr {f g : α → β} {s s' : Sym2 α} (hs : s = s') (h : ∀ x ∈ s, f x = g x) :
+    map f s = map g s' := by
+  subst hs
   ext y
   simp only [mem_map]
-  constructor <;>
-    · rintro ⟨w, hw, rfl⟩
-      exact ⟨w, hw, by simp [hw, h]⟩
+  constructor
+  all_goals
+    rintro ⟨w, hw, rfl⟩
+    exact ⟨w, hw, by simp [hw, h]⟩
 
 /-- Note: `Sym2.map_id` will not simplify `Sym2.map id z` due to `Sym2.map_congr`. -/
 @[simp]
@@ -471,8 +475,8 @@ lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sy
     z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
   cases z; rfl
 
-lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
-    (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
+lemma pmap_map {P : α → Prop} (f : ∀ a, P a → β) (g : β → γ)
+    (z : Sym2 α) (h : ∀ a ∈ z, P a) :
     (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
   cases z; rfl
 
@@ -498,6 +502,16 @@ def attachWith {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) : Sym2 {a 
 lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s, P a) :
     (s.attachWith h).map Subtype.val = s := by
   cases s; rfl
+
+@[simp]
+lemma attachWith_mk {P : α → Prop} (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+    s(a, b).attachWith h = s(⟨a, h a <| mem_mk_left ..⟩, ⟨b, h b <| mem_mk_right ..⟩) :=
+  rfl
+
+@[simp]
+lemma attachWith_inj {P : α → Prop} {z₁ z₂ : Sym2 α} {h₁ : ∀ a ∈ z₁, P a} {h₂ : ∀ a ∈ z₂, P a} :
+    z₁.attachWith h₁ = z₂.attachWith h₂ ↔ z₁ = z₂ := by
+  simp [← (map.injective Subtype.val_injective).eq_iff]
 
 /-! ### Diagonal -/
 
@@ -556,7 +570,7 @@ theorem mk_fiber_of_isDiag (hz : z.IsDiag) :
 /-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
 @[simps]
 def diagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
-  toFun x := x.1.diagElem x.2
+  toFun x := x.val.diagElem x.property
   invFun a := ⟨diag a, rfl⟩
   left_inv x := by ext; simp
   right_inv a := by simp [diag]
@@ -761,18 +775,11 @@ def fromRelOrderIso : { r : α → α → Prop // Std.Symm r } ≃o Set (Sym2 α
   right_inv s := by simp [fromRel_toRel]
   map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
-/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-@[deprecated fromRelOrderIso +typeChanged (since := "2026-03-11")]
-def fromRelOrderEmbedding : { r : α → α → Prop // Std.Symm r } ↪o Set (Sym2 α) :=
-  fromRelOrderIso α |>.toOrderEmbedding
-
 @[simp]
 theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
   rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderIso α |>.eq_iff_eq]
   rfl
-
-@[deprecated (since := "2026-03-11")] alias fromRel_eq_fromRell_iff_eq := fromRel_eq_fromRel_iff_eq
 
 end Relations
 
@@ -811,8 +818,12 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 @[simp]
-theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ := by
-  exact Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
+theorem toFinset_nonempty (z : Sym2 α) : z.toFinset.Nonempty :=
+  ⟨_, mem_toFinset.mpr (out_fst_mem _)⟩
+
+@[deprecated toFinset_nonempty +typeChanged (since := "2026-11-11")]
+theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ :=
+  z.toFinset_nonempty.ne_empty
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
@@ -946,7 +957,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
     have {f g h} : @Eq.ndrec (Sym2 α) s(b, c)
       (fun x => a ∈ x → α) (fun _ => if a = b then c else b) f g h =
         if a = b then c else b := by subst g; rfl
-    aesop)
+    rw [this]; aesop)
     z h
 
 @[simp]
@@ -1032,6 +1043,15 @@ def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn
   simp [pair_subset_iff]
+
+variable (s) in
+/-- The set of all unordered pairs of elements from a set is equivalent to the type of all unordered
+pairs of elements from that set. -/
+def sym2Equiv : s.sym2 ≃ Sym2 s where
+  toFun := fun ⟨z, hz⟩ ↦ z.attachWith fun a ha ↦ s.mem_sym2_iff_subset.mp hz ha
+  invFun z := ⟨z.map (↑), by cases z; simp⟩
+  left_inv _ := by simp
+  right_inv z := by cases z; simp
 
 lemma sym2_eq_mk_image : s.sym2 = (Sym2.mk.uncurry) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
 

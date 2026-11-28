@@ -73,7 +73,7 @@ The following examples can be found in the book of Lam [lam_1999]
   but not the rank condition.
 
 
-## Future work
+## TODO
 
 So far, there is no API at all for the `InvariantBasisNumber` class. There are several natural
 ways to formulate that a module `M` is finitely generated and free, for example
@@ -98,7 +98,6 @@ variants) should be formalized.
 ## Tags
 
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
-
 -/
 
 public section
@@ -232,9 +231,12 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
     (.funCongrLeft R R (Fintype.equivFin α) ≪≫ₗ f ≪≫ₗ
       .symm (.funCongrLeft R R (Fintype.equivFin β)))
 
-theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
+instance (priority := 100) : Nontrivial R := by
   by_contra! h
   exact zero_ne_one (eq_of_fin_equiv R <| .ofSubsingleton ..)
+
+@[deprecated "use infer_instance instead" (since := "2026-10-08")]
+theorem nontrivial_of_invariantBasisNumber : Nontrivial R := inferInstance
 
 end
 

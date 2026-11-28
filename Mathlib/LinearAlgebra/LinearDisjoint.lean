@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
-
 # Linearly disjoint submodules
 
 This file contains basics about linearly disjoint submodules.
@@ -124,7 +123,6 @@ assuming `S` is commutative.
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section
@@ -161,7 +159,7 @@ protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ
 
 @[simp]
 theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
-    (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
+    (H.mulMap (m ⊗ₜ[R] n) : S) = m.val * n.val := rfl
 
 @[nontriviality]
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
@@ -178,19 +176,19 @@ theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
   simp only [linearDisjoint_iff, mulMap_op, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
+    LinearEquiv.coe_toLinearMap, EquivLike.comp_injective, EquivLike.injective_comp]
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 
 /-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
-    (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : N.LinearDisjoint M := by
+    (hc : ∀ (m : M) (n : N), Commute m.val n.val) : N.LinearDisjoint M := by
   rw [linearDisjoint_iff, mulMap_comm_of_commute M N hc]
   exact ((TensorProduct.comm R N M).toEquiv.injective_comp _).2 H.injective
 
 /-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem linearDisjoint_comm_of_commute
-    (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
+    (hc : ∀ (m : M) (n : N), Commute m.val n.val) : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
@@ -214,7 +212,7 @@ theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
   classical simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+    LinearEquiv.coe_toLinearMap, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent
@@ -224,7 +222,7 @@ theorem of_basis_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
   classical simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+    LinearEquiv.coe_toLinearMap, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
@@ -240,7 +238,8 @@ theorem of_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
   have : i = Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S) := by
     ext x
     simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
-  simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+  simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- The zero module is linearly disjoint with any other submodules. -/
@@ -331,7 +330,7 @@ to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) has trivial kernel. -/
 theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
@@ -350,7 +349,7 @@ to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) has trivial kernel. -/
 theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
@@ -368,7 +367,8 @@ variable {M N} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
-    (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
+    (hn : LinearIndependent R n) :
+    LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
   rw [LinearIndependent] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.linearCombination R m)
@@ -377,7 +377,7 @@ theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat
   have h1 : Function.Injective i1 := Module.Flat.rTensor_preserves_injective_linearMap _ hm
   have h2 : Function.Injective i2 := Module.Flat.lTensor_preserves_injective_linearMap _ hn
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
-  have : i = Finsupp.linearCombination R fun i ↦ (m i.1).1 * (n i.2).1 := by
+  have : i = Finsupp.linearCombination R fun i ↦ (m i.1).val * (n i.2).val := by
     ext x
     simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rwa [this] at h
@@ -389,7 +389,8 @@ variable {M N} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Flat R N]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
-    (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
+    (hn : LinearIndependent R n) :
+    LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
   rw [LinearIndependent] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.linearCombination R n)
@@ -398,7 +399,7 @@ theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Fla
   have h1 : Function.Injective i1 := Module.Flat.lTensor_preserves_injective_linearMap _ hn
   have h2 : Function.Injective i2 := Module.Flat.rTensor_preserves_injective_linearMap _ hm
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
-  have : i = Finsupp.linearCombination R fun i ↦ (m i.1).1 * (n i.2).1 := by
+  have : i = Finsupp.linearCombination R fun i ↦ (m i.1).val * (n i.2).val := by
     ext x
     simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rwa [this] at h
@@ -411,7 +412,8 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
     (hf : Module.Flat R M ∨ Module.Flat R N)
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
-    (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
+    (hn : LinearIndependent R n) :
+    LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val := by
   rcases hf with _ | _
   · exact H.linearIndependent_mul_of_flat_left hm hn
   · exact H.linearIndependent_mul_of_flat_right hm hn
@@ -420,7 +422,7 @@ theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
-    (H : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1) : M.LinearDisjoint N := by
+    (H : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).val * (n i.2).val) : M.LinearDisjoint N := by
   rw [LinearIndependent] at H
   exact of_basis_mul' M N m n H
 
@@ -485,12 +487,12 @@ variable [Nontrivial R]
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
-    (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
+    (a b : ↥(M ⊓ N)) (hc : Commute a.val b.val) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let n : Fin 2 → N := (inclusion inf_le_right) ∘ ![a, b]
   have hn : LinearIndependent R n := h.map' _ (ker_inclusion _ _ _)
   -- need this instance otherwise it only has semigroup structure
   let : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
-  let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
+  let m : Fin 2 →₀ M := .single 0 ⟨b.val, b.property.1⟩ - .single 1 ⟨a.val, a.property.1⟩
   have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_right_of_flat hn, mem_bot] at hm
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
@@ -501,12 +503,12 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
 /-- If `M` and `N` are linearly disjoint, if `N` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
-    (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
+    (a b : ↥(M ⊓ N)) (hc : Commute a.val b.val) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let m : Fin 2 → M := (inclusion inf_le_left) ∘ ![a, b]
   have hm : LinearIndependent R m := h.map' _ (ker_inclusion _ _ _)
   -- need this instance otherwise it only has semigroup structure
   let : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
-  let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩
+  let n : Fin 2 →₀ N := .single 0 ⟨b.val, b.property.2⟩ - .single 1 ⟨a.val, a.property.2⟩
   have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_left_of_flat hm, mem_bot] at hn
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
@@ -517,7 +519,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
 /-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
-    (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := by
+    (a b : ↥(M ⊓ N)) (hc : Commute a.val b.val) : ¬LinearIndependent R ![a, b] := by
   rcases hf with _ | _
   · exact H.not_linearIndependent_pair_of_commute_of_flat_left a b hc
   · exact H.not_linearIndependent_pair_of_commute_of_flat_right a b hc
@@ -527,13 +529,13 @@ end
 /-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat,
 if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
-    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.val n.val) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
   nontriviality R
   refine _root_.rank_le fun s h ↦ ?_
   by_contra hs
   rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
   obtain ⟨a, b, hab⟩ := hs.exists_pair_ne
-  refine H.not_linearIndependent_pair_of_commute_of_flat hf a.1 b.1 (hc a.1 b.1) ?_
+  refine H.not_linearIndependent_pair_of_commute_of_flat hf a.val b.val (hc a.val b.val) ?_
   have := h.comp ![a, b] fun i j hij ↦ by
     fin_cases i <;> fin_cases j
     · rfl
@@ -547,13 +549,13 @@ theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat
 /-- If `M` and `N` are linearly disjoint, if `M` is flat,
 if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat_left [Module.Flat R M]
-    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.val n.val) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat (Or.inl ‹_›) hc
 
 /-- If `M` and `N` are linearly disjoint, if `N` is flat,
 if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat_right [Module.Flat R N]
-    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.val n.val) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat (Or.inr ‹_›) hc
 
 end
@@ -561,7 +563,7 @@ end
 /-- If `M` and itself are linearly disjoint, if `M` is flat,
 if any two elements of `M` are commutative, then the rank of `M` is at most one. -/
 theorem rank_le_one_of_commute_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M]
-    (hc : ∀ (m n : M), Commute m.1 n.1) : Module.rank R M ≤ 1 := by
+    (hc : ∀ (m n : M), Commute m.val n.val) : Module.rank R M ≤ 1 := by
   rw [← inf_of_le_left (le_refl M)] at hc ⊢
   exact H.rank_inf_le_one_of_commute_of_flat_left hc
 

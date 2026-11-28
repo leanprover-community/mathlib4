@@ -68,7 +68,8 @@ lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomCla
 @[simps]
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N where
-  toFun := SeparationQuotient.liftContinuousAddMonoidHom f <| apply_eq_apply_of_inseparable f hf
+  toFun := SeparationQuotient.liftContinuousAddMonoidHom f.toContinuousAddMonoidHom
+    <| apply_eq_apply_of_inseparable f hf
   map_add' v₁ v₂ := map_add ..
   bound' := by
     refine ⟨‖f‖, fun v ↦ ?_⟩
@@ -124,7 +125,7 @@ theorem norm_normedMk_eq_one [NontrivialTopology M] :
   · simpa only [normedMk_apply, one_mul] using! fun _ ↦ le_rfl
   · intro N _ hle
     obtain ⟨x, _⟩ := exists_norm_ne_zero M
-    exact one_le_of_le_mul_right₀ (by positivity) (hle x)
+    exact one_le_of_le_mul_right₀ (b := ‖x‖) (by positivity) (hle x)
 
 /-- The projection is `0` if and only if all the elements have norm `0`. -/
 theorem normedMk_eq_zero_iff : normedMk (M := M) = 0 ↔ ∀ (x : M), ‖x‖ = 0 := by

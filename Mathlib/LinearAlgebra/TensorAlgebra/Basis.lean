@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.FreeAlgebra
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A basis for `TensorAlgebra R M`
 
@@ -22,7 +25,6 @@ public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 * `TensorAlgebra.instFreeModule`: the tensor algebra over `M` is free when `M` is
 * `TensorAlgebra.rank_eq`
-
 -/
 
 @[expose] public section

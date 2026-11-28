@@ -9,6 +9,8 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Logic.Equiv.Fin.Rotate
 
+import Mathlib.Algebra.Regular.Basic
+
 /-!
 # Linear independence
 
@@ -38,7 +40,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 public section
@@ -161,7 +162,7 @@ theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
   rw [LinearIndepOn, LinearIndepOn]
   convert Iff.rfl using 2
   ext x
-  exact h.symm x.2
+  exact h.symm x.property
 
 theorem LinearIndepOn.congr {w : ι → M} (hli : LinearIndepOn R v s) (h : EqOn v w s) :
     LinearIndepOn R w s :=
@@ -185,22 +186,27 @@ theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G
   convert h.group_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
--- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
--- `Rˣ` on `R` is not commutative.
-theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
-    LinearIndependent R (w • v) := by
+/-- Scaling a linearly independent family with right-regular scalars preserves
+linear independence. This applies in particular to non-zero-divisors
+(see `isRegular_iff_mem_nonZeroDivisors`). -/
+theorem LinearIndependent.smul_of_isRightRegular {v : ι → M} (hv : LinearIndependent R v)
+    {w : ι → R} (hw : ∀ i, IsRightRegular (w i)) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''ₛ] at hv ⊢
   intro s g₁ g₂ hgs hsum i
-  rw [← (w i).mul_left_inj]
+  apply hw i
   refine hv s (fun i ↦ g₁ i • w i) (fun i ↦ g₂ i • w i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
   · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using! hsum
+
+theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
+    LinearIndependent R (w • v) :=
+  smul_of_isRightRegular hv fun i ↦ (w i).isRegular.right
 
 @[simp]
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
-  convert h.units_smul (fun i ↦ (w i)⁻¹)
+  convert h.units_smul fun i ↦ (w i)⁻¹
   simp [funext_iff]
 
 protected theorem LinearIndependent.codRestrict (hs : LinearIndependent R v) (N : Submodule R M)
@@ -310,7 +316,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     (hs : LinearIndepOn R id s) (h : t ⊆ s) (hst : s ⊆ span R t) : s = t := by
   let f : t ↪ s :=
-    ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
+    ⟨fun x => ⟨x.val, h x.property⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
     convert hst <;> simp [f, comp_def]
@@ -405,9 +411,6 @@ theorem LinearIndependent.finCons' {m : ℕ} (x : M) (v : Fin m → M) (hli : Li
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
 
-@[deprecated (since := "2026-04-07")]
-alias LinearIndependent.fin_cons' := LinearIndependent.finCons'
-
 /-- See `LinearIndependent.finSnoc` for a family of elements in a vector space. -/
 theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : LinearIndependent R v)
     (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
@@ -495,6 +498,10 @@ theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
     LinearIndepOn R id (s ∪ t) ↔
     LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
   rw [linearIndepOn_union_iff hdj, image_id, image_id]
+
+theorem disjoint_span_of_linearIndepOn_id_union {s t : Set M} (hdj : Disjoint s t)
+    (hli : LinearIndepOn R id (s ∪ t)) : Disjoint (span R s) (span R t) :=
+  ((linearIndepOn_id_union_iff hdj).mp hli).2.2
 
 open LinearMap
 

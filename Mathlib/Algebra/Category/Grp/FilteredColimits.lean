@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Category.MonCat.FilteredColimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor from (commutative) (additive) groups preserves filtered colimits.
 
@@ -20,7 +23,6 @@ group,
 thereby showing that the forgetful functor `forget₂ GrpCat MonCat` preserves filtered colimits.
 In particular, this implies that `forget GrpCat` preserves filtered colimits.
 Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
-
 -/
 
 @[expose] public section

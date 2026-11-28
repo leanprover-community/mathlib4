@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotent completeness and homological complexes
 
@@ -17,7 +20,6 @@ of categories `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi 
 
 When the category `C` is idempotent complete, it is shown that
 `HomologicalComplex (Karoubi C) c` is also idempotent complete.
-
 -/
 
 @[expose] public section

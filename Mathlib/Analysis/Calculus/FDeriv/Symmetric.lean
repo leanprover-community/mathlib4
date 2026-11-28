@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetry of the second derivative
 
@@ -40,7 +43,7 @@ is `ℝ` or `ℂ`, and analytic otherwise. Formally, we assume that the function
 with `minSmoothness 𝕜 2 ≤ n`, where `minSmoothness 𝕜 i` is `i` if `𝕜` is `ℝ` or `ℂ`,
 and `ω` otherwise.
 
-## Implementation note
+## Implementation notes
 
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
 using the mean value inequality applied to a suitable function along the
@@ -490,7 +493,8 @@ variable (𝕜) in
 /-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than or equal to `n` for which
 one can do serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise,
 this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
-noncomputable irreducible_def minSmoothness (n : ℕ∞ω) :=
+@[no_expose]
+noncomputable def minSmoothness (n : ℕ∞ω) :=
   if IsRCLikeNormedField 𝕜 then n else ω
 
 @[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : ℕ∞ω} :

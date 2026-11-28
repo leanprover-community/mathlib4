@@ -21,7 +21,6 @@ positive linear maps.
 We do not define `PositiveContinuousLinearMapClass` to avoid adding a class that mixes order and
 algebra. One can achieve the same effect by using a combination of `ContinuousLinearMapClass` and
 `OrderHomClass`.
-
 -/
 
 @[expose] public section
@@ -102,7 +101,6 @@ lemma coe_toPositiveLinearMap (f : E₁ →P[R] E₂) :
     (f.toPositiveLinearMap : E₁ → E₂) = f :=
   rfl
 
-@[simp]
 lemma coe_toContinuousLinearMap (f : E₁ →P[R] E₂) :
     (f.toContinuousLinearMap : E₁ → E₂) = f :=
   rfl
@@ -125,6 +123,7 @@ lemma toContinuousLinearMap_inj (f g : E₁ →P[R] E₂) :
     f.toContinuousLinearMap = g.toContinuousLinearMap ↔ f = g :=
   toContinuousLinearMap_injective.eq_iff
 
+set_option fun_prop.projDefaultTransparency true in
 instance : Zero (E₁ →P[R] E₂) where
   zero := .mk (0 : E₁ →ₚ[R] E₂) <| by fun_prop
 
@@ -136,7 +135,7 @@ lemma toPositiveLinearMap_zero : (0 : E₁ →P[R] E₂).toPositiveLinearMap = 0
 lemma toContinuousLinearMap_zero : (0 : E₁ →P[R] E₂).toContinuousLinearMap = 0 :=
   rfl
 
-instance : IsZeroApply (E₁ →P[R] E₂) E₁ E₂ where
+instance : IsZeroApply (E₁ →P[R] E₂) where
 
 variable (R E₁) in
 /-- The identity as a positive continuous linear map. -/
@@ -190,7 +189,7 @@ lemma toContinuousLinearMap_add (f g : E₁ →P[R] E₂) :
     (f + g).toContinuousLinearMap = f.toContinuousLinearMap + g.toContinuousLinearMap := by
   rfl
 
-instance : IsAddApply (E₁ →P[R] E₂) E₁ E₂ where
+instance : IsAddApply (E₁ →P[R] E₂) where
 
 instance : SMul ℕ (E₁ →P[R] E₂) where
   smul n f := .mk (n • f.toPositiveLinearMap) <|
@@ -206,7 +205,7 @@ lemma toContinuousLinearMap_nsmul (f : E₁ →P[R] E₂) (n : ℕ) :
     (n • f).toContinuousLinearMap = n • f.toContinuousLinearMap :=
   rfl
 
-instance : IsSMulApply ℕ (E₁ →P[R] E₂) E₁ E₂ where
+instance : IsSMulApply ℕ (E₁ →P[R] E₂) where
 
 instance : AddCommMonoid (E₁ →P[R] E₂) := fast_instance% FunLike.addCommMonoid
 

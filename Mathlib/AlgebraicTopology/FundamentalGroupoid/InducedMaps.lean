@@ -43,7 +43,7 @@ theorem Path.Homotopic.map_trans_evalAt {X Y : Type*} [TopologicalSpace X] [Topo
   /- Let `G` be the continuous map on the unit square sending `(t, s)` to `F(t, p(s))`.
   Then our homotopy is the image under `G` of a homotopy
   between the two paths from `(0, 0)` to `(1, 1)` along the sides of the square. -/
-  set G : C(I × I, Y) := F.toContinuousMap.comp (.prodMap (.id _) p)
+  set G : C(I × I, Y) := F.toContinuousMap.comp (.prodMap (.id _) p.toContinuousMap)
   set p₁ : Path ((0, 0) : I × I) (1, 1) := .prod (.trans (.refl _) .id) (.trans .id (.refl _))
   set p₂ : Path ((0, 0) : I × I) (1, 1) := .prod (.trans .id (.refl _)) (.trans (.refl _) .id)
   set Fsq : p₁.Homotopy p₂ :=
@@ -107,11 +107,7 @@ then deprecate the rest of them.
 
 namespace unitInterval
 
-/-- The path 0 ⟶ 1 in `I` -/
-def path01 : Path (0 : I) 1 where
-  toFun := id
-  source' := rfl
-  target' := rfl
+@[deprecated (since := "2026-10-07")] alias path01 := Path.id
 
 /-- The path 0 ⟶ 1 in `ULift I` -/
 def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where

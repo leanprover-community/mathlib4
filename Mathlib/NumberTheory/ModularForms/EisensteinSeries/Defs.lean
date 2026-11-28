@@ -22,6 +22,7 @@ public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 * We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
 
 ## References
+
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
 
@@ -29,7 +30,8 @@ public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
+open ModularForm UpperHalfPlane Complex CongruenceSubgroup Set
+open Matrix hiding zpow_neg
 
 open scoped MatrixGroups
 
@@ -123,7 +125,7 @@ def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0
 
 @[simp]
 lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
-    (gammaSetDivGcdEquiv r) v = divIntMap r v.1 := rfl
+    (gammaSetDivGcdEquiv r) v = divIntMap r v.val := rfl
 
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
@@ -144,7 +146,7 @@ section gamma_action
 
 /-- Right-multiplying a vector by a matrix in `SL(2, ℤ)` doesn't change its gcd. -/
 lemma vecMulSL_gcd {v : Fin 2 → ℤ} (hab : finGcdMap v = r) (A : SL(2, ℤ)) :
-    finGcdMap (v ᵥ* A.1) = r := by
+    finGcdMap (v ᵥ* A.val) = r := by
   have hvr : v = r • (v / r) := by
     ext i
     refine Eq.symm (Int.mul_ediv_cancel' ?_)
@@ -164,12 +166,11 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N r a)
 variable (a) in
 /-- The bijection between `GammaSets` given by multiplying by an element of `SL(2, ℤ)`. -/
 def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N r a ≃ gammaSet N r (a ᵥ* γ) where
-  toFun v := ⟨v.1 ᵥ* γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
-  invFun v := ⟨v.1 ᵥ* ↑(γ⁻¹), by
-      have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
+  toFun v := ⟨v.val ᵥ* γ, vecMul_SL2_mem_gammaSet v.property γ⟩
+  invFun v := ⟨v.val ᵥ* ↑(γ⁻¹), by
+      have := vecMul_SL2_mem_gammaSet v.property γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
-      simpa only [SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-        map_inv, mul_inv_cancel, SpecialLinearGroup.coe_one, vecMul_one]⟩
+      simpa⟩
   left_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, mul_inv_cancel,
     SpecialLinearGroup.coe_one, vecMul_one]
   right_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, inv_mul_cancel,

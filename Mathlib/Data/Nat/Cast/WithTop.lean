@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemma about the coercion `ℕ → WithBot ℕ`.
 

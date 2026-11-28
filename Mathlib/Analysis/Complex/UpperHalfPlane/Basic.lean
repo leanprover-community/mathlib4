@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The upper half plane
 
@@ -38,7 +41,7 @@ attribute [coe] UpperHalfPlane.coe
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 /-- Define `I := √-1` as an element of the upper half plane. -/
-def I : ℍ := ⟨Complex.I, by simp⟩
+protected def I : ℍ := ⟨Complex.I, by simp⟩
 
 /-- Define the cube root of unity `ρ := (-1 + √-3) / 2` as an element of the upper half plane. -/
 def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
@@ -59,7 +62,7 @@ instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im where
   prf z hz := ⟨⟨z, hz⟩, rfl⟩
 
 protected theorem «forall» {P : ℍ → Prop} : (∀ z, P z) ↔ ∀ z hz, P ⟨z, hz⟩ :=
-  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.1 z.2⟩
+  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.coe z.coe_im_pos⟩
 
 protected theorem «exists» {P : ℍ → Prop} : (∃ z, P z) ↔ ∃ z hz, P ⟨z, hz⟩ :=
   ⟨fun ⟨⟨z, hz⟩, hP⟩ ↦ ⟨z, hz, hP⟩, fun ⟨z, hz, hP⟩ ↦ ⟨⟨z, hz⟩, hP⟩⟩
@@ -96,17 +99,17 @@ theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 
 @[simp]
-theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
+theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.coe_im_pos) : mk z h = z :=
   rfl
 
 @[simp]
-lemma I_im : I.im = 1 := Complex.I_im
+lemma I_im : (.I : ℍ).im = 1 := Complex.I_im
 
 @[simp]
-lemma I_re : I.re = 0 := Complex.I_re
+lemma I_re : (.I : ℍ).re = 0 := Complex.I_re
 
 @[simp, norm_cast]
-lemma coe_I : I = Complex.I := rfl
+lemma coe_I : (.I : ℍ) = Complex.I := rfl
 
 theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
   Complex.re_add_im z
@@ -183,7 +186,7 @@ lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z 
 section PosRealAction
 
 instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
-  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
+  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.property z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _
   mul_smul x y z := UpperHalfPlane.ext <| mul_smul (x : ℝ) y (z : ℂ)
 
@@ -237,7 +240,7 @@ protected theorem vadd_left_injective (z : ℍ) : Function.Injective fun x : ℝ
   simp [Function.Injective]
 
 instance : Infinite ℍ :=
-  .of_injective _ <| UpperHalfPlane.vadd_left_injective I
+  .of_injective _ <| UpperHalfPlane.vadd_left_injective .I
 
 instance : Nontrivial ℍ := inferInstance
 

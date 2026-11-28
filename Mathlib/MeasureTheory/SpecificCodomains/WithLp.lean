@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.MeasureTheory.SpecificCodomains.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrability in `WithLp`
 
@@ -26,6 +29,11 @@ variable {X : Type*} {mX : MeasurableSpace X} {μ : Measure X} {p q : ℝ≥0∞
 section Pi
 
 variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] {f : X → PiLp q E}
+
+omit [Fact (1 ≤ q)] [Fintype ι] in
+lemma AEStronglyMeasurable.eval_piLp (hf : AEStronglyMeasurable f μ) (i : ι) :
+    AEStronglyMeasurable (fun x ↦ f x i) μ :=
+  ((PiLp.continuous_ofLp q E).comp_aestronglyMeasurable hf).eval
 
 lemma memLp_piLp_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ := by
   simp_rw [← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]

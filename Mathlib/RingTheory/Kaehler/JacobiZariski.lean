@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
-
 # The Jacobi-Zariski exact sequence
 
 Given algebras $R \to S \to T$, the Jacobi-Zariski exact sequence is a long exact sequence
@@ -40,13 +39,12 @@ T \otimes_S H_1(L_{S/R}) \to H_1(L_{T/R}) \to H_1(L_{T/S})
 $$
 The exactness lemma is `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`.
 
-# TODO
+## TODO
 
 The flatness assumption in `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`
 is stronger than the `Tor`-vanishing conditions required in the full statement of
 [Stacks Project, 00S2], this should be refactored and generalized once more API
 for `Tor` modules is available.
-
 -/
 
 @[expose] public section
@@ -97,7 +95,7 @@ lemma Cotangent.exact :
       ((Extension.Cotangent.map (Q.toComp P).toExtensionHom).liftBaseChange T)
       (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) := by
   apply LinearMap.exact_of_comp_of_mem_range
-  · rw [LinearMap.liftBaseChange_comp, ← Extension.Cotangent.map_comp,
+  · rw [LinearMap.comp_liftBaseChange, ← Extension.Cotangent.map_comp,
       EmbeddingLike.map_eq_zero_iff]
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -119,7 +117,7 @@ lemma Cotangent.exact :
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_right hy)⟩
-    have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
+    have hz : z.val ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
       ext; simpa only [val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
@@ -159,7 +157,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
   apply (Q.comp P).cotangentSpaceBasis.repr.injective
   ext j
   simp only [compEquiv, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr,
+    Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_inr,
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
   obtain (j | j) := j <;>
@@ -182,8 +180,9 @@ lemma CotangentSpace.fst_compEquiv :
   intro i
   apply Q.cotangentSpaceBasis.repr.injective
   ext j
-  simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ofComp_val,
-    LinearEquiv.trans_apply, Basis.repr_self, LinearMap.fst_apply, repr_CotangentSpaceMap]
+  simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    ofComp_val, LinearEquiv.trans_apply, Basis.repr_self, LinearMap.fst_apply,
+    repr_CotangentSpaceMap]
   obtain (i | i) := i <;>
     simp only [Basis.repr_symm_apply, Finsupp.linearCombination_single, Basis.prod_apply,
       LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply, one_smul,
@@ -382,7 +381,7 @@ lemma exact_δ_map :
   · exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
 
 lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
-    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.1) (z)
+    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.val) (z)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
@@ -392,7 +391,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
-    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
+    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.val := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
     simp only [y, Extension.Cotangent.map_mk]
@@ -405,8 +404,8 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
   · exact hy
   · rw [← CotangentSpace.compEquiv_symm_inr]
     apply (CotangentSpace.compEquiv Q P).injective
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr, Function.comp_apply,
-      LinearEquiv.apply_symm_apply, z]
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_inr,
+      Function.comp_apply, LinearEquiv.apply_symm_apply, z]
     ext
     swap; · rfl
     change 0 = (LinearMap.fst T Q.toExtension.CotangentSpace
@@ -518,7 +517,7 @@ theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : H
   rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
   convert exact_liftBaseChange_map_of_flat Q P
   · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
-    rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
+    rw [LinearMap.comp_liftBaseChange, ← Extension.H1Cotangent.map_comp,
       Extension.H1Cotangent.map_eq]
   · change (Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
       (Extension.H1Cotangent.map _) = _

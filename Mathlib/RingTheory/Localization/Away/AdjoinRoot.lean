@@ -7,7 +7,12 @@ module
 
 public import Mathlib.RingTheory.AdjoinRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
+# Localization away from `r` and adjoining an inverse
+
 The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined.
 -/

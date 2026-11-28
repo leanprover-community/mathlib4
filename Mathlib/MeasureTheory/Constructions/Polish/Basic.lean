@@ -6,8 +6,10 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Topology.MetricSpace.Perfect
-public import Mathlib.Topology.Separation.CountableSeparatingOn
+
+import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -182,7 +184,7 @@ in `analyticSet_iff_exists_polishSpace_range`.
 Warning: these are analytic sets in the context of descriptive set theory (which is why they are
 registered in the namespace `MeasureTheory`). They have nothing to do with analytic sets in the
 context of complex analysis. -/
-irreducible_def AnalyticSet (s : Set α) : Prop :=
+@[no_expose] def AnalyticSet (s : Set α) : Prop :=
   s = ∅ ∨ ∃ f : (ℕ → ℕ) → α, Continuous f ∧ range f = s
 
 theorem analyticSet_empty : AnalyticSet (∅ : Set α) := by
@@ -205,7 +207,7 @@ theorem _root_.IsOpen.analyticSet_image {β : Type*} [TopologicalSpace β] [Poli
     {s : Set β} (hs : IsOpen s) {f : β → α} (f_cont : Continuous f) : AnalyticSet (f '' s) := by
   rw [image_eq_range]
   have : PolishSpace s := hs.polishSpace
-  exact analyticSet_range_of_polishSpace (f_cont.comp continuous_subtype_val)
+  exact analyticSet_range_of_polishSpace (f_cont.comp continuous_subtypeVal)
 
 /-- A set is analytic if and only if it is the continuous image of some Polish space. -/
 theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
@@ -258,12 +260,12 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       isClosed_eq ((f_cont n).comp (continuous_apply n)) ((f_cont i₀).comp (continuous_apply i₀))
   have : PolishSpace t := t_closed.polishSpace
   let F : t → α := fun x => f i₀ ((x : γ) i₀)
-  have F_cont : Continuous F := (f_cont i₀).comp ((continuous_apply i₀).comp continuous_subtype_val)
+  have F_cont : Continuous F := (f_cont i₀).comp ((continuous_apply i₀).comp continuous_subtypeVal)
   have F_range : range F = ⋂ n : ι, s n := by
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
       refine mem_iInter.2 fun n => ?_
-      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n :)
+      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.property n :)
       rw [← this, ← f_range n]
       exact mem_range_self _
     · intro y hy
@@ -300,7 +302,7 @@ theorem _root_.IsClosed.analyticSet [PolishSpace α] {s : Set α} (hs : IsClosed
     AnalyticSet s := by
   have : PolishSpace s := hs.polishSpace
   rw [← @Subtype.range_val α s]
-  exact analyticSet_range_of_polishSpace continuous_subtype_val
+  exact analyticSet_range_of_polishSpace continuous_subtypeVal
 
 /-- Given a Borel-measurable set in a Polish space, there exists a finer Polish topology making
 it clopen. This is in fact an equivalence, see `isClopenable_iff_measurableSet`. -/
@@ -337,7 +339,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
   have : Countable b := b_count.to_subtype
   have : ∀ s : b, IsClopenable (rangeFactorization f ⁻¹' s) := fun s ↦ by
     apply MeasurableSet.isClopenable
-    exact hf.subtype_mk (hb.isOpen s.2).measurableSet
+    exact hf.subtype_mk (hb.isOpen s.property).measurableSet
   choose T Tt Tpolish _ Topen using this
   obtain ⟨t', t'T, t't, t'_polish⟩ :
       ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
@@ -345,7 +347,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
   refine ⟨t', t't, ?_, t'_polish⟩
   have : Continuous[t', _] (rangeFactorization f) :=
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
-  exact continuous_subtype_val.comp this
+  exact continuous_subtypeVal.comp this
 
 /-- The image of a measurable set in a standard Borel space under a measurable map
 is an analytic set. -/
@@ -423,7 +425,8 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       ¬MeasurablySeparable (f '' cylinder p.2.1 p.1) (g '' cylinder p.2.2 p.1) }
   -- for each such pair, one can find longer cylinders whose images are not Borel-separated either
   have : ∀ p : A, ∃ q : A,
-      q.1.1 = p.1.1 + 1 ∧ q.1.2.1 ∈ cylinder p.1.2.1 p.1.1 ∧ q.1.2.2 ∈ cylinder p.1.2.2 p.1.1 := by
+      q.val.1 = p.val.1 + 1 ∧ q.val.2.1 ∈ cylinder p.val.2.1 p.val.1 ∧
+      q.val.2.2 ∈ cylinder p.val.2.2 p.val.1 := by
     rintro ⟨⟨n, x, y⟩, hp⟩
     rcases I n x y hp with ⟨x', y', hx', hy', h'⟩
     exact ⟨⟨⟨n + 1, x', y'⟩, h'⟩, rfl, hx', hy'⟩
@@ -433,13 +436,13 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   let p : ℕ → A := fun n => F^[n] p0
   have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [p, iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
-  have pn_fst : ∀ n, (p n).1.1 = n := fun n ↦ by
+  have pn_fst : ∀ n, (p n).val.1 = n := fun n ↦ by
     induction n with
     | zero => rfl
     | succ n IH => simp only [prec, hFn, IH]
   -- check that the cylinders we construct are indeed decreasing, by checking that the coordinates
   -- are stationary.
-  have Ix : ∀ m n, m + 1 ≤ n → (p n).1.2.1 m = (p (m + 1)).1.2.1 m := by
+  have Ix : ∀ m n, m + 1 ≤ n → (p n).val.2.1 m = (p (m + 1)).val.2.1 m := by
     intro m
     apply Nat.le_induction
     · rfl
@@ -449,7 +452,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       rw [pn_fst]
       exact hmn
     rw [prec, I, IH]
-  have Iy : ∀ m n, m + 1 ≤ n → (p n).1.2.2 m = (p (m + 1)).1.2.2 m := by
+  have Iy : ∀ m n, m + 1 ≤ n → (p n).val.2.2 m = (p (m + 1)).val.2.2 m := by
     intro m
     apply Nat.le_induction
     · rfl
@@ -460,12 +463,12 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       exact hmn
     rw [prec, I, IH]
   -- denote by `x` and `y` the limit points of these two sequences of cylinders.
-  set x : ℕ → ℕ := fun n => (p (n + 1)).1.2.1 n with hx
-  set y : ℕ → ℕ := fun n => (p (n + 1)).1.2.2 n with hy
+  set x : ℕ → ℕ := fun n => (p (n + 1)).val.2.1 n with hx
+  set y : ℕ → ℕ := fun n => (p (n + 1)).val.2.2 n with hy
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert (p n).2 using 3
+    convert (p n).property using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
@@ -589,7 +592,7 @@ theorem measurableSet_preimage_iff_inter_range {f : X → Z} [CountablySeparated
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
   rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
-    ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
+    ← (MeasurableEmbedding.subtypeVal hr).measurableSet_image, Subtype.image_preimage_coe]
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space
 to a countably separated measurable space,
@@ -687,20 +690,20 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
   -- for each pair of disjoint sets in the topological basis `b`, consider Borel sets separating
   -- their images, by injectivity of `f` and the Lusin separation theorem.
   have : ∀ p : A, ∃ q : Set β,
-      f '' (p.1.1 : Set γ) ⊆ q ∧ Disjoint (f '' (p.1.2 : Set γ)) q ∧ MeasurableSet q := by
+      f '' (p.val.1 : Set γ) ⊆ q ∧ Disjoint (f '' (p.val.2 : Set γ)) q ∧ MeasurableSet q := by
     intro p
     apply
-      AnalyticSet.measurablySeparable ((hb.isOpen p.1.1.2).analyticSet_image f_cont)
-        ((hb.isOpen p.1.2.2).analyticSet_image f_cont)
-    exact Disjoint.image p.2 f_inj.injOn (subset_univ _) (subset_univ _)
+      AnalyticSet.measurablySeparable ((hb.isOpen p.val.1.property).analyticSet_image f_cont)
+        ((hb.isOpen p.val.2.property).analyticSet_image f_cont)
+    exact Disjoint.image p.property f_inj.injOn (subset_univ _) (subset_univ _)
   choose q hq1 hq2 q_meas using this
   -- define sets `E i` and `F n` as in the proof sketch above
   let E : b → Set β := fun s =>
-    closure (f '' s) ∩ ⋂ (t : b) (ht : Disjoint s.1 t.1), q ⟨(s, t), ht⟩ \ q ⟨(t, s), ht.symm⟩
+    closure (f '' s) ∩ ⋂ (t : b) (ht : Disjoint s.val t.val), q ⟨(s, t), ht⟩ \ q ⟨(t, s), ht.symm⟩
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
       ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), E s
+  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : IsBounded s.val ∧ diam s.val ≤ u n), E s
   -- it is enough to show that `range f = ⋂ F n`, as the latter set is obviously measurable.
   suffices range f = ⋂ n, F n by
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
@@ -737,16 +740,13 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
   -- Now, let us prove the harder inclusion `⋂ F n ⊆ range f`.
   · intro x hx
     -- pick for each `n` a good set `s n` of small diameter for which `x ∈ E (s n)`.
-    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
+    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.val ∧ diam s.val ≤ u n), x ∈ E s := fun n => by
       simpa only [F, mem_iUnion] using mem_iInter.1 hx n
     choose s hs hxs using C1
-    have C2 : ∀ n, (s n).1.Nonempty := by
-      intro n
-      rw [nonempty_iff_ne_empty]
-      grind
+    have C2 : ∀ n, (s n).val.Nonempty := by grind [not_nonempty_iff_eq_empty]
     -- choose a point `y n ∈ s n`.
     choose y hy using C2
-    have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
+    have I : ∀ m n, ((s m).val ∩ (s n).val).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
       by_contra h
@@ -871,7 +871,7 @@ theorem ContinuousOn.measurableEmbedding [BorelSpace β]
     measurableSet_image' := by
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
-        (MeasurableEmbedding.subtype_coe hs).measurableSet_image.2 hu
+        (MeasurableEmbedding.subtypeVal hs).measurableSet_image.2 hu
       have B : MeasurableSet (f '' ((↑) : s → γ) '' u) :=
         A.image_of_continuousOn_injOn (f_cont.mono (Subtype.coe_image_subset s u))
           (f_inj.mono (Subtype.coe_image_subset s u))
@@ -1039,7 +1039,8 @@ theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i))
   have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
-  refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
+  refine measurable_of_tendsto_metrizable' L.filter ?_
+    (tendsto_pi_nhds.mpr fun e => e.property.hasProd)
   fun_prop
 
 /-- The product of almost everywhere measurable functions is measurable. -/
@@ -1111,6 +1112,65 @@ theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
   obtain ⟨_, _, _, s_closed, _⟩ := hs.isClopenable'
   have := s_closed.polishSpace
   infer_instance
+
+/-- In a standard Borel space, a zero-one measure that is not the zero measure is a Dirac
+measure. -/
+theorem MeasureTheory.IsZeroOneMeasure.exists_eq_dirac
+    {μ : Measure α} [IsZeroOneMeasure μ] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
+  have : IsProbabilityMeasure μ := by
+    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
+    · simp_all
+    · exact ⟨h⟩
+  obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
+  let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
+  have mBn : MeasurableSet (⋂ n, B n) := by
+    refine MeasurableSet.iInter fun n ↦ ?_
+    simp only [dite_eq_ite, B]
+    split_ifs
+    · exact hAm n
+    · exact (hAm n).compl
+  have hBn : μ (⋂ n, B n) = 1 := by
+    refine (prob_compl_eq_zero_iff mBn).mp ?_
+    simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
+    intro n
+    split_ifs with h
+    · simp_all
+    · rw [compl_compl]
+      rcases μ.zero_one (A n) with (h₀ | h₁)
+      · exact h₀
+      · simp_all
+  obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+    simp_rw [eq_singleton_iff_unique_mem]
+    have neBn : (⋂ n, B n).Nonempty := by
+      by_contra! h
+      rw [h] at hBn
+      simp_all
+    refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
+    refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
+    have hsome := neBn.some_mem
+    simp only [dite_eq_ite, mem_iInter, B] at hsome hy
+    specialize hsome n
+    specialize hy n
+    constructor
+    · intro h
+      split_ifs at hy with hμAn
+      · simpa [hμAn] using! hsome
+      · contradiction
+    · intro h
+      split_ifs at hsome with hμAn
+      · simpa [hμAn] using! hy
+      · contradiction
+  use x₀
+  ext s hs
+  by_cases h : x₀ ∈ s
+  · simp [h]
+    have : μ {x₀} ≤ μ s := measure_mono (μ := μ) (by grind)
+    rw [← hx₀, hBn] at this
+    simp_all
+  · simp [h]
+    have : μ s ≤ μ {x₀}ᶜ := measure_mono (μ := μ) (by grind)
+    rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
+    simp_all
 
 end StandardBorelSpace
 

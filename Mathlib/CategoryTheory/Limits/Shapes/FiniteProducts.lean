@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories with finite (co)products
 
@@ -35,11 +38,24 @@ class HasFiniteProducts : Prop where
   /-- `C` has finite products -/
   out (n : ℕ) : HasLimitsOfShape (Discrete (Fin n)) C
 
+/-- A category has finite coproducts if there exists a colimit for every diagram
+with shape `Discrete J`, where we have `[Fintype J]`.
+
+We require this condition only for `J = Fin n` in the definition, then deduce a version for any
+`J : Type*` as a corollary of this definition.
+-/
+@[to_dual]
+class HasFiniteCoproducts : Prop where
+  /-- `C` has all finite coproducts -/
+  out (n : ℕ) : HasColimitsOfShape (Discrete (Fin n)) C
+
 /-- If `C` has finite limits then it has finite products. -/
+@[to_dual /-- If `C` has finite colimits then it has finite coproducts. -/]
 instance (priority := 10) hasFiniteProducts_of_hasFiniteLimits [HasFiniteLimits C] :
     HasFiniteProducts C :=
   ⟨fun _ => inferInstance⟩
 
+@[to_dual]
 instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
     HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
@@ -52,33 +68,10 @@ noncomputable example [HasFiniteProducts C] (X : C) : C :=
 
 /-- If a category has all products then in particular it has finite products.
 -/
+@[to_dual
+/-- If a category has all coproducts then in particular it has finite coproducts.
+-/]
 theorem hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts C :=
   ⟨fun _ => hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
-
-/-- A category has finite coproducts if there exists a colimit for every diagram
-with shape `Discrete J`, where we have `[Fintype J]`.
-
-We require this condition only for `J = Fin n` in the definition, then deduce a version for any
-`J : Type*` as a corollary of this definition.
--/
-class HasFiniteCoproducts : Prop where
-  /-- `C` has all finite coproducts -/
-  out (n : ℕ) : HasColimitsOfShape (Discrete (Fin n)) C
-
-instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
-    HasColimitsOfShape (Discrete ι) C := by
-  rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
-  have : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n
-  exact hasColimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
-
-/-- If `C` has finite colimits then it has finite coproducts. -/
-instance (priority := 10) hasFiniteCoproducts_of_hasFiniteColimits [HasFiniteColimits C] :
-    HasFiniteCoproducts C :=
-  ⟨fun J => by infer_instance⟩
-
-/-- If a category has all coproducts then in particular it has finite coproducts.
--/
-theorem hasFiniteCoproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasFiniteCoproducts C :=
-  ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
 
 end CategoryTheory.Limits

@@ -26,9 +26,9 @@ import Mathlib.RingTheory.RingHom.Injective
   A morphism is proper if and only if
   it is qcqs and of finite type and satisfies the valuative criterion.
 
-## Future projects
-Show that it suffices to check discrete valuation rings when the base is Noetherian.
+## TODO
 
+Show that it suffices to check discrete valuation rings when the base is Noetherian.
 -/
 
 @[expose] public section

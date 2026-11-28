@@ -20,7 +20,7 @@ If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-semim
 in the universe `v`. We show that it is preadditive and show that being an isomorphism and
 monomorphism are equivalent to being a linear equivalence and an injective linear map respectively.
 
-## Implementation details
+## Implementation notes
 
 To construct an object in the category of `R`-semimodules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.
@@ -295,7 +295,7 @@ instance : Zero (M ⟶ N) where
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
-@[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -462,10 +462,12 @@ end Bilinear
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp] theorem LinearMap.comp_id_semiModuleCat {R} [Semiring R]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.comp_id_semiModuleCat {R} [Semiring R]
     {G : SemimoduleCat.{u} R} {H : Type u} [AddCommMonoid H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
-@[simp] theorem LinearMap.id_semiModuleCat_comp {R} [Semiring R]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.id_semiModuleCat_comp {R} [Semiring R]
     {G : Type u} [AddCommMonoid G] [Module R G] {H : SemimoduleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp

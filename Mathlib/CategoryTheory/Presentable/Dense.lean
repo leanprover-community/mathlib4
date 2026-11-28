@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `κ`-presentable objects form a dense subcategory
@@ -16,7 +20,6 @@ In a `κ`-accessible category `C`, the inclusion of the full subcategory
 of `κ`-presentable objects is a dense functor. This expresses canonically
 any object `X : C` as a colimit of `κ`-presentable objects, and we show
 that this is a `κ`-filtered colimit.
-
 -/
 
 public section
@@ -54,13 +57,12 @@ instance final_toCostructuredArrow
       g₁.left.hom g₂.left.hom ((CostructuredArrow.w g₁).trans (CostructuredArrow.w g₂).symm)
     exact ⟨k, a, by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance [IsCardinalAccessibleCategory C κ] :
     (isCardinalPresentable C κ).ι.IsDense where
   isDenseAt X := by
     obtain ⟨J, _, _, ⟨p⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
-    exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).1
+    exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).toFun
       (IsColimit.ofIsoColimit p.isColimit (Cocone.ext (Iso.refl _)))⟩
 
 instance [IsCardinalAccessibleCategory C κ] (X : C) :

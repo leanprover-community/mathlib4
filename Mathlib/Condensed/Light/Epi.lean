@@ -10,8 +10,11 @@ public import Mathlib.Condensed.Light.Limits
 
 import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
 import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Epimorphisms of light condensed objects
 
 This file characterises epimorphisms in light condensed sets and modules as the locally surjective
@@ -132,11 +135,9 @@ variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M 
 set_option backward.defeqAttrib.useBackward true in
 instance : Epi (Limits.Pi.map f) :=
   epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by
-    simp only [Nat.succ_eq_add_one, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-      Functor.ofOpSequence_map_homOfLE_succ]
+    simp only [Nat.succ_eq_add_one, Functor.ofOpSequence_obj, Functor.ofOpSequence_map_homOfLE_succ]
     infer_instance)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by

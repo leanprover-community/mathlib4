@@ -109,7 +109,7 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
         (ΓSpecIso (X.presheaf.stalk x)).inv ≫
           (Spec (X.presheaf.stalk x)).presheaf.map (homOfLE le_top).op := by
   obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
-    hxU U.2
+    hxU U.is_open'
   rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.Hom.comp_app,
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
   simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
@@ -127,7 +127,7 @@ lemma SpecMap_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
     Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hyU, -⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ y) isOpen_univ
-  have hxU : x ∈ U := h.mem_open U.2 hyU
+  have hxU : x ∈ U := h.mem_open U.is_open' hyU
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hyU, ← hU.fromSpecStalk_eq_fromSpecStalk hxU,
     IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpecStalk, ← Category.assoc, ← Spec.map_comp,
     TopCat.Presheaf.germ_stalkSpecializes]
@@ -141,7 +141,7 @@ lemma SpecMap_stalkMap_fromSpecStalk {x} :
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
-    hxU (f ⁻¹ᵁ U).2
+    hxU (f ⁻¹ᵁ U).is_open'
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hxU, ← hV.fromSpecStalk_eq_fromSpecStalk hxV,
     IsAffineOpen.fromSpecStalk, ← Spec.map_comp_assoc, Scheme.Hom.germ_stalkMap f _ x hxU,
     IsAffineOpen.fromSpecStalk, Spec.map_comp_assoc, ← X.presheaf.germ_res (homOfLE hVU) x hxV,
@@ -237,7 +237,7 @@ def stalkClosedPointIso :
 lemma stalkClosedPointIso_inv :
     (stalkClosedPointIso R).inv = StructureSheaf.toStalk R _ := by
   ext x
-  exact (StructureSheaf.stalkIso _ _).commutes _
+  exact (StructureSheaf.stalkIso R _).commutes _
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ΓSpecIso_hom_stalkClosedPointIso_inv :
@@ -369,8 +369,8 @@ omit [IsLocalRing R] in
 /-- useful lemma for applications of `SpecToEquivOfLocalRing` -/
 lemma SpecToEquivOfLocalRing_eq_iff
     {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom }} :
-    f₁ = f₂ ↔ ∃ h₁ : f₁.1 = f₂.1, f₁.2.1 =
-      (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.1 := by
+    f₁ = f₂ ↔ ∃ h₁ : f₁.1 = f₂.1, f₁.2.val =
+      (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.val := by
   constructor
   · rintro rfl; simp
   · obtain ⟨x₁, ⟨f₁, h₁⟩⟩ := f₁
@@ -390,7 +390,7 @@ noncomputable
 def SpecToEquivOfLocalRing :
     (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom } where
   toFun f := ⟨f (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
-  invFun xf := Spec.map xf.2.1 ≫ X.fromSpecStalk xf.1
+  invFun xf := Spec.map xf.2.val ≫ X.fromSpecStalk xf.1
   left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk
   right_inv xf := by
     obtain ⟨x, ⟨f, hf⟩⟩ := xf

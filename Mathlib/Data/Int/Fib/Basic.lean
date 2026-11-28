@@ -8,14 +8,12 @@ module
 public import Mathlib.Data.Nat.Fib.Basic
 
 /-!
-
 # Fibonacci numbers extended onto the integers
 
 This file defines the Fibonacci sequence on the integers.
 
 Definition of the sequence: `F₀ = 0`, `F₁ = 1`, and `Fₙ₊₂ = Fₙ₊₁ + Fₙ`
 (same as the natural number version `Nat.fib`, but here `n` is an integer).
-
 -/
 
 @[expose] public section
@@ -26,7 +24,7 @@ namespace Int
 `fib (n + 2) = fib n + fib (n + 1)`.
 
 This is an extension of `Nat.fib`. -/
-@[pp_nodot]
+@[pp_nodot, oeis A000045]
 def fib (n : ℤ) : ℤ :=
   if 0 ≤ n then n.toNat.fib else
   if Even n then -(-n).toNat.fib else (-n).toNat.fib

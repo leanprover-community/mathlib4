@@ -14,10 +14,12 @@ In this file we discuss subcomplexes of CW complexes.
 The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 
 ## Main results
+
 * `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a
   (relative) CW complex.
 
 ## References
+
 * [K. Jänich, *Topology*][Janich1984]
 -/
 
@@ -57,7 +59,7 @@ lemma RelCWComplex.Subcomplex.union_closedCell [T2Space X] [RelCWComplex C D] (E
     D ∪ ⋃ (n : ℕ) (j : E.I n), closedCell (C := C) n j = E := by
   apply subset_antisymm
   · apply union_subset E.base_subset
-    exact iUnion₂_subset fun n i ↦ closedCell_subset_of_mem E i.2
+    exact iUnion₂_subset fun n i ↦ closedCell_subset_of_mem E i.property
   · rw [← E.union]
     apply union_subset_union_right
     apply iUnion₂_mono fun n i ↦ ?_
@@ -106,7 +108,7 @@ instance RelCWComplex.Subcomplex.instRelCWComplex [T2Space X] [RelCWComplex C D]
     specialize hJ h
     obtain ⟨m, hmn, j, hj, hxj⟩ := hJ
     suffices j ∈ E.I m from ⟨m, hmn, j, this, hj, openCell_subset_closedCell _ _ hxj⟩
-    have : x ∈ (E : Set X) := E.cellFrontier_subset_of_mem i.2 hx
+    have : x ∈ (E : Set X) := E.cellFrontier_subset_of_mem i.property hx
     by_contra hj'
     exact E.disjoint_openCell_subcomplex_of_notMem hj' |>.notMem_of_mem_left hxj this
   closed' A hA h := by
@@ -124,12 +126,10 @@ instance CWComplex.Subcomplex.instCWComplex [T2Space X] [CWComplex C] (E : Subco
     CWComplex (E : Set X) :=
   RelCWComplex.toCWComplex (E : Set X)
 
-@[simp]
 lemma CWComplex.Subcomplex.cell_def [T2Space X] [CWComplex C] (E : Subcomplex C)
     (n : ℕ) : cell (E : Set X) n = E.I (C := C) n :=
   rfl
 
-@[simp]
 lemma CWComplex.Subcomplex.map_def [T2Space X] [CWComplex C] (E : Subcomplex C) (n : ℕ)
     (i : E.I n) : map (C := E) n i = map (C := C) n i :=
   rfl

@@ -12,12 +12,14 @@ public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
 import Mathlib.CategoryTheory.Localization.OfQuotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
 
 In this file, we introduce the triangulated full subcategory `HomotopyCategory.Plus C`
 of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
-
 -/
 
 @[expose] public section
@@ -33,7 +35,6 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -112,8 +113,6 @@ instance : (plus C).IsStableUnderShift ℤ where
           plus_quotient_obj_iff]
         exact ⟨q - n, K.isStrictlyGE_shift q n (q - n) (by lia)⟩ }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (plus C).IsTriangulatedClosed₃ where
   ext₃' T hT h₁ h₂ := by
@@ -140,7 +139,7 @@ abbrev Plus := (plus C).FullSubcategory
 namespace Plus
 
 /-- The inclusion of the homotopy category of bounded below cochain complexes
-in the homotopy category category of all cochain complexes. -/
+in the homotopy category of all cochain complexes. -/
 abbrev ι : Plus C ⥤ HomotopyCategory C (.up ℤ) := (plus C).ι
 
 /-- The inclusion functor
@@ -195,7 +194,7 @@ variable {C} in
 lemma quotient_obj_surjective : Function.Surjective (quotient C).obj :=
   fun K ↦ by
     obtain ⟨L, hL⟩ := HomotopyCategory.quotient_obj_surjective K.obj
-    refine ⟨⟨L, ?_⟩, by ext; exact hL⟩
+    refine ⟨⟨L, ?_⟩, by ext : 1; exact hL⟩
     rw [← HomotopyCategory.plus_quotient_obj_iff, hL]
     exact K.property
 
@@ -223,9 +222,7 @@ section
 
 variable [HasZeroObject C] [HasBinaryBiproducts C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 open HomologicalComplex in
-set_option backward.defeqAttrib.useBackward true in
 instance :
     (quotient C).IsLocalization
       ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)) :=
@@ -290,7 +287,6 @@ namespace Functor
 variable {C D}
 variable (F : C ⥤ D) [F.Additive]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor between bounded below homotopy categories that is induced
 by an additive functor. -/
 @[implicit_reducible]
@@ -364,7 +360,6 @@ lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
     (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
     Functor.mapHomotopyCategoryFactors_hom_app]
   simp [mapHomotopyCategoryPlus, HomotopyCategory.Plus.quotient]
-  rfl
 
 instance : NatTrans.CommShift F.quotientCompMapHomotopyCategoryPlusIso.hom ℤ :=
   NatTrans.CommShift.of_comp_faithful (HomotopyCategory.Plus.ι _) (by

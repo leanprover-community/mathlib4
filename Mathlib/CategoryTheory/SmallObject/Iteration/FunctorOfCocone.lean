@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The functor from `Set.Iic j` deduced from a cocone
 
 Given a functor `F : Set.Iio j ⥤ C` and `c : Cocone F`, we define
 an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
-
 -/
 
 @[expose] public section
@@ -68,7 +70,6 @@ lemma map_id (i : J) (hi : i ≤ j) :
   dsimp [map]
   grind
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (hi₃ : i₃ ≤ j) :
     map c i₁ i₃ (hi.trans hi') hi₃ =
       map c i₁ i₂ hi (hi'.trans hi₃) ≫
@@ -91,10 +92,10 @@ end ofCocone
 where `j : J` and `J` is linearly ordered, this is the functor
 `Set.Iic j ⥤ C` which extends `F` and sends the top element to `c.pt`. -/
 def ofCocone : Set.Iic j ⥤ C where
-  obj i := ofCocone.obj c i.1
-  map {_ j} f := ofCocone.map c _ _ (leOfHom f) j.2
-  map_id i := ofCocone.map_id _ _ i.2
-  map_comp {_ _ i₃} _ _ := ofCocone.map_comp _ _ _ _ _ _ i₃.2
+  obj i := ofCocone.obj c i.val
+  map {_ j} f := ofCocone.map c _ _ (leOfHom f) j.property
+  map_id i := ofCocone.map_id _ _ i.property
+  map_comp {_ _ i₃} _ _ := ofCocone.map_comp _ _ _ _ _ _ i₃.property
 
 lemma ofCocone_obj_eq (i : J) (hi : i < j) :
     (ofCocone c).obj ⟨i, hi.le⟩ = F.obj ⟨i, hi⟩ :=
@@ -149,7 +150,7 @@ variable {c} in
 /-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (le_refl j)`. -/
 def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
     IsColimit (coconeOfLE (ofCocone c) (le_refl j)) :=
-  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
+  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).toFun
     (IsColimit.ofIsoColimit hc
       (Cocone.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by
         dsimp

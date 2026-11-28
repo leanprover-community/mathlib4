@@ -28,8 +28,8 @@ The `ModelCategory` instance is scoped in the namespace
 `CochainComplex.Plus.modelCategoryQuillen`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra, §I.1, Example B][Quillen1967]
 
+* [Daniel G. Quillen, Homotopical algebra, §I.1, Example B][Quillen1967]
 -/
 
 public section
@@ -90,7 +90,6 @@ instance {A B : CochainComplex.Plus C} (i : A ⟶ B) [Cofibration i] :
     Mono i := by
   rwa [← cofibration_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 open HomComplex in
 /-- Let `sq` be a commutative square in the category of bounded below cochain complexes
 in an abelian category. We assume that the left morphism `i` is a monomorphism,
@@ -146,7 +145,7 @@ private lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶
         apply (X.isZero_of_isStrictlyGE d i).eq_of_tgt
       exact isKInjective_of_injective _ d
     /- The cocycle `β` is a coboundary when `i` or `p` is a quasi-isomorphism. -/
-    obtain ⟨α, hα⟩ : ∃ (α : Cochain (cokernel i) (kernel p) 0), δ 0 1 α = β.1 := by
+    obtain ⟨α, hα⟩ : ∃ (α : Cochain (cokernel i) (kernel p) 0), δ 0 1 α = β.val := by
       cases hip
       · refine IsKInjective.eq_δ_of_cocycle β ?_ 0 (by simp)
         have : (ShortComplex.mk _ _ (cokernel.condition i)).ShortExact :=

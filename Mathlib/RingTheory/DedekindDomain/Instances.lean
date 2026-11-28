@@ -23,11 +23,11 @@ structures and various properties of the rings involved. Another situation is wh
 tower extension `R ⊆ S ⊆ T` and thus we work with `Rₚ ⊆ Sₚ ⊆ Tₚ` where
 `Tₚ` is the localization of `T` at `P`. This file contains a collection of such instances.
 
-## Implementation details
+## Implementation notes
+
 In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
 cannot be instances (since Lean has no way of guessing the submonoid). Having the instances in the
 special case of *the* localization at a prime ideal is useful in working with Dedekind domains.
-
 -/
 
 public section
@@ -154,7 +154,7 @@ instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
 set_option linter.overlappingInstances false in
 instance [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S] [hP : NeZero P] :
     IsPrincipalIdealRing Sₚ :=
-  IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P (fun h ↦ hP.1 h)
+  IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P (fun h ↦ hP.out h)
 
 instance [Algebra.IsSeparable K L] :
     -- Without the following line there is a timeout
