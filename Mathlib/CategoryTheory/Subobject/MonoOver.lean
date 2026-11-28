@@ -77,7 +77,6 @@ abbrev forget (X : C) : MonoOver X ⥤ Over X :=
 
 instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
 
-@[simp]
 theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
   rfl
 

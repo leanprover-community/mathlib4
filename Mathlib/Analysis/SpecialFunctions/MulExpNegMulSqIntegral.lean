@@ -188,7 +188,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   -- Stone-Weierstrass approximation of f on K
   obtain ⟨g', hg'A, hg'approx⟩ :=
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
-      hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
+      hA f.toContinuousMap hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
   simp only [Subalgebra.mem_map] at hg'A
   let g := hg'A.choose
   have hgA : g ∈ A := hg'A.choose_spec.1
@@ -199,26 +199,26 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   have line1 : |∫ x, mulExpNegMulSq ε (f x) ∂P
       - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < √ε :=
     abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
-      f (IsClosed.measurableSet hKcl) hε hKPbound
+      f.toContinuousMap (IsClosed.measurableSet hKcl) hε hKPbound
   have line3 : |∫ x in K, mulExpNegMulSq ε (g x) ∂P
       - ∫ x, mulExpNegMulSq ε (g x) ∂P| < √ε := by
     rw [abs_sub_comm]
     exact (abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
-      g (IsClosed.measurableSet hKcl) hε hKPbound)
+      g.toContinuousMap (IsClosed.measurableSet hKcl) hε hKPbound)
   have line5 : |∫ x, mulExpNegMulSq ε (g x) ∂P'
       - ∫ x in K, mulExpNegMulSq ε (g x) ∂P'| < √ε :=
     (abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
-      g (IsClosed.measurableSet hKcl) hε hKP'bound)
+      g.toContinuousMap (IsClosed.measurableSet hKcl) hε hKP'bound)
   have line7 : |∫ x in K, mulExpNegMulSq ε (f x) ∂P'
       - ∫ x, mulExpNegMulSq ε (f x) ∂P'| < √ε := by
     rw [abs_sub_comm]
     exact (abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt
-      f (IsClosed.measurableSet hKcl) hε hKP'bound)
+      f.toContinuousMap (IsClosed.measurableSet hKcl) hε hKP'bound)
   have line2 : |∫ x in K, mulExpNegMulSq ε (f x) ∂P
       - ∫ x in K, mulExpNegMulSq ε (g x) ∂P| ≤ √ε := by
     rw [abs_sub_comm]
     apply le_trans (abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure hKco
-      (IsClosed.measurableSet hKcl) f g hε hgapprox)
+      (IsClosed.measurableSet hKcl) f.toContinuousMap g.toContinuousMap hε hgapprox)
     rw [mul_assoc]
     apply mul_le_of_le_one_right (le_of_lt (sqrt_pos_of_pos hε))
     apply inv_mul_le_one_of_le₀ (le_max_of_le_left _) (le_of_lt pos_of_measure)
@@ -227,7 +227,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   have line6 : |∫ x in K, mulExpNegMulSq ε (g x) ∂P'
       - ∫ x in K, mulExpNegMulSq ε (f x) ∂P'| ≤ √ε := by
     apply le_trans (abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure hKco
-      (IsClosed.measurableSet hKcl) f g hε hgapprox)
+      (IsClosed.measurableSet hKcl) f.toContinuousMap g.toContinuousMap hε hgapprox)
     rw [mul_assoc]
     apply mul_le_of_le_one_right (le_of_lt (sqrt_pos_of_pos hε))
     apply inv_mul_le_one_of_le₀ (le_max_of_le_right _) (le_of_lt pos_of_measure)

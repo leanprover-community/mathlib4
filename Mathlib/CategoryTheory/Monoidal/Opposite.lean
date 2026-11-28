@@ -115,10 +115,8 @@ theorem unmop_comp {X Y Z : Cᴹᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} :
 @[simp]
 theorem unmop_id {X : Cᴹᵒᵖ} : (𝟙 X).unmop = 𝟙 (unmop X) := rfl
 
-@[simp]
 theorem unmop_id_mop {X : C} : (𝟙 (mop X)).unmop = 𝟙 X := rfl
 
-@[simp]
 theorem mop_id_unmop {X : Cᴹᵒᵖ} : (𝟙 (unmop X)).mop = 𝟙 X := rfl
 
 -- aesop prefers this lemma as a safe apply over Quiver.Hom.unmop_inj

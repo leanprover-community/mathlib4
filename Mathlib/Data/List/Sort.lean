@@ -140,7 +140,7 @@ theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b
     simp_rw [List.forall_mem_cons, forall_and] at hl
     simp_rw [List.map, insertionSort_cons]
     rw [List.map_orderedInsert _ s, ih hl.2.2]
-    · simpa only [mem_insertionSort] using hl.1.2
+    simpa only [mem_insertionSort] using hl.1.2
 
 variable {r}
 

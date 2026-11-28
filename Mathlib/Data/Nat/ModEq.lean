@@ -109,7 +109,7 @@ theorem _root_.Dvd.dvd.zero_modEq_nat (h : n ∣ a) : 0 ≡ a [MOD n] :=
   h.modEq_zero_nat.symm
 
 theorem modEq_iff_dvd : a ≡ b [MOD n] ↔ (n : ℤ) ∣ b - a := by
-  rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_mod, Int.natCast_mod,
+  rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_emod, Int.natCast_emod,
     Int.emod_eq_emod_iff_emod_sub_eq_zero, Int.dvd_iff_emod_eq_zero]
 
 alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd

@@ -373,15 +373,16 @@ theorem sqLe_mul {d x y z w : ℕ} :
       (SqLe x 1 y d → SqLe w d z 1 → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
         (SqLe y d x 1 → SqLe z 1 w d → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
           (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;>
-    · intro xy zw
-      have :=
-        Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
-          (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
-      refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert this using 1
-      simp only [one_mul, Int.natCast_add, Int.natCast_mul]
-      ring
+  refine ⟨?_, ?_, ?_, ?_⟩
+  all_goals
+    intro xy zw
+    have :=
+      Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
+        (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
+    refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
+    convert this using 1
+    simp only [one_mul, Int.natCast_add, Int.natCast_mul]
+    ring
 
 open Int in
 /-- "Generalized" `nonneg`. `nonnegg c d x y` means `a √c + b √d ≥ 0`;

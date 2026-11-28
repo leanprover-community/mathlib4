@@ -59,8 +59,9 @@ def wittPolyProd (n : ℕ) : 𝕄 :=
 theorem wittPolyProd_vars (n : ℕ) : (wittPolyProd p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [wittPolyProd]
   apply Subset.trans (vars_mul _ _)
-  refine union_subset ?_ ?_ <;>
-  · refine Subset.trans (vars_rename _ _) ?_
+  refine union_subset ?_ ?_
+  all_goals
+    refine Subset.trans (vars_rename _ _) ?_
     simp [wittPolynomial_vars, image_subset_iff]
 
 /-- The "remainder term" of `WittVector.wittPolyProd`. See `mul_polyOfInterest_aux2`. -/
@@ -97,8 +98,9 @@ def remainder (n : ℕ) : 𝕄 :=
 theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [remainder]
   apply Subset.trans (vars_mul _ _)
-  refine union_subset ?_ ?_ <;>
-  · refine Subset.trans (vars_sum_subset _ _) ?_
+  refine union_subset ?_ ?_
+  all_goals
+    refine Subset.trans (vars_sum_subset _ _) ?_
     rw [biUnion_subset]
     intro x hx
     rw [rename_monomial, vars_monomial, Finsupp.mapDomain_single]

@@ -155,7 +155,7 @@ lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
           (mappingCone_triangleh_distinguished S.f) n _ rfl).δlast
         (composableArrows₅_exact hS n _ rfl).δlast φ
       all_goals
-      · dsimp [φ, homMkSucc, homMk₄, homMk₃, homMk₂, homMk₁]
+        dsimp [φ, homMkSucc, homMk₄, homMk₃, homMk₂, homMk₁]
         infer_instance
     apply IsIso.of_isIso_comp_left ((homologyFunctorFactors C (up ℤ) n).hom.app (mappingCone S.f))
 

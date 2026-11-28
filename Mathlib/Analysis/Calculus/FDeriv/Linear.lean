@@ -108,9 +108,9 @@ and this would only slow it down in failing situations.
 
 section CompLeft
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
 variable (g : F →L[𝕜] G) {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E} {L : Filter (E × E)}
 
 namespace ContinuousLinearMap
@@ -144,6 +144,8 @@ theorem comp_differentiableAt (hf : DifferentiableAt 𝕜 f x) : DifferentiableA
 theorem comp_differentiable (hf : Differentiable 𝕜 f) : Differentiable 𝕜 (g ∘ f) :=
   fun x ↦ g.comp_differentiableAt (hf x)
 
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd G] [ContinuousSMul 𝕜 G] [T2Space G]
+
 theorem fderiv_comp_left (hf : DifferentiableAt 𝕜 f x) : fderiv 𝕜 (g ∘ f) x = g ∘L fderiv 𝕜 f x :=
   g.comp_hasFDerivAt hf.hasFDerivAt |>.fderiv
 
@@ -158,9 +160,9 @@ end CompLeft
 
 section CompRight
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
 variable {g : F → G} {g' : F →L[𝕜] G} {x : E} {y : F} {s : Set E} {t : Set F}
 variable (f : E →L[𝕜] F)
 

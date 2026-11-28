@@ -112,7 +112,7 @@ theorem teichmuller_coeff_pos (r : R) : ∀ (n : ℕ) (_ : 0 < n), (teichmuller 
 
 @[simp]
 theorem teichmuller_zero : teichmuller p (0 : R) = 0 := by
-  ext ⟨⟩ <;> · rw [zero_coeff]; rfl
+  ext ⟨⟩ <;> rw [zero_coeff] <;> rfl
 
 /-- `teichmuller` is a natural transformation. -/
 @[simp]

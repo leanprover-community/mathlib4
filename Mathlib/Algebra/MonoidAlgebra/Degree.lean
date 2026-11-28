@@ -179,7 +179,7 @@ theorem sup_support_coeff_multisetProd_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset R[A]) :
     m.prod.coeff.support.sup degb ≤ (m.map fun f : R[A] => f.coeff.support.sup degb).sum := by
   induction m using Quot.inductionOn
-  rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
+  rw [Multiset.quot_mk_to_coe', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
 
 @[deprecated (since := "2026-06-18")]

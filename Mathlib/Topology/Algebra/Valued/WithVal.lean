@@ -197,7 +197,7 @@ theorem congr_trans {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : R ≃+* S)
 /-- Canonical valuation on the `WithVal v` type synonym. -/
 def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 
-@[simp] lemma valuation_toVal (x : R) : valuation v (toVal v x) = v x := rfl
+lemma valuation_toVal (x : R) : valuation v (toVal v x) = v x := rfl
 
 @[simp] lemma valuation_apply_eq_ofVal (x : WithVal v) : valuation v x = v x.ofVal := rfl
 

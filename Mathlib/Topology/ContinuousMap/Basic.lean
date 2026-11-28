@@ -299,7 +299,6 @@ theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.domRestrict f :=
 theorem restrict_apply (f : C(α, β)) (s : Set α) (x : s) : f.restrict s x = f x :=
   rfl
 
-@[simp]
 theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
     f.restrict s ⟨x, hx⟩ = f x :=
   rfl
@@ -525,23 +524,28 @@ instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
 
 @[simp]
-theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
+theorem toContinuousMap_refl : (Homeomorph.refl α).toContinuousMap = ContinuousMap.id α :=
   rfl
 
+@[deprecated (since := "2026-11-25")] alias coe_refl := toContinuousMap_refl
+
 @[simp]
-theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
+theorem toContinuousMap_trans :
+    (f.trans g).toContinuousMap = g.toContinuousMap.comp f.toContinuousMap :=
   rfl
+
+@[deprecated (since := "2026-11-25")] alias coe_trans := toContinuousMap_trans
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
 theorem symm_comp_toContinuousMap :
-    (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α := by
-  rw [← coe_trans, self_trans_symm, coe_refl]
+    f.symm.toContinuousMap.comp f.toContinuousMap = ContinuousMap.id α := by
+  rw [← toContinuousMap_trans, self_trans_symm, toContinuousMap_refl]
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
 theorem toContinuousMap_comp_symm :
-    (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β := by
-  rw [← coe_trans, symm_trans_self, coe_refl]
+    f.toContinuousMap.comp f.symm.toContinuousMap = ContinuousMap.id β := by
+  rw [← toContinuousMap_trans, symm_trans_self, toContinuousMap_refl]
 
 end Homeomorph

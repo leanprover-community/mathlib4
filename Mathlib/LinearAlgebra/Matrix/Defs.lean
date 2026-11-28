@@ -95,7 +95,6 @@ def of : (m → n → α) ≃ Matrix m n α :=
 theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
   rfl
 
-@[simp]
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 

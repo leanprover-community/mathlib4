@@ -607,7 +607,6 @@ theorem curryFinFinset_symm_apply_piecewise_const (hk : #s = k) (hl : #sᶜ = l)
       f (fun _ => x) fun _ => y :=
   MultilinearMap.curryFinFinset_symm_apply_piecewise_const hk hl _ x y
 
-@[simp]
 theorem curryFinFinset_symm_apply_const (hk : #s = k) (hl : #sᶜ = l)
     (f : G [×k]→L[𝕜] G [×l]→L[𝕜] G') (x : G) :
     ((curryFinFinset 𝕜 G G' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=

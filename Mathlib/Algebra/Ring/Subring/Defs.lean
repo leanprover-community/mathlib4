@@ -400,14 +400,12 @@ theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toAddSubgroup (s : Subring R) : (s.toAddSubgroup : Set R) = s :=
   rfl
 

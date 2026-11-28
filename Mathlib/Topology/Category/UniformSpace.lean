@@ -193,7 +193,6 @@ theorem hom_id (X : CpltSepUniformSpace) :
     ConcreteCategory.hom (𝟙 X : X ⟶ X) = ⟨id, uniformContinuous_id⟩ :=
   rfl
 
-@[simp]
 theorem hom_ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
     (f : { f : X → Y // UniformContinuous f }) : (UniformSpaceCat.ofHom f).hom = f :=
   rfl

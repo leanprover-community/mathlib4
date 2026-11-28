@@ -63,10 +63,11 @@ theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * 
   rw [cos_sq]
   simp only [add_eq_left, div_eq_zero_iff, OfNat.ofNat_ne_zero, or_false]
   rw [cos_eq_zero_iff]
-  constructor <;>
-    · rintro ⟨k, h⟩
-      use k
-      linarith
+  constructor
+  all_goals
+    rintro ⟨k, h⟩
+    use k
+    linarith
 
 theorem solve_cos3x_0 {x : ℝ} : cos (3 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 6 := by
   rw [cos_eq_zero_iff]

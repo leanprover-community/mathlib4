@@ -39,7 +39,7 @@ section Real
 variable [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [PartialOrder A] [StarOrderedRing A]
 
 /-- The absolute value defined via the non-unital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
@@ -174,7 +174,7 @@ lemma _root_.cfcₙ_norm_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (‖f
   cfcₙ_nonneg fun _ _ ↦ by simp
 
 variable [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
-  [NonnegSpectrumClass ℝ A] [IsTopologicalRing A] [T2Space A]
+  [IsTopologicalRing A] [T2Space A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
@@ -215,7 +215,7 @@ section Real
 
 variable [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [PartialOrder A] [StarOrderedRing A]
   [IsTopologicalRing A] [T2Space A]
 
 lemma abs_eq_cfc_norm (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -259,7 +259,7 @@ variable {p : A → Prop} [RCLike 𝕜]
   [Ring A] [TopologicalSpace A] [StarRing A] [PartialOrder A]
   [StarOrderedRing A] [Algebra 𝕜 A]
   [ContinuousFunctionalCalculus 𝕜 A p]
-  [Algebra ℝ A] [NonnegSpectrumClass ℝ A] [IsTopologicalRing A] [T2Space A]
+  [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
@@ -288,7 +288,7 @@ section Isometric
 variable [NonUnitalNormedRing A] [StarRing A] [ContinuousStar A]
   [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] [CompleteSpace A]
+  [PartialOrder A] [StarOrderedRing A] [CompleteSpace A]
 
 protected lemma continuous_abs : Continuous (CFC.abs : A → A) :=
   continuousOn_sqrt.comp_continuous (by fun_prop) (by cfc_tac)
@@ -302,7 +302,7 @@ section CStar
 variable [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
   [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [PartialOrder A] [StarOrderedRing A]
 
 open CFC
 

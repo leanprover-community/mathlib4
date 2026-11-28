@@ -131,11 +131,11 @@ end
 theorem exists_mul_mod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m < k, n * m % k = gcd n k := by
   have hk' := Int.ofNat_ne_zero.2 (Nat.zero_lt_of_lt hk).ne'
   have key := congr(($(gcd_eq_gcd_ab n k) % k).toNat)
-  rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
+  rw [Int.add_mul_emod_self_left, ← Int.natCast_emod, Int.toNat_natCast, mod_eq_of_lt hk] at key
   refine ⟨(n.gcdA k % k).toNat, ?_, (Int.ofNat_inj.1 ?_).trans key.symm⟩
   · rw [Int.toNat_lt (Int.emod_nonneg _ hk')]
     exact Int.emod_lt _ hk'
-  rw [Int.natCast_mod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
+  rw [Int.natCast_emod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
     Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
 theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
@@ -301,8 +301,9 @@ protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.C
   by_cases n = 0; · simp_all
   by_cases hb : b = 0; · exact ⟨0, by simp_all⟩
   by_cases ha : a = 0; · exact ⟨0, by have := h.symm; simp_all⟩
-  refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
-  · refine (pow_one _).symm.trans ?_
+  refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩
+  all_goals
+    refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]
     simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_natCast, (hab.zpow_zpow₀ _ _).mul_zpow,
       ← zpow_mul, mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]

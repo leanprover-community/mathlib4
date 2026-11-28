@@ -254,7 +254,6 @@ def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := �
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Under.map` commutes with composition. -/
-@[simps! hom_app_left]
 def Under.mapComp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) [Q.RespectsIso]
     (fg : X ⟶ Z := f ≫ g) (hfg : fg = f ≫ g := by cat_disch) :
     map (f := fg) Q (by subst hfg; exact P.comp_mem f g hf hg) ≅ map Q hg ⋙ map Q hf :=

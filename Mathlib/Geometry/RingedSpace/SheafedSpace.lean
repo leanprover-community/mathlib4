@@ -127,7 +127,6 @@ attribute [local simp] id comp
 theorem id_hom (X : SheafedSpace C) : (𝟙 X : X ⟶ X).hom = 𝟙 X.toPresheafedSpace :=
   rfl
 
-@[simp]
 theorem id_hom_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).hom.base = 𝟙 (X : TopCat) :=
   rfl
 

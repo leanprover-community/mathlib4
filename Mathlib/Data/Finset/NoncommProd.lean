@@ -422,9 +422,7 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp
   · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
-      noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    · simp only [Pi.mulSingle_eq_same]
-    · simpa using fun _ a ↦ Pi.mulSingle_eq_of_ne (a ·.symm) _
+      noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one] <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]

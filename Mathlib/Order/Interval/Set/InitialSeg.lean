@@ -46,7 +46,7 @@ lemma principalSegIio_apply (k : Iio j) : principalSegIio j k = k.val :=
   rfl
 
 /-- If `i ≤ j`, then `Iic i` is an initial segment of `Iic j`. -/
-@[simps]
+@[implicit_reducible, simps]
 def initialSegIicIicOfLE (h : i ≤ j) : Iic i ≤i Iic j where
   toFun k := ⟨k, k.property.trans h⟩
   inj' _ _ _ := by aesop

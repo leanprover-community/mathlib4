@@ -253,7 +253,7 @@ lemma coe_preimage {U : Opens Y} : f ⁻¹ᵁ U = f ⁻¹' U := rfl
 
 lemma preimage_sup {U V : Opens Y} : f ⁻¹ᵁ (U ⊔ V) = f ⁻¹ᵁ U ⊔ f ⁻¹ᵁ V := rfl
 lemma preimage_inf {U V : Opens Y} : f ⁻¹ᵁ (U ⊓ V) = f ⁻¹ᵁ U ⊓ f ⁻¹ᵁ V := rfl
-@[simp] lemma preimage_top : f ⁻¹ᵁ ⊤ = ⊤ := rfl
+lemma preimage_top : f ⁻¹ᵁ ⊤ = ⊤ := rfl
 @[simp] lemma preimage_bot : f ⁻¹ᵁ ⊥ = ⊥ := rfl
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
@@ -269,7 +269,6 @@ lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
 
 lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
 
-@[simp]
 lemma comp_preimage {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g) ⁻¹ᵁ U = f ⁻¹ᵁ g ⁻¹ᵁ U := rfl
 
@@ -306,7 +305,6 @@ noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
 lemma coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
     ⇑(homeoOfIso e) = e.hom := rfl
 
-@[simp]
 lemma coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
     ⇑(homeoOfIso e.symm) = e.inv := rfl
 
@@ -359,7 +357,6 @@ theorem id_base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
 theorem id_app {X : Scheme} (U : X.Opens) :
     (𝟙 X :).app U = 𝟙 _ := rfl
 
-@[simp]
 theorem id_appTop {X : Scheme} :
     (𝟙 X :).appTop = 𝟙 _ :=
   rfl
@@ -383,7 +380,7 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).app U = g.app U ≫ f.app _ :=
   rfl
 
-@[simp, reassoc] -- reassoc lemma does not need `simp`
+@[reassoc]
 theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl

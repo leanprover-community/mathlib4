@@ -293,9 +293,8 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
       · simp_all [edist_def]
       have : BddAbove (.range fun x : ⋃₀ 𝔖 ↦ dist (toFun 𝔖 f x) (toFun 𝔖 g x)) := by
         use (Metric.ediam (.univ : Set β)).toReal
-        simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
-          ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
-          Metric.edist_le_ediam_of_mem]
+        simp [mem_upperBounds, ← edist_dist, Metric.edist_le_ediam_of_mem,
+          ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top]
       refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
       simp [edist_def, ciSup_le_iff this]
 

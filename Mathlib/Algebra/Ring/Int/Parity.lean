@@ -45,8 +45,9 @@ lemma even_xor_odd (n : ℤ) : Xor (Even n) (Odd n) := by
   grind
 
 lemma even_xor_odd' (n : ℤ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
-  rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;>
-  · use k
+  rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩)
+  all_goals
+    use k
     grind
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd

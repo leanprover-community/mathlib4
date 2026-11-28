@@ -530,6 +530,12 @@ instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun
   inv_continuous e := e.continuous_invFun
 
+/-- Reinterpret a homeomorphism `α ≃ₜ β` as a continuous map `C(α, β)`. -/
+def toContinuousMap (f : α ≃ₜ β) : C(α, β) := .ofClass f
+
+@[simp]
+lemma coe_toContinuousMap (f : α ≃ₜ β) : ⇑f.toContinuousMap = f := rfl
+
 end Homeomorph
 
 section IsHomeomorph

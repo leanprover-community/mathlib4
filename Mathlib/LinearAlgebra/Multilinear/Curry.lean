@@ -366,7 +366,6 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
     rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_notMem]
     exact Finset.mem_compl.1 (Finset.orderEmbOfFin_mem _ _ _)
 
-@[simp]
 theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l) (f : (Fin k → M') →ₘₛₗ[σ] (Fin l → M') →ₘₛₗ[σ] M₂) (x : M') :
     ((curryFinFinset σ M₂ M' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=

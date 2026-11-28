@@ -450,7 +450,6 @@ variable {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (hIJ : I ≤ J)
 lemma Quotient.coe_factorₐ :
     (Ideal.Quotient.factorₐ R₁ hIJ : A ⧸ I →+* A ⧸ J) = Ideal.Quotient.factor hIJ := rfl
 
-@[simp]
 lemma Quotient.factorₐ_apply_mk (x : A) :
     Ideal.Quotient.factorₐ R₁ hIJ x = x := rfl
 
@@ -1079,7 +1078,6 @@ theorem quotQuotEquivQuotSupₐ_toRingEquiv :
 theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = quotQuotEquivQuotSup I J :=
   rfl
 
-@[simp]
 theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
     ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
       (quotQuotEquivQuotSup I J).symm :=
@@ -1132,7 +1130,6 @@ theorem coe_quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
     ⇑(quotQuotEquivQuotOfLEₐ R h) = quotQuotEquivQuotOfLE h :=
   rfl
 
-@[simp]
 theorem quotQuotEquivQuotOfLEₐ_symm_toRingEquiv (h : I ≤ J) :
     ((quotQuotEquivQuotOfLEₐ R h).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
       (quotQuotEquivQuotOfLE h).symm :=

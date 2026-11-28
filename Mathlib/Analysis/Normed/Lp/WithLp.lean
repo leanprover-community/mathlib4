@@ -67,7 +67,7 @@ variable (p : ℝ≥0∞) (K K' : Type*) {K'' : Type*} (V : Type*) {V' V'' : Typ
 namespace WithLp
 
 /-- `WithLp.ofLp` and `WithLp.toLp` as an equivalence. -/
-@[simps]
+@[simps apply]
 protected def equiv : WithLp p V ≃ V where
   toFun := ofLp
   invFun := toLp p

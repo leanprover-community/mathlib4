@@ -246,11 +246,9 @@ section Add
 
 variable {R : Type u} [Semiring R]
 
-@[simp]
 theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 
-@[simp]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 

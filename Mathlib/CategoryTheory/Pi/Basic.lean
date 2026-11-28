@@ -53,7 +53,7 @@ lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
 /--
 The evaluation functor at `i : I`, sending an `I`-indexed family of objects to the object over `i`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def eval (i : I) : (∀ i, C i) ⥤ C i where
   obj f := f i
   map α := α i
@@ -100,7 +100,6 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -177,14 +176,14 @@ variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [C
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i where
   obj f i := (F i).obj (f i)
   map α i := (F i).map (α i)
 
 /-- Similar to `pi`, but all functors come from the same category `A`
 -/
-@[simps]
+@[simps, implicit_reducible]
 def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
   obj a i := (f i).obj a
   map h i := (f i).map h
@@ -234,8 +233,6 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps!]
@@ -260,7 +257,6 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
@@ -268,7 +264,6 @@ def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
   hom := NatTrans.pi (fun i => (e i).hom)
   inv := NatTrans.pi (fun i => (e i).inv)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
@@ -312,8 +307,6 @@ def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
 
 attribute [local simp] eqToHom_map
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Reindexing a family of categories gives equivalent `Pi` categories. -/
 @[simps]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
@@ -331,8 +324,6 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
     (leftUnitor _).symm)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]
 def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
@@ -352,7 +343,6 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]

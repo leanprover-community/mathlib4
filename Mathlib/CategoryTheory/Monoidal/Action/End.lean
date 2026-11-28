@@ -215,7 +215,7 @@ namespace endofunctorMonoidalCategory
 Note that in the literature, this is defined as a left action, but mathlib's
 monoidal structure on `C ⥤ C` is the monoidal opposite of the one usually
 considered in the literature. -/
-@[simps! actionObj actionHomLeft actionHomRight actionAssocIso actionUnitIso]
+@[simps! actionAssocIso actionUnitIso]
 scoped instance evaluationRightAction : MonoidalRightAction (C ⥤ C) C :=
   MonoidalRightAction.actionOfMonoidalFunctorToEndofunctor (𝟭 (C ⥤ C))
 

@@ -232,7 +232,6 @@ theorem projectionL_apply (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x = p.projectionOntoL q h x :=
   rfl
 
-@[simp]
 theorem coe_projectionOntoL_apply (h : IsTopCompl p q) (x : M) :
     (p.projectionOntoL q h x : M) = p.projectionL q h x :=
   rfl

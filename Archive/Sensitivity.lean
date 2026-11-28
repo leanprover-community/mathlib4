@@ -170,12 +170,18 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
+instance : DecidableEq (V n) := by
+  induction n
+  all_goals dsimp only [V]; infer_instance
 
-instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
+instance : AddCommGroup (V n) := by
+  induction n
+  all_goals dsimp only [V]; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
+instance : Module ℝ (V n) := by
+  induction n
+  all_goals dsimp only [V]; infer_instance
 
 end V
 

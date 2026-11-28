@@ -222,14 +222,14 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     exact filter_append_perm (· ∈ s) (primeFactorsList m)
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
-    (hm : m ∈ factoredNumbers s) :
-    equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
-
-@[simp]
 lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (x : ℕ × factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs x = p ^ x.1 * x.2 := rfl
+
+@[deprecated equivProdNatFactoredNumbers_apply' +typeChanged (since := "2026-11-26")]
+lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
+    (hm : m ∈ factoredNumbers s) :
+    equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 
 /-!
@@ -372,12 +372,12 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     Set.equivOfEq <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
-lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
-    equivProdNatSmoothNumbers hp (e, ⟨m, hm⟩) = p ^ e * m := rfl
-
-@[simp]
 lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp : p.Prime) (x : ℕ × p.smoothNumbers) :
     equivProdNatSmoothNumbers hp x = p ^ x.1 * x.2 := rfl
+
+@[deprecated equivProdNatSmoothNumbers_apply' +typeChanged (since := "2026-11-26")]
+lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
+    equivProdNatSmoothNumbers hp (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 
 /-!

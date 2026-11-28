@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 
 /-!
 # Exponential enclosures for interval_dyadic_real
@@ -34,8 +35,6 @@ This requires a certified computation of `log 2` to arbitrary precision, which i
 
 public section
 
-open Finset
-
 open scoped Nat
 
 namespace Inclusion
@@ -43,44 +42,31 @@ namespace Inclusion
 namespace IntervalDyadicReal
 open Inclusion.IntervalDyadicReal
 
-/-- The numerator of the partial Taylor sum `∑ m ∈ range n, (a / b) ^ m / m!` as an unreduced
-fraction over the common denominator `b ^ n * n!`. -/
-@[expose]
-def expPartialSumNum (a : ℤ) (b n : ℕ) : ℤ :=
-  match n with
-  | 0 => 0
-  | n + 1 => (expPartialSumNum a b n + a ^ n) * (b * (n + 1) : ℕ)
-
-theorem expPartialSumNum_div (a : ℤ) {b : ℕ} (hb : b ≠ 0) (n : ℕ) :
-    (expPartialSumNum a b n : ℝ) / (b ^ n * n !) =
-      ∑ m ∈ range n, ((a : ℝ) / b) ^ m / m ! := by
-  induction n with
-  | zero => simp [expPartialSumNum]
-  | succ n ih =>
-    rw [sum_range_succ, ← ih, expPartialSumNum, Nat.factorial_succ]
-    push_cast [div_pow]
-    field_simp
-    ring
-
 /-- An enclosure of `exp (a / b)` by the first `n` terms of its Taylor series and the remainder
 bound of `Real.exp_bound`, rounded outward to precision `prec`. This is only intended for use
 when `| a / b | ≤ 1`. -/
 @[expose]
 def expRatTaylor (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
-  ratBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n !)) prec
+  let X := hypergeomPartialSum (fun _ ↦ a) (fun j ↦ b * (j + 1)) 0 n
+  ratBall (n * X.sumNum) ((n + 1) * |X.termNum|) (n * X.den) prec
 
 theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
     (prec : ℕ) : Real.exp (a / b) ∈ expRatTaylor a b n prec := by
   have hy : |(a : ℝ) / b| ≤ 1 := by
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
     norm_cast
+  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_spec (Int.castRingHom ℝ) (fun _ ↦ a)
+    (fun j ↦ b * (j + 1)) (fun j ↦ by positivity) 0 (fun m ↦ ((a : ℝ) / b) ^ m / m !)
+    (fun j ↦ by push_cast [eq_intCast, pow_succ, Nat.factorial_succ]; field) n
+  rw [expRatTaylor]
+  generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at hterm hsum ⊢
+  have hterm' : |(X.termNum : ℝ)| / X.den = |(a : ℝ) / b| ^ n / n ! := by
+    simpa [abs_div] using congrArg abs hterm
   refine ratBall_mem ?_ prec
-  push_cast
-  rw [mul_div_mul_left _ _ (by positivity), expPartialSumNum_div a hb n]
-  refine (Real.exp_bound hy hn).trans_eq ?_
-  rw [abs_div, Nat.abs_cast, abs_pow, div_pow]
-  push_cast
-  field_simp
+  convert Real.exp_bound hy hn using 1
+  · simp [← hsum, mul_div_mul_left, hn.ne']
+  · push_cast [mul_div_mul_comm, hterm']
+    ring
 
 /-- Square `I` `k` times, rounding outward to the `2 ^ (-prec)` grid after each squaring.
 Compared with the exact `I.pow (2 ^ k)`, the roundings add an error of less than about
@@ -112,8 +98,7 @@ Some relevant precision constants are chosen as follows:
 - `k`, the number of squarings, is an argument with default `⌊√prec⌋`, which balances the cost of
   the squarings against that of the Taylor terms. `powerBits` and `taylorTerms` below are computed
   from `k`, so every `k` gives the same precision and only the cost changes. With `k = 0`, about
-  `prec / 2` terms are needed, and at `4500` bits their recursion exceeds the kernel's default
-  `maxRecDepth`.
+  `prec / 2` terms are needed.
 - `precTaylor` is the precision of `exp (x / N)` requested. The powers turn an absolute error `δ` on
   `exp (x / N)` into about `N * exp x * δ` on `exp x` (the derivative of the `N`-th power is
   `N * exp (x / N) ^ (N - 1)`). So `precTaylor` adds three amounts to `prec`.

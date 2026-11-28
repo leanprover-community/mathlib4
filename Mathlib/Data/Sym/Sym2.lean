@@ -420,9 +420,10 @@ theorem map_congr {f g : α → β} {s s' : Sym2 α} (hs : s = s') (h : ∀ x �
   subst hs
   ext y
   simp only [mem_map]
-  constructor <;>
-    · rintro ⟨w, hw, rfl⟩
-      exact ⟨w, hw, by simp [hw, h]⟩
+  constructor
+  all_goals
+    rintro ⟨w, hw, rfl⟩
+    exact ⟨w, hw, by simp [hw, h]⟩
 
 /-- Note: `Sym2.map_id` will not simplify `Sym2.map id z` due to `Sym2.map_congr`. -/
 @[simp]
@@ -956,7 +957,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
     have {f g h} : @Eq.ndrec (Sym2 α) s(b, c)
       (fun x => a ∈ x → α) (fun _ => if a = b then c else b) f g h =
         if a = b then c else b := by subst g; rfl
-    aesop)
+    rw [this]; aesop)
     z h
 
 @[simp]

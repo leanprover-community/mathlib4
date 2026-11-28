@@ -71,7 +71,6 @@ theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
   rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
-@[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
   rfl
 

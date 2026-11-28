@@ -69,7 +69,7 @@ noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
     IsPerfPair.bijective_left p
 
 @[simp] lemma toLinearMap_toPerfPair (x : M) : p.toPerfPair x = p x := rfl
-@[simp] lemma toPerfPair_apply (x : M) (y : N) : p.toPerfPair x y = p x y := rfl
+lemma toPerfPair_apply (x : M) (y : N) : p.toPerfPair x y = p x y := rfl
 
 @[simp] lemma apply_symm_toPerfPair_self (f : Dual R N) : p (p.toPerfPair.symm f) = f :=
   p.toPerfPair.apply_symm_apply f

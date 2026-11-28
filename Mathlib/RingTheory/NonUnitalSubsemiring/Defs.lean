@@ -234,7 +234,6 @@ namespace NonUnitalSubsemiring
 variable [NonUnitalNonAssocSemiring S]
 variable (s : NonUnitalSubsemiring R)
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=
   rfl
 

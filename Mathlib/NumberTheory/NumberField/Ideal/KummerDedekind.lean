@@ -136,6 +136,15 @@ theorem monicFactorsMod_dvd_map_minpoly (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]) ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) :=
   (mem_monicFactorsMod_iff.mp Q.property).2.2
 
+/--
+If `a` is a root of `minpoly ℤ θ` modulo `p`, then `X - a` is in `monicFactorsMod θ p`.
+-/
+theorem X_sub_C_mem_monicFactorsMod {a : ℤ}
+    (ha : ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))).IsRoot a) :
+    (X - C a : ℤ[X]).map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p := by
+  rw [Polynomial.map_sub, map_X, map_C, mem_monicFactorsMod_iff]
+  exact ⟨irreducible_X_sub_C _, monic_X_sub_C _, dvd_iff_isRoot.mpr (by simpa using ha)⟩
+
 end monicFactorsMod
 
 /--
@@ -255,6 +264,42 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣
       ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) ℤ = natDegree Q := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply]
+
+/--
+If `p` does not divide `exponent θ`, then the prime ideal corresponding to
+`X - a ∈ monicFactorsMod θ p` via `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is
+`span {p, θ - a}`.
+-/
+theorem primesOverSpanEquivMonicFactorsMod_symm_eq_span (hp : ¬ p ∣ exponent θ) {a : ℤ}
+    (Q : monicFactorsMod θ p) (hQ : Q.val = X - C (a : ZMod p)) :
+    ((primesOverSpanEquivMonicFactorsMod hp).symm Q : Ideal (𝓞 K)) =
+      span {(p : 𝓞 K), θ - a} := by
+  obtain ⟨Q, hQm⟩ := Q
+  obtain rfl : Q = (X - C a : ℤ[X]).map (Int.castRingHom (ZMod p)) := by simpa using hQ
+  rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, map_sub, aeval_X, aeval_C,
+    algebraMap_int_eq, eq_intCast]
+
+/--
+If `p` does not divide `exponent θ` and `a` is a root of `minpoly ℤ θ` modulo `p`, then
+`span {p, θ - a}` is a prime ideal above `p`.
+-/
+theorem span_sub_intCast_mem_primesOver (hp : ¬ p ∣ exponent θ) {a : ℤ}
+    (ha : ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))).IsRoot a) :
+    span {(p : 𝓞 K), θ - a} ∈ primesOver (span {(p : ℤ)}) (𝓞 K) := by
+  rw [← primesOverSpanEquivMonicFactorsMod_symm_eq_span hp ⟨_, X_sub_C_mem_monicFactorsMod ha⟩
+    (by simp)]
+  exact Subtype.prop _
+
+/--
+If `p` does not divide `exponent θ` and `a` is a root of `minpoly ℤ θ` modulo `p`, then the
+residual degree of the prime ideal `span {p, θ - a}` is `1`.
+-/
+theorem inertiaDeg_span_sub_intCast (hp : ¬ p ∣ exponent θ) {a : ℤ}
+    (ha : ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))).IsRoot a) :
+    inertiaDeg (span {(p : 𝓞 K), θ - a}) ℤ = 1 := by
+  rw [← primesOverSpanEquivMonicFactorsMod_symm_eq_span hp ⟨_, X_sub_C_mem_monicFactorsMod ha⟩
+    (by simp), inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply', Polynomial.map_sub,
+    map_X, map_C, natDegree_X_sub_C]
 
 /--
 The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via

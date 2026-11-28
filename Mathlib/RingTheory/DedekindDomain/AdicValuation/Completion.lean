@@ -214,7 +214,7 @@ instance : Coe (WithVal (v.valuation K)) (adicCompletion K v) where
 instance (priority := 99) : Coe K (adicCompletion K v) where
   coe k := ofCompletion (k : (v.valuation K).Completion)
 
-@[simp] lemma coe_toCompletion (k : K) :
+lemma coe_toCompletion (k : K) :
     (↑k : adicCompletion K v).toCompletion = (k : (v.valuation K).Completion) := rfl
 
 theorem extension_apply_eq_valued (y : (v.valuation K).Completion) :

@@ -153,7 +153,8 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
 theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ {0,1}) (Γ : I → C(I, E))
     (Γ_lifts : ∀ t s, p (Γ t s) = γ (t, s)) (Γ_0 : ∀ t, Γ t 0 = Γ 0 0) (t : I) :
     Γ t 1 = Γ 0 1 := by
-  have := homeo.continuous_lift sep (.comp γ .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
+  have := homeo.continuous_lift sep (.comp γ.toContinuousMap .prodSwap)
+    (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
   · apply sep.const_of_comp homeo.isLocallyInjective (this.comp (.prodMk_right 1))
     intro t t'; change p (Γ _ _) = p (Γ _ _); simp_rw [Γ_lifts, γ.eq_fst _ (.inr rfl)]
   · ext; apply Γ_lifts
@@ -188,11 +189,13 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
     have ⟨γ, hγ⟩ := U_conn.joinedIn _ (mem_of_mem_nhds haU) _ hxU
     let Γ' : Path e₀ ((p.symm ∘ f) a) :=
       ⟨Γ _ (somePath a₀ a).source, Γ_0 .., by simp [← this, hep, F]⟩
-    specialize uniq ((somePath a₀ a).trans γ) _ (Γ'.trans <| γ.map' <| p.continuousOn_symm.comp
-      (by fun_prop) <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp)
+    specialize uniq ((somePath a₀ a).trans γ).toContinuousMap _
+      (Γ'.trans <| γ.map' <| p.continuousOn_symm.comp
+      (by fun_prop) <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)).toContinuousMap _ (by simp)
       (somePath a₀ x).source (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
     · ext
-      simp only [Function.comp, ContinuousMap.coe_ofClass, Path.trans_apply, ContinuousMap.coe_comp]
+      simp only [comp, comp_apply, Path.coe_toContinuousMap, Path.trans_apply, one_div,
+        ContinuousMap.comp_apply]
       split_ifs
       · apply congr_fun (Γ_lifts ..)
       · simp [Path.map', p.right_inv (hUp (hγ _))]
@@ -200,8 +203,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
   · exact uniq _ (.const I a₀) _ (.const I e₀) (somePath a₀ a₀).source rfl (Γ_0 ..) rfl (Γ_lifts ..)
       (by simpa) (Path.target _)
   · let γ := somePath a₀ a
-    simpa using uniq _ _ (F'.comp γ) (Γ _ γ.source) γ.source γ.source (by simpa) (Γ_0 ..)
-      (by simp [← Function.comp_assoc, hpF']) (Γ_lifts ..) rfl
+    simpa using uniq _ _ (F'.comp γ.toContinuousMap) (Γ _ γ.source) γ.source γ.source (by simpa)
+      (Γ_0 ..) (by simp [← Function.comp_assoc, hpF']) (Γ_lifts ..) rfl
 
 end IsLocalHomeomorph
 
@@ -277,27 +280,29 @@ lemma liftPath_const {x : X} (hpe : x = p e) : cov.liftPath (.const I x) e hpe =
   .symm <| (cov.eq_liftPath_iff' _).mpr ⟨funext fun _ ↦ hpe.symm, rfl⟩
 
 lemma liftPath_trans {x y z : X} {e : E} (hpe : x = p e) (γ : Path x y) (γ' : Path y z) :
-    letI Γ := cov.liftPath γ e (γ.source.trans hpe)
-    cov.liftPath (γ.trans γ') e (by simpa) = (⟨Γ, liftPath_zero .., rfl⟩ : Path e (Γ 1)).trans
-      ⟨cov.liftPath γ' (Γ 1) (by simpa using congr($(cov.liftPath_lifts γ ..) 1).symm),
-        liftPath_zero .., rfl⟩ := by
+    letI Γ := cov.liftPath γ.toContinuousMap e (γ.source.trans hpe)
+    cov.liftPath (γ.trans γ').toContinuousMap e (by simpa) = ((⟨Γ, liftPath_zero .., rfl⟩ :
+      Path e (Γ 1)).trans
+      ⟨cov.liftPath γ'.toContinuousMap (Γ 1)
+        (by simpa using congr($(cov.liftPath_lifts γ.toContinuousMap ..) 1).symm),
+        liftPath_zero .., rfl⟩).toContinuousMap := by
   refine .symm <| (cov.eq_liftPath_iff' _).mpr ⟨funext fun _ ↦ ?_, by simp⟩
-  simp only [ContinuousMap.coe_ofClass, Function.comp_apply, Path.trans_apply]; split_ifs
-  · congrm $(cov.liftPath_lifts γ e (γ.source.trans hpe)) _
-  · congrm $(cov.liftPath_lifts γ' _ ?_) _
-    simpa using congr($(cov.liftPath_lifts γ ..) 1).symm
+  simp only [Path.coe_toContinuousMap, Function.comp_apply, Path.trans_apply]; split_ifs
+  · congrm $(cov.liftPath_lifts γ.toContinuousMap e (γ.source.trans hpe)) _
+  · congrm $(cov.liftPath_lifts γ'.toContinuousMap _ ?_) _
+    simpa using congr($(cov.liftPath_lifts γ.toContinuousMap ..) 1).symm
 
 theorem comp_subtypeVal_pathComponent_surjective (e₀ : E) [PathConnectedSpace X] :
     Surjective (fun x : pathComponent e₀ ↦ p x) := by
   intro x
   let γ := PathConnectedSpace.somePath (p e₀) x
   have hγ : γ 0 = p e₀ := by simp [γ]
-  let Γ := cov.liftPath γ e₀ hγ
+  let Γ := cov.liftPath γ.toContinuousMap e₀ hγ
   have hΓ : Γ 1 ∈ pathComponent e₀ := by
     rw [mem_pathComponent_iff]
-    exact ⟨⟨Γ, cov.liftPath_zero γ e₀ hγ, rfl⟩⟩
+    exact ⟨⟨Γ, cov.liftPath_zero γ.toContinuousMap e₀ hγ, rfl⟩⟩
   refine ⟨⟨Γ 1, hΓ⟩, ?_⟩
-  simpa [γ] using congr($(cov.liftPath_lifts γ e₀ hγ) 1)
+  simpa [γ] using congr($(cov.liftPath_lifts γ.toContinuousMap e₀ hγ) 1)
 
 end path_lifting
 
@@ -345,20 +350,21 @@ def liftHomotopyRel [PreconnectedSpace A]
     {f₀' f₁' : C(A, E)} (he : ∃ a ∈ S, f₀' a = f₁' a)
     (h₀ : p ∘ f₀' = f₀) (h₁ : p ∘ f₁' = f₁) : f₀'.HomotopyRel f₁' S :=
   have F_0 : ∀ a, F (0, a) = p (f₀' a) := fun a ↦ (F.apply_zero a).trans congr($h₀ a).symm
-  have rel : ∀ t, ∀ a ∈ S, cov.liftHomotopy F f₀' F_0 (t, a) = f₀' a := fun t a ha ↦ by
+  have rel : ∀ t, ∀ a ∈ S, cov.liftHomotopy F.toContinuousMap f₀' F_0 (t, a) = f₀' a :=
+    fun t a ha ↦ by
     rw [liftHomotopy_apply, cov.const_of_comp (ContinuousMap.continuous _) _ t 0]
     · apply cov.liftPath_zero
     · intro t t'; simp_rw [← p.comp_apply, cov.liftPath_lifts]
       exact (F.prop t a ha).trans (F.prop t' a ha).symm
-  { toContinuousMap := cov.liftHomotopy F f₀' F_0
-    map_zero_left := cov.liftHomotopy_zero F f₀' F_0
+  { toContinuousMap := cov.liftHomotopy F.toContinuousMap f₀' F_0
+    map_zero_left := cov.liftHomotopy_zero F.toContinuousMap f₀' F_0
     map_one_left := by
       obtain ⟨a, ha, he⟩ := he
       simp_rw [toFun_eq_coe, ← ContinuousMap.curry_apply]
       refine congr_fun (cov.eq_of_comp_eq
         (ContinuousMap.continuous _) f₁'.continuous ?_ a <| (rel 1 a ha).trans he)
       ext a; rw [h₁, Function.comp_apply, ContinuousMap.curry_apply]
-      exact congr($(cov.liftHomotopy_lifts F f₀' _) ((1, a))).trans (F.apply_one a)
+      exact congr($(cov.liftHomotopy_lifts F.toContinuousMap f₀' _) ((1, a))).trans (F.apply_one a)
     prop' := rel }
 
 /-- Two continuous maps from a preconnected space to the total space of a covering map
@@ -388,17 +394,19 @@ theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
   of the path. -/
 def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
     p ⁻¹' {x} → p ⁻¹' {y} :=
-  fun e ↦ γ.lift (fun γ : Path x y ↦ ⟨cov.liftPath γ e (γ.source.trans e.property.symm) 1,
+  fun e ↦ γ.lift (fun γ : Path x y ↦ ⟨cov.liftPath γ.toContinuousMap e
+      (γ.source.trans e.property.symm) 1,
       congr($(cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
 theorem coe_monodromy_mk {x y : X} (γ : Path x y) (e : p ⁻¹' {x}) :
-    (cov.monodromy (.mk γ) e : E) = cov.liftPath γ e (γ.source.trans e.property.symm) 1 :=
+    (cov.monodromy (.mk γ) e : E) =
+      cov.liftPath γ.toContinuousMap e (γ.source.trans e.property.symm) 1 :=
   rfl
 
 lemma monodromy_eq_apply_one {x y : X} {γ : Path x y} {e : p ⁻¹' {x}} {Γ : C(I, E)}
     (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) : cov.monodromy (.mk γ) e = Γ 1 := by
-  rw [show Γ = cov.liftPath γ e (γ.source.trans e.property.symm) from
+  rw [show Γ = cov.liftPath γ.toContinuousMap e (γ.source.trans e.property.symm) from
       (eq_liftPath_iff' ..).mpr ⟨hpΓ, Γ_0⟩,
     coe_monodromy_mk]
 
@@ -406,8 +414,9 @@ lemma monodromy_eq_apply_one {x y : X} {γ : Path x y} {e : p ⁻¹' {x}} {Γ : 
 def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     Path.Homotopic.Quotient e.val (cov.monodromy γ e) :=
   have he (γ : Path x y) : γ 0 = p (e : E) := by aesop
-  let g (γ : Path x y) : Path.Homotopic.Quotient (e : E) (cov.liftPath γ (e : E) (he γ) 1) :=
-    .mk ⟨cov.liftPath γ (e : E) (he γ), cov.liftPath_zero .., rfl⟩
+  let g (γ : Path x y) : Path.Homotopic.Quotient (e : E)
+      (cov.liftPath γ.toContinuousMap (e : E) (he γ) 1) :=
+    .mk ⟨cov.liftPath γ.toContinuousMap (e : E) (he γ), cov.liftPath_zero .., rfl⟩
   let _i : Setoid (Path x y) := Path.Homotopic.setoid x y
   have hg (γ γ' : Path x y) (hγ : γ ≈ γ') : g γ ≍ g γ' := by
     refine .trans (heq_of_eq ?_) (Path.Homotopic.Quotient.cast_heq rfl

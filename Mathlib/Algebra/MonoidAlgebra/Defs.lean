@@ -564,7 +564,7 @@ lemma coeff_mul_single_eq_coeff_mul (m₂ : M) (H : ∀ m' ∈ x.coeff.support, 
     (x * single m r).coeff m₁
     _ = x.coeff.sum fun m' r' ↦ if m' * m = m₁ then r' * r else 0 := by simp [coeff_mul]
     _ = x.coeff.sum fun m' r' ↦ if m' = m₂ then r' * r else 0 := by gcongr; simp [*]
-    _ = x.coeff m₂ * r := by simp +contextual [Finsupp.sum_eq_single m₂]
+    _ = x.coeff m₂ * r := by simp [Finsupp.sum_eq_single m₂]
 
 @[deprecated (since := "2026-06-18")] alias mul_single_apply_aux := coeff_mul_single_eq_coeff_mul
 
@@ -576,7 +576,7 @@ lemma coeff_single_mul_eq_mul_coeff (m₂ : M) (H : ∀ m' ∈ x.coeff.support, 
     (single m r * x).coeff m₁
     _ = x.coeff.sum fun m' r' ↦ if m * m' = m₁ then r * r' else 0 := by simp [coeff_mul]
     _ = x.coeff.sum fun m' r' ↦ if m' = m₂ then r * r' else 0 := by gcongr; simp [*]
-    _ = r * x.coeff m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
+    _ = r * x.coeff m₂ := by simp [Finsupp.sum_eq_single m₂]
 
 @[deprecated (since := "2026-06-18")] alias single_mul_apply_aux := coeff_single_mul_eq_mul_coeff
 
@@ -911,7 +911,7 @@ lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
 @[to_additive (attr := simp)]
 lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coeff_sub_apply (x y : R[M]) (i : M) : coeff (x - y) i = coeff x i - coeff y i := rfl
 
 @[to_additive (attr := simp) (dont_translate := R)]

@@ -493,7 +493,7 @@ theorem multinomial_nsmul (k : ℕ) (m : Multiset ℕ) :
   | succ k hk =>
     rw [succ_nsmul', multinomial_add, hk, Finset.range_add_one,
       Nat.multinomial_insert (by simp), sum_add, sum_nsmul, pow_succ']
-    simp [smul_eq_mul, Finset.sum_const, Finset.card_range]
+    simp [Finset.sum_const, Finset.card_range]
     ring
 
 theorem multinomial_nsmul_singleton (k n : ℕ) :

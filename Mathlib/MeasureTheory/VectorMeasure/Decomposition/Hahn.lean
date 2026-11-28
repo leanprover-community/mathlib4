@@ -176,7 +176,7 @@ private theorem restrictNonposSeq_succ (n : ℕ) :
   rw [restrictNonposSeq]
 
 private theorem restrictNonposSeq_subset (n : ℕ) : restrictNonposSeq s i n ⊆ i := by
-  cases n <;> · rw [restrictNonposSeq]; exact someExistsOneDivLT_subset'
+  cases n <;> rw [restrictNonposSeq] <;> exact someExistsOneDivLT_subset'
 
 private theorem restrictNonposSeq_lt (n : ℕ) (hn : ¬s ≤[i \ ⋃ k ≤ n, restrictNonposSeq s i k] 0) :
     (1 / (findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k) + 1) : ℝ) <
@@ -202,9 +202,10 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
 
 private theorem restrictNonposSeq_measurableSet (n : ℕ) :
     MeasurableSet (restrictNonposSeq s i n) := by
-  cases n <;>
-    · rw [restrictNonposSeq]
-      exact someExistsOneDivLT_measurableSet
+  cases n
+  all_goals
+    rw [restrictNonposSeq]
+    exact someExistsOneDivLT_measurableSet
 
 private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
@@ -278,10 +279,11 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   set bdd : ℕ → ℕ := fun n => findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k)
   have hn' : ∀ n : ℕ, ¬s ≤[i \ ⋃ l ≤ n, restrictNonposSeq s i l] 0 := by
     intro n
-    convert hn (n + 1) using 5 <;>
-      · ext l
-        simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
-        exact fun _ => Nat.lt_succ_iff.symm
+    convert hn (n + 1) using 5
+    all_goals
+      ext l
+      simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
+      exact fun _ => Nat.lt_succ_iff.symm
   have h₁ : s i = s A + ∑' l, s (restrictNonposSeq s i l) := by
     rw [hA, ← s.of_disjoint_iUnion, add_comm, of_add_of_sdiff]
     · exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _

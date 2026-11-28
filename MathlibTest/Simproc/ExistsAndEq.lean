@@ -139,3 +139,113 @@ example (f : Nat → Nat) (hf : ∀ x, f x < 5)
   simp only [existsAndEq]
   guard_target = (∃ y, ∃ _ : s y ∧ True, g (f y) (hf y) = c) ↔ s c
   grind
+
+-- # `forallImpEq`
+
+example (P Q : α → Prop) (a : α) :
+    (∀ b : α, P b → b = a → Q b) ↔ (P a → a = a → Q a) := by
+  simp only [forallImpEq]
+
+example (P Q : α → Prop) (a : α) :
+    (∀ b : α, P b → a = b → Q b) ↔ (P a → a = a → Q a) := by
+  simp only [forallImpEq]
+
+example (P : α → Prop) (a : α) (h : P a) : ∀ b : α, b = a → P b := by
+  simp only [forallImpEq]
+  exact fun _ ↦ h
+
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example (f : α → α) (P : α → Prop) : ∀ a : α, a = f a → P a := by
+  simp only [forallImpEq]
+
+-- The hypothesis must be a hypothesis, not hidden under a negation or a premise.
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example (P : α → Prop) (a' : α) : ∀ a : α, ((a = a' → False) → P a) := by
+  simp only [forallImpEq]
+
+-- `a'` can't depend on a binder that stays in place
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example {γ : α → Type v} (f : ∀ a, γ a → α) (P : α → Prop) :
+    ∀ a : α, ∀ c : γ a, a = f a c → P a := by
+  simp only [forallImpEq]
+
+-- nor on a binder whose type depends on a binder that stays in place
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example {γ : α → Type v} (δ : ∀ a, γ a → Type v) (f : ∀ a c, δ a c → α) (P : α → Prop) :
+    ∀ a : α, ∀ c : γ a, ∀ d : δ a c, a = f a c d → P a := by
+  simp only [forallImpEq]
+
+example (f : β → α) (P Q : α → Prop) :
+    (∀ a, P a → ∀ b, a = f b → Q a) ↔ ∀ b, P (f b) → f b = f b → Q (f b) := by
+  simp only [forallImpEq]
+
+example (f : β → α) (P Q : α → Prop) :
+    (∀ a, P a → ∀ b, f b = a → Q a) ↔ ∀ b, P (f b) → Q (f b) := by
+  simp only [forallImpEq, true_implies]
+
+example (f : β → α) (P : β → Prop) (Q : α → Prop) :
+    (∀ a b, P b → f b = a → Q a) ↔ ∀ b, P b → Q (f b) := by
+  simp only [forallImpEq, true_implies]
+
+-- Binders that don't depend on `a` are moved to the front, keeping their order.
+example (f : β → β → α) (P : α → β → Prop) (Q : α → Prop) :
+    (∀ a b, P a b → ∀ c, a = f b c → Q a) = ∀ b c, P (f b c) b → f b c = f b c → Q (f b c) := by
+  simp only [forallImpEq]
+
+-- The hypothesis can be used by the rest of the statement.
+example (a' : α) (P : (a : α) → a = a' → Prop) :
+    (∀ a : α, ∀ (h : a = a'), P a h) ↔ ∀ (h : a' = a'), P a' h := by
+  simp only [forallImpEq]
+
+example (a' : α) (P : (a : α) → a' = a → Prop) :
+    (∀ a : α, ∀ (h : a' = a), P a h) ↔ ∀ (h : a' = a'), P a' h := by
+  simp only [forallImpEq]
+
+-- Binders that depend on `a` stay in place.
+example {γ : α → Type v} (a' : α) (P : (a : α) → γ a → Prop) :
+    (∀ a : α, ∀ c : γ a, a = a' → P a c) ↔ ∀ c : γ a', a' = a' → P a' c := by
+  simp only [forallImpEq]
+
+example {γ : α → Type v} (f : β → α) (P : (a : α) → γ a → β → Prop) :
+    (∀ a : α, ∀ c : γ a, ∀ b, a = f b → P a c b) ↔ ∀ b, ∀ c : γ (f b), f b = f b → P (f b) c b := by
+  simp only [forallImpEq]
+
+-- Implicit and instance binders
+example (P : α → Prop) (a' : α) :
+    (∀ {a : α}, a = a' → P a) ↔ (a' = a' → P a') := by
+  simp only [forallImpEq]
+
+-- Interaction with `simp`
+example (s : α → Prop) (f : α → β) (P : β → Prop) :
+    (∀ b, ∀ a, s a → f a = b → P b) ↔ ∀ a, s a → P (f a) := by
+  simp
+
+example (P Q : α × β → Prop) (a : α × β) :
+    (∀ b : α × β, P b → b = a → Q b) ↔ (P a → Q a) := by
+  simp
+
+-- # Metavariables in goals
+
+open Lean Meta Qq in
+#eval show MetaM Unit from do
+  let b : Q(Nat) ← mkFreshExprMVarQ q(Nat)
+  let e : Q(Prop) := q(∀ a : Nat, a = Nat.succ $b → 0 < $b)
+  let simprocs ← ({} : Simprocs).add ``ForallImpEq.forallImpEq (post := false)
+  let (r, _) ← Simp.main e (← Simp.mkContext) (methods := Simp.mkDefaultMethodsCore #[simprocs])
+  let some pf := r.proof? | throwError "the simproc did not fire"
+  let pf ← instantiateMVars pf
+  let leftover := (← getMVars pf).filter (· != b.mvarId!)
+  unless leftover.isEmpty do
+    throwError "metavariables left in the proof: {leftover.map mkMVar}\n{pf}"

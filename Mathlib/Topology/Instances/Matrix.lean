@@ -329,6 +329,18 @@ section tsum
 
 variable [AddCommMonoid R] [TopologicalSpace R] {L : SummationFilter X}
 
+theorem Matrix.hasSum_iff {f : X → Matrix m n R} {a : Matrix m n R} :
+    HasSum f a L ↔ ∀ i j, HasSum (fun x => f x i j) (a i j) L :=
+  Pi.hasSum.trans <| forall_congr' fun _ => Pi.hasSum
+
+theorem Matrix.summable_iff {f : X → Matrix m n R} :
+    Summable f L ↔ ∀ i j, Summable (fun x => f x i j) L :=
+  Pi.summable.trans <| forall_congr' fun _ => Pi.summable
+
+theorem Matrix.tsum_apply [T2Space R] [L.NeBot] {f : X → Matrix m n R} (hf : Summable f L)
+    (i : m) (j : n) : (∑'[L] x, f x) i j = ∑'[L] x, f x i j :=
+  (Matrix.hasSum_iff.mp hf.hasSum i j).tsum_eq.symm
+
 theorem HasSum.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSum f a L) :
     HasSum (fun x => (f x)ᵀ) aᵀ L :=
   (hf.map (Matrix.transposeAddEquiv m n R) continuous_id.matrix_transpose :)

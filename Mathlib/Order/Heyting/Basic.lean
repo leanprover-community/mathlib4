@@ -964,7 +964,7 @@ theorem top_eq : (⊤ : PUnit) = unit :=
 theorem sup_eq : a ⊔ b = unit :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem hnot_eq : ￢a = unit :=
   rfl
 

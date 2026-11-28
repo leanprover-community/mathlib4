@@ -619,7 +619,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intro l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
-    · rw [cast_natCast, ← natCast_mod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
+    · rw [cast_natCast, ← natCast_emod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
       simp [hl]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg

@@ -49,7 +49,6 @@ def extendRight : IntermediateField K M := F.map (Algebra.algHom K L M)
 /-- The isomorphism between `F` and its image `F.extendRight M` in `M`. -/
 noncomputable def extendRightEquiv : F ≃ₐ[K] (F.extendRight M) := F.equivMap (Algebra.algHom K L M)
 
-@[simp]
 theorem algebraMap_extendRightEquiv (a : F) :
     algebraMap (F.extendRight M) M (extendRightEquiv F M a) = algebraMap F M a := rfl
 
@@ -117,7 +116,6 @@ noncomputable def _root_.IntermediateField.extendRightEquiv' : F ≃ₐ[S] (F.ex
 theorem coe_extendRightEquiv' (a : F) :
     (extendRightEquiv' F M S a : M) = algebraMap F M a := rfl
 
-@[simp]
 theorem algebraMap_extendRightEquiv' (a : F) :
     algebraMap (F.extendRight M) M (extendRightEquiv' F M S a) = algebraMap F M a := rfl
 

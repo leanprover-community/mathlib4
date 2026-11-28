@@ -45,19 +45,15 @@ abbrev twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
 
 variable (h : f ≫ g = fg)
 
-@[simp]
 lemma twoδ₂Toδ₁_app_zero :
     (twoδ₂Toδ₁ f g fg h).app 0 = 𝟙 _ := rfl
 
-@[simp]
 lemma twoδ₂Toδ₁_app_one :
     (twoδ₂Toδ₁ f g fg h).app 1 = g := rfl
 
-@[simp]
 lemma twoδ₁Toδ₀_app_zero :
     (twoδ₁Toδ₀ f g fg h).app 0 = f := rfl
 
-@[simp]
 lemma twoδ₁Toδ₀_app_one :
     (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
 

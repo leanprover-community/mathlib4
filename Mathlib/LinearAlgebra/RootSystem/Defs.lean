@@ -199,11 +199,9 @@ def pairing : R := P.root' i (P.coroot j)
 lemma root_coroot_eq_pairing : P.toLinearMap (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
 
-@[simp]
 lemma root'_coroot_eq_pairing : P.root' i (P.coroot j) = P.pairing i j :=
   rfl
 
-@[simp]
 lemma root_coroot'_eq_pairing : P.coroot' i (P.root j) = P.pairing j i :=
   rfl
 

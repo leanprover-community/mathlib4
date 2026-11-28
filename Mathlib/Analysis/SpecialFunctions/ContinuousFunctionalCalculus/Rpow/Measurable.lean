@@ -22,7 +22,7 @@ then the square root function `sqrt : A → A` is measurable.
 
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
   [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A]
-  [NonnegSpectrumClass ℝ A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [CompleteSpace A] [ContinuousStar A] [OrderClosedTopology A] [MeasurableSpace A] [BorelSpace A]
 
 namespace CFC

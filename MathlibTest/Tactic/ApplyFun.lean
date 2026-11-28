@@ -135,7 +135,7 @@ example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
 
 example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
   apply_fun (· + 1 : ℕ → ℕ) at h using StrictMono.add_const strictMono_id 1
-  · exact h
+  exact h
 
 example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
   apply_fun (· + 1 : ℕ → ℕ) at h

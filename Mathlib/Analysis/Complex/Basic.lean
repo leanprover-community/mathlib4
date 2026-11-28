@@ -275,7 +275,7 @@ theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
 theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
 
-@[simp] lemma conjCAE_toLinearMap : conjCAE.toLinearMap = conjAe.toLinearMap := rfl
+lemma conjCAE_toLinearMap : conjCAE.toLinearMap = conjAe.toLinearMap := rfl
 
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=

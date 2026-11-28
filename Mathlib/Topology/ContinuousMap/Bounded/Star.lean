@@ -103,6 +103,9 @@ variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
 def toContinuousMapStarₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
   map_star' _ := rfl }
 
+lemma toContinuousMapStarₐ_apply_apply (f : α →ᵇ β) (a : α) :
+    toContinuousMapStarₐ 𝕜 f a = f a := rfl
+
 @[simp]
 theorem coe_toContinuousMapStarₐ (f : α →ᵇ β) : (f.toContinuousMapStarₐ 𝕜 : α → β) = f := rfl
 

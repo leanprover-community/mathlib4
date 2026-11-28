@@ -378,9 +378,10 @@ theorem pi_div_two_lt_arccos {x : ℝ} : π / 2 < arccos x ↔ x < 0 :=
 @[simp]
 theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
   rw [arccos, ← pi_div_four_le_arcsin]
-  constructor <;>
-    · intro
-      linarith
+  constructor
+  all_goals
+    intro
+    linarith
 
 @[continuity, fun_prop]
 theorem continuous_arccos : Continuous arccos :=

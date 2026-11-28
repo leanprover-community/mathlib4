@@ -72,7 +72,6 @@ example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbe
 protected def toEmbedding : α ↪ β :=
   ⟨f, f.injective⟩
 
-@[simp]
 theorem coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
 

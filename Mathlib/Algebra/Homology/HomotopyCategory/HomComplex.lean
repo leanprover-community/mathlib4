@@ -610,7 +610,6 @@ variable (F G n)
 instance : AddCommGroup (Cocycle F G n) :=
   inferInstanceAs <| AddCommGroup (cocycle F G n)
 
-@[simp]
 lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl
 
 variable {F G n}

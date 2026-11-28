@@ -134,7 +134,6 @@ theorem fixedReduce_mk (e : V ≃ₗ[R] V) (x : V) :
     fixedReduce e (Submodule.Quotient.mk x) = Submodule.Quotient.mk (e x) :=
   rfl
 
-@[simp]
 theorem fixedReduce_mkQ (e : V ≃ₗ[R] V) (x : V) :
     fixedReduce e (e.fixedSubmodule.mkQ x) = e.fixedSubmodule.mkQ (e x) :=
   rfl

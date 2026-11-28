@@ -241,8 +241,7 @@ def prec (f g : Code) : Code :=
   let F := case id <| comp (comp (comp tail tail) (fix G)) zero'
   cons (comp F (cons head <| cons (comp f tail) tail)) nil
 
-attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
-
+attribute [-simp] Part.bind_eq_bind Part.map_eq_map in
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → List.Vector ℕ m →. ℕ}
     (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.val = pure <$> f v)

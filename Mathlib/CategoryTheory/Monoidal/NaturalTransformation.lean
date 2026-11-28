@@ -99,13 +99,13 @@ instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     IsMonoidal (NatTrans.prod' α β) where
   unit := by
     ext
-    · rw [prod_comp_fst, prod'_ε_fst, prod'_ε_fst, prod'_app_fst, IsMonoidal.unit]
-    · rw [prod_comp_snd, prod'_ε_snd, prod'_ε_snd, prod'_app_snd, IsMonoidal.unit]
+    · rw [prod_comp, prod'_ε_fst, prod'_ε_fst, prod'_app_fst, IsMonoidal.unit]
+    · rw [prod_comp, prod'_ε_snd, prod'_ε_snd, prod'_app_snd, IsMonoidal.unit]
   tensor X Y := by
     ext
-    · simp only [prod_comp_fst, prod'_μ_fst, prod'_app_fst,
+    · simp only [prod_comp, prod'_μ_fst, prod'_app_fst,
         prodMonoidal_tensorHom, IsMonoidal.tensor]
-    · simp only [prod_comp_snd, prod'_μ_snd, prod'_app_snd,
+    · simp only [prod_comp, prod'_μ_snd, prod'_app_snd,
         prodMonoidal_tensorHom, IsMonoidal.tensor]
 
 end NatTrans

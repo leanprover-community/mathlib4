@@ -154,7 +154,7 @@ def normalizeIso {a : B} :
 @[simp] theorem normalizeIso_id {a : B} {b : FreeBicategory B} (p : Path a b) :
     normalizeIso p (𝟙 b) = ρ_ _ := rfl
 
-@[simp] theorem quot_whisker_left {a b c : FreeBicategory B} (f : a ⟶ b) {g h : b ⟶ c}
+theorem quot_whisker_left {a b c : FreeBicategory B} (f : a ⟶ b) {g h : b ⟶ c}
     (η : Hom₂ g h) : Quot.mk Rel (Hom₂.whisker_left f η) = f ◁ (Quot.mk Rel η) := rfl
 
 /-- Given a 2-morphism between `f` and `g` in the free bicategory, we have the equality

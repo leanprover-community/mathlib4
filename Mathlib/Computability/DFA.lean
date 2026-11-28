@@ -84,7 +84,6 @@ theorem evalFrom_cons (s : σ) (a : α) (x : List α) :
     M.evalFrom s (a :: x) = M.evalFrom (M.step s a) x :=
   rfl
 
-@[simp]
 theorem evalFrom_singleton (s : σ) (a : α) : M.evalFrom s [a] = M.step s a :=
   rfl
 

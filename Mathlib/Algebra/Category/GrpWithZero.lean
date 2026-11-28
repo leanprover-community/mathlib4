@@ -69,7 +69,7 @@ lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
+lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
     (forget GrpWithZero).map f = (f : _ → _) :=
   rfl
 

@@ -214,7 +214,6 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) :
   obj X := F.elementsMk (Opposite.op X.unop.left) (yonedaEquiv X.unop.hom)
   map f := homMk f.unop.left.op (by simp [yonedaEquiv_naturality])
 
-@[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (Opposite.op (CostructuredArrow.mk f)) =
       F.elementsMk (Opposite.op X) (yonedaEquiv f) := rfl

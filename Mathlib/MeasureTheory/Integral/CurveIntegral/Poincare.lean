@@ -53,7 +53,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F] {a b c d : E}
 set_option backward.isDefEq.respectTransparency false in
 private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable_real
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
-    (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hs : s.Countable)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : ∀ a ∈ Ioo (0 : I) 1, ∀ b ∈ Ioo (0 : I) 1, (a, b) ∉ s →
@@ -231,7 +231,7 @@ under a smooth map is zero. We may ignore the behavior on a countable set.
 This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
-    (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hs : s.Countable)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : ∀ a ∈ Ioo (0 : I) 1, ∀ b ∈ Ioo (0 : I) 1, (a, b) ∉ s →
@@ -256,7 +256,7 @@ under a smooth map is zero.
 This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
-    (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : ∀ x ∈ t, HasFDerivWithinAt ω (dω x) t x)
     (hωc : ContinuousOn ω (closure t))
@@ -273,7 +273,7 @@ under a smooth map is zero, a version stated in terms of `DiffContOnC1`.
 
 This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_diffContOnCl
-    {ω : E → E →L[𝕜] F} (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    {ω : E → E →L[𝕜] F} (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : DiffContOnCl ℝ ω t)
     (hdω_symm : ∀ x ∈ t, ∀ u ∈ tangentConeAt ℝ t x, ∀ v ∈ tangentConeAt ℝ t x,
@@ -305,7 +305,8 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x)
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     (∫ᶜ x in .segment a b, ω x) + ∫ᶜ x in .segment b c, ω x = ∫ᶜ x in .segment a c, ω x := by
-  set φ := ContinuousMap.Homotopy.affine (Path.segment a b : C(I, E)) (Path.segment a c)
+  set φ := ContinuousMap.Homotopy.affine (Path.segment a b).toContinuousMap
+    (Path.segment a c).toContinuousMap
   have hφs : range φ ⊆ s := by
     rw [range_subset_iff]
     intro x

@@ -126,12 +126,10 @@ instance CWComplex.Subcomplex.instCWComplex [T2Space X] [CWComplex C] (E : Subco
     CWComplex (E : Set X) :=
   RelCWComplex.toCWComplex (E : Set X)
 
-@[simp]
 lemma CWComplex.Subcomplex.cell_def [T2Space X] [CWComplex C] (E : Subcomplex C)
     (n : ℕ) : cell (E : Set X) n = E.I (C := C) n :=
   rfl
 
-@[simp]
 lemma CWComplex.Subcomplex.map_def [T2Space X] [CWComplex C] (E : Subcomplex C) (n : ℕ)
     (i : E.I n) : map (C := E) n i = map (C := C) n i :=
   rfl

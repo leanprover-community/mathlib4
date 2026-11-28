@@ -101,7 +101,6 @@ lemma coe_toPositiveLinearMap (f : E₁ →P[R] E₂) :
     (f.toPositiveLinearMap : E₁ → E₂) = f :=
   rfl
 
-@[simp]
 lemma coe_toContinuousLinearMap (f : E₁ →P[R] E₂) :
     (f.toContinuousLinearMap : E₁ → E₂) = f :=
   rfl

@@ -515,7 +515,7 @@ open Real
 section NonUnitalCFC
 
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
-  [IsScalarTower ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [IsScalarTower ℝ A A] [PartialOrder A] [StarOrderedRing A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
@@ -637,7 +637,7 @@ end NonUnitalCFC
 section UnitalCFC
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
-  [StarOrderedRing A] [NonnegSpectrumClass ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [StarOrderedRing A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 variable (A) in
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (-1, 0)`). -/

@@ -270,7 +270,7 @@ theorem Hom₂.id_app {C D : Cat.{v, u}} (F : C ⟶ D) (X : C) :
     (𝟙 F : F ⟶ F).toNatTrans.app X = 𝟙 (F.toFunctor.obj X) := by
   simp
 
-@[simp, reassoc]
+@[reassoc]
 theorem Hom₂.comp_app {C D : Cat.{v, u}} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).toNatTrans.app X = α.toNatTrans.app X ≫ β.toNatTrans.app X := rfl
 

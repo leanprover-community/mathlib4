@@ -408,8 +408,28 @@ end NoZeroDivisors
   simp [((Commute.neg_one_left _).pow_left _).eq, h]
 
 @[simp]
+lemma natDegree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).natDegree = p.natDegree := by
+  nontriviality R
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp]
+  rw [natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
+
+@[simp]
+theorem comp_neg_X_eq_C_iff [Ring R] {p : R[X]} {a : R} : p.comp (-X) = C a ↔ p = C a := by
+  grind [→ eq_C_of_natDegree_eq_zero, natDegree_C, natDegree_comp_neg_X, C_comp]
+
+@[simp]
 theorem comp_neg_X_eq_zero_iff [Ring R] {p : R[X]} : p.comp (-X) = 0 ↔ p = 0 := by
-  simp [← leadingCoeff_eq_zero]
+  simpa using comp_neg_X_eq_C_iff (p := p) (a := 0)
+
+@[simp]
+theorem comp_neg_X_eq_one_iff [Ring R] {p : R[X]} : p.comp (-X) = 1 ↔ p = 1 := by
+  simpa using comp_neg_X_eq_C_iff (p := p) (a := 1)
+
+@[simp] lemma degree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).degree = p.degree := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp]
+  rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, natDegree_comp_neg_X]
 
 lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
     p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
@@ -432,13 +452,6 @@ lemma degree_comp [Semiring R] [NoZeroDivisors R] {p q : R[X]} (hq : 0 < q.degre
   apply degree_eq_natDegree
   simp_rw [Ne, comp_eq_zero_iff, hp, false_or, not_and_or, ← degree_le_zero_iff]
   simp [hq]
-
-@[simp] lemma degree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).degree = p.degree := by
-  nontriviality R
-  rcases eq_or_ne p 0 with rfl | hp
-  · rw [zero_comp]
-  rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, Nat.cast_inj,
-    natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
 
 section DivisionRing
 

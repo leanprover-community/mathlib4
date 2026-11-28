@@ -289,7 +289,7 @@ def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bi
     rw [← Iso.comp_inv_eq]
     ext
     all_goals
-    · simp only [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
+      simp only [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
       ← AlgHom.comp_toRingHom, Category.assoc, pullbackSpecIso_inv_fst, pullbackSpecIso_inv_snd,
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
       congr 3

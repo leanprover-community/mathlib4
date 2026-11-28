@@ -405,7 +405,7 @@ attribute [coe] RingHom.toMonoidWithZeroHom
 instance : Coe (α →+* β) (α →*₀ β) :=
   ⟨RingHom.toMonoidWithZeroHom⟩
 
-@[simp]
+@[simp, nolint simpNF] -- `nolint` needed while we have `toMonoidHom_eq_coe`
 theorem coe_toMonoidWithZeroHom (f : α →+* β) : ⇑(f : α →*₀ β) = f := rfl
 
 @[deprecated (since := "2026-09-15")] alias toMonoidWithZeroHom_eq_coe := coe_toMonoidWithZeroHom

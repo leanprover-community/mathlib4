@@ -281,7 +281,6 @@ def AdditiveFunctor.of (F : C ⥤ D) [F.Additive] : C ⥤+ D :=
 theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).obj = F :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.obj :=
   rfl
 
@@ -289,7 +288,6 @@ theorem AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
     (AdditiveFunctor.forget C D).obj (AdditiveFunctor.of F) = F :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
     (AdditiveFunctor.forget C D).map α = α.hom :=
   rfl
@@ -349,32 +347,26 @@ end
 
 variable {C D}
 
-@[simp]
 theorem AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
     ((AdditiveFunctor.ofLeftExact C D).obj F).obj = F.obj :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
     ((AdditiveFunctor.ofRightExact C D).obj F).obj = F.obj :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
     ((AdditiveFunctor.ofExact C D).obj F).obj = F.obj :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofLeftExact_map_hom {F G : C ⥤ₗ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofLeftExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofRightExact_map_hom {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofRightExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl

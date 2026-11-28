@@ -44,7 +44,6 @@ abbrev objEqToHom {i j : β} (h : i = j) :
     X.obj i ⟶ X.obj j :=
   eqToHom congr(X.obj $h)
 
-@[simp]
 theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
 

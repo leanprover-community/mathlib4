@@ -728,8 +728,9 @@ theorem isBigO_atTop_iff_eventually_exists_pos {α : Type*}
 lemma isBigOWith_mul_iff_isBigOWith_div {f g h : α → 𝕜} {c : ℝ} (hf : ∀ᶠ x in l, f x ≠ 0) :
     IsBigOWith c l (fun x ↦ f x * g x) h ↔ IsBigOWith c l g (fun x ↦ h x / f x) := by
   rw [isBigOWith_iff, isBigOWith_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;>
-  · refine h.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  all_goals
+    refine h.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
     rw [norm_mul, norm_div, ← mul_div_assoc, le_div_iff₀' (norm_pos_iff.mpr hx)]
 
 lemma isBigO_mul_iff_isBigO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l, f x ≠ 0) :

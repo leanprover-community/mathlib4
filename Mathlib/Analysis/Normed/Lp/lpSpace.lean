@@ -415,17 +415,14 @@ protected theorem memℓp (f : lp E p) : Memℓp f p :=
 
 variable (E p)
 
-@[simp]
 theorem coeFn_zero : ⇑(0 : lp E p) = 0 :=
   rfl
 
 variable {E p}
 
-@[simp]
 theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
   rfl
 
-@[simp]
 theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 
@@ -442,7 +439,6 @@ theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) :=
   (lp E p).val_finsetSum f s
 
-@[simp]
 theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
   rfl
 

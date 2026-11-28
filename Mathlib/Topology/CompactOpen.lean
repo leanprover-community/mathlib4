@@ -181,8 +181,8 @@ def compRightContinuousMap (f : C(X, Y)) :
 `C(X, Y) ≃ₜ C(Z, T)`. -/
 protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
     C(X, Y) ≃ₜ C(Z, T) where
-  toFun f := .comp ψ <| f.comp φ.symm
-  invFun f := .comp ψ.symm <| f.comp φ
+  toFun f := .comp ψ.toContinuousMap <| f.comp φ.symm.toContinuousMap
+  invFun f := .comp ψ.symm.toContinuousMap <| f.comp φ.toContinuousMap
   left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
@@ -193,7 +193,7 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   simp_rw [continuous_iff_continuousAt, ContinuousAt, ContinuousMap.tendsto_nhds_compactOpen]
   rintro ⟨r, f⟩ K hK U hU H
   obtain ⟨V, W, hV, hW, hrV, hKW, hVW⟩ := generalized_tube_lemma (isCompact_singleton (x := r))
-    (hK.image f.continuous) hU (by simpa [Set.subset_def, forall_comm (α := X)])
+    (hK.image f.continuous) hU (by simpa [Set.subset_def])
   refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds (by simpa using hrV))
     (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo_iff_image_subset.mpr hKW))) ?_
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK

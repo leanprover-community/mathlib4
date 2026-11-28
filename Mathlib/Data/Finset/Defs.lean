@@ -125,7 +125,6 @@ instance : PartialOrder (Finset α) := .ofSetLike (Finset α)
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 
-@[simp]
 theorem setOfPred_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
 

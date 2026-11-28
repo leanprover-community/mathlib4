@@ -43,7 +43,7 @@ open Coalgebra
 instance : CoeSort (CoalgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-@[simp] theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
+theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
     ↧X.toModuleCat = X.toModuleCat :=
   rfl
 
@@ -59,11 +59,9 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab CoalgCat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-@[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
-@[simp]
 lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 

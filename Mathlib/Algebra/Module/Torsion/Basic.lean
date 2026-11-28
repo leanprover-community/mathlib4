@@ -567,7 +567,6 @@ theorem IsTorsionBySet.mk_smul [I.IsTwoSided] (hM : IsTorsionBySet R M I) (b : R
     Ideal.Quotient.mk I b • x = b • x :=
   rfl
 
-@[simp]
 theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M r) (b : R) (x : M) :
     haveI := hM.hasSMul
     Ideal.Quotient.mk (Ideal.span {r}) b • x = b • x :=
@@ -684,7 +683,6 @@ instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
 
-@[simp]
 theorem torsionBySet.mk_smul (I : Ideal R) (b : R) (x : torsionBySet R M I) :
     Ideal.Quotient.mk I b • x = b • x :=
   rfl
@@ -701,7 +699,6 @@ instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy
 instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
   inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
-@[simp]
 theorem torsionBy.mk_ideal_smul (a b : R) (x : torsionBy R M a) :
     (Ideal.Quotient.mk (Ideal.span {a})) b • x = b • x :=
   rfl

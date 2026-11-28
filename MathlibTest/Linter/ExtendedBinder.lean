@@ -33,17 +33,17 @@ example : ∃ᵉ (n > 0) (m > 0), n + m > 1 := by
 @ +1:0...6
 info: ∀ (n : Nat), ∃ m, n = m : Prop
 ---
-@ +1:13...23
-warning: Try this:
-  ∃ᵉ̵ m : Nat
-
-The basic `∃` syntax is preferred over `∃ᵉ`.
----
 @ +1:7...11
 warning: Try this:
   ∀ᵉ̵ n
 
 The basic `∀` syntax is preferred over `∀ᵉ`.
+---
+@ +1:13...23
+warning: Try this:
+  ∃ᵉ̵ m : Nat
+
+The basic `∃` syntax is preferred over `∃ᵉ`.
 -/
 #guard_msgs (positions := true) in
 #check ∀ᵉ n, ∃ᵉ m : Nat, n = m

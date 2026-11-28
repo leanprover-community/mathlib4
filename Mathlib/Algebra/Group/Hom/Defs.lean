@@ -417,7 +417,7 @@ alias MonoidHomClass.toMonoidHom := MonoidHom.ofClass
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨MonoidHom.ofClass⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) :
     ((.ofClass f : M →* N) : M → N) = f := rfl
 
@@ -576,7 +576,7 @@ theorem MonoidHom.coe_mk [MulOne M] [MulOne N] (f hmul) :
 theorem MonoidHom.toOneHom_coe [MulOne M] [MulOne N] (f : M →* N) :
     (f.toOneHom : M → N) = f := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem MonoidHom.toMulHom_coe [MulOne M] [MulOne N] (f : M →* N) :
     f.toMulHom.toFun = f := rfl
 

@@ -143,7 +143,6 @@ theorem coe_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A) :
 theorem mem_toSubmodule (S : NonUnitalSubalgebra R A) {x} : x ∈ S.toSubmodule ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubmodule (S : NonUnitalSubalgebra R A) : (↑S.toSubmodule : Set A) = S :=
   rfl
 
@@ -186,7 +185,6 @@ theorem mem_toNonUnitalSubring {S : NonUnitalSubalgebra R A} {x} :
     x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toNonUnitalSubring (S : NonUnitalSubalgebra R A) :
     (↑S.toNonUnitalSubring : Set A) = S :=
   rfl
@@ -310,7 +308,6 @@ protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algeb
     {S : NonUnitalSubalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_smul [SMul R' R] [SMul R' A] [IsScalarTower R' R A] (r : R') (x : S) :
     ↑(r • x) = r • (x : A) :=
   rfl

@@ -95,13 +95,10 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : FinBddDistLat} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : FinBddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
 lemma forget_map {X Y : FinBddDistLat} (f : X ⟶ Y) :
     (forget FinBddDistLat).map f = (f : _ → _) := rfl
 

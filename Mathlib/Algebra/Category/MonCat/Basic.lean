@@ -126,13 +126,13 @@ initialize_simps_projections AddMonCat.Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
     (forget MonCat).map f = (f : _ → _) := rfl
 
@@ -211,7 +211,7 @@ lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y).hom x = 1 := rfl
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "holds by reducible rfl" (since := "2026-11-26"))]
 lemma mul_of {A : Type*} [Monoid A] (a b : A) :
     @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
 
@@ -322,10 +322,10 @@ initialize_simps_projections AddCommMonCat.Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive (attr := ext)]

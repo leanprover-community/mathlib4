@@ -91,14 +91,12 @@ def Hom.Simps.hom (X Y : BddLat.{u}) (f : Hom X Y) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-@[simp]
 lemma hom_id {X : Lat} : (𝟙 X : X ⟶ X).hom = LatticeHom.id _ := rfl
 
 /- Provided for rewriting. -/
 lemma id_apply (X : Lat) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
 
-@[simp]
 lemma hom_comp {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
 

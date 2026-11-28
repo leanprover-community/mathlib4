@@ -118,21 +118,21 @@ theorem toPartialEquiv_injective :
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
 homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
 
-@[simp, mfld_simps]
+@[mfld_simps]
 theorem toFun_eq_coe (e : OpenPartialHomeomorph X Y) : e.toFun = e :=
   rfl
 
-@[simp, mfld_simps]
+@[mfld_simps]
 theorem invFun_eq_coe (e : OpenPartialHomeomorph X Y) : e.invFun = e.symm :=
   rfl
 
-@[simp, mfld_simps]
+@[mfld_simps]
 theorem coe_toPartialEquiv : (e.toPartialEquiv : X → Y) = e :=
   rfl
 
 @[deprecated (since := "2026-05-18")] alias coe_coe := coe_toPartialEquiv
 
-@[simp, mfld_simps]
+@[mfld_simps]
 theorem coe_toPartialEquiv_symm : (e.toPartialEquiv.symm : Y → X) = e.symm :=
   rfl
 

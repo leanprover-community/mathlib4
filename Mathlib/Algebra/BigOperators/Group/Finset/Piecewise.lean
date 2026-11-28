@@ -111,7 +111,7 @@ lemma prod_attach_eq_prod_dite [Fintype ι] (s : Finset ι) (f : s → M) [Decid
   congr
   · simp
   · ext; simp
-  · apply Function.hfunext <;> simp +contextual [Subtype.heq_iff_coe_eq]
+  · apply Function.hfunext <;> simp [Subtype.heq_iff_coe_eq]
 
 @[to_additive (attr := simp)]
 theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, a = x → M) :

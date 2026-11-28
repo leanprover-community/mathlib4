@@ -496,7 +496,6 @@ lemma IsType₂.type₁_eq_of_δ_eq
     rw [φ_castSucc]
     ext : 1
     · simp [← s.isIndex.simplex_fst_castSucc]
-      rfl
     · change (s.x.cast s.hd).simplex.2
         (s.index.castSucc.succAbove (min s.δ rfl)) = _
       rw [s.isIndex.min_δ, Fin.succAbove_castSucc_self]

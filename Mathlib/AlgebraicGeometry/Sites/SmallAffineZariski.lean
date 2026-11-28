@@ -208,7 +208,7 @@ variable (X) in
 /-- The directed cover of a scheme indexed by `X.AffineZariskiSite`.
 Note the related `Scheme.directedAffineCover`, which has the same (defeq) cover but a different
 category instance on the indices. -/
-@[simps] abbrev directedCover : X.OpenCover where
+abbrev directedCover : X.OpenCover where
   I₀ := X.AffineZariskiSite
   X U := U.val
   f U := U.val.ι

@@ -243,9 +243,10 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
         G (⟨2 * x.1 - 1,
           unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   show ite _ _ _ = _ by
-    split_ifs <;>
-      · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
-        rfl
+    split_ifs
+    all_goals
+      rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
+      rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
@@ -299,7 +300,7 @@ def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y
 `f₁.prodMk g₁` that sends `p` to `(F p, G p)`. -/
 nonrec def prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (f₀.prodMk g₀) (f₁.prodMk g₁) where
-  toContinuousMap := F.prodMk G
+  toContinuousMap := F.prodMk G.toContinuousMap
   map_zero_left _ := Prod.ext (F.map_zero_left _) (G.map_zero_left _)
   map_one_left _ := Prod.ext (F.map_one_left _) (G.map_one_left _)
 
@@ -315,7 +316,7 @@ homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
 protected def pi {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
     (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.pi f₀) (.pi f₁) where
-  toContinuousMap := .pi fun i ↦ F i
+  toContinuousMap := .pi fun i ↦ (F i).toContinuousMap
   map_zero_left x := funext fun i ↦ (F i).map_zero_left x
   map_one_left x := funext fun i ↦ (F i).map_one_left x
 

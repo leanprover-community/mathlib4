@@ -286,9 +286,9 @@ Note: This linter can be disabled with `set_option linter.style.dollarSyntax fal
 @[reducible]
 def test (f g : Nat → Nat) : Inhabited Nat where
   default := by
-    · have := 0
-      · have : Nat := f $ g $ 0
-        · exact 0
+    have := 0
+    have : Nat := f $ g $ 0
+    exact 0
 
 section lambdaSyntaxLinter
 
@@ -372,9 +372,8 @@ example : True := by
     refine ⟨by trivial, by
       let _f := λ n : ℕ ↦ 0;
       have : ℕ := by
-        · -- comment
-          · have := λ k : ℕ ↦ -5
-            · exact 0
+        have := λ k : ℕ ↦ -5
+        exact 0
       refine ⟨by trivial, have := λ k : ℕ ↦ -5; by simp⟩
       ⟩
   trivial

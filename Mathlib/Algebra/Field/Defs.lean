@@ -214,7 +214,6 @@ theorem smul_one_eq_cast (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) 
 
 end Rat
 
-/-- `OfScientific.ofScientific` is the simp-normal form. -/
-@[simp]
+@[deprecated ofScientific_ofNat_ofNat (since := "2026-11-23")]
 theorem Rat.ofScientific_eq_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     Rat.ofScientific (OfNat.ofNat m) s (OfNat.ofNat e) = OfScientific.ofScientific m s e := rfl

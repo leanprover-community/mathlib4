@@ -116,7 +116,6 @@ instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P)
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
   SetLike.ext'
 
-@[simp]
 theorem carrier_eq_coe (s : Ideal P) : s.carrier = s :=
   rfl
 

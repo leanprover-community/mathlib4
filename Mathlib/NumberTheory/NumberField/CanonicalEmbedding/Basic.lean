@@ -978,7 +978,6 @@ theorem negAt_signSet_apply_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
   · rw [negAt_apply_isReal_and_mem _ hw, Real.norm_of_nonpos hw]
   · rw [negAt_apply_isReal_and_notMem _ hw, Real.norm_of_nonneg (lt_of_not_ge hw).le]
 
-@[simp]
 theorem negAt_signSet_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt (signSet x) x).2 w = x.2 w := rfl
 

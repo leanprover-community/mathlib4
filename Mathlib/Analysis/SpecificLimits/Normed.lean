@@ -243,7 +243,9 @@ lemma tendsto_pow_atTop_nhds_zero_iff_norm_lt_one {R : Type*} [SeminormedRing R]
   | base => simp
   | succ n hn IH => simp [pow_succ, IH]
 
-variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
+section AbsoluteValue
+
+variable {R S : Type*} [Field R] [Field S] [LinearOrder S]
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [_i : OrderTopology S]
 
 /-- `v (1 / (1 + a ^n))` tends to `1` for all `v : AbsoluteValue R S` for fields `R` and `S`,
@@ -266,6 +268,8 @@ theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} 
   refine (tendsto_atTop_mono (fun n ↦ v.le_add _ _) ?_).inv_tendsto_atTop
   simpa using (tendsto_atTop_add_right_of_le _ _ (tendsto_pow_atTop_atTop_of_one_lt ha)
     (fun _ ↦ le_rfl)).congr fun n ↦ (sub_eq_add_neg (v a ^ n) 1).symm
+
+end AbsoluteValue
 
 /-! ### Geometric series -/
 
@@ -1120,30 +1124,28 @@ section
 
 open Bornology
 
-variable {R K : Type*}
+variable {K E : Type*}
 
 section NormedAddCommGroup
-variable [NormedRing K] [IsDomain K] [NormedAddCommGroup R]
-variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
+variable [SeminormedRing K] [SeminormedAddCommGroup E]
+variable [Module K E] [NormSMulClass K E]
 
-lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → R}
+/-- If `‖f x‖` tends to infinity while `‖f x • g x‖ stays bounded, then `g x` tends to zero. -/
+lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → E}
     {l : Filter α} (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x • g x‖)
     (hf : Tendsto f l (cobounded K)) :
     Tendsto g l (𝓝 0) := by
   obtain ⟨c, hc⟩ := hmul.eventually_le
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
-  filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
-    hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
-  rcases eq_or_lt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
-  · simpa [(smul_eq_zero_iff_right hf0).mp (norm_le_zero_iff.mp hfgc)] using hε0.le
-  calc
-    _ = ‖g x‖ := by simp
-    _ ≤ c / ‖f x‖ := by rwa [norm_smul, ← le_div_iff₀' (by positivity)] at hfgc
-    _ ≤ c / (c / ε) := by gcongr
-    _ = ε := div_div_cancel₀ hc0.ne'
+  rcases exists_pos_lt_mul hε0 c with ⟨δ, hδ₀, hδ⟩
+  filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf δ trivial,
+    hf.eventually_ne_cobounded 0] with x hfgc hδf hf0
+  rw [mem_closedBall_zero_iff]
+  refine lt_of_mul_lt_mul_left ?_ (norm_nonneg (f x)) |>.le
+  grw [← norm_smul, hfgc, hδ, hδf]
 
 lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
-    {f₁ f₂ : α → K} {g : α → R} {t : R} {l : Filter α}
+    {f₁ f₂ : α → K} {g : α → E} {t : E} {l : Filter α}
     (hmul : Tendsto (fun x ↦ f₁ x • g x) l (𝓝 t))
     (hf₁ : Tendsto f₁ l (cobounded K))
     (hbdd : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f₁ x - f₂ x‖) :
@@ -1156,11 +1158,16 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
   · rw [← tendsto_zero_iff_norm_tendsto_zero]
     exact tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hmul.norm.isBoundedUnder_le hf₁
 
-set_option linter.overlappingInstances false in
--- The use case in mind for this is when `K = ℝ`, and `R = ℝ` or `ℂ`
-lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [LinearOrder K]
-    [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
-    (hg : Tendsto (fun n : ℕ ↦ n • g n) atTop (𝓝 t)) :
+end NormedAddCommGroup
+
+section Floor
+
+variable [NormedRing K] [NormSMulClass ℤ K] [LinearOrder K] [IsStrictOrderedRing K]
+  [FloorSemiring K] [HasSolidNorm K]
+
+-- The use case in mind for this is when `K = ℝ`, and `E = ℝ` or `ℂ`
+lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormedAddCommGroup E] [Module K E]
+    [NormSMulClass K E] {g : ℕ → E} {t : E} (hg : Tendsto (fun n : ℕ ↦ n • g n) atTop (𝓝 t)) :
     Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) := by
   replace hg : Tendsto (fun n : ℕ ↦ (n : K) • g n) atTop (𝓝 t) := mod_cast hg
   apply tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
@@ -1170,13 +1177,11 @@ lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [Linear
     apply Eventually.mono _ (fun x h ↦ norm_le_norm_of_abs_le_abs h)
     simpa using ⟨0, fun _ h ↦ mod_cast Nat.abs_floor_sub_le h⟩
 
-end NormedAddCommGroup
-
-lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
-    [Module K R] [IsTorsionFree K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
-    [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
-    (hg : Tendsto (fun n : ℕ ↦ n * g n) atTop (𝓝 t)) :
+lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing E] [Module K E] [NormSMulClass K E]
+    {g : ℕ → E} {t : E} (hg : Tendsto (fun n : ℕ ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) :=
   tendsto_smul_comp_nat_floor_of_tendsto_nsmul (by simpa only [nsmul_eq_mul] using hg)
+
+end Floor
 
 end

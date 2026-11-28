@@ -362,8 +362,9 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
       let _a ← synthInstanceQ q(LinearOrder $α)
       let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
       assumeInstancesCommute
-      let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
-      let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
+      let b' := b.consumeMData
+      let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
+      let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q 2 * $m := ⟨⟩

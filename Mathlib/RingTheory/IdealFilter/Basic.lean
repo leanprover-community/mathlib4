@@ -102,8 +102,9 @@ In particular, `IsTorsionQuot F L K` need not require `L ≤ K` for it is equiva
 the quotient `K / (L ⊓ K)` is `F`-torsion. -/
 lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     IsTorsionQuot F (L ⊓ K) K ↔ IsTorsionQuot F L K := by
-  constructor <;>
-  · intro h k hk
+  constructor
+  all_goals
+    intro h k hk
     rcases h k hk with ⟨I, hI, hI_le⟩
     have hcol : (L ⊓ K).colon {k} = Submodule.colon L {k} :=
       Submodule.colon_inf_eq_left_of_subset (Set.singleton_subset_iff.mpr hk)

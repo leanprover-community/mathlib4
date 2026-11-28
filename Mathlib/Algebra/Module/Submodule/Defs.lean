@@ -268,7 +268,6 @@ theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
 theorem coe_add (x y : p) : (↑(x + y) : M) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : p) : M) = 0 :=
   rfl
 
@@ -276,7 +275,6 @@ theorem coe_zero : ((0 : p) : M) = 0 :=
 theorem coe_smul (r : R) (x : p) : ((r • x : p) : M) = r • (x : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : p) :
     ((r • x : p) : M) = r • (x : M) :=
   rfl
@@ -323,7 +321,6 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
 def toAddSubgroup : AddSubgroup M :=
   { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
 
-@[simp]
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
   rfl
 

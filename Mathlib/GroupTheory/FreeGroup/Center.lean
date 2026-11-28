@@ -56,7 +56,7 @@ theorem mem_zpowers_of_iff [DecidableEq α] {a : α} {x : FreeGroup α} :
     refine mul_mem ?_ (ih (by grind))
     obtain ⟨b, _ | _⟩ := p
     all_goals
-    · simp at h
+      simp at h
       simp [h.1, mk_eq_of, mk_eq_inv_of]
 
 @[to_additive]

@@ -408,11 +408,9 @@ lemma lift_openEmbedding_target (e : OpenPartialHomeomorph X Z) (hf : IsOpenEmbe
 lemma lift_openEmbedding_symm (e : OpenPartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm = f ∘ e.symm := rfl
 
-@[simp, mfld_simps]
 lemma lift_openEmbedding_symm_source (e : OpenPartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.source = e.target := rfl
 
-@[simp, mfld_simps]
 lemma lift_openEmbedding_symm_target (e : OpenPartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.target = f '' e.source := by
   rw [OpenPartialHomeomorph.symm_target, e.lift_openEmbedding_source]

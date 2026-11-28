@@ -35,11 +35,15 @@ variable {X : Type*} [UniformSpace X] {x y z : X}
 namespace Path
 
 instance instUniformSpace : UniformSpace (Path x y) :=
-  .comap ((↑) : _ → C(I, X)) ContinuousMap.compactConvergenceUniformSpace
+  .comap (toContinuousMap : _ → C(I, X)) ContinuousMap.compactConvergenceUniformSpace
 
-theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : Path x y → C(I, X)) where
+theorem isUniformEmbedding_toContinuousMap :
+    IsUniformEmbedding (toContinuousMap : Path x y → C(I, X)) where
   comap_uniformity := rfl
   injective := ContinuousMap.injective_ofClass
+
+@[deprecated (since := "2026-11-27")] alias isUniformEmbedding_coe :=
+  isUniformEmbedding_toContinuousMap
 
 theorem uniformContinuous (γ : Path x y) : UniformContinuous γ :=
   CompactSpace.uniformContinuous_of_continuous <| map_continuous _
@@ -52,7 +56,8 @@ theorem uniformContinuous_extend (γ : Path x y) : UniformContinuous γ.extend :
 /-- The function sending a path `γ` to its extension `γ.extend : ℝ → X`
 is uniformly continuous in `γ`. -/
 theorem uniformContinuous_extend_left : UniformContinuous (Path.extend : Path x y → C(ℝ, X)) :=
-  ContinuousMap.projIccCM.uniformContinuous_comp_left.comp isUniformEmbedding_coe.uniformContinuous
+  ContinuousMap.projIccCM.uniformContinuous_comp_left.comp
+    isUniformEmbedding_toContinuousMap.uniformContinuous
 
 /-- If `{U i | p i}` form a basis of entourages of `X`,
 then the entourages `{V i | p i}`, `V i = {(γ₁, γ₂) | ∀ t, (γ₁ t, γ₂ t) ∈ U i}`,
@@ -82,7 +87,8 @@ theorem uniformContinuous_trans :
 /-- The space of paths between two points in a complete uniform space
 is a complete uniform space. -/
 instance instCompleteSpace [CompleteSpace X] : CompleteSpace (Path x y) :=
-  isUniformEmbedding_coe.completeSpace <| by simpa [Set.EqOn, range_coe]
-    using ContinuousMap.isComplete_setOfPred_eqOn (Function.update (fun _ : I ↦ y) 0 x) {0, 1}
+  isUniformEmbedding_toContinuousMap.completeSpace <| by
+    simpa [Set.EqOn, range_toContinuousMap]
+      using ContinuousMap.isComplete_setOfPred_eqOn (Function.update (fun _ : I ↦ y) 0 x) {0, 1}
 
 end Path

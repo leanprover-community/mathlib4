@@ -33,7 +33,7 @@ namespace CFC
 section nonunital
 
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]
-  [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma nnNorm_nnrPow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
@@ -70,7 +70,7 @@ end nonunital
 section unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [PartialOrder A] [StarOrderedRing A]
   [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma nnNorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
@@ -97,7 +97,7 @@ section cstar
 
 variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [StarOrderedRing A]
-    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [NonnegSpectrumClass ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma norm_star_mul_mul_self_of_nonneg {a : A} (b : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖star b * a * b‖ = ‖CFC.sqrt a * b‖ ^ 2 := by

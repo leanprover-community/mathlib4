@@ -164,7 +164,7 @@ theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑f.toCoalgHom = f :=
 
 lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `LinearMap.ofClass`
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
@@ -231,10 +231,10 @@ protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →�
     map_mul' := by intros; simp_all }
 
 @[simp]
-theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+theorem coe_copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
   rfl
 
-theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+theorem copy_eq (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
   DFunLike.ext' h
 
 section

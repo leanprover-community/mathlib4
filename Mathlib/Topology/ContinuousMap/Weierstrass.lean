@@ -59,7 +59,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
     let W : C(Set.Icc a b, ℝ) →ₐ[ℝ] C(I, ℝ) :=
-      compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm
+      compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm.toContinuousMap
     -- This operation is itself a homeomorphism
     -- (with respect to the norm topologies on continuous functions).
     let W' : C(Set.Icc a b, ℝ) ≃ₜ C(I, ℝ) := (iccHomeoI a b h).arrowCongr (.refl _)

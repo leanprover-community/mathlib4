@@ -123,10 +123,10 @@ initialize_simps_projections AddGrpCat.Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_id {X : GrpCat} : (𝟙 X : X → X) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_comp {X Y Z : GrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive (attr := ext)]
@@ -353,10 +353,10 @@ initialize_simps_projections AddCommGrpCat.Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_id {X : CommGrpCat} : (𝟙 X : X → X) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_comp {X Y Z : CommGrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive (attr := ext)]
@@ -470,7 +470,7 @@ instance : Coe CommGrpCat.{u} CommMonCat.{u} where coe := (forget₂ CommGrpCat 
 instance (G H : CommGrpCat) : One (G ⟶ H) where
   one := ofHom 1
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem one_apply (G H : CommGrpCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
   rfl
 

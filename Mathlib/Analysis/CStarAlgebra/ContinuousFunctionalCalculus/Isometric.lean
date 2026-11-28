@@ -459,8 +459,8 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     · simpa [halg.dist_eq] using! ContinuousMap.dist_apply_le_dist _
     · let x' : σₙ S a := Subtype.map (algebraMap R S) (fun _ ↦ quasispectrum.algebraMap_mem S) x
       apply le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist x'
-      simp only [ContinuousMapZero.comp_apply, ContinuousMapZero.coe_mk,
-        ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
+      simp only [ContinuousMapZero.coe_toContinuousMap, ContinuousMapZero.comp_apply,
+        ContinuousMapZero.coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
       congr! 2
       all_goals ext; exact haf.left_inv _ |>.symm
 
@@ -482,7 +482,6 @@ section Unital
 
 variable {A : Type*} [NormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A]
 
 open NNReal in
 instance Nonneg.instIsometricContinuousFunctionalCalculus :
@@ -497,7 +496,6 @@ section NonUnital
 variable {A : Type*} [NonUnitalNormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
 variable [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A]
 
 open NNReal in
 instance Nonneg.instNonUnitalIsometricContinuousFunctionalCalculus :
@@ -519,7 +517,6 @@ section Unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
 variable [StarOrderedRing A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A]
 
 lemma IsGreatest.nnNorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
@@ -609,7 +606,6 @@ section NonUnital
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
 variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
 variable [StarOrderedRing A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A]
 
 lemma IsGreatest.nnNorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
@@ -712,16 +708,16 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
     simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]
     refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
     let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
-    change ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
+    change ‖f.toContinuousMap.comp ι‖ = ‖f.toContinuousMap‖
     apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
       (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
     · rintro ⟨x, hx⟩
-      exact (f : C(σₙ 𝕜 a, 𝕜)).norm_coe_le_norm ⟨x, spectrum_subset_quasispectrum 𝕜 a hx⟩
+      exact f.toContinuousMap.norm_coe_le_norm ⟨x, spectrum_subset_quasispectrum 𝕜 a hx⟩
     · rintro ⟨x, hx⟩
       obtain (rfl | hx') : x = 0 ∨ x ∈ σ 𝕜 a := by
         simpa [quasispectrum_eq_spectrum_union_zero] using hx
       · change ‖f 0‖ ≤ _
         simp
-      · exact (f : C(σₙ 𝕜 a, 𝕜)).comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
+      · exact f.toContinuousMap.comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
 
 end IsometricContinuousFunctionalCalculus

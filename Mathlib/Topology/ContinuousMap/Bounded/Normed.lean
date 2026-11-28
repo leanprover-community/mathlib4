@@ -550,12 +550,14 @@ protected def AlgHom.compLeftContinuousBounded [NormedRing β] [NormedAlgebra �
 /-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps]
 def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
-  toFun := (↑)
+  toFun := toContinuousMap
   map_one' := rfl
   map_mul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
   commutes' _ := rfl
+
+lemma toContinuousMapₐ_apply_apply (f : α →ᵇ γ) (a : α) : f.toContinuousMapₐ 𝕜 a = f a := rfl
 
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl

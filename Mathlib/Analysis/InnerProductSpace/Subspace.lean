@@ -62,7 +62,6 @@ instance ClosedSubmodule.innerProductSpace (W : ClosedSubmodule 𝕜 E) : InnerP
   fast_instance% W.toSubmodule.innerProductSpace
 
 /-- The inner product on closed submodules is the same as on the ambient space. -/
-@[simp]
 theorem ClosedSubmodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
   rfl
 

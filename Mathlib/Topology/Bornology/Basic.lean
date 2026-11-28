@@ -76,7 +76,7 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps! cobounded, instance_reducible]
+@[instance_reducible]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)

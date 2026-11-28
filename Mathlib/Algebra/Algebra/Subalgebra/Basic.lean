@@ -358,7 +358,6 @@ protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algeb
 protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S : Subalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y := rfl
 
-@[simp, norm_cast]
 theorem coe_smul [SMul R' R] [SMul R' A] [IsScalarTower R' R A] (r : R') (x : S) :
     (↑(r • x) : A) = r • (x : A) := rfl
 

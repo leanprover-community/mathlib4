@@ -117,7 +117,7 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
-@[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
+lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind
 

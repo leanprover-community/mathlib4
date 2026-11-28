@@ -159,11 +159,9 @@ section CoeLemmas
 
 variable (A B : GL n R)
 
-@[simp]
 theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 
-@[simp]
 theorem coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
   rfl
 
@@ -175,7 +173,6 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
 theorem coe_toLin : (toLin A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
 
-@[simp]
 theorem toLin_apply (v : n → R) : (toLin A : _ → n → R) v = Matrix.mulVecLin A v :=
   rfl
 
@@ -517,11 +514,9 @@ instance : Neg (GLPos n R) :=
 theorem GLPos.coe_neg_GL (g : GLPos n R) : ↑(-g) = -(g : GL n R) :=
   rfl
 
-@[simp]
 theorem GLPos.coe_neg (g : GLPos n R) : (↑(-g) : GL n R) = -((g : GL n R) : Matrix n n R) :=
   rfl
 
-@[simp]
 theorem GLPos.coe_neg_apply (g : GLPos n R) (i j : n) :
     ((↑(-g) : GL n R) : Matrix n n R) i j = -((g : GL n R) : Matrix n n R) i j :=
   rfl

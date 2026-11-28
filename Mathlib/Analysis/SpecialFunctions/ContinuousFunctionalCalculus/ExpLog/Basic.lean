@@ -140,7 +140,7 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0) (hr
     _ = _ := by rw [cfc_const_add _ _ _]
 
 @[grind =]
-lemma log_smul' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] {r : ℝ} (a : A)
+lemma log_smul' [PartialOrder A] [StarOrderedRing A] {r : ℝ} (a : A)
     (hr : 0 < r) (ha : IsStrictlyPositive a := by cfc_tac) :
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
   grind [log_smul]
@@ -153,7 +153,7 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
   simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
 
 @[grind =]
-lemma log_pow' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (n : ℕ) (a : A)
+lemma log_pow' [PartialOrder A] [StarOrderedRing A] (n : ℕ) (a : A)
     (ha : IsStrictlyPositive a := by cfc_tac) :
     log (a ^ n) = n • log a := by
   grind [log_pow]
@@ -167,7 +167,7 @@ lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (exp a) = a := 
 
 open NormedSpace in
 @[grind =]
-lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (a : A)
+lemma exp_log [PartialOrder A] [StarOrderedRing A] (a : A)
     (ha : IsStrictlyPositive a := by cfc_tac) : exp (log a) = a := by
   have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by grind
   rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop)]

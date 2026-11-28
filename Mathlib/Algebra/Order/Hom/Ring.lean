@@ -161,8 +161,15 @@ theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = 
   rfl
 
 @[simp]
-theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWithZeroHom = f :=
+theorem coe_toOrderMonoidWithZeroHom (f : α →+*o β) :
+    ⇑f.toOrderMonoidWithZeroHom = f := rfl
+
+theorem toOrderMonoidWithZeroHom_eq_ofClass (f : α →+*o β) :
+    f.toOrderMonoidWithZeroHom = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias toOrderMonoidWithZeroHom_eq_coe :=
+  toOrderMonoidWithZeroHom_eq_ofClass
 
 @[simp]
 theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
@@ -174,8 +181,8 @@ theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
 theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
   rfl
 
-@[simp]
-theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o β) = f :=
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-26")]
+theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(.ofClass f : α →*₀o β) = f :=
   rfl
 
 @[norm_cast]
@@ -188,8 +195,9 @@ theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a 
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
   rfl
 
-@[norm_cast]
-theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) : (f : α →*₀o β) a = f a :=
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
+theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) :
+    ⇑(OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom f) a = f a :=
   rfl
 
 /-- Copy of an `OrderRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -234,9 +242,12 @@ theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAdd
   rfl
 
 @[simp]
-theorem coe_orderMonoidWithZeroHom_id :
-    (OrderRingHom.id α : α →*₀o α) = OrderMonoidWithZeroHom.id α :=
+theorem toOrderMonoidWithZeroHom_id :
+    (OrderRingHom.id α).toOrderMonoidWithZeroHom = OrderMonoidWithZeroHom.id α :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias coe_orderMonoidWithZeroHom_id :=
+  toOrderMonoidWithZeroHom_id
 
 /-- Composition of two `OrderRingHom`s as an `OrderRingHom`. -/
 protected def comp (f : β →+*o γ) (g : α →+*o β) : α →+*o γ :=

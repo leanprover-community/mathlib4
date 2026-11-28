@@ -57,7 +57,7 @@ theorem Icc_symm (x y : X) : Icc R x y = Icc R y x := by
   ext z
   constructor
   all_goals
-  · rintro ⟨m, n, hm , hn , hmn , hz⟩
+    rintro ⟨m, n, hm , hn , hmn , hz⟩
     rw [convexCombPair_symm] at hz
     exact ⟨n, m, hn, hm, add_comm m n ▸ hmn, hz⟩
 
@@ -66,7 +66,7 @@ theorem Ioo_symm (x y : X) : Ioo R x y = Ioo R y x := by
   ext z
   constructor
   all_goals
-  · rintro ⟨m, n, hm , hn , hmn , hz⟩
+    rintro ⟨m, n, hm , hn , hmn , hz⟩
     rw [convexCombPair_symm] at hz
     exact ⟨n, m, hn, hm, add_comm m n ▸ hmn, hz⟩
 
