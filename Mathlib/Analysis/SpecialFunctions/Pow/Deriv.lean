@@ -780,3 +780,48 @@ theorem Real.logDeriv_const_rpow_neg (ha : 0 < a) :
 end deriv
 
 end Differentiability
+
+section Lipschitz
+
+open Real
+
+open Complex in
+/-- The complex power `z ↦ z ^ w` is `‖w‖ * (c ^ (w.re - 1) ⊔ B ^ (w.re - 1)) * exp (π * |w.im|)`-
+Lipschitz on any convex subset `S` of the slit plane whose elements have norm in `[c, B]`
+(with `0 < c`). -/
+lemma lipschitzOnWith_cpow (w : ℂ) {c B : ℝ} {S : Set ℂ} (hc : 0 < c) (hS : Convex ℝ S)
+    (hSslit : S ⊆ slitPlane) (hSc : ∀ z ∈ S, c ≤ ‖z‖) (hSB : ∀ z ∈ S, ‖z‖ ≤ B) :
+    LipschitzOnWith (‖w‖ * (c ^ (w.re - 1) ⊔ B ^ (w.re - 1)) * .exp (π * |w.im|)).toNNReal
+      (· ^ w : ℂ → ℂ) S := by
+  set C := ‖w‖ * (c ^ (w.re - 1) ⊔ B ^ (w.re - 1)) * .exp (π * |w.im|) with hCdef
+  simp only [lipschitzOnWith_iff_dist_le_mul, C.coe_toNNReal (by positivity), dist_eq_norm]
+  refine fun a ha b hb ↦ hS.norm_image_sub_le_of_norm_hasDerivWithin_le
+    (fun z hz ↦ (Complex.hasStrictDerivAt_cpow_const (hSslit hz)).hasDerivAt.hasDerivWithinAt)
+      (fun z hz ↦ ?_) hb ha
+  grw [hCdef, norm_mul, mul_assoc, norm_cpow_le]
+  gcongr
+  calc ‖z‖ ^ (w - 1).re / .exp (arg z * (w - 1).im)
+      = ‖z‖ ^ (w.re - 1) * (.exp (arg z * w.im))⁻¹ := by simp [div_eq_mul_inv]
+    _ ≤ (c ^ (w.re - 1) ⊔ B ^ (w.re - 1)) * .exp (π * |w.im|) := by
+        gcongr ?_ * ?_
+        · obtain hp | hp := le_total 0 (w.re - 1)
+          · exact le_sup_of_le_right (rpow_le_rpow (hc.le.trans (hSc z hz)) (hSB z hz) hp)
+          · exact le_sup_of_le_left (rpow_le_rpow_of_nonpos hc (hSc z hz) hp)
+        · grw [← Real.exp_neg, neg_le_abs, abs_mul, Complex.abs_arg_le_pi]
+
+/-- The map `x ↦ x ^ r` is `|r| * (a ^ (r - 1) ⊔ b ^ (r - 1))`-Lipschitz on `[a, b]` (with
+`0 < a`). -/
+lemma lipschitzOnWith_rpow {a b r : ℝ} (ha : 0 < a) :
+    LipschitzOnWith (|r| * (a ^ (r - 1) ⊔ b ^ (r - 1))).toNNReal (· ^ r : ℝ → ℝ) (.Icc a b) := by
+  have hpos {x} (hx : x ∈ Set.Icc a b) : 0 < x := ha.trans_le hx.1
+  have := lipschitzOnWith_cpow r (S := (↑) '' .Icc a b) ha
+    ((convex_Icc a b).linear_image Complex.ofRealLI.toLinearMap)
+    (by rintro _ ⟨x, hx, rfl⟩; exact Complex.ofReal_mem_slitPlane.2 (hpos hx))
+    (by rintro _ ⟨x, hx, rfl⟩; simpa [abs_of_pos (hpos hx)] using hx.1)
+    (by rintro _ ⟨x, hx, rfl⟩; simpa [abs_of_pos (hpos hx)] using hx.2)
+  simp only [lipschitzOnWith_iff_dist_le_mul, Set.forall_mem_image] at this ⊢
+  intro x hx y hy
+  simpa [← Complex.ofReal_cpow (hpos hx).le, ← Complex.ofReal_cpow (hpos hy).le,
+    Complex.isometry_ofReal.dist_eq] using this hx hy
+
+end Lipschitz
