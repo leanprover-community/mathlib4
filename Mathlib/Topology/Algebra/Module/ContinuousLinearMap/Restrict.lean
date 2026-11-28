@@ -18,6 +18,9 @@ to subspaces of the domain/codomain.
 
 * `Submodule.subtypeL S` is the inclusion map `S →L[R] M` when `S : Submodule R M`.
   In other words, it is `Submodule.subtype S` bundled as a `ContinuousLinearMap`.
+* `Submodule.inclusionL h` is the inclusion map `S →L[R] T` when
+  `S T : Submodule R M` and `h : S ≤ T`.
+  It is `Submodule.inclusion h` bundled as a `ContinuousLinearMap`.
 * `ContinuousLinearMap.domRestrict f S` is the map `S →SL[σ] N` obtained by restricting
   `f : M →SL[σ] N` to a subspace `S` of the *domain*.
   This is the continuous version of `LinearMap.domRestrict`.
@@ -46,6 +49,11 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoi
 /-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
 def subtypeL (p : Submodule R M) : p →L[R] M where
   toLinearMap := p.subtype
+
+/-- `Submodule.inclusion` as a `ContinuousLinearMap`. -/
+def inclusionL {p q : Submodule R M} (h : p ≤ q) : p →L[R] q where
+  toLinearMap := Submodule.inclusion h
+  cont := continuous_inclusion h
 
 @[simp, norm_cast]
 theorem toLinearMap_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M) = p.subtype := rfl
