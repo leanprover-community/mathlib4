@@ -496,6 +496,8 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R K⟮X⟯ wher
       IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' _ _ := mul_comm _ _
 
+abbrev _root_.Polynomial.toRatFunc (p : K[X]) : K⟮X⟯ := algebraMap _ _ p
+
 variable {K}
 
 /-- The coercion from polynomials to rational functions, implemented as the algebra map from a
@@ -951,6 +953,17 @@ theorem denom_one : denom (1 : K⟮X⟯) = 1 := by
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ K⟮X⟯ p) = 1 := by
   convert denom_div p one_ne_zero <;> simp
 
+theorem denom_inv_algebraMap_eq_normalize [DecidableEq K] {p : K[X]} (hp : p ≠ 0) :
+    (algebraMap K[X] K⟮X⟯ p)⁻¹.denom = normalize p := by
+  obtain rfl : Classical.decEq K = ‹_› := Subsingleton.elim _ _
+  rw [← one_div, ← map_one (algebraMap K[X] K⟮X⟯), denom_div _ hp]
+  simp [normalize_apply, mul_comm, leadingCoeff_ne_zero.mpr hp]
+
+theorem denom_inv_algebraMap_eq_self {p : K[X]} (hp : p.Monic) :
+    (algebraMap K[X] K⟮X⟯ p)⁻¹.denom = p := by
+  classical
+  rw [denom_inv_algebraMap_eq_normalize hp.ne_zero, hp.normalize_eq_self]
+
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
   classical
@@ -1072,6 +1085,11 @@ theorem denom_inv_dvd (x : K⟮X⟯) : denom x⁻¹ ∣ num x := by
   refine ⟨x.denom, ?_⟩
   nth_rw 1 [← x.num_div_denom]
   rw [inv_div]
+
+/-- The denominator of `1 / p` divides `p`. -/
+theorem denom_inv_algebraMap_dvd (p : K[X]) :
+    (algebraMap K[X] K⟮X⟯ p)⁻¹.denom ∣ p := by
+  simpa using denom_div_dvd (1 : K[X]) p
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
