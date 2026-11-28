@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.RingTheory.PowerSeries.Exp
@@ -57,8 +58,8 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 * `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k =
   if n = 1 then 1 else 0`
-* `Bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2)
-  with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
+* `Bernoulli.vonStaudt_clausen`: for even `k`, `B_k + ∑_{p - 1 ∣ k} 1/p` is an integer.
+* `Bernoulli.squarefree_den_bernoulli`: the denominator of `bernoulli k` is squarefree.
 
 ## References
 
@@ -525,6 +526,14 @@ private lemma pow_div_mem_pIntegrals {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
     (hM'_cop.coprime_dvd_left (by
       rw [hM'_eq]; exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _))).symm)
 
+/- Dividing a `p`-integral rational by a `p`-coprime natural number stays `p`-integral. -/
+private lemma div_natCast_mem_pIntegrals {p : ℕ} [Fact p.Prime] {a : ℚ} {n : ℕ}
+    (ha : a ∈ pIntegrals p) (hn : ¬ p ∣ n) : a / n ∈ pIntegrals p := by
+  have hvn : Rat.padicValuation p n = 1 := by
+    simpa [Int.padicValuation_eq_one_iff, Int.natCast_dvd_natCast]
+  rw [div_eq_mul_inv]
+  exact mul_mem ha (by simp [Valuation.mem_integer_iff, hvn])
+
 /- Main valuation estimate behind the contradiction step for even-index summands. -/
 private lemma factorization_succ_le_sub_one {p d : ℕ} [Fact p.Prime] (hd : d ≥ 2) :
     (d + 1).factorization p ≤ d - 1 := by
@@ -685,6 +694,14 @@ private lemma not_dvd_den_bernoulli_add_indicator {k p : ℕ} (hk : k > 0) [Fact
       mem_pIntegrals_iff_not_dvd_den.mpr (ih m hm_lt hm_pos)
     exact mem_pIntegrals_iff_not_dvd_den.mp (sub_mem hT_int hR)
 
+/- For even `k > 0`, the rational `B_k + e_k(p)/p` lies in the `p`-integral subring. -/
+private lemma bernoulli_add_indicator_mem_pIntegrals {p : ℕ} [Fact p.Prime] :
+    ∀ {k}, 0 < k → Even k → bernoulli k + vonStaudtIndicator k p / p ∈ pIntegrals p := by
+  suffices ∀ k > 0, bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p ∈ pIntegrals p by
+    grind [even_iff_exists_two_mul]
+  intro k hk
+  exact mem_pIntegrals_iff_not_dvd_den.mpr (not_dvd_den_bernoulli_add_indicator hk)
+
 /- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
 private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q).den := by
@@ -699,16 +716,111 @@ private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime] 
 /-- **von Staudt-Clausen theorem:** For any natural number $k$, the sum
 $$B_{2k} + \sum_{p - 1 \mid 2k} \frac{1}{p}$$ is an integer.
 -/
-theorem vonStaudt_clausen (k : ℕ) :
-    bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k,
+theorem vonStaudt_clausen {k : ℕ} (hk : Even k) :
+    bernoulli k + ∑ p ∈ range (k + 2) with p.Prime ∧ (p - 1) ∣ k,
       (1 : ℚ) / p ∈ Set.range Int.cast := by
-  rcases Nat.eq_zero_or_pos k with rfl | hk
+  obtain ⟨m, rfl⟩ := hk
+  simp only [← two_mul]
+  rcases Nat.eq_zero_or_pos m with rfl | hm
   · exact ⟨1, by decide +kernel⟩
   · rw [Set.mem_range]
     refine ⟨_, Rat.intCast_num_of_den_eq_one ?_⟩
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
-    exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
+    exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hm) hdvd
+
+/-- For even `k ≠ 0` and prime `p`, `p` does not divide the denominator of
+`bernoulli k + (if p - 1 ∣ k then 1 else 0) / p`. -/
+theorem not_dvd_den_bernoulli_add_ite {p k : ℕ} (hp : p.Prime) (hk₀ : k ≠ 0) (hk : Even k) :
+    ¬ p ∣ (bernoulli k + (if p - 1 ∣ k then 1 else 0) / p).den := by
+  have : Fact p.Prime := ⟨hp⟩
+  rw [← mem_pIntegrals_iff_not_dvd_den]
+  exact bernoulli_add_indicator_mem_pIntegrals hk₀.bot_lt hk
+
+/-- For even `k ≠ 0`, a prime `p` divides the denominator of `bernoulli k` exactly when
+`(p - 1) ∣ k`. See `sub_one_dvd_of_dvd_den_bernoulli` for one direction without the parity
+hypothesis. -/
+theorem dvd_den_bernoulli_iff {p k : ℕ} (hp : p.Prime) (hm : Even k) (hm0 : k ≠ 0) :
+    p ∣ (bernoulli k).den ↔ p - 1 ∣ k := by
+  have : Fact p.Prime := ⟨hp⟩
+  rw [← not_iff_not, ← mem_pIntegrals_iff_not_dvd_den]
+  have hmem : bernoulli k + vonStaudtIndicator k p / p ∈ pIntegrals p :=
+    bernoulli_add_indicator_mem_pIntegrals (by lia) hm
+  refine ⟨fun h ↦ ?_, by grind [vonStaudtIndicator]⟩
+  intro hdvd
+  have h1p : (1 / p : ℚ) ∉ pIntegrals p := by simp [mem_pIntegrals_iff_not_dvd_den, hp.ne_zero]
+  exact h1p (by simpa [vonStaudtIndicator, hdvd] using sub_mem hmem h)
+
+/-- If a prime `p` divides the denominator of a Bernoulli number `bernoulli k`, then `p - 1 ∣ k`.
+A corollary of the von Staudt-Clausen theorem, see `vonStaudt_clausen`; see `dvd_den_bernoulli_iff`
+for the double implication under a parity hypothesis. -/
+theorem sub_one_dvd_of_dvd_den_bernoulli {p k : ℕ} (hp : p.Prime) (hk : p ∣ (bernoulli k).den) :
+    p - 1 ∣ k := by
+  obtain rfl | rfl | he | ⟨ho, hk₁⟩ : k = 0 ∨ k = 1 ∨ (Even k ∧ k ≠ 0) ∨ (Odd k ∧ 1 < k) := by grind
+  · simp
+  · obtain rfl : p = 2 := by revert hk; rw [← Nat.prime_dvd_prime_iff_eq hp (by decide)]; norm_num
+    grind
+  · grind [dvd_den_bernoulli_iff]
+  · simp [bernoulli_eq_zero_of_odd ho hk₁, hp.ne_one] at hk
+
+/- The rational `p * B_k` lies in the `p`-integral subring, for every `k`. -/
+private theorem mul_bernoulli_mem_pIntegrals {p k : ℕ} [Fact p.Prime] :
+    (p : ℚ) * bernoulli k ∈ pIntegrals p := by
+  have hp : p.Prime := Fact.out
+  obtain rfl | rfl | he | ⟨ho, hk₁⟩ : k = 0 ∨ k = 1 ∨ (Even k ∧ k ≠ 0) ∨ (Odd k ∧ 1 < k) := by grind
+  · simp
+  · obtain rfl | hodd := hp.eq_two_or_odd'
+    · norm_num
+    have : (p : ℚ) * bernoulli 1 = (-p) / (2 : ℕ) := by norm_num; ring
+    rw [this]
+    apply div_natCast_mem_pIntegrals (by simp)
+    rw [Nat.prime_dvd_prime_iff_eq hp (by decide)]
+    grind
+  · have hid : (p : ℚ) * (bernoulli k + vonStaudtIndicator k p / p) - vonStaudtIndicator k p =
+        p * bernoulli k := by
+      field [hp.ne_zero]
+    rw [← hid]
+    apply sub_mem (mul_mem (natCast_mem _ p)
+      (bernoulli_add_indicator_mem_pIntegrals (Nat.pos_of_ne_zero he.2) he.1))
+    simp [vonStaudtIndicator, apply_ite]
+  · simp [bernoulli_eq_zero_of_odd ho hk₁]
+
+/-- For `p ≠ 1`, `p` does not divide the denominator of `p * bernoulli k`. -/
+theorem not_dvd_mul_bernoulli {p k : ℕ} (hp : p ≠ 1) :
+    ¬ p ∣ ((p : ℚ) * bernoulli k).den := by
+  intro hdvd
+  have hfact : Fact p.minFac.Prime := ⟨Nat.minFac_prime hp⟩
+  have hqd : p.minFac ∣ ((p : ℚ) * bernoulli k).den := (Nat.minFac_dvd p).trans hdvd
+  obtain ⟨m, hm⟩ := Nat.minFac_dvd p
+  have hpc : (p : ℚ) = p.minFac * m := by exact_mod_cast hm
+  have hfactor : (p.minFac : ℚ) * m * bernoulli k = (m : ℚ) * (p.minFac * bernoulli k) := by
+    ring
+  rw [hpc, hfactor] at hqd
+  have hdvd2 : ((m : ℚ) * ((p.minFac : ℚ) * bernoulli k)).den ∣
+      ((p.minFac : ℚ) * bernoulli k).den := by
+    simpa using Rat.mul_den_dvd (m : ℚ) ((p.minFac : ℚ) * bernoulli k)
+  exact mem_pIntegrals_iff_not_dvd_den.mp mul_bernoulli_mem_pIntegrals (hqd.trans hdvd2)
+
+/-- The denominator of every Bernoulli number is squarefree. See `not_sq_dvd_den_bernoulli`
+for the statement that no prime square divides it. -/
+theorem squarefree_den_bernoulli {k : ℕ} : Squarefree (bernoulli k).den := by
+  rw [Nat.squarefree_iff_prime_squarefree]
+  intro p hp h
+  suffices p ∣ ((p : ℚ) * bernoulli k).den by
+    exact not_dvd_mul_bernoulli hp.ne_one this
+  apply Nat.dvd_of_mul_dvd_mul_left hp.pos
+  calc
+    p * p ∣ (bernoulli k).den := h
+    _ = ((1 / p) * ((p : ℚ) * bernoulli k)).den := by congr! 1; field [hp.ne_zero]
+    _ ∣ (1 / p : ℚ).den * ((p : ℚ) * bernoulli k).den := Rat.mul_den_dvd _ _
+    _ = _ := by simp [hp.ne_zero]
+
+/-- For `p ≠ 1`, `p ^ 2` does not divide the denominator of any Bernoulli number:
+each prime occurs in the denominator with multiplicity one. A corollary of
+`squarefree_den_bernoulli`. -/
+theorem not_sq_dvd_den_bernoulli {p k : ℕ} (hp : p ≠ 1) : ¬ p ^ 2 ∣ (bernoulli k).den := by
+  rw [pow_two]
+  exact fun h => hp (Nat.isUnit_iff.mp (squarefree_den_bernoulli p h))
 
 section Valuation
 
@@ -732,32 +844,20 @@ theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
     WithZero.exp_inj, WithZero.exp_ne_zero, padicValuation_bernoulli hk hpk]
 
 /-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` divides the denominator of the
-Bernoulli number `B₂ₖ`. -/
-theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den := by
-  by_contra hcon
-  simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk] at hcon
+Bernoulli number `B₂ₖ`. See `dvd_den_bernoulli_iff` for the iff under a parity hypothesis. -/
+theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den :=
+  (dvd_den_bernoulli_iff Fact.out ⟨k, two_mul k⟩ (by lia)).mpr hpk
 
-/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
+/-- If `p` is prime and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
 Bernoulli number `B₂ₖ`. -/
-theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+theorem not_dvd_num_bernoulli (hpk : p - 1 ∣ 2 * k) :
     ¬ (p : ℤ) ∣ (bernoulli (2 * k)).num := by
   rw [Int.natCast_dvd]
-  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
-    (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
-
-/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
-the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
-theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
-    ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
-  have hp : p.Prime := Fact.out
-  have hpne : (p : ℚ) ≠ 0 := mod_cast hp.ne_zero
-  have h1 : ¬ p ∣ (p * bernoulli (2 * k)).den := by
-    simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk, ← WithZero.exp_add]
-  have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
-    have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
-    rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
-  contrapose h1
-  simpa [Nat.mul_dvd_mul_iff_left hp.pos, pow_two] using h1.trans h2
+  rcases Nat.eq_zero_or_pos k with rfl | hk
+  · simp only [mul_zero, bernoulli_zero, Rat.num_one, Int.natAbs_one, Nat.dvd_one]
+    exact (Fact.out : p.Prime).ne_one
+  · exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+      (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
 
 end Valuation
 
