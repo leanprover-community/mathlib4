@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.ToDual
 
 /-!
@@ -40,6 +41,7 @@ A preorder is a reflexive, transitive relation `≤`.
 In a preorder, `a < b` means `a ≤ b ∧ ¬b ≤ a`, and `<` is defined this way by default.
 You can override this definition to set a better def-eq.
 -/
+@[wikidata Q1425985, wikidata Q78054942, wikidata Q7240591]
 class Preorder (α : Type*) extends LE α, LT α where
   protected le_refl : ∀ a : α, a ≤ a
   protected le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
@@ -156,7 +158,7 @@ recommended_spelling "wcovBy" for "⋖" in [WCovBy, «term_⩿_»]
 
 /-- `CovBy a b` means that `b` covers `a`. This means that `a < b` and there is no element in
 between. This is denoted `a ⋖ b`. -/
-@[to_dual self (reorder := 3 4)]
+@[to_dual self (reorder := 3 4), wikidata Q5179263]
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
@@ -176,6 +178,7 @@ section PartialOrder
 -/
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
+@[wikidata Q1069998, wikidata Q474715]
 class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
