@@ -38,7 +38,7 @@ variable {M X : Type*} [TopologicalSpace X] [SMul M X] [ContinuousConstSMul M X]
 
 @[to_additive]
 instance instSMul : SMul M (SeparationQuotient X) where
-  smul c := Quotient.map' (c • ·) fun _ _ h ↦ h.const_smul c
+  smul c := Quotient.map (c • ·) fun _ _ h ↦ h.const_smul c
 
 @[to_additive (attr := simp)]
 theorem mk_smul (c : M) (x : X) : mk (c • x) = c • mk x := rfl
@@ -134,7 +134,7 @@ instance (priority := 900) instNSMul [AddMonoid M] [ContinuousAdd M] :
 
 @[to_additive existing]
 instance instPow [Monoid M] [ContinuousMul M] : Pow (SeparationQuotient M) ℕ where
-  pow x n := Quotient.map' (s₁ := inseparableSetoid M) (· ^ n) (fun _ _ h ↦ Inseparable.pow h n) x
+  pow x n := Quotient.map (sa := inseparableSetoid M) (· ^ n) (fun _ _ h ↦ Inseparable.pow h n) x
 
 @[to_additive, simp] -- `mk_nsmul` is not a `simp` lemma because we have `mk_smul`
 theorem mk_pow [Monoid M] [ContinuousMul M] (x : M) (n : ℕ) : mk (x ^ n) = (mk x) ^ n := rfl
@@ -155,7 +155,7 @@ variable {G : Type*} [TopologicalSpace G]
 
 @[to_additive]
 instance instInv [Inv G] [ContinuousInv G] : Inv (SeparationQuotient G) where
-  inv := Quotient.map' (·⁻¹) fun _ _ ↦ Inseparable.inv
+  inv := Quotient.map (·⁻¹) fun _ _ ↦ Inseparable.inv
 
 @[to_additive (attr := simp)]
 theorem mk_inv [Inv G] [ContinuousInv G] (x : G) : mk x⁻¹ = (mk x)⁻¹ := rfl
@@ -190,7 +190,7 @@ instance instZSMul [AddGroup G] [IsTopologicalAddGroup G] : SMul ℤ (Separation
 
 @[to_additive existing]
 instance instZPow [Group G] [IsTopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
-  pow x n := Quotient.map' (s₁ := inseparableSetoid G) (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
+  pow x n := Quotient.map (sa := inseparableSetoid G) (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
 
 @[to_additive, simp] -- `mk_zsmul` is not a `simp` lemma because we have `mk_smul`
 theorem mk_zpow [Group G] [IsTopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) = (mk x) ^ n := rfl

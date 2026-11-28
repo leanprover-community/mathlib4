@@ -81,7 +81,7 @@ instance right_quotientAction' [hH : H.Normal] : QuotientAction Gᵐᵒᵖ H :=
 @[to_additive]
 instance quotient [QuotientAction X H] : MulAction X (G ⧸ H) where
   smul b :=
-    Quotient.map' (b • ·) fun _ _ h =>
+    Quotient.map (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
   one_smul q := Quotient.inductionOn q fun a => congr(Quotient.mk'' $(one_smul X a))
   mul_smul b b' q := Quotient.inductionOn q fun a => congr(Quotient.mk'' $(mul_smul b b' a))

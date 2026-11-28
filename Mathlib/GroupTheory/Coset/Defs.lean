@@ -129,11 +129,11 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
 @[to_additive /-- Right cosets are in bijection with left cosets. -/]
 def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s where
   toFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b => by
+    Quotient.map (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   invFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b => by
+    Quotient.map (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
@@ -283,8 +283,8 @@ variable {t : Subgroup α}
 @[to_additive
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/]
 def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
-  toFun := Quotient.map' id fun _a _b h' => h ▸ h'
-  invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
+  toFun := Quotient.map id fun _a _b h' => h ▸ h'
+  invFun := Quotient.map id fun _a _b h' => h.symm ▸ h'
   left_inv q := induction_on q fun _g => rfl
   right_inv q := induction_on q fun _g => rfl
 

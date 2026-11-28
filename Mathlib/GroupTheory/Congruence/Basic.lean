@@ -279,7 +279,7 @@ section Actions
 @[to_additive]
 instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
     SMul α c.Quotient where
-  smul a := (Quotient.map' (a • ·)) fun _ _ => c.smul a
+  smul a := (Quotient.map (a • ·)) fun _ _ => c.smul a
 
 @[to_additive]
 theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)

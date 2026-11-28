@@ -347,15 +347,15 @@ theorem liftFun_antisymmRel (f : α →o β) :
 -/
 protected def OrderHom.antisymmetrization (f : α →o β) :
     Antisymmetrization α (· ≤ ·) →o Antisymmetrization β (· ≤ ·) :=
-  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂ a b f.mono⟩
+  ⟨Quotient.map f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂ a b f.mono⟩
 
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
-    ⇑f.antisymmetrization = Quotient.map' f (liftFun_antisymmRel f) :=
+    ⇑f.antisymmetrization = Quotient.map f (liftFun_antisymmRel f) :=
   rfl
 
 theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
-    f.antisymmetrization a = Quotient.map' f (liftFun_antisymmRel f) a :=
+    f.antisymmetrization a = Quotient.map f (liftFun_antisymmRel f) a :=
   rfl
 
 @[simp]
@@ -374,10 +374,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
-  toFun := (Quotient.map' id) fun _ _ => And.symm
-  invFun := (Quotient.map' id) fun _ _ => And.symm
-  left_inv a := Quotient.inductionOn a fun a => by simp_rw [Quotient.map'_mk'', id]
-  right_inv a := Quotient.inductionOn a fun a => by simp_rw [Quotient.map'_mk'', id]
+  toFun := (Quotient.map id) fun _ _ => And.symm
+  invFun := (Quotient.map id) fun _ _ => And.symm
+  left_inv a := Quotient.inductionOn a fun a => by simp_rw [Quotient.map_mk, id]
+  right_inv a := Quotient.inductionOn a fun a => by simp_rw [Quotient.map_mk, id]
   map_rel_iff' := @fun a b => Quotient.inductionOn₂ a b fun _ _ => Iff.rfl
 
 @[simp]

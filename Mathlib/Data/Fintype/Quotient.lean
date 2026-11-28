@@ -206,7 +206,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Sort*} {β : So
 /-- Given a function that for each `i : ι` gives a term of the corresponding
 truncation type, then there is corresponding term in the truncation of the product. -/
 def finChoice (q : ∀ i, Trunc (α i)) : Trunc (∀ i, α i) :=
-  Quotient.map' id (fun _ _ _ => trivial) (Quotient.finChoice q)
+  Quotient.map id (fun _ _ _ => trivial) (Quotient.finChoice q)
 
 theorem finChoice_eq (f : ∀ i, α i) : (Trunc.finChoice fun i => Trunc.mk (f i)) = Trunc.mk f :=
   Subsingleton.elim _ _

@@ -323,7 +323,7 @@ and `quotientRangePowQuotSuccInclusionEquiv` for this as a linear equivalence.
 noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) :
     S ⧸ P →
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i) :=
-  Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
+  Quotient.map (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
     fun x y h => by
     rw [Submodule.quotientRel_def] at h ⊢
     simp only [map_mul, LinearMap.mem_range]
@@ -336,7 +336,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
-  apply Quotient.map'_mk''
+  apply Quotient.map_mk
 
 section
 variable [hfp : NeZero (ramificationIdx' p P)]

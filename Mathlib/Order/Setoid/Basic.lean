@@ -234,7 +234,7 @@ lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
 
 /-- The map induced between quotients by a setoid inequality. -/
 def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
-  Quotient.map' id h
+  Quotient.map id h
 
 /-- The map from the quotient of the infimum of a set of setoids into the quotient
 by an element of this set. -/
