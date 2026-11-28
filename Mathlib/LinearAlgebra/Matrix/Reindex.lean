@@ -203,7 +203,7 @@ end Semiring
 
 section Algebra
 
-variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [Semiring A] [Algebra R A]
+variable [Fintype n] [Fintype m] [AddCommMonoid A] [Mul A] [SMul R A]
 
 /-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
 map that reindexes a matrix's rows and columns with equivalent types,
@@ -230,7 +230,8 @@ theorem toRingEquiv_reindexAlgEquiv (e : m ≃ n) : reindexAlgEquiv R A e = rein
   rfl
 
 @[simp]
-theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
+theorem toLinearEquiv_reindexAlgEquiv {A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
@@ -251,7 +252,7 @@ theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.ref
   rfl
 
 @[simp]
-theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
+theorem reindexAlgEquiv_trans_reindexAlgEquiv [Fintype o] (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
 
@@ -264,15 +265,13 @@ end Algebra
 
 section StarAlgebra
 
-variable [Semiring R] [Fintype n] [Fintype m] [Fintype o] [NonUnitalNonAssocSemiring A] [Module R A]
-  [Star A]
+variable [Fintype n] [Fintype m] [Fintype o] [AddCommMonoid A] [Mul A] [SMul R A] [Star A]
 
 /-- For square matrices with coefficients in a (non-unital, non-associative) semiring `A` with a
 star operation and an `R`-module structure, the natural map that reindexes a matrix's rows and
 columns with equivalent types, `Matrix.reindex`, is an equivalence of ⋆-algebras. -/
 def reindexStarAlgEquiv (e : m ≃ n) : Matrix m m A ≃⋆ₐ[R] Matrix n n A where
-  __ := reindexRingEquiv A e
-  __ := reindexLinearEquiv R A e e
+  __ := reindexAlgEquiv R A e
   map_star' _ := rfl
 
 @[simp]
@@ -313,8 +312,8 @@ theorem reindexStarAlgEquiv_trans_reindexStarAlgEquiv (e : m ≃ n) (e' : n ≃ 
 end StarAlgebra
 
 @[simp]
-theorem toAlgEquiv_reindexStarAlgEquiv [CommSemiring R] [Fintype m] [Fintype n] [Semiring A]
-    [Algebra R A] [Star A] (e : m ≃ n) :
+theorem toAlgEquiv_reindexStarAlgEquiv [Semiring R] [Fintype m] [Fintype n]
+    [NonUnitalNonAssocSemiring A] [Module R A] [Star A] (e : m ≃ n) :
     (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
   rfl
 

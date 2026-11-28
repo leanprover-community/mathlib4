@@ -367,7 +367,7 @@ instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A
   inferInstanceAs <| Ring (Matrix n n A)
 
 /-- `ofMatrix` bundled as a ring equivalence. -/
-def ofMatrixRingEquiv [Fintype n] [Semiring A] :
+def ofMatrixRingEquiv [Fintype n] [AddCommMonoid A] [Mul A] :
     Matrix n n A ≃+* CStarMatrix n n A :=
   { ofMatrix with
     map_mul' := fun _ _ => rfl
@@ -380,13 +380,14 @@ instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [
     Algebra R (CStarMatrix n n A) := inferInstanceAs <| Algebra R (Matrix n n A)
 
 /-- `ofMatrix` bundled as a star algebra equivalence. -/
-def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
+def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [NonUnitalNonAssocSemiring A] [StarRing A] :
     Matrix n n A ≃⋆ₐ[ℂ] CStarMatrix n n A :=
   { ofMatrixRingEquiv with
     map_star' := fun _ => rfl
     map_smul' := fun _ _ => rfl }
 
-lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
+lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [NonUnitalNonAssocSemiring A]
+    [StarRing A] :
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 

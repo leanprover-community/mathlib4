@@ -634,17 +634,17 @@ end RingHom
 
 namespace RingEquiv
 
-variable [Fintype m] [DecidableEq m]
-variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
+variable [Fintype m]
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
 
 /-- The `RingEquiv` between spaces of square matrices induced by a `RingEquiv` between their
 coefficients. This is `Matrix.map` as a `RingEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃+* β) : Matrix m m α ≃+* Matrix m m β :=
-  { f.toRingHom.mapMatrix,
-    f.toAddEquiv.mapMatrix with
+  { f.toAddEquiv.mapMatrix with
     toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    invFun := fun M => M.map f.symm
+    map_mul' := by simp }
 
 @[simp]
 theorem mapMatrix_refl : (RingEquiv.refl α).mapMatrix = RingEquiv.refl (Matrix m m α) :=
@@ -713,18 +713,18 @@ end AlgHom
 
 namespace AlgEquiv
 
-variable [Fintype m] [DecidableEq m]
-variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-variable [Algebra R α] [Algebra R β] [Algebra R γ]
+variable [Fintype m]
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
+variable [SMul R α] [SMul R β] [SMul R γ]
 
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
 coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
-  { f.toAlgHom.mapMatrix,
-    f.toRingEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+  { f.toRingEquiv.mapMatrix with
+    toFun M := M.map f
+    invFun M := M.map f.symm
+    map_smul' _ _ := by ext; simp }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=
@@ -745,7 +745,8 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
 
 See also `Matrix.transposeAlgEquiv` for a version that doesn't take the opposite of `α`,
 given that its multiplication is commutative. -/
-@[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+@[simps!] def mopMatrix {α : Type*} [AddCommMonoid α] [Mul α] [SMul R α] :
+    Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
   map_smul' _ _ := MulOpposite.unop_injective <| by ext; simp
 
@@ -877,19 +878,19 @@ variable [Fintype n]
 @[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
     prodRingEquiv n α β = prodAddEquiv n n α β := rfl
 
-variable [CommSemiring R] [DecidableEq n]
-
 /-- `prodEquiv` as an `AlgEquiv`. -/
-@[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+@[simps!] def prodAlgEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β]
+    [SMul R α] [SMul R β] :
     Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
   __ := prodRingEquiv n α β
-  __ := AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl
+  map_smul' _ _ := by ext <;> simp
 
-@[simp] theorem toRingEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+@[simp] theorem toRingEquiv_prodAlgEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β]
+    [SMul R α] [SMul R β] :
     prodAlgEquiv n R α β = prodRingEquiv n α β := rfl
 
-@[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
-    [Semiring β] [Algebra R β] :
+@[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring R] [NonUnitalNonAssocSemiring α]
+    [NonUnitalNonAssocSemiring β] [Module R α] [Module R β] :
     prodAlgEquiv n R α β = prodLinearEquiv n n R α β := rfl
 
 end Prod
@@ -940,19 +941,21 @@ This is available in bundled forms as:
     (piRingEquiv (n := n) (ι := ι) (β := β) :
       Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
 
-variable (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
-  [Fintype n] [DecidableEq n]
+variable (R) [Fintype n]
 
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+@[simps!] def piAlgEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)] [Π i, SMul R (β i)] :
+    Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
-  map_smul' := map_smul (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl)
+  map_smul' _ _ := by ext; simp
 
-@[simp] theorem toRingEquiv_piAlgEquiv :
+@[simp] theorem toRingEquiv_piAlgEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)]
+    [Π i, SMul R (β i)] :
     (piAlgEquiv (n := n) R (ι := ι) (β := β) :
        Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
 
-@[simp] theorem toLinearEquiv_piAlgEquiv :
+@[simp] theorem toLinearEquiv_piAlgEquiv [Semiring R] [Π i, NonUnitalNonAssocSemiring (β i)]
+    [Π i, Module R (β i)] :
     (piAlgEquiv (n := n) R (ι := ι) (β := β) :
       Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
 
@@ -1041,13 +1044,13 @@ variable (R m α)
 See also `AlgEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
 multiplication, by taking its opposite. -/
 @[simps!]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
+def transposeAlgEquiv [CommMagma α] [AddCommMonoid α] [Fintype m] [SMul R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
   map_smul' := by simp
 
 @[simp]
-theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
+theorem toRingEquiv_transposeAlgEquiv [CommMagma α] [AddCommMonoid α] [Fintype m] [SMul R α] :
     transposeAlgEquiv m R α = transposeRingEquiv m α := rfl
 
 end Transpose
