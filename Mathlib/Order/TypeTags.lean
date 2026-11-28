@@ -28,14 +28,14 @@ instance WithBot.instRepr [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
     | none => "⊥"
-    | some a => "↑" ++ repr a⟩
+    | some a => "↑" ++ reprArg a⟩
 
 @[to_dual existing]
 instance WithTop.instRepr [Repr α] : Repr (WithTop α) :=
   ⟨fun o _ =>
     match o with
     | none => "⊤"
-    | some a => "↑" ++ repr a⟩
+    | some a => "↑" ++ reprArg a⟩
 
 namespace WithBot
 

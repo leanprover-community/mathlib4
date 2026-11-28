@@ -61,7 +61,7 @@ instance [Repr X] : Repr (OnePoint X) :=
   ⟨fun o _ =>
     match o with
     | none => "∞"
-    | some a => "↑" ++ repr a⟩
+    | some a => "↑" ++ reprArg a⟩
 
 namespace OnePoint
 
