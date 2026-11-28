@@ -18,9 +18,10 @@ The backend-neutral layer over the backend modules:
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
 backend. `Cache/Location.lean` derives the marker. `Cache/Marker.lean`
-defines its read and write operations. The reads resolve their locations
-with the same resolvers (`Container.location`, `Location.ofEndpoint`), so
-every upload writes to the URLs that the reads probe.
+defines its read and write operations. The reads resolve their container
+locations with `Container.location`, which builds on the same constructor
+(`Container.locationAt`), so every upload writes to the URLs that the reads
+probe.
 -/
 
 public section
@@ -61,46 +62,42 @@ end UploadBackend
 /--
 Pure core of `uploadLocation`: resolve where a staged set uploads.
 
-`MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: an endpoint without
-a container segment. `Location.ofEndpoint` applies the repo's layout, and the
-selected backend signs the requests.
-The azure backend rejects `--container` because it always uses this endpoint.
-Any set value counts here, an empty one included: a misconfigured endpoint
-fails the upload and does not divert it to the backend's location. The
-read variables take the opposite rule, where an empty value means unset.
+An upload writes one container, `container?`, which `--container` names. The
+container decides the layout under its root (`Container.locationAt`): flat for
+`master`, repo-namespaced for `forks`. The root is the URL
+`MATHLIB_CACHE_PUT_URL` names (`putURL?`), on every backend. The tool has no
+default root, because a store URL is account-specific. On the s3 backend the
+root has the form `https://endpoint/bucket[/prefix]` (`s3EndpointSplit`). An
+empty value means unset.
 
-Without it, the function returns the container layout under the bucket in
-`MATHLIB_CACHE_PUT_BASE_URL` (`putBase?`, where an empty value means unset)
-for the s3 backend, and an error for the azure backend.
+A scope addresses a per-commit namespace. A flat container has no per-commit
+namespaces, so a scope on it is an error.
 -/
-def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
+def uploadLocationFrom (backend : UploadBackend) (putURL? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String Location := do
-  if backend == .azure && container?.isSome then
-    throw "the azure backend uses MATHLIB_CACHE_PUT_URL without a container: \
-      remove --container"
-  let dest ← if let some url := putUrl? then
-      pure (.ofEndpoint url "MATHLIB_CACHE_PUT_URL" repo scope?)
-    else
-      match backend with
-      | .azure => .error "the azure backend needs an endpoint: \
-          set MATHLIB_CACHE_PUT_URL"
-      | .s3 => s3UploadLocationFrom (normalizeBaseURL putBase?) container? repo scope?
-  -- An s3 root must have the form `https://endpoint/bucket[/prefix]`.
-  if backend == .s3 then discard (s3EndpointSplit dest.root)
-  return dest
+  let some c := container? | throw s!"an upload writes one container: pass --container=NAME \
+    (one of {", ".intercalate (Container.all.map Container.name)})"
+  if let some sha := scope? then
+    if c.flatPath then
+      throw s!"scope {sha} set for an upload to {c.name}, which has no per-commit namespaces: \
+        unset --scope and MATHLIB_CACHE_REPO_SCOPE"
+  let some root := normalizeBaseURL putURL?
+    | throw "an upload writes under the URL MATHLIB_CACHE_PUT_URL names, the container's \
+        root: set it"
+  if backend == .s3 then discard (s3EndpointSplit root)
+  return c.locationAt root repo scope?
 
 /--
-`uploadLocationFrom` on the environment variables `MATHLIB_CACHE_PUT_URL` and
-`MATHLIB_CACHE_PUT_BASE_URL`. `scope?` is the caller's resolved scope
-(`getRepoScope`). A repo-namespaced location retains it in its scope.
-The location derives both the file directory and its optional marker, so
-every transfer tool uses one resolution.
+`uploadLocationFrom` on the environment variable `MATHLIB_CACHE_PUT_URL`.
+`scope?` is the caller's resolved scope (`getRepoScope`). A repo-namespaced
+location retains it in its scope. The location derives both the file
+directory and its optional marker, so every transfer tool uses one
+resolution.
 -/
 def uploadLocation (backend : UploadBackend) (container? : Option Container)
     (repo : String) (scope? : Option String) : IO Location := do
-  let putUrl? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
-  let putBase? ← IO.getEnv "MATHLIB_CACHE_PUT_BASE_URL"
-  IO.ofExcept <| uploadLocationFrom backend putUrl? putBase? container? repo scope?
+  IO.ofExcept <| uploadLocationFrom backend (← IO.getEnv "MATHLIB_CACHE_PUT_URL")
+    container? repo scope?
 
 end Cache.Requests
