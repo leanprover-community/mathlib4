@@ -98,7 +98,7 @@ private def ExistsOneDivLT (s : SignedMeasure α) (i : Set α) (n : ℕ) : Prop 
 private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
     ∃ n : ℕ, ExistsOneDivLT s i n :=
   let ⟨k, hj₁, hj₂, hj⟩ := exists_pos_measure_of_not_restrict_le_zero s hi
-  let ⟨n, hn⟩ := exists_nat_one_div_lt hj
+  let ⟨n, hn⟩ := exists_natCast_one_div_lt hj
   ⟨n, k, hj₂, hj₁, hn⟩
 
 open scoped Classical in
