@@ -375,6 +375,24 @@ theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡
       _ ≡ 1 [ZMOD ↑b] := by rw [← Nat.gcd_eq_gcd_ab, hgcd]; rfl
       ⟩
 
+/-- If `k ≡ a [ZMOD n]` and `k ≡ b [ZMOD m]`, then `a ≡ b [ZMOD gcd n m]`. -/
+theorem modEq_gcd_of_modEq_of_modEq {a b n m k : ℤ} (h₁ : k ≡ a [ZMOD n])
+    (h₂ : k ≡ b [ZMOD m]) : a ≡ b [ZMOD gcd n m] :=
+  (h₁.of_dvd (gcd_dvd_left n m)).symm.trans (h₂.of_dvd (gcd_dvd_right n m))
+
+/-- **Chinese remainder theorem** over `ℤ`, solvability criterion:
+`k ≡ a [ZMOD n]` and `k ≡ b [ZMOD m]` have a common solution iff
+`a ≡ b [ZMOD gcd n m]`. A solution is `b - m * q * gcdB n m` where
+`b - a = gcd n m * q`. -/
+theorem exists_modEq_and_modEq_iff {a b n m : ℤ} :
+    (∃ k, k ≡ a [ZMOD n] ∧ k ≡ b [ZMOD m]) ↔ a ≡ b [ZMOD gcd n m] := by
+  refine ⟨fun ⟨_, h₁, h₂⟩ ↦ modEq_gcd_of_modEq_of_modEq h₁ h₂, fun h ↦ ?_⟩
+  obtain ⟨q, hq⟩ := h.dvd
+  refine ⟨b + m * -(q * gcdB n m), ?_, modEq_add_fac_self⟩
+  have hbz := gcd_eq_gcd_ab n m
+  rw [show b + m * -(q * gcdB n m) = a + n * (gcdA n m * q) by grind]
+  exact modEq_add_fac_self
+
 theorem existsUnique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
     ∃ z : ℤ, 0 ≤ z ∧ z < b ∧ z ≡ a [ZMOD b] :=
   ⟨a % b, emod_nonneg _ (ne_of_gt hb),
