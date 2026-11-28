@@ -58,7 +58,7 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Tags
 
-elliptic curve, Jacobian, point, group law
+elliptic curve, Jacobian, point, group law, hello Mum
 -/
 
 @[expose] public section
