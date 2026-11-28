@@ -465,9 +465,7 @@ lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
 
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 
--- TODO: prove this in terms of a Boolean algebra lemma
-lemma disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
+lemma disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) := disjoint_inf_sdiff.symm
 
 lemma subset_sdiff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_sdiff
 
