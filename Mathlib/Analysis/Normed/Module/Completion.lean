@@ -89,6 +89,12 @@ instance [NormedField A] [CompletableTopField A] :
   __ : Field (Completion A) := inferInstance
   norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 
+instance [hdnf : DenselyNormedField A] [CompletableTopField A] :
+    DenselyNormedField (UniformSpace.Completion A) where
+  lt_norm_lt x y hx hxy := by
+    obtain ⟨z, hz⟩ := hdnf.lt_norm_lt x y hx hxy
+    exact ⟨z, by simpa using hz⟩
+
 end Algebra
 
 end Completion
