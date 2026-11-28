@@ -1,0 +1,130 @@
+/-
+Copyright (c) 2026 Project Numina. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Numina Team, Bolton Bailey
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Topology.MetricSpace.AffineThickness
+
+/-!
+# Thickness of a set in a Euclidean affine space
+
+In a Euclidean affine space,
+a proper affine subspace (one whose direction is not the whole space)
+admits a unit vector orthogonal to its direction.
+Pushing a point along such a vector gives lower bounds for `Metric.ethickness`
+that are unavailable in a general metric affine space.
+Combined with the upper bounds
+`Metric.ethickness_cthickening_le` and `Metric.ethickness_closedBall_le`,
+they compute the `ethickness` of thickenings and of closed balls.
+
+## Main results
+
+* `Metric.infDist_add_le_of_closedBall_subset_cthickening`:
+  if the closed `ρ`-ball around `x` lies
+  in the closed `r`-thickening of a proper affine subspace `A`,
+  then `infDist x A + ρ ≤ r`.
+* `Metric.ethickness_cthickening`:
+  thickening a nonempty set by `r` increases its `ethickness` by exactly `r`,
+  at every rank below the ambient dimension.
+* `Metric.ethickness_closedBall`:
+  the closed ball of radius `r` has `ethickness` equal to `r`
+  at every rank below the ambient dimension.
+-/
+
+@[expose] public section
+
+open scoped NNReal ENNReal
+
+open EuclideanGeometry
+
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+namespace Metric
+
+/-- If the closed `ρ`-ball around `x` lies
+in the closed `r`-thickening of a proper affine subspace `A`,
+then `infDist x A + ρ ≤ r`:
+move `x` by `ρ` away from `A` along a unit vector orthogonal to `A`. -/
+lemma infDist_add_le_of_closedBall_subset_cthickening
+    {A : AffineSubspace ℝ P} [A.direction.HasOrthogonalProjection]
+    (hA : A.direction ≠ ⊤) {x : P} {ρ r : ℝ≥0}
+    (h : closedBall x ρ ⊆ cthickening r A) : infDist x A + ρ ≤ r := by
+  have : Nonempty A := by
+    by_contra! hAe
+    simpa [Set.eq_empty_iff_forall_notMem.2 fun y hy ↦ hAe.false ⟨y, hy⟩] using
+      h (mem_closedBall_self ρ.coe_nonneg)
+  have hA' : A.directionᗮ ≠ ⊥ := by rwa [Ne, Submodule.orthogonal_eq_bot_iff]
+  set w : V := x -ᵥ orthogonalProjection A x with hw
+  have hwA : w ∈ A.directionᗮ := vsub_orthogonalProjection_mem_direction_orthogonal A x
+  obtain ⟨u, huA, hu, hwu⟩ : ∃ u ∈ A.directionᗮ, ‖u‖ = 1 ∧ w = ‖w‖ • u := by
+    obtain h0 | h0 := eq_or_ne w 0
+    · obtain ⟨v, hvA, hv⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hA'
+      exact ⟨‖v‖⁻¹ • v, Submodule.smul_mem _ _ hvA, by simp [norm_smul, hv], by simp [h0]⟩
+    · exact ⟨‖w‖⁻¹ • w, Submodule.smul_mem _ _ hwA, by simp [norm_smul, h0], by simp [h0]⟩
+  have hy : (ρ : ℝ) • u +ᵥ x ∈ closedBall x ρ := by simp [norm_smul, hu]
+  have hp : orthogonalProjection A ((ρ : ℝ) • u +ᵥ x) = orthogonalProjection A x := by
+    rw [orthogonalProjection_eq_iff_mem, vadd_vsub_assoc]
+    exact add_mem (Submodule.smul_mem _ _ huA) hwA
+  have := ENNReal.toReal_le_of_le_ofReal r.coe_nonneg (mem_cthickening_iff.1 (h hy))
+  rwa [← infDist, ← dist_orthogonalProjection_eq_infDist, hp, dist_eq_norm_vsub V,
+    vadd_vsub_assoc, ← hw, hwu, ← add_smul, norm_smul, hu, mul_one,
+    Real.norm_of_nonneg (by positivity), add_comm, ← dist_eq_norm_vsub V,
+    dist_orthogonalProjection_eq_infDist] at this
+
+/-- Thickening a nonempty set by `ρ` increases its `ethickness` by at least `ρ`,
+at every rank below the ambient dimension.
+See `Metric.ethickness_cthickening_le` for the reverse inequality. -/
+theorem le_ethickness_cthickening {s : Set P} (hs : s.Nonempty) (ρ : ℝ≥0) {n : ℕ}
+    (hn : n < Module.rank ℝ V) :
+    ethickness ℝ s n + ρ ≤ ethickness ℝ (cthickening ρ s) n := by
+  rw [le_ethickness_iff]
+  intro r A hA hsub
+  have hA' : A.direction ≠ ⊤ := fun h ↦ (hA.trans_lt hn).ne (h ▸ rank_top ..)
+  have : FiniteDimensional ℝ A.direction :=
+    Module.rank_lt_aleph0_iff.1 (hA.trans_lt Cardinal.natCast_lt_aleph0)
+  obtain ⟨x₀, hx₀⟩ := hs
+  have hAne : (A : Set P).Nonempty := by
+    by_contra! hAe
+    simpa [hAe] using hsub (self_subset_cthickening s hx₀)
+  have := hAne.to_subtype
+  have hdist (x) (hx : x ∈ s) : infDist x A + ρ ≤ r :=
+    infDist_add_le_of_closedBall_subset_cthickening hA'
+      ((closedBall_subset_cthickening hx ρ).trans hsub)
+  have hρr : ρ ≤ r :=
+    NNReal.coe_le_coe.1 <| (le_add_of_nonneg_left infDist_nonneg).trans (hdist x₀ hx₀)
+  have : ethickness ℝ s n ≤ (r - ρ : ℝ≥0) := by
+    refine ethickness_le_of_cthickening _ hA fun x hx ↦ mem_cthickening_of_dist_le x
+      (orthogonalProjection A x) _ _ (orthogonalProjection_mem x) ?_
+    rw [dist_orthogonalProjection_eq_infDist, NNReal.coe_sub hρr]
+    grind [hdist x hx]
+  grw [this, ← ENNReal.coe_add, tsub_add_cancel_of_le hρr]
+
+/-- Thickening a nonempty set by `r` increases its `ethickness` by exactly `r`,
+at every rank below the ambient dimension. -/
+theorem ethickness_cthickening {s : Set P} (hs : s.Nonempty) (r : ℝ≥0) {n : ℕ}
+    (hn : n < Module.rank ℝ V) :
+    ethickness ℝ (cthickening r s) n = ethickness ℝ s n + r :=
+  (ethickness_cthickening_le r n).antisymm (le_ethickness_cthickening hs r hn)
+
+/-- The closed ball of radius `r` has `ethickness` at least `r`,
+at every rank below the ambient dimension.
+See `Metric.ethickness_closedBall_le` for the reverse inequality. -/
+theorem le_ethickness_closedBall {x : P} (r : ℝ≥0) {n : ℕ}
+    (hn : n < Module.rank ℝ V) :
+    (r : ℝ≥0∞) ≤ ethickness ℝ (closedBall x r) n := by
+  simpa [Set.subsingleton_singleton.ethickness_eq_zero, cthickening_singleton _ r.coe_nonneg]
+    using le_ethickness_cthickening (Set.singleton_nonempty x) r hn
+
+/-- The closed ball of radius `r` has `ethickness` equal to `r`,
+at every rank below the ambient dimension. -/
+theorem ethickness_closedBall {x : P} (r : ℝ≥0) {n : ℕ}
+    (hn : n < Module.rank ℝ V) :
+    ethickness ℝ (closedBall x r) n = r :=
+  (ethickness_closedBall_le r n).antisymm (le_ethickness_closedBall r hn)
+
+end Metric
