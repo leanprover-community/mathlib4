@@ -216,7 +216,7 @@ lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts 
 
 instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  QuasispectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
+  QuasispectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM.toContinuousMap
     Complex.isometry_ofReal.isClosedEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
 
@@ -234,7 +234,7 @@ lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
 
 instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
+  SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM.toContinuousMap
     Complex.isometry_ofReal.isClosedEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
 
@@ -330,12 +330,12 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcHom ha =
       ha.spectrumRestricts.starAlgHom (R := ℝ) (S := ℂ)
-        (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
+        (cfcHom ha.isStarNormal) (f := Complex.reCLM.toContinuousMap) :=
   ha.spectrumRestricts.cfcHom_eq_restrict _ ha ha.isStarNormal
 
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a :=
-  ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
+  ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM.toContinuousMap)
     Complex.isometry_ofReal.isClosedEmbedding ha ha.isStarNormal f
 
 lemma cfc_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ spectrum ℂ a, star (f x) = f x)
@@ -357,12 +357,12 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module
 
 lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcₙHom ha = ha.quasispectrumRestricts.nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
-      (R := ℝ) (S := ℂ) (f := Complex.reCLM) :=
+      (R := ℝ) (S := ℂ) (f := Complex.reCLM.toContinuousMap) :=
   ha.quasispectrumRestricts.cfcₙHom_eq_restrict _ ha ha.isStarNormal
 
 lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a :=
-  ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM)
+  ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM.toContinuousMap)
     Complex.isometry_ofReal.isClosedEmbedding ha ha.isStarNormal f
 
 lemma cfcₙ_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ σₙ ℂ a, star (f x) = f x)

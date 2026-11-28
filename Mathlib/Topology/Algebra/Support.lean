@@ -247,6 +247,11 @@ theorem of_mulSupport_subset_isCompact [R1Space α] (hK : IsCompact K) (h : mulS
   hK.closure_of_subset h
 
 @[to_additive]
+theorem _root_.hasCompactMulSupport_mulIndicator {s : Set α} (hs : IsCompact (closure s)) :
+    HasCompactMulSupport (s.mulIndicator f) :=
+  hs.of_isClosed_subset isClosed_closure (closure_mono mulSupport_mulIndicator_subset)
+
+@[to_additive]
 theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) := hf
 
 @[to_additive]
