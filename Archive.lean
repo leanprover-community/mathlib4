@@ -74,7 +74,6 @@ public import Archive.RiemannStieltjes
 public import Archive.Robbins
 public import Archive.Sensitivity
 public import Archive.Wiedijk100Theorems.AbelRuffini
-public import Archive.Wiedijk100Theorems.AreaOfACircle
 public import Archive.Wiedijk100Theorems.AscendingDescendingSequences
 public import Archive.Wiedijk100Theorems.BallotProblem
 public import Archive.Wiedijk100Theorems.BirthdayProblem
