@@ -25,8 +25,6 @@ path graph on `n` vertices.
 
 * `SimpleGraph.hasse`: Hasse diagram of an order.
 * `SimpleGraph.pathGraph`: Path graph on `n` vertices.
-* `SimpleGraph.dist_pathGraph`: The distance in a path graph is the absolute difference of the
-  indices.
 -/
 
 @[expose] public section
@@ -213,28 +211,27 @@ theorem Walk.natAbs_sub_le_length_pathGraph {n : ℕ} {u v : Fin n}
   | nil => simp
   | cons h _ ih => grind [pathGraph_adj, Walk.length_cons]
 
-theorem exists_walk_pathGraph_length_eq {n : ℕ} (u v : Fin n) :
-    ∃ p : (pathGraph n).Walk u v, p.length = ((u : ℤ) - v).natAbs := by
-  suffices ∀ k (u v : Fin n), (u : ℕ) + k = v → ∃ p : (pathGraph n).Walk u v, p.length = k by
-    rcases le_total (u : ℕ) v with h | h
-    · obtain ⟨p, hp⟩ := this (v - u) u v (by omega)
-      exact ⟨p, by omega⟩
-    · obtain ⟨p, hp⟩ := this (u - v) v u (by omega)
-      exact ⟨p.reverse, by rw [Walk.length_reverse]; omega⟩
-  intro k
-  induction k with
-  | zero => exact fun u v h ↦ ⟨Walk.nil.copy rfl (Fin.ext h), by simp⟩
-  | succ k ih =>
-    intro u v h
-    obtain ⟨p, hp⟩ := ih ⟨u + 1, by omega⟩ v (by rw [Fin.val_mk]; omega)
-    exact ⟨.cons (by simp [pathGraph_adj]) p, by rw [Walk.length_cons, hp]⟩
-
 /-- The distance between two vertices of a path graph is the absolute difference of their
 indices. -/
 @[simp]
 theorem dist_pathGraph {n : ℕ} (u v : Fin n) :
     (pathGraph n).dist u v = ((u : ℤ) - v).natAbs := by
-  obtain ⟨p, hp⟩ := exists_walk_pathGraph_length_eq u v
+  -- TODO: once `Walk.pathGraph` (#34171) lands, use it for the walk of length `|u - v|`.
+  have key : ∀ k (u v : Fin n), (u : ℕ) + k = v →
+      ∃ p : (pathGraph n).Walk u v, p.length = k := by
+    intro k
+    induction k with
+    | zero => exact fun u v h ↦ ⟨Walk.nil.copy rfl (Fin.ext h), by simp⟩
+    | succ k ih =>
+      intro u v h
+      obtain ⟨p, hp⟩ := ih ⟨u + 1, by omega⟩ v (by rw [Fin.val_mk]; omega)
+      exact ⟨.cons (by simp [pathGraph_adj]) p, by rw [Walk.length_cons, hp]⟩
+  obtain ⟨p, hp⟩ : ∃ p : (pathGraph n).Walk u v, p.length = ((u : ℤ) - v).natAbs := by
+    rcases le_total (u : ℕ) v with h | h
+    · obtain ⟨p, hp⟩ := key (v - u) u v (by omega)
+      exact ⟨p, by omega⟩
+    · obtain ⟨p, hp⟩ := key (u - v) v u (by omega)
+      exact ⟨p.reverse, by rw [Walk.length_reverse]; omega⟩
   obtain ⟨q, hq⟩ := (preconnected_pathGraph n u v).exists_walk_length_eq_dist
   exact le_antisymm (hp ▸ dist_le p) (hq ▸ q.natAbs_sub_le_length_pathGraph)
 
