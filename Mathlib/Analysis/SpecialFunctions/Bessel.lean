@@ -32,6 +32,16 @@ This function is analytic for all `x` when `a` is an integer. (see `Complex.anal
 $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 (See `Complex.besselJ_zero`)
 
+## `Complex.besselI a x`: modified Bessel function of the first kind $I_a(x)$
+
+Similarly, we define $I_a(x)$ using
+$$
+I_a(x) = (x / 2)^a \frac{₀F₁(-; a + 1; (x/2)^2)} {Γ(a + 1)}
+$$
+Lemmas `Complex.besselI_eq_mul_besselJ_of_arg_le` and `Complex.besselI_eq_mul_besselJ_of_lt_arg`
+provide conversion between `Complex.besselI` and `Complex.besselJ` on two overlapping domains. For
+integer `a`, they unify into `Complex.besselI_int_eq_mul_besselJ`.
+
 ## TODO
 
 * Bessel function of the second kind
@@ -43,6 +53,7 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 @[expose] public noncomputable section
 
 open Nat FormalMultilinearSeries
+open scoped Real
 
 namespace Complex
 
@@ -52,32 +63,97 @@ local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ)}
 @[pp_nodot, dlmf 10.2.E2]
 noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)
 
+/-- Modified Bessel function of the first kind $I_a(x)$. -/
+@[pp_nodot, dlmf 10.25.E2]
+noncomputable def besselI (a x : ℂ) := (x / 2) ^ a * F₀₁(a + 1) ((x / 2) ^ 2)
+
 local notation "J" => besselJ
+local notation "I_" => besselI
 
 theorem besselJ_def : J = fun a x ↦ (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2) := rfl
 
-/-- `J a` is even or odd when $a$ is even or odd, respectively. -/
+theorem besselI_def : I_ = fun a x ↦ (x / 2) ^ a * F₀₁(a + 1) ((x / 2) ^ 2) := rfl
+
+@[dlmf 10.27.E6]
+theorem besselI_eq_mul_besselJ_of_arg_le (a : ℂ) {x : ℂ} (hx : x.arg ≤ π / 2) :
+    I_ a x = (-I) ^ a * J a (x * I) := calc
+  _ = (-I) ^ a * I ^ a * (x / 2) ^ a * F₀₁(a + 1) ((x / 2) ^ 2) := by
+    rw [← mul_cpow (by simp [Real.pi_pos, Real.pi_nonneg])]
+    simp [besselI]
+  _ = (-I) ^ a * ((x * I / 2) ^ a * F₀₁(a + 1) ((x / 2) ^ 2)) := by
+    rw [mul_div_right_comm, mul_cpow (by simp; grind [neg_pi_lt_arg])]
+    ring
+  _ = _ := by
+    congr
+    conv_rhs => rw [div_pow, mul_pow, I_sq]
+    ring
+
+@[dlmf 10.27.E6]
+theorem besselI_eq_mul_besselJ_of_lt_arg (a : ℂ) {x : ℂ} (hx : -π / 2 < x.arg) :
+    I_ a x = I ^ a * J a (-x * I) := calc
+  _ = I ^ a * (-I) ^ a * (x / 2) ^ a * F₀₁(a + 1) ((x / 2) ^ 2) := by
+    rw [← mul_cpow (by simp [Real.pi_pos, Real.pi_nonneg])]
+    simp [besselI]
+  _ = I ^ a * ((x * (-I) / 2) ^ a * F₀₁(a + 1) ((x / 2) ^ 2)) := by
+    rw [mul_div_right_comm, mul_cpow (by simp; grind [arg_le_pi])]
+    ring
+  _ = _ := by
+    congrm _ * ($(by ring) ^ a * F₀₁(a + 1) ?_)
+    conv_rhs => rw [div_pow, mul_pow, I_sq]
+    ring
+
+/-- `besselJ a` is even or odd when $a$ is even or odd, respectively. -/
 theorem besselJ_int_neg (a : ℤ) (x : ℂ) : J a (-x) = (-1) ^ a * J a x := by
   simp [besselJ_def, ← mul_assoc, neg_div, ← mul_zpow]
+
+/-- `besselI a` is even or odd when $a$ is even or odd, respectively. -/
+theorem besselI_int_neg (a : ℤ) (x : ℂ) : I_ a (-x) = (-1) ^ a * I_ a x := by
+  simp [besselI_def, ← mul_assoc, neg_div, ← mul_zpow]
+
+theorem besselI_int_eq_mul_besselJ (a : ℤ) (x : ℂ) :
+    I_ a x = (-I) ^ a * J a (x * I) := by
+  by_cases! hx : x.arg ≤ π / 2
+  · simp [besselI_eq_mul_besselJ_of_arg_le a hx]
+  · have hx : -π / 2 < x.arg := by grind [Real.pi_pos]
+    rw [besselI_eq_mul_besselJ_of_lt_arg a hx, neg_mul, besselJ_int_neg, cpow_intCast]
+    conv_rhs => rw [neg_eq_neg_one_mul, mul_zpow]
+    ring
 
 theorem odd_besselJ {a : ℤ} (ha : Odd a) : Function.Odd (J a) := by
   intro x
   simp [besselJ_int_neg, ha.neg_zpow]
 
+theorem odd_besselI {a : ℤ} (ha : Odd a) : Function.Odd (I_ a) := by
+  intro x
+  simp [besselI_int_neg, ha.neg_zpow]
+
 theorem even_besselJ {a : ℤ} (ha : Even a) : Function.Even (J a) := by
   intro x
   simp [besselJ_int_neg, ha.neg_zpow]
 
-/-- `J a` is analytic outside of the branch cut on the negative real axis. -/
+theorem even_besselI {a : ℤ} (ha : Even a) : Function.Even (I_ a) := by
+  intro x
+  simp [besselI_int_neg, ha.neg_zpow]
+
+/-- `besselJ a` is analytic outside of the branch cut on the negative real axis. -/
 @[fun_prop]
 theorem analyticAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) : AnalyticAt ℂ (J a) x := by
   fun_prop (disch := simpa [slitPlane] using h) [besselJ]
+
+/-- `besselI a` is analytic outside of the branch cut on the negative real axis. -/
+@[fun_prop]
+theorem analyticAt_besselI (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) : AnalyticAt ℂ (I_ a) x := by
+  fun_prop (disch := simpa [slitPlane] using h) [besselI]
 
 @[fun_prop]
 theorem analyticOnNhd_besselJ (a : ℂ) : AnalyticOnNhd ℂ (J a) slitPlane :=
   fun _ hz ↦ analyticAt_besselJ a hz
 
-/-- For integer `a`, `J a` and `J (-a)` are related by a sign. -/
+@[fun_prop]
+theorem analyticOnNhd_besselI (a : ℂ) : AnalyticOnNhd ℂ (I_ a) slitPlane :=
+  fun _ hz ↦ analyticAt_besselI a hz
+
+/-- For integer `a`, `besselJ a` and `besselJ (-a)` are related by a sign. -/
 @[dlmf 10.4.E1]
 theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
   wlog! ha : 0 ≤ a
@@ -95,10 +171,17 @@ theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
   rw [regularizedHGFun_zero_singleton_neg_nat_add_one, neg_pow, h, zpow_natCast]
   ring
 
+/-- For integer `a`, `besselI a` and `besselI (-a)` are equal. -/
+@[dlmf 10.27.E1]
+theorem besselI_neg_int (a : ℤ) (x : ℂ) : I_ (-a) x = I_ a x := by
+  rw [← Int.cast_neg, besselI_int_eq_mul_besselJ, besselI_int_eq_mul_besselJ, Int.cast_neg,
+    besselJ_neg_int, zpow_neg, ← inv_zpow, inv_neg, inv_I, neg_neg, ← mul_assoc, ← mul_zpow,
+    mul_neg_one]
+
 theorem besselJ_neg_comm (a : ℤ) (x : ℂ) : J (-a) x = J a (-x) := by
   rw [besselJ_neg_int, ← besselJ_int_neg]
 
-/-- `J a` is analytic for integer `a`. -/
+/-- `besselJ a` is analytic for integer `a`. -/
 @[fun_prop]
 theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J a) x := by
   wlog! ha : 0 ≤ a
@@ -110,12 +193,26 @@ theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J a) x := b
   have : AnalyticAt ℂ (fun x ↦ (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)) x := by fun_prop
   simpa [besselJ_def]
 
+/-- `besselI a` is analytic for integer `a`. -/
+@[fun_prop]
+theorem analyticAt_besselI_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (I_ a) x := by
+  suffices AnalyticAt ℂ (I_ a ·) x by simpa
+  simp_rw [besselI_int_eq_mul_besselJ]
+  fun_prop
+
 @[fun_prop]
 theorem analyticOnNhd_besselJ_int (a : ℤ) : AnalyticOnNhd ℂ (J a) .univ :=
   fun z _ ↦ analyticAt_besselJ_int a z
 
+@[fun_prop]
+theorem analyticOnNhd_besselI_int (a : ℤ) : AnalyticOnNhd ℂ (I_ a) .univ :=
+  fun z _ ↦ analyticAt_besselI_int a z
+
 theorem besselJ_zero (a : ℂ) : J a 0 = if a = 0 then 1 else 0 := by
   split_ifs with h <;> simp [besselJ, h, regularizedHGFunCoeff]
+
+theorem besselI_zero (a : ℂ) : I_ a 0 = if a = 0 then 1 else 0 := by
+  split_ifs with h <;> simp [besselI, h, regularizedHGFunCoeff]
 
 @[dlmf 10.6.E1]
 theorem two_mul_self_mul_besselJ (a : ℂ) (x : ℂ) :
@@ -135,6 +232,19 @@ theorem two_mul_self_mul_besselJ (a : ℂ) (x : ℂ) :
       grind [sub_add_cancel, cpow_add, cpow_one]
     _ = _ := by
       grind [cpow_one]
+
+@[dlmf 10.29.E1]
+theorem two_mul_self_mul_besselI (a : ℂ) (x : ℂ) :
+    2 * a * I_ a x = x * I_ (a - 1) x - x * I_ (a + 1) x := by
+  by_cases! hx : x.arg ≤ π / 2
+  · have hI : -I ≠ 0 := neg_ne_zero.mpr I_ne_zero
+    simp_rw [besselI_eq_mul_besselJ_of_arg_le _ hx, cpow_add _ _ hI, cpow_sub _ _ hI, cpow_one,
+      div_neg, div_I]
+    linear_combination (-I) ^ a * two_mul_self_mul_besselJ a (x * I)
+  · have hx : -π / 2 < x.arg := by grind [Real.pi_pos]
+    simp_rw [besselI_eq_mul_besselJ_of_lt_arg _ hx, cpow_add _ _ I_ne_zero, cpow_sub _ _ I_ne_zero,
+      cpow_one, div_I]
+    linear_combination I ^ a * two_mul_self_mul_besselJ a (-x * I)
 
 @[dlmf 10.6.E2]
 theorem mul_deriv_besselJ_eq_besselJ_add_one (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
