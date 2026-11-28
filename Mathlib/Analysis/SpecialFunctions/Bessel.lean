@@ -8,7 +8,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
 
+import Mathlib.Analysis.Normed.Module.Connected
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+import Mathlib.Analysis.SpecialFunctions.GeneratingFunction
 
 /-!
 # Bessel function
@@ -36,7 +38,6 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 
 * Bessel function of the second kind
 * Differential equations
-* Generating functions
 * Bessel's integrals
 -/
 
@@ -169,6 +170,12 @@ theorem two_mul_deriv_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
     mul_deriv_besselJ_eq_besselJ_add_one a h
 
 @[dlmf 10.6.E1]
+theorem hasDerivAt_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
+    HasDerivAt (J a) ((J (a - 1) x - J (a + 1) x) / 2) x := by
+  convert (analyticAt_besselJ a h).differentiableAt.hasDerivAt
+  linear_combination -two_mul_deriv_besselJ a h / 2
+
+@[dlmf 10.6.E1]
 theorem two_mul_deriv_besselJ_int (a : ℤ) (x : ℂ) :
     2 * deriv (J a) x = J (a - 1) x - J (a + 1) x := by
   revert x
@@ -176,6 +183,12 @@ theorem two_mul_deriv_besselJ_int (a : ℤ) (x : ℂ) :
   apply AnalyticOnNhd.eq_of_frequently_eq (by fun_prop) (by norm_cast; fun_prop) (z₀ := 1)
   refine (eventually_nhdsWithin_of_eventually_nhds (eventually_nhds_iff.mpr ?_)).frequently
   exact ⟨slitPlane, fun x hx ↦ two_mul_deriv_besselJ a hx, isOpen_slitPlane, by simp⟩
+
+@[dlmf 10.6.E1]
+theorem hasDerivAt_besselJ_int (a : ℤ) (x : ℂ) :
+    HasDerivAt (J a) ((J (a - 1) x - J (a + 1) x) / 2) x := by
+  convert (analyticAt_besselJ_int a x).differentiableAt.hasDerivAt
+  linear_combination -two_mul_deriv_besselJ_int a x / 2
 
 @[dlmf 10.6.E2]
 theorem mul_deriv_besselJ_eq_besselJ_add_one_int (a : ℤ) (x : ℂ) :
@@ -186,5 +199,60 @@ theorem mul_deriv_besselJ_eq_besselJ_add_one_int (a : ℤ) (x : ℂ) :
 theorem mul_deriv_besselJ_eq_besselJ_sub_one_int (a : ℤ) (x : ℂ) :
     x * deriv (J a) x = x * J (a - 1) x - a * J a x := by
   linear_combination two_mul_self_mul_besselJ a x + mul_deriv_besselJ_eq_besselJ_add_one_int a x
+
+theorem norm_besselJ_le_exp {a : ℂ} (ha : 0 ≤ a.re) (x : ℂ) :
+    ‖J a x‖ ≤ ‖Gamma (a + 1)‖⁻¹ * ‖(x / 2) ^ a‖ * Real.exp (‖x / 2‖ ^ 2) := by
+  grw [besselJ, norm_mul, norm_regularizedHGFun_le_exp_of_one_le_re (by simpa using ha)]
+  simp [mul_left_comm, mul_assoc]
+
+theorem norm_besselJ_le_exp_int (a : ℤ) (x : ℂ) :
+    ‖J a x‖ ≤ (a.natAbs ! : ℝ)⁻¹ * ‖x / 2‖ ^ a.natAbs * Real.exp (‖x / 2‖ ^ 2) := by
+  wlog! ha : 0 ≤ a
+  · specialize this (-a) (-x) (by simpa using ha.le)
+    simpa [besselJ_neg_comm] using this
+  lift a to ℕ using ha
+  grw [norm_besselJ_le_exp (by simp)]
+  simp [Gamma_nat_eq_factorial]
+
+-- Within a bounded set, `t ^ a * J a x` can be bounded uniformly by exp series terms.
+private theorem zpow_mul_besselJ_le (t : ℂ) {s : Set ℂ} (hs : Bornology.IsBounded s) :
+    ∃ u v, ∀ a : ℤ, ∀ x ∈ s,
+      ‖t ^ a * J a x‖ ≤ (a.natAbs ! : ℝ)⁻¹ * (u ^ a.natAbs * ‖t ^ a‖) * v := by
+  obtain ⟨c, hc0, hc⟩ := hs.exists_pos_norm_le
+  refine ⟨c / 2, Real.exp ((c / 2) ^ 2), fun a y hy ↦ ?_⟩
+  have hy' : ‖y / 2‖ ≤ c / 2 := by simpa using div_le_div_of_nonneg_right (hc y hy) zero_le_two
+  grw [norm_mul, norm_besselJ_le_exp_int, hy', hy']
+  exact le_of_eq (by ring)
+
+-- The uniform bound on `t ^ a * J a x` is summable
+private theorem summable_bound (u v : ℝ) (t : ℂ) :
+    Summable fun a : ℤ ↦ (a.natAbs ! : ℝ)⁻¹ * (u ^ a.natAbs * ‖t ^ a‖) * v := by
+  refine summable_int_iff_summable_nat_and_neg.mpr ⟨?_, ?_⟩
+  · simpa [mul_pow] using
+      (NormedSpace.exp_series_hasSum_exp' (𝕂 := ℝ) (u * ‖t‖)).summable.mul_right v
+  · simpa [mul_pow] using
+      (NormedSpace.exp_series_hasSum_exp' (𝕂 := ℝ) (u * ‖t‖⁻¹)).summable.mul_right v
+
+/-- $f(t) = e^{x(t - t^{-1})/2}$ at $t = 0$ is the generating function for $J_a(x)$. -/
+@[dlmf 10.12.E1]
+theorem tsum_zpow_mul_besselJ (x : ℂ) {t : ℂ} (ht : t ≠ 0) :
+    ∑' a : ℤ, t ^ a * J a x = exp (x / 2 * (t - t⁻¹)) := by
+  suffices ∑' a : ℤ, t ^ a • J a x = exp (x / 2 * (t - t⁻¹)) by simpa
+  obtain ⟨u, v, h⟩ := zpow_mul_besselJ_le t (Metric.isBounded_ball (x := 0) (r := ‖x‖ + 1))
+  have (a : ℤ) (y : ℂ) (hy : y ∈ Metric.ball 0 (‖x‖ + 1)) :
+      HasDerivAt (J a) (∑ i, ![(1 / 2 : ℂ), -1 / 2] i • J (a - ![1, -1] i : ℤ) y) y := by
+    convert hasDerivAt_besselJ_int a y
+    simp
+    ring
+  rw [tsum_zpow_smul_eq_exp_smul Metric.isOpen_ball Metric.isPreconnected_ball this ht
+    (summable_bound u v t) h (Metric.mem_ball_self (by positivity)) (by simp)]
+  simp [besselJ_zero, Fin.sum_univ_two]
+  grind
+
+theorem hasSum_zpow_mul_besselJ (x : ℂ) {t : ℂ} (ht : t ≠ 0) :
+    HasSum (fun a : ℤ ↦ t ^ a * J a x) (exp (x / 2 * (t - t⁻¹))) :=
+  let ⟨u, v, h⟩ := zpow_mul_besselJ_le t (Bornology.isBounded_singleton (x := x))
+  ((summable_bound u v t).of_norm_bounded fun a ↦ h a x (Set.mem_singleton x)).hasSum_iff.mpr
+    (tsum_zpow_mul_besselJ x ht)
 
 end Complex
