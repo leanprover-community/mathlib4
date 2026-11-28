@@ -67,11 +67,8 @@ theorem toLinearMap_coeAlgHom : (coeAlgHom R F : F →ₗ[R] α → β) = coeLin
 
 variable (R F) in
 /-- Evaluation as an algebra homomorphism. -/
-@[expose]
+@[expose, simps!]
 def evalAlgHom (x : α) : F →ₐ[R] β := (Pi.evalAlgHom R _ x).comp (coeAlgHom R F)
-
-@[simp]
-theorem evalAlgHom_apply (x : α) (f : F) : evalAlgHom R F x f = f x := rfl
 
 @[simp, norm_cast]
 theorem toRingHom_evalAlgHom (x : α) : (evalAlgHom R F x : F →+* β) = evalRingHom F x := rfl
