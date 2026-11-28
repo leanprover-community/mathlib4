@@ -116,8 +116,8 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
 
 theorem pivotOfList_lt_pivotOfList {cols : List (Fin n)} (hsorted : cols.SortedLT) {i j : ℕ}
     (hij : i < j) (hj : pivotOfList cols j ≠ ⊤) : pivotOfList cols i < pivotOfList cols j := by
-  grind [pivotOfList, List.SortedLT.getElem_lt_getElem_iff, WithTop.coe_lt_coe, WithTop.some_eq_coe,
-    WithTop.none_eq_top]
+  grind [pivotOfList, List.SortedLT.getElem_lt_getElem_iff, WithTop.coe_lt_coe,
+    WithTop.optionSome_eq_some, WithTop.none_eq_top]
 
 theorem pivotOfList_mono_of_sortedLT {cols : List (Fin n)} (hsorted : cols.SortedLT) :
     Monotone (pivotOfList cols) := by
