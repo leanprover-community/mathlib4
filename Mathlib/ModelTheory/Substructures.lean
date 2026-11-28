@@ -967,7 +967,7 @@ theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embeddin
 
 @[simp]
 theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
-    (inclusion h : S → T) = Set.inclusion h :=
+    (inclusion h : S → T) = Set.inclusion (id h) :=
   rfl
 
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
