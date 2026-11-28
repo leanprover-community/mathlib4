@@ -9,7 +9,7 @@ public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Push
 
 /-!
-## Symmetric quivers and arrow reversal
+# Symmetric quivers and arrow reversal
 
 This file contains constructions related to symmetric quivers:
 
