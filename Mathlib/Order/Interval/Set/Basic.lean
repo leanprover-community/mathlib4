@@ -321,15 +321,17 @@ theorem Icc_subset_Ioc_left (h : a₁ < a₂) : Icc a₂ b ⊆ Ioc a₁ b :=
 theorem Icc_subset_Ioo (ha : a₂ < a₁) (hb : b₁ < b₂) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ :=
   (Icc_subset_Ioc_left ha).trans (Ioc_subset_Ioo_right hb)
 
-@[to_dual] theorem Ico_subset_Iio_self : Ico a b ⊆ Iio b := fun _ => And.right
-@[to_dual] theorem Ioo_subset_Iio_self : Ioo a b ⊆ Iio b := fun _ => And.right
-@[to_dual] theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := fun _ => And.right
-@[to_dual] theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := fun _ => And.right
+@[to_dual (attr := simp)] theorem Ico_subset_Iio_self : Ico a b ⊆ Iio b := fun _ => And.right
+@[to_dual (attr := simp)] theorem Ioo_subset_Iio_self : Ioo a b ⊆ Iio b := fun _ => And.right
+@[to_dual (attr := simp)] theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := fun _ => And.right
+@[to_dual (attr := simp)] theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := fun _ => And.right
 
-@[to_dual] theorem Ioo_subset_Ico_self : Ioo a b ⊆ Ico a b := fun _ => And.imp_left le_of_lt
-@[to_dual] theorem Ioc_subset_Icc_self : Ioc a b ⊆ Icc a b := fun _ => And.imp_left le_of_lt
+@[to_dual (attr := simp)]
+theorem Ioo_subset_Ico_self : Ioo a b ⊆ Ico a b := fun _ => And.imp_left le_of_lt
+@[to_dual (attr := simp)]
+theorem Ioc_subset_Icc_self : Ioc a b ⊆ Icc a b := fun _ => And.imp_left le_of_lt
 
-@[to_dual self]
+@[to_dual self, simp]
 theorem Ioo_subset_Icc_self : Ioo a b ⊆ Icc a b :=
   Ioo_subset_Ico_self.trans Ico_subset_Icc_self
 
