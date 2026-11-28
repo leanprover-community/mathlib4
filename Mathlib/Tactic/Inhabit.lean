@@ -12,6 +12,8 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
+# The `inhabit` tactic
+
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
 constructively or otherwise.
 -/

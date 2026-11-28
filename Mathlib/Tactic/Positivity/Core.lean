@@ -12,7 +12,7 @@ public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
 
 /-!
-## `positivity` core functionality
+# `positivity` core functionality
 
 This file sets up the `positivity` tactic and the `@[positivity]` attribute,
 which allow for plugging in new positivity functionality around a positivity-based driver.

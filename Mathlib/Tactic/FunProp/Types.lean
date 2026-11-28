@@ -10,7 +10,7 @@ public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public meta import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
-## `funProp`
+# `funProp`
 
 this file defines environment extension for `funProp`
 -/

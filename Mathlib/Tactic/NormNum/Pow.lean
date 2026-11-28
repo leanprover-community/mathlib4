@@ -10,7 +10,7 @@ public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
 
 /-!
-## `norm_num` plugin for `^`.
+# `norm_num` plugin for `^`
 -/
 
 public section

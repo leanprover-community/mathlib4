@@ -11,6 +11,8 @@ public meta import Lean.Meta.Tactic.SplitIf
 public import Mathlib.Tactic.Core
 
 /-!
+# The `split_ifs` tactic
+
 Tactic to split if-then-else expressions.
 -/
 

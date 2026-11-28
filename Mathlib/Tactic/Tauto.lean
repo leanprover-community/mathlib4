@@ -17,7 +17,7 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
-The `tauto` tactic.
+# The `tauto` tactic
 -/
 
 public meta section

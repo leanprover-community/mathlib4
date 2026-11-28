@@ -16,6 +16,8 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
+# Helper functions for linters
+
 This file contains functions that are used by multiple linters.
 -/
 
