@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.PowerBasis
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

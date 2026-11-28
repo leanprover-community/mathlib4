@@ -31,7 +31,6 @@ quasiconcavity, and monotonicity implies quasilinearity.
 
 @[expose] public section
 
-
 open Function OrderDual Set
 
 variable {𝕜 E β : Type*}

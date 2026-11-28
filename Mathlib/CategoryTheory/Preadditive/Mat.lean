@@ -45,7 +45,6 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Preadditive
 
 noncomputable section

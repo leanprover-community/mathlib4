@@ -31,7 +31,6 @@ adjoin, algebra, finitely-generated algebra
 
 @[expose] public section
 
-
 universe u v w
 
 open Ring Submodule

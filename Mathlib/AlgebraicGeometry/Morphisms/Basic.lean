@@ -97,7 +97,6 @@ with a `Precoverage`.
 
 @[expose] public section
 
-
 universe u v
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite

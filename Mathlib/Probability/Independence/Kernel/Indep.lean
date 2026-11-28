@@ -412,7 +412,6 @@ end Indep
 
 /-! ### Deducing `Indep` from `iIndep` -/
 
-
 section FromiIndepToIndep
 
 variable {_mα : MeasurableSpace α}
@@ -445,7 +444,6 @@ end FromiIndepToIndep
 
 Independence of measurable spaces is equivalent to independence of generating π-systems.
 -/
-
 
 section FromMeasurableSpacesToSetsOfSets
 

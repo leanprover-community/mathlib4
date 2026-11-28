@@ -45,7 +45,6 @@ lemma BddAbove.smul_of_nonneg (hs : BddAbove s) (ha : 0 ≤ a) : BddAbove (a •
 
 end PosSMulMono
 
-
 section
 variable [Preorder α] [Preorder β] [GroupWithZero α] [Zero β] [MulActionWithZero α β]
   [PosSMulMono α β] [PosSMulReflectLE α β] {s : Set β} {a : α}

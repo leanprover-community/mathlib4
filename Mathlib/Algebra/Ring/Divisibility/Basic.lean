@@ -23,7 +23,6 @@ imports. Further results about divisibility in rings may be found in
 
 @[expose] public section
 
-
 variable {α β : Type*}
 
 section Semigroup

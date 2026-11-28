@@ -51,7 +51,6 @@ between Grothendieck topoi and left exact reflective subcategories of presheaf t
 
 @[expose] public section
 
-
 universe v₁ u₁ v u
 
 namespace CategoryTheory
@@ -415,7 +414,6 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
     rcases h hf with ⟨Z, g, hg⟩
     exact ⟨_, _, hg⟩
 
-
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
 def Cover (X : C) : Type max u v :=
@@ -607,7 +605,6 @@ def Relation.mk' {S : J.Cover X} {fst snd : S.Arrow} (r : fst.Relation snd) :
   fst := fst
   snd := snd
   r := r
-
 
 /-- The shape of the multiequalizer diagrams associated to `S : J.Cover X`. -/
 @[simps]

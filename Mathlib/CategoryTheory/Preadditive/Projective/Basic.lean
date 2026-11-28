@@ -30,7 +30,6 @@ Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projecti
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Limits Opposite

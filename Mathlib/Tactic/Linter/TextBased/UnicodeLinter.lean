@@ -7,7 +7,6 @@ module
 
 import Mathlib.Init
 
-
 /-!
 # Tools for the unicode Linter
 

@@ -183,7 +183,6 @@ lemma extendedHom_mk0 (I : (Ideal A)⁰) :
   congr; ext : 1
   exact FractionalIdeal.extendedHom_coeIdeal_eq_map (L := FractionRing B) (B := B) _
 
-
 @[simp]
 theorem extendedHom_comp_apply (x : ClassGroup A) :
       extendedHom B C (extendedHom A B x) = extendedHom A C x := by

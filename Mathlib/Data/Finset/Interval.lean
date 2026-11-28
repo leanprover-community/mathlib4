@@ -28,7 +28,6 @@ out of `Finset α` in terms of `Finset.insert`
 
 public section
 
-
 variable {α β : Type*}
 
 namespace Finset

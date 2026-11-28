@@ -30,7 +30,6 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 
 public section
 
-
 open Filter
 
 open scoped ENNReal NNReal MeasureTheory Topology

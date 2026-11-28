@@ -60,7 +60,6 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 *  `IsNilpotent.commute_of_orderOf_coprime` : In a nilpotent group, two elements commute when their
   orders are coprime.
 
-
 ## Warning
 
 A "central series" is usually defined to be a finite sequence of normal subgroups going
@@ -73,7 +72,6 @@ are not central series if `G` is not nilpotent is a standard abuse of notation.
 -/
 
 @[expose] public section
-
 
 open commutatorElement Subgroup
 

@@ -18,7 +18,6 @@ An object `J` is injective iff every morphism into `J` can be obtained by extend
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Limits Opposite

@@ -21,7 +21,6 @@ at `l`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
@@ -891,7 +890,6 @@ theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [Meas
 The primed lemmas take explicit arguments about the measure being finite at the endpoint, while
 the unprimed ones use `[NullSingletonClass μ]`.
 -/
-
 
 section PartialOrder
 

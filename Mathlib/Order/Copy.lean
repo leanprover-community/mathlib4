@@ -20,7 +20,6 @@ that have better definitional properties.
 
 @[expose] public section
 
-
 open Order
 
 universe u

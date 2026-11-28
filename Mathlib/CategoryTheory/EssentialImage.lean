@@ -28,7 +28,6 @@ a functor decomposes into an essentially surjective functor and a fully faithful
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section

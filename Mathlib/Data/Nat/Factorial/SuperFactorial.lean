@@ -24,7 +24,6 @@ This file defines the [superfactorial](https://en.wikipedia.org/wiki/Superfactor
 
 @[expose] public section
 
-
 namespace Nat
 
 /-- `Nat.superFactorial n` is the superfactorial of `n`. -/

@@ -32,7 +32,6 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 
 @[expose] public section
 
-
 open Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (g : Y → Z)

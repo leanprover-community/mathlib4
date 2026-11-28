@@ -28,7 +28,6 @@ Let `X` be a profinite set.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v w

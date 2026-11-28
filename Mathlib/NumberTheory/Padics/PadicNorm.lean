@@ -40,7 +40,6 @@ p-adic, p adic, padic, norm, valuation
 
 @[expose] public section
 
-
 /-- If `q ≠ 0`, the `p`-adic norm of a rational `q` is `p ^ (-padicValRat p q)`.
 If `q = 0`, the `p`-adic norm of `q` is `0`. -/
 noncomputable def padicNorm (p : ℕ) (q : ℚ) : ℚ :=

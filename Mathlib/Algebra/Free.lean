@@ -13,7 +13,6 @@ public import Mathlib.Util.CompileInductive
 import Mathlib.Control.Applicative
 import Mathlib.Tactic.AdaptationNote
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

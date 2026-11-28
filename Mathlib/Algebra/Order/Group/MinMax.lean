@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 section
 
 variable {α : Type*} [Group α] [LinearOrder α] [MulLeftMono α]

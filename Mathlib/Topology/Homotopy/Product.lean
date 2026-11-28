@@ -48,7 +48,6 @@ of products.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace ContinuousMap

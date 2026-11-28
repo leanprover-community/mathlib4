@@ -36,7 +36,6 @@ probability mass function, discrete probability measure
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {α : Type*}

@@ -27,7 +27,6 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 
 public section
 
-
 open Asymptotics Filter Function
 open scoped Topology
 

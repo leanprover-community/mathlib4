@@ -35,7 +35,6 @@ divisibility, divides
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 section Semigroup

@@ -82,7 +82,6 @@ variable {f : E → F}
 /-! First we prove some properties of a function that `ApproximatesLinearOn` a (not necessarily
 invertible) continuous linear map. -/
 
-
 section
 
 variable {f' : E →L[𝕜] F} {s t : Set E} {c c' : ℝ≥0}
@@ -133,7 +132,6 @@ We prove that a function which is linearly approximated by a continuous linear m
 right inverse is locally onto. This will apply to the case where the approximating map is a linear
 equivalence, for the local inverse theorem, but also whenever the approximating map is onto,
 by Banach's open mapping theorem. -/
-
 
 variable [CompleteSpace E] {s : Set E} {c : ℝ≥0} {f' : E →L[𝕜] F}
 
@@ -308,7 +306,6 @@ From now on we assume that `f` approximates an invertible continuous linear map 
 
 We also assume that either `E = {0}`, or `c < ‖f'⁻¹‖⁻¹`. We use `N` as an abbreviation for `‖f'⁻¹‖`.
 -/
-
 
 variable {f' : E ≃L[𝕜] F} {s : Set E} {c : ℝ≥0}
 

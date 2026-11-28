@@ -379,7 +379,6 @@ end ConditionallyCompleteLinearOrder
 In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
 
-
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}

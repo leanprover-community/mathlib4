@@ -22,7 +22,6 @@ corresponds to `BddDistLat`.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

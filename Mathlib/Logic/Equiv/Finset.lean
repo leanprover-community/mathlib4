@@ -56,7 +56,6 @@ def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card 
 
 end Encodable
 
-
 namespace Denumerable
 variable [Denumerable α]
 

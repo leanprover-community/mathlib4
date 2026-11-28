@@ -32,8 +32,6 @@ The rationale is that we are not carrying any additional data, just requiring a 
 
 @[expose] public section
 
-
-
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 namespace CategoryTheory

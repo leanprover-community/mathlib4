@@ -25,7 +25,6 @@ subgroup, subgroups
 
 public section
 
-
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
 

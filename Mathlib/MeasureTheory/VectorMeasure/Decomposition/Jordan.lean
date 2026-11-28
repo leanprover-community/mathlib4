@@ -44,7 +44,6 @@ Jordan decomposition theorem
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped MeasureTheory ENNReal NNReal

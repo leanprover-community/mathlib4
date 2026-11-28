@@ -60,7 +60,6 @@ open Asymptotics Filter Set
 
 open ContinuousLinearMap (id)
 
-
 /-!
 ### Inverse function theorem
 

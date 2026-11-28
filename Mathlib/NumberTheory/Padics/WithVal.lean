@@ -134,7 +134,6 @@ def withValRingEquiv :
   map_mul' := map_mul _
   map_add' := map_add _
 
-
 @[simp]
 lemma coe_withValRingEquiv :
     ⇑(Padic.withValRingEquiv (p := p)) = Completion.extension

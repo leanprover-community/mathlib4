@@ -20,7 +20,6 @@ public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 * `SimpleGraph.isTree_starGraph` proves the star graph is a tree.
 
-
 ## Tags
 
 star graph

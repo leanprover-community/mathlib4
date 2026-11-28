@@ -46,7 +46,6 @@ that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 
 @[expose] public section
 
-
 open Polynomial
 
 noncomputable section

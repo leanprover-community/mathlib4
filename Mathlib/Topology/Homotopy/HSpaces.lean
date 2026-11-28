@@ -110,7 +110,6 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.hmulE.prop' t x h.1) (HSpace.hmulE.prop' t y h.2)
 
-
 namespace IsTopologicalGroup
 
 /-- The definition `toHSpace` is not an instance because its additive version would
@@ -144,7 +143,6 @@ example {G G' : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [T
     [Group G'] [IsTopologicalGroup G'] : IsTopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
   rfl
-
 
 end IsTopologicalGroup
 

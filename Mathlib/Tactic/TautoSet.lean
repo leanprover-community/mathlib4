@@ -28,7 +28,6 @@ local elab (name := specialize_all) "specialize_all" x:term : tactic => withMain
     unless h.isImplementationDetail do
       evalTactic (← `(tactic|specialize $(mkIdent h.userName) $x)) <|> pure ()
 
-
 /--
 `tauto_set` proves tautologies involving hypotheses and goals of the form `X ⊆ Y`
 or `X = Y`, where `X`, `Y` are expressions built using `∪`, `∩`, `\`, and `ᶜ` from finitely many
@@ -56,6 +55,5 @@ macro "tauto_set" : tactic => `(tactic|
     try specialize_all x
     <;> tauto
 )
-
 
 end Mathlib.Tactic.TautoSet

@@ -43,7 +43,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 
 @[expose] public section
 
-
 open Finset
 
 /-- The recursive definition of the sequence of Catalan numbers:

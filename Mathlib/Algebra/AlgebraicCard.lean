@@ -24,7 +24,6 @@ proof is given by `Liouville.transcendental`.
 
 public section
 
-
 universe u v
 
 open Cardinal Polynomial Set

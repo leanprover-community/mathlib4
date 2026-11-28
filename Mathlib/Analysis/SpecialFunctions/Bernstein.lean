@@ -93,7 +93,6 @@ end Mathlib.Meta.Positivity
 We now give a slight reformulation of `bernsteinPolynomial.variance`.
 -/
 
-
 namespace bernstein
 
 /-- Send `k : Fin (n+1)` to the equally spaced points `k/n` in the unit interval.

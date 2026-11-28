@@ -18,7 +18,6 @@ The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
 
 @[expose] public section
 
-
 universe v u
 
 open Opposite

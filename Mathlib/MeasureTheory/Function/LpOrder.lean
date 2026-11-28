@@ -22,8 +22,6 @@ public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 
 public section
 
-
-
 open TopologicalSpace MeasureTheory
 open scoped ENNReal
 

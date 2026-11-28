@@ -46,7 +46,6 @@ sin, cos, tan, angle
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set

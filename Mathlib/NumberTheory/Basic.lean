@@ -28,7 +28,6 @@ all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` 
 
 public section
 
-
 section
 
 open Ideal Ideal.Quotient

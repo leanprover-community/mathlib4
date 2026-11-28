@@ -117,7 +117,6 @@ lemma permMatrix_mem_rowStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
 
-
 /- ## Column-stochastic matrices -/
 
 /-- A square matrix is column stochastic iff all entries are nonnegative, and left

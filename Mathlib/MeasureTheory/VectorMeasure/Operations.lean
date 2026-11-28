@@ -529,7 +529,6 @@ def restrictₗ (i : Set α) : VectorMeasure α M →ₗ[R] VectorMeasure α M w
 
 end
 
-
 section Trim
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]

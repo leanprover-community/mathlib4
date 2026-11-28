@@ -80,7 +80,6 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 /-! ### Valuations of non-zero elements -/
 
-
 namespace HeightOneSpectrum
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
@@ -153,7 +152,6 @@ theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
 end HeightOneSpectrum
 
 /-! ### Selmer groups -/
-
 
 variable {S S' : Set <| HeightOneSpectrum R} {n : ℕ}
 

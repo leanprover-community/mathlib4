@@ -40,7 +40,6 @@ properties to computational properties of the matrix.
 
 @[expose] public section
 
-
 open Matrix
 
 open Finset SimpleGraph

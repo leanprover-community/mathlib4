@@ -38,7 +38,6 @@ case the unit and the counit would switch to each other.
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
-
 noncomputable section
 
 universe u
@@ -338,7 +337,6 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
   right_triangle_components R := by
     simp only [Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
     exact right_triangle R.unop
-
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toSpecΓ_unop (R : CommRingCatᵒᵖ) :

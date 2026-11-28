@@ -14,7 +14,6 @@ structure Struct where
 
 example : Encodable Struct := inferInstance
 
-
 /-!
 Inductive types with parameters
 -/
@@ -41,7 +40,6 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 #guard_msgs in
 #eval (Encodable.decode 96964472478917 : Option <| T Nat)
 
-
 /-!
 Mutually recursive types
 -/
@@ -58,7 +56,6 @@ end
 
 example : Encodable T1 := inferInstance
 example : Encodable T2 := inferInstance
-
 
 /-!
 Not supported: indexed types

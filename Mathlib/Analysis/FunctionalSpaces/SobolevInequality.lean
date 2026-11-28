@@ -640,7 +640,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
       push_cast
       simp_rw [mul_assoc]
 
-
 variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_le`.
 It only depends on `F`, `μ`, `s`, `p` and `q`. -/
@@ -648,7 +647,6 @@ It only depends on `F`, `μ`, `s`, `p` and `q`. -/
     ℝ≥0 :=
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
-
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension

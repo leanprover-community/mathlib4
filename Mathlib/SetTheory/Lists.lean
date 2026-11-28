@@ -48,7 +48,6 @@ This calls for a two-step definition of ZFA lists:
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 /-- Prelists, helper type to define `Lists`. `Lists' α false` are the "atoms", a copy of `α`.

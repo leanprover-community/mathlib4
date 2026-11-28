@@ -20,7 +20,6 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 @[expose] public section
 
-
 namespace Cardinal
 
 universe u v
@@ -61,7 +60,6 @@ theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 :=
 ### Inequalities
 -/
 
-
 theorem aleph0_lt_continuum : ℵ₀ < 𝔠 :=
   cantor ℵ₀
 
@@ -98,7 +96,6 @@ theorem continuum_toENat : toENat continuum = ⊤ :=
 ### Addition
 -/
 
-
 @[simp]
 theorem aleph0_add_continuum : ℵ₀ + 𝔠 = 𝔠 :=
   add_eq_right aleph0_le_continuum aleph0_le_continuum
@@ -131,7 +128,6 @@ theorem continuum_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 + ofNat(n) = �
 ### Multiplication
 -/
 
-
 @[simp]
 theorem continuum_mul_self : 𝔠 * 𝔠 = 𝔠 :=
   mul_eq_left aleph0_le_continuum le_rfl continuum_ne_zero
@@ -163,7 +159,6 @@ theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * ofNat(n) = �
 /-!
 ### Power
 -/
-
 
 @[simp]
 theorem aleph0_power_aleph0 : ℵ₀ ^ ℵ₀ = 𝔠 :=

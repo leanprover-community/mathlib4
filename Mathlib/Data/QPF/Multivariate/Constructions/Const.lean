@@ -22,7 +22,6 @@ specification.
 
 @[expose] public section
 
-
 universe u
 
 namespace MvQPF

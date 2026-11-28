@@ -22,7 +22,6 @@ supplied for true `εNFA`'s.
 
 @[expose] public section
 
-
 open Set
 
 open scoped Computability
@@ -296,7 +295,6 @@ theorem mem_accepts_iff_exists_path {x : List α} :
 
 /-! ### Conversions between `εNFA` and `NFA` -/
 
-
 /-- `M.toNFA` is an `NFA` constructed from an `εNFA` `M`. -/
 def toNFA : NFA α σ where
   step S a := M.εClosure (M.step S a)
@@ -354,7 +352,6 @@ theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
 end NFA
 
 /-! ### Regex-like operations -/
-
 
 namespace εNFA
 

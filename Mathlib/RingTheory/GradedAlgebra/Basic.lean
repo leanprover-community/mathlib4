@@ -41,7 +41,6 @@ graded algebra, graded ring, graded semiring, decomposition
 
 @[expose] public section
 
-
 open DirectSum
 
 variable {ι R A σ : Type*}

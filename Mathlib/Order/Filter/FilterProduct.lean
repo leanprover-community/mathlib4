@@ -24,7 +24,6 @@ ultrafilter, ultraproduct
 
 public section
 
-
 universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}

@@ -277,7 +277,6 @@ def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
 
 end Truncation
 
-
 noncomputable section
 
 /-- The n-skeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
@@ -307,7 +306,6 @@ end
 section adjunctions
 /- When the left and right Kan extensions exist, `Truncated.sk n` and `Truncated.cosk n`
 respectively define left and right adjoints to `truncation n`. -/
-
 
 variable (n : ℕ)
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),

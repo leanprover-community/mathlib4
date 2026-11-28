@@ -19,7 +19,6 @@ Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilt
 
 public section
 
-
 universe w' w w₂' w₂ v u
 
 noncomputable section

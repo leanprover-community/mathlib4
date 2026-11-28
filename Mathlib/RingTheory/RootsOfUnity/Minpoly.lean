@@ -28,7 +28,6 @@ We gather several results about minimal polynomial of root of unity.
 
 public section
 
-
 open minpoly Polynomial
 
 open scoped Polynomial

@@ -17,7 +17,6 @@ import Mathlib.Algebra.Group.Equiv.Defs
 
 public section
 
-
 variable {α β : Type*}
 
 section Add
@@ -57,7 +56,6 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
   exact e.monotone (e_add.symm.toAddHom.le_map_tsub e.symm.monotone _ _)
 
 /-! ### Preorder -/
-
 
 section Preorder
 

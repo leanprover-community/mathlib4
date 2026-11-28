@@ -116,7 +116,6 @@ def foldrIdxM {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) :
 
 end foldIdxM
 
-
 section mapIdxM
 
 -- This could be relaxed to `Applicative` but is `Monad` to match `List.mapIdxM`.
@@ -343,7 +342,6 @@ map₂Right' prod.mk [1, 2] ['a'] = ([(some 1, 'a')], [2])
 def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : List γ × List α :=
   map₂Left' (flip f) bs as
 
-
 /-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
 `aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
@@ -382,7 +380,6 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
   ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).flatMap Task.get
-
 
 /-!
 We add some n-ary versions of `List.zipWith` for functions with more than two arguments.

@@ -28,7 +28,6 @@ Once we have cocartesian-monoidal categories, replace `monoidalOfHasFiniteCoprod
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

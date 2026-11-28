@@ -57,7 +57,6 @@ This is to enable `calc` support, as `calc` requires that the last two explicit 
 
 public section
 
-
 namespace Asymptotics
 
 open Filter Function

@@ -22,7 +22,6 @@ permutations of interval endpoints.
 
 public section
 
-
 variable {α : Type*} {β : Type*} [LinearOrder α] [PartialOrder β] {f : α → β}
 
 open Set Function

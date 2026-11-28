@@ -40,7 +40,6 @@ every monomorphism or epimorphism is regular, and deduce that these categories a
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory

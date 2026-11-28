@@ -474,7 +474,6 @@ end CondIndep
 
 /-! ### Deducing `CondIndep` from `iCondIndep` -/
 
-
 section FromiCondIndepToCondIndep
 
 variable {m' : MeasurableSpace Ω}
@@ -505,7 +504,6 @@ end FromiCondIndepToCondIndep
 Conditional independence of measurable spaces is equivalent to conditional independence of
 generating π-systems.
 -/
-
 
 section FromMeasurableSpacesToSetsOfSets
 

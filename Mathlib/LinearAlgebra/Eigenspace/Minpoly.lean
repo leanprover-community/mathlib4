@@ -24,7 +24,6 @@ eigenvalue, minimal polynomial
 
 public section
 
-
 universe u v w
 
 namespace Module

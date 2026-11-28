@@ -65,7 +65,6 @@ set_option pp.tagAppFns true
 #guard_msgs in #eval testTagAppFns ``Filter.eventually
 end
 
-
 -- Testing lambda expressions:
 notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
 /-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/
@@ -247,7 +246,6 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
-
 
 notation3 "(" "ignorez " "SVP" ")" => Sort _
 notation3 "Objet " "mathématique " "supérieur" => Type _

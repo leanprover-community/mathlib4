@@ -21,7 +21,6 @@ TODO: move these results to other places, and deprecate this file.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace MvPolynomial

@@ -32,7 +32,6 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 
 @[expose] public section
 
-
 universe u1 u2 u3
 
 variable {R M N : Type*}
@@ -155,7 +154,6 @@ theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R,
   | mul_ι _ _ hx => simpa only [reverse.map_mul, reverse_ι] using ι_mul _ _ hx
 
 /-! ### Versions with extra state -/
-
 
 /-- Auxiliary definition for `CliffordAlgebra.foldr'` -/
 def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :

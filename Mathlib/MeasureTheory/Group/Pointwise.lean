@@ -20,7 +20,6 @@ no `MeasurableSet.mul` etc.
 
 public section
 
-
 open scoped Pointwise
 
 open Set

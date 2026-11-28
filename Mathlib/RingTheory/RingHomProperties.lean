@@ -26,7 +26,6 @@ The following meta-properties of predicates on ring homomorphisms are defined
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory CategoryTheory.Limits TensorProduct

@@ -59,7 +59,6 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
   · exact RingHom.ext_int _ _
   · simpa using! h _
 
-
 @[simps -isSimp]
 instance over : 𝔸(n; S).CanonicallyOver S where
   hom := pullback.fst _ _

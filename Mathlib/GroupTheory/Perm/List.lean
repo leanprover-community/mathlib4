@@ -34,7 +34,6 @@ nontrivial permutation that is noncyclic.
 
 @[expose] public section
 
-
 namespace List
 
 variable {α : Type*}

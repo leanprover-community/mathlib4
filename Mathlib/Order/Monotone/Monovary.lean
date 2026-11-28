@@ -27,7 +27,6 @@ This condition comes up in the rearrangement inequality. See `Algebra.Order.Rear
 
 @[expose] public section
 
-
 open Function Set
 
 variable {ι ι' α β γ : Type*}

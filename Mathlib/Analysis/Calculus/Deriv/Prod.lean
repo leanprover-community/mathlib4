@@ -37,7 +37,6 @@ section CartesianProduct
 
 /-! ### Derivative of the Cartesian product of two functions -/
 
-
 variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f₂ : 𝕜 → G} {f₂' : G}
 
@@ -100,7 +99,6 @@ theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
   simp
 
 end Pi
-
 
 /-!
 ### Derivatives of tuples `f : 𝕜 → Π i : Fin n.succ, F' i`

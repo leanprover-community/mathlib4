@@ -18,7 +18,6 @@ This file contains lemmas about integers, which require further imports than
 
 public section
 
-
 open Nat
 
 namespace Int
@@ -28,12 +27,10 @@ theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
 
 /-! ### `succ` and `pred` -/
 
-
 theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 
 /-! ### `natAbs` -/
-
 
 theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
   rw [sq, sq]

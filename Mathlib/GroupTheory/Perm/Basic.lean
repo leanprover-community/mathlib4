@@ -29,7 +29,6 @@ the algebra and non-algebra parts).
 
 public section
 
-
 universe u v
 
 namespace Equiv

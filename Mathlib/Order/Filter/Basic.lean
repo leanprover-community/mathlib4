@@ -144,7 +144,6 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
 
 end Filter
 
-
 namespace Filter
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
@@ -514,7 +513,6 @@ theorem sup_join {f₁ f₂ : Filter (Filter α)} : join f₁ ⊔ join f₂ = jo
 @[simp]
 theorem iSup_join {ι : Sort w} {f : ι → Filter (Filter α)} : ⨆ x, join (f x) = join (⨆ x, f x) :=
   Filter.ext fun x => by simp only [mem_iSup, mem_join]
-
 
 /-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
 instance instCoframe : Coframe (Filter α) where

@@ -420,7 +420,6 @@ lemma eTruncLTLTIsoLT_inv_hom_id_app_eTruncLT_obj (X : C) :
 
 end
 
-
 section
 
 variable (a b : EInt)

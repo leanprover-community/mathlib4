@@ -19,7 +19,6 @@ This file proves lemmas relating incenters and excenters of a simplex to angle b
 
 public section
 
-
 open EuclideanGeometry Module
 open scoped Real
 

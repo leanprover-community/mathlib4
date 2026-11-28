@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 
-
 /-!
 # Basis.norm
 

@@ -44,7 +44,6 @@ Brownian motion, covariance matrix, projective family
 
 @[expose] public section
 
-
 open MeasureTheory NormedSpace Set WithLp
 open scoped ENNReal NNReal
 

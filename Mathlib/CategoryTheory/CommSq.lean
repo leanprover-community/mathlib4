@@ -26,7 +26,6 @@ Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lea
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
@@ -126,7 +125,6 @@ lemma vert_comp {W X Y Y' Z Z' : C} {f : W ⟶ X} {g : W ⟶ Y} {g' : Y ⟶ Y'} 
     CommSq f (g ≫ g') (h ≫ h') i' :=
   flip (horiz_comp (flip hsq₁) (flip hsq₂))
 
-
 section
 
 variable {W X Y : C}
@@ -158,7 +156,6 @@ end Functor
 alias CommSq.map := Functor.map_commSq
 
 namespace CommSq
-
 
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 

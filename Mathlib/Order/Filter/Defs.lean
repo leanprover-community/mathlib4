@@ -264,7 +264,6 @@ theorem mem_sdiff : s ∈ f \ g ↔ ∀ t ∈ g, s ⊆ t → t ∈ f := .rfl
 
 protected theorem hnot_def : ￢f = 𝓟 f.kerᶜ := rfl
 
-
 /-- A filter is `NeBot` if it is not equal to `⊥`, or equivalently the empty set does not belong to
 the filter. Bourbaki include this assumption in the definition of a filter but we prefer to have a
 `CompleteLattice` structure on `Filter _`, so we use a typeclass argument in lemmas instead. -/

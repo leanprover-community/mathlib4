@@ -83,7 +83,6 @@ convention:
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory
@@ -127,7 +126,6 @@ a preadditive category with kernels, cokernels, and finite products,
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category.
 -/
-
 
 namespace CategoryTheory.Abelian
 
@@ -294,7 +292,6 @@ end ToNonPreadditiveAbelian
 section
 
 /-! We now promote some instances that were constructed using `nonPreadditiveAbelian`. -/
-
 
 attribute [local instance] nonPreadditiveAbelian
 
@@ -579,7 +576,6 @@ variable [Limits.HasPullbacks C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-! This section contains a slightly technical result about pullbacks and biproducts.
     We will need it in the proof that the pullback of an epimorphism is an epimorphism. -/
-
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` -/
 abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=

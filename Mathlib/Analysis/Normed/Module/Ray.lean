@@ -21,7 +21,6 @@ norms and `‖y‖ • x = ‖x‖ • y`.
 
 public section
 
-
 open Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}

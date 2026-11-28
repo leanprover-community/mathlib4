@@ -25,7 +25,6 @@ complement is convex.
 
 public section
 
-
 open Set
 
 variable {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]

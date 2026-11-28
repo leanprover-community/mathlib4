@@ -21,7 +21,6 @@ This file contains results on the `R`-module structure on functions of finite su
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set LinearMap Module Submodule
@@ -179,7 +178,6 @@ lemma Module.Free.trans {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R
   .of_equiv e.symm
 
 /-! TODO: move this section to an earlier file. -/
-
 
 namespace Basis
 

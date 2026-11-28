@@ -86,7 +86,6 @@ probability measure
 
 public section
 
-
 open MeasureTheory Set Filter BoundedContinuousFunction
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
@@ -202,7 +201,6 @@ implies that
       the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 -/
 
-
 variable {Ω : Type*} [MeasurableSpace Ω]
 
 theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type*} {L : Filter ι}
@@ -269,7 +267,6 @@ Combining with earlier proven implications, we get that (T) implies also both
   (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
       the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 -/
-
 
 /-- One implication of the portmanteau theorem:
 Weak convergence of finite measures implies that the limsup of the measures of any closed set is
@@ -369,7 +366,6 @@ end ConvergenceImpliesLimsupClosedLE --section
 section LimitBorelImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: limit condition for Borel sets implies limsup for closed sets
-
 
 In this section we prove, under the assumption that the underlying topological space `Ω` is
 pseudo-emetrizable, that
@@ -477,7 +473,6 @@ end LimitBorelImpliesLimsupClosedLE --section
 section le_liminf_open_implies_convergence
 
 /-! ### Portmanteau implication: liminf condition for open sets implies weak convergence
-
 
 In this section we prove for a sequence (μsₙ)ₙ Borel probability measures that
 

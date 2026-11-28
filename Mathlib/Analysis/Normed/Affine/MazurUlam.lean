@@ -30,7 +30,6 @@ isometry, affine map, linear map
 
 @[expose] public section
 
-
 variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
   [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
@@ -100,7 +99,6 @@ theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midp
 Since `f : PE ≃ᵢ PF` sends midpoints to midpoints, it is an affine map.
 We define a conversion to a `ContinuousLinearEquiv` first, then a conversion to an `AffineMap`.
 -/
-
 
 /-- **Mazur-Ulam Theorem**: if `f` is an isometric bijection between two normed vector spaces
 over `ℝ` and `f 0 = 0`, then `f` is a linear isometry equivalence. -/

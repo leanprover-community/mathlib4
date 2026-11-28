@@ -105,7 +105,6 @@ end Module
 
 /-! ## Special cases for real multiplication -/
 
-
 section Mul
 
 variable {r : ℝ}

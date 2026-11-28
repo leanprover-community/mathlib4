@@ -71,7 +71,6 @@ class CentroidHomClass (F : Type*) (α : outParam Type*)
   /-- Commutativity of centroid homomorphisms with right multiplication. -/
   map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
 
-
 export CentroidHomClass (map_mul_left map_mul_right)
 
 instance [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α] :

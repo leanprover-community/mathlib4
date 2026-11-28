@@ -35,7 +35,6 @@ filter, topological space
 
 public section
 
-
 open Set Filter TopologicalSpace
 
 open Filter Topology

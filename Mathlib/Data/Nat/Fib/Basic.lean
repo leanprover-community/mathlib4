@@ -44,8 +44,6 @@ Fibonacci numbers, Fibonacci sequence
 
 namespace Nat
 
-
-
 /-- Implementation of the Fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
 

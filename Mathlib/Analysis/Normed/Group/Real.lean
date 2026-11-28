@@ -22,7 +22,6 @@ normed group
 
 public section
 
-
 variable {E : Type*}
 
 open Filter

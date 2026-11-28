@@ -136,7 +136,6 @@ def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
   | Int.ofNat e => n < d <<< e
   | Int.negSucc e => n <<< e.succ < d
 
-
 -- TODO(Mario): Prove these and drop 'unsafe'
 @[nolint docBlame, deprecated "no replacement" (since := "2026-10-02")]
 unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by

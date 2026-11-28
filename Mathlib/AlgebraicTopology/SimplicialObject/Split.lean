@@ -36,7 +36,6 @@ Simplicial objects equipped with a splitting form a category
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits Opposite SimplexCategory
@@ -169,7 +168,6 @@ of epimorphisms `p.unop ≫ A.e`. -/
 def epiComp {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂) [Epi p.unop] :
     IndexSet Δ₂ :=
   ⟨A.1, ⟨p.unop ≫ A.e, epi_comp _ _⟩⟩
-
 
 variable {Δ' : SimplexCategoryᵒᵖ} (θ : Δ ⟶ Δ')
 

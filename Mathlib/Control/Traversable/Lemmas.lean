@@ -23,7 +23,6 @@ Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 
 @[expose] public section
 
-
 universe u
 
 open LawfulTraversable

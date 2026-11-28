@@ -28,7 +28,6 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 @[expose] public section
 
-
 namespace Polynomial
 
 variable {Fq : Type*} [Field Fq] [Fintype Fq]

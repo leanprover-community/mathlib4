@@ -783,7 +783,6 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
 theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
     (φ : 𝓓^{n}(Ω, F₁)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
 
-
 end bilin
 
 end Multiplication

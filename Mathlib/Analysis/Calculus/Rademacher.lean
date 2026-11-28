@@ -63,7 +63,6 @@ This follows from the one-dimensional result that a Lipschitz function on `ℝ` 
 variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
-
 theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     MemLp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)

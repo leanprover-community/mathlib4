@@ -297,7 +297,6 @@ end Complex
 -- ## Tactic extensions for complex powers
 -- -/
 
-
 -- namespace NormNum
 
 -- theorem cpow_pos (a b : ℂ) (b' : ℕ) (c : ℂ) (hb : b = b') (h : a ^ b' = c) : a ^ b = c := by

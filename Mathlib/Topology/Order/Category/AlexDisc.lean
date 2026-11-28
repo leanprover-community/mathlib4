@@ -50,7 +50,6 @@ instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
     ext x
     congrm $h x
 
-
 /-- Construct a bundled `AlexDisc` from the underlying topological space. -/
 abbrev of (X : Type*) [TopologicalSpace X] [AlexandrovDiscrete X] : AlexDisc where
   toTopCat := ↧X

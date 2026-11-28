@@ -236,7 +236,6 @@ theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
   simpa [expMap_single, mul_comm] using!
     (HasDerivAt.comp x (Real.hasDerivAt_exp _) (hasDerivAt_mul_const (w.mult : ℝ)⁻¹))
 
-
 variable [NumberField K]
 
 /--

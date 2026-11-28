@@ -16,7 +16,6 @@ In this file, we define instances of algebraic structures over `C^n` functions.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped Manifold ContDiff
@@ -168,7 +167,6 @@ In this section we show that `C^n` functions valued in a `C^n` ring `R` inherit 
 under pointwise multiplication.
 -/
 
-
 instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] : Semiring C^n⟮I, N; I', R⟯ :=
   { ContMDiffMap.addCommMonoid,
@@ -233,7 +231,6 @@ In this section we show that `C^n` functions valued in a vector space `M` over a
 field `𝕜` inherit a vector space structure.
 -/
 
-
 instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun r f ↦ ⟨r • ⇑f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩⟩
@@ -270,7 +267,6 @@ section AlgebraStructure
 In this section we show that `C^n` functions valued in a normed algebra `A` over a normed field `𝕜`
 inherit an algebra structure.
 -/
-
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(𝕜, A) n A]
 

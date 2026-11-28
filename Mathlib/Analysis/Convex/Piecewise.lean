@@ -30,7 +30,6 @@ This file proves convex and concave theorems for piecewise functions.
 
 public section
 
-
 variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
   [PosSMulMono 𝕜 E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]

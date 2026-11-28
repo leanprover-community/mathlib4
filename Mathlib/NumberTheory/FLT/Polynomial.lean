@@ -142,7 +142,6 @@ private lemma find_contract {a : k[X]}
     exact ha heq
   · rw [← natDegree_expand, ← heq]
 
-
 private theorem Polynomial.flt_catalan_aux
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0)

@@ -34,7 +34,6 @@ primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 
 public section
 
-
 namespace Polynomial
 
 variable {R : Type*} [CommRing R] {n : ℕ}

@@ -20,7 +20,6 @@ This file defines the lattice structure on submodules, `Submodule.CompleteLattic
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
-
 ## Implementation notes
 
 This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try
@@ -277,7 +276,6 @@ theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Su
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 
 /-! Note that `Submodule.mem_iSup` is provided in `Mathlib/LinearAlgebra/Span/Defs.lean`. -/
-
 
 theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
     ∀ {x : M}, x ∈ s → x ∈ sSup S := by

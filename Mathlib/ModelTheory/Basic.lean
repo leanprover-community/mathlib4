@@ -51,7 +51,6 @@ namespace FirstOrder
 
 /-! ### Languages and Structures -/
 
-
 -- intended to be used with explicit universe parameters
 set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
@@ -170,7 +169,6 @@ def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 
 /-! ### Maps -/
-
 
 /-- A homomorphism between first-order structures is a function that commutes with the
   interpretations of functions and maps tuples in one structure where a given relation is true to
@@ -756,7 +754,6 @@ theorem relMap_sumInl {n : ℕ} (R : L₁.Relations n) :
 theorem relMap_sumInr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
-
 
 end SumStructure
 

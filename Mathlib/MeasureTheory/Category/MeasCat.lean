@@ -29,7 +29,6 @@ measurable space, giry monad, borel
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory MeasureTheory
@@ -37,7 +36,6 @@ open CategoryTheory MeasureTheory
 open scoped ENNReal
 
 universe u v
-
 
 /-- The category of measurable spaces and measurable functions. -/
 structure MeasCat : Type (u + 1) where

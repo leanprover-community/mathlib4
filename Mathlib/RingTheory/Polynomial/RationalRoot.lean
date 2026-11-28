@@ -28,7 +28,6 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 public section
 
-
 open scoped Polynomial
 
 section ScaleRoots

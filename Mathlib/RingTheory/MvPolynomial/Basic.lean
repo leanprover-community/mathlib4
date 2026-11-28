@@ -40,7 +40,6 @@ Generalise to noncommutative (semi)rings
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set LinearMap Module Submodule

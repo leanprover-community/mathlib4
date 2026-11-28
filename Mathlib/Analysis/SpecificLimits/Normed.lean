@@ -925,7 +925,6 @@ section
 
 /-! ### Dirichlet and alternating series tests -/
 
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 

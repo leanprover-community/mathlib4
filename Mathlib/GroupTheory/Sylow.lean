@@ -43,7 +43,6 @@ The Sylow theorems are the following results for every finite group `G` and ever
 
 @[expose] public section
 
-
 open MulAction Subgroup
 
 section InfiniteSylow

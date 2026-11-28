@@ -24,7 +24,6 @@ and is 1-dimensional iff `X` and `Y` are isomorphic.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits

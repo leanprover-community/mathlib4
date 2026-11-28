@@ -19,7 +19,6 @@ public meta section
 
 open Lean Meta Server ProofWidgets
 
-
 /-! ### CongrM widget -/
 
 /-- Return the link text and inserted text above and below of the congrm widget. -/

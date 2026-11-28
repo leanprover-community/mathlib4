@@ -37,7 +37,6 @@ See `Nat.Xgcd` for a very similar algorithm allowing values in `ℤ`.
 
 @[expose] public section
 
-
 open Nat
 
 namespace PNat

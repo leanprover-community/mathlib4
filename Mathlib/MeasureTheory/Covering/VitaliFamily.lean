@@ -49,7 +49,6 @@ Let `v` be such a Vitali family.
 
 @[expose] public section
 
-
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 open scoped Topology
 

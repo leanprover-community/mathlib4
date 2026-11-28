@@ -25,7 +25,6 @@ def Bifunctor.mapEquiv (F : Type u → Type v → Type w) [Bifunctor F] [LawfulB
 
 @[expose] public section
 
-
 universe u v w
 
 variable {α β : Type u}

@@ -29,7 +29,6 @@ matrix group, group, matrix inverse
 
 @[expose] public section
 
-
 namespace Matrix
 
 universe u v

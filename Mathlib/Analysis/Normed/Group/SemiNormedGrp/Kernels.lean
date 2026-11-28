@@ -29,7 +29,6 @@ and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Limits
 
 universe u

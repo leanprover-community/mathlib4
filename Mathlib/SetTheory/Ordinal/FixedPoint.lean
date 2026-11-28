@@ -29,7 +29,6 @@ Moreover, we prove some lemmas about the fixed points of specific normal functio
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v

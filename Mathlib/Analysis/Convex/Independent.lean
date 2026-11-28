@@ -44,7 +44,6 @@ independence, convex position
 
 @[expose] public section
 
-
 open Finset Function
 
 variable {𝕜 E ι : Type*}
@@ -192,7 +191,6 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
 
 /-! ### Extreme points -/
-
 
 theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     ConvexIndependent 𝕜 ((↑) : s.extremePoints 𝕜 → E) :=

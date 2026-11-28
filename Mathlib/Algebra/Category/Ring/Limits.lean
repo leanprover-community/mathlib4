@@ -23,7 +23,6 @@ the underlying types are just the limits in the category of types.
 
 @[expose] public section
 
-
 -- We use the following trick a lot of times in this file.
 library_note «change elaboration strategy with `by apply`» /--
 Some definitions may be extremely slow to elaborate, when the target type to be constructed

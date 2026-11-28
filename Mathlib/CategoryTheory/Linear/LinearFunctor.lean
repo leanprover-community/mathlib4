@@ -25,7 +25,6 @@ for every two objects `X` and `Y`, the map
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 variable (R : Type*) [Semiring R] {C D : Type*} [Category* C] [Category* D]

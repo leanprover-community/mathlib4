@@ -26,7 +26,6 @@ Show the analogous results for functors which reflect or create (co)limits.
 
 @[expose] public section
 
-
 universe v v' u u'
 
 noncomputable section
@@ -111,7 +110,6 @@ theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ => Iso.refl _
     rw [← hasLimit_iff_of_iso that]
     apply hasProduct_fin⟩⟩
-
 
 end
 

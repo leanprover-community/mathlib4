@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Integrability.PosLog
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
-
 /-!
 # The Proximity Function of Value Distribution Theory
 
@@ -202,7 +201,6 @@ theorem proximity_add_top_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f�
     proximity (f₁ + f₂) ⊤ ≤ (proximity f₁ ⊤) + (proximity f₂ ⊤) + (fun _ ↦ log 2) := by
   simpa using proximity_sum_top_le Finset.univ ![f₁, f₂]
     (fun i ↦ by fin_cases i <;> aesop)
-
 
 /--
 The proximity function of `f • g` at `⊤` is less than or equal to the sum of the proximity functions

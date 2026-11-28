@@ -20,7 +20,6 @@ ordered commutative group.
 
 public section
 
-
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 namespace Positive

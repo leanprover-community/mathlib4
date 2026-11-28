@@ -139,7 +139,6 @@ variable {R : Type u} {A M B : Type v} [Ring R] [AddCommGroup A] [Module R A] [A
 
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
-
 set_option backward.privateInPublic true in
 private noncomputable def lequivProdOfRightSplitExact' {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=

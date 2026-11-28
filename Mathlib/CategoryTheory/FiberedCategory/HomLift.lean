@@ -165,7 +165,6 @@ lemma id_lift_eqToHom_codomain {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} (hRS : R = S) {b
     p.IsHomLift (eqToHom hRS) (𝟙 b) := by
   subst hRS hb; simp
 
-
 section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]

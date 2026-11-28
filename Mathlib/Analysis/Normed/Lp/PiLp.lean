@@ -244,7 +244,6 @@ In this section we define the `edist`, `dist` and `norm` functions on `PiLp p α
 lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
-
 section EDist
 
 variable [∀ i, EDist (β i)]
@@ -382,7 +381,6 @@ TODO: the results about uniformity and bornology should be using the tools in
 `Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
-
 
 variable [Fact (1 ≤ p)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
 variable [Fintype ι]

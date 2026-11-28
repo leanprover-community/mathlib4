@@ -33,7 +33,6 @@ indeed generates this sigma-algebra.
 
 @[expose] public section
 
-
 universe u v
 
 variable {α : Type u}

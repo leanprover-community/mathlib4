@@ -39,7 +39,6 @@ Together, these two results prove the Galois correspondence.
 
 @[expose] public section
 
-
 open scoped Polynomial IntermediateField
 
 open Module AlgEquiv IntermediateField
@@ -624,7 +623,6 @@ instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field 
     [IsAlgClosure k K] [CharZero k] : IsGalois k K where
 
 end IsAlgClosure
-
 
 section restrictRestrictAlgEquivMapHom
 

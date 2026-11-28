@@ -47,7 +47,6 @@ Jacobson, Jacobson radical, Local Ideal
 
 @[expose] public section
 
-
 universe u v
 
 namespace Ideal

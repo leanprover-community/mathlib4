@@ -20,7 +20,6 @@ is conformal at `x` iff the derivative preserves inner products up to a scalar m
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {E F : Type*}

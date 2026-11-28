@@ -26,7 +26,6 @@ in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`.
 
 @[expose] public section
 
-
 open scoped Matrix
 
 variable {m n : Type*} {α : Type*}

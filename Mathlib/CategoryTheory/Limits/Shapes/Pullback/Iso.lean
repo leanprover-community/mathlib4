@@ -223,5 +223,4 @@ lemma pushout_inr_inv_inl_of_right_isIso :
 
 end PushoutRightIso
 
-
 end CategoryTheory.Limits

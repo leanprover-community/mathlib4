@@ -26,7 +26,6 @@ showing that the forgetful functor `forget MonCat` preserves filtered colimits. 
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

@@ -36,7 +36,6 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 
 @[expose] public section
 
-
 open TopologicalSpace Function
 
 open scoped Topology

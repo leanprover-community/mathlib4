@@ -26,7 +26,6 @@ additional data. We provide the notation `a △ b` for making a `BinaryTree Unit
 
 @[expose] public section
 
-
 /-- A binary tree with values stored in non-leaf nodes. -/
 inductive BinaryTree.{u} (α : Type u) : Type u
   | nil : BinaryTree α

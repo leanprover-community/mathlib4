@@ -23,7 +23,6 @@ objects.
 
 @[expose] public section
 
-
 universe w v v₁ v₂ u u₁ u₂
 
 noncomputable section

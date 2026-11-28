@@ -23,7 +23,6 @@ with the `Multiset.sum` operation which computes the additive sum.
 
 @[expose] public section
 
-
 open Sum
 
 namespace Multiset

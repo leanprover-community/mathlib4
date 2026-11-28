@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 /-!
 # The category of Hopf monoids in a braided monoidal category.
 
-
 ## TODO
 
 * Show that in a Cartesian monoidal category Hopf monoids are exactly group objects.
@@ -47,7 +46,6 @@ namespace HopfObj
 @[inherit_doc] scoped notation "𝒮[" M "]" => HopfObj.antipode (X := M)
 
 attribute [reassoc (attr := simp)] antipode_left antipode_right
-
 
 end HopfObj
 
@@ -298,7 +296,6 @@ theorem mul_antipode₁ (A : C) [HopfObj A] :
   slice_lhs 8 9 =>
     rw [← tensorHom_def]
   simp
-
 
 /--
 Auxiliary calculation for `mul_antipode`.

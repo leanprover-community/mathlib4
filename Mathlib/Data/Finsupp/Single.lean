@@ -271,7 +271,6 @@ end Single
 
 /-! ### Declarations about `update` -/
 
-
 section Update
 
 variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
@@ -340,7 +339,6 @@ theorem update_comm (f : α →₀ M) {a₁ a₂ : α} (h : a₁ ≠ a₂) (m₁
 end Update
 
 /-! ### Declarations about `erase` -/
-
 
 section Erase
 
@@ -423,7 +421,6 @@ end MapRange
 
 /-! ### Declarations about `embDomain` -/
 
-
 section EmbDomain
 
 variable [Zero M] [Zero N]
@@ -452,7 +449,6 @@ theorem embDomain_single (f : α ↪ β) (a : α) (m : M) :
 end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
-
 
 section ZipWith
 

@@ -123,7 +123,6 @@ example {α β : Type} (f g : α ⟶ β) (w : f = g) (a : α) : f a = g a := by
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
-
 example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w
   guard_hyp w : ∀ (x : α), f x = g x
@@ -226,7 +225,6 @@ example {α β : Type} (f g : α ⟶ β) (w : f = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
-
 
 example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w

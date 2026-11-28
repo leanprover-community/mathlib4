@@ -54,7 +54,6 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 @[expose] public section
 
-
 noncomputable section
 
 open ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
@@ -160,7 +159,6 @@ theorem Measurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0�
   hf.lintegral_prod_left'
 
 /-! ### The product measure -/
-
 
 namespace MeasureTheory
 
@@ -351,7 +349,6 @@ instance {X Y : Type*}
     [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)] :
     IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
-
 
 open IsUnifLocDoublingMeasure in
 /--
@@ -1141,7 +1138,6 @@ theorem Measure.bind_comm [SFinite μ] {f : α → β → Measure γ} (hf : Meas
   exact (measurable_measure.1 hf s hs).aemeasurable
 
 /-! ### Marginals of a measure defined on a product -/
-
 
 namespace Measure
 

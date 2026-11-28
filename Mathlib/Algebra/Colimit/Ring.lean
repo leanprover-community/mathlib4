@@ -320,7 +320,6 @@ theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
 
 section
 
-
 open scoped Classical in
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
 noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=

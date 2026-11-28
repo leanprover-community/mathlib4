@@ -28,7 +28,6 @@ coefficients.
 
 @[expose] public section
 
-
 open Finset Function
 
 noncomputable section

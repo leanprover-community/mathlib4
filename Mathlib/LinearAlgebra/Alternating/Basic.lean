@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 import Mathlib.Algebra.Group.Action.FunLike
 
-
 /-!
 # Alternating Maps
 
@@ -91,7 +90,6 @@ open Function
 
 /-! Basic coercion simp lemmas, largely copied from `RingHom` and `MultilinearMap` -/
 
-
 section Coercions
 
 @[macro_inline]
@@ -152,7 +150,6 @@ end Coercions
 
 These are expressed in terms of `⇑f` instead of `f.toFun`.
 -/
-
 
 @[simp]
 theorem map_update_add [DecidableEq ι] (i : ι) (x y : M) :
@@ -415,7 +412,6 @@ end AlternatingMap
 ### Composition with linear maps
 -/
 
-
 namespace LinearMap
 
 variable {S : Type*} {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
@@ -621,7 +617,6 @@ open Function
 ### Other lemmas from `MultilinearMap`
 -/
 
-
 section
 
 theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M) (m : ι → M) :
@@ -646,7 +641,6 @@ end
 Various properties of reordered and repeated inputs which follow from
 `AlternatingMap.map_eq_zero_of_eq`.
 -/
-
 
 theorem map_update_self [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (Function.update v i (v j)) = 0 :=

@@ -40,7 +40,6 @@ fractional ideal, fractional ideals, invertible ideal
 
 @[expose] public section
 
-
 open IsLocalization Pointwise nonZeroDivisors
 
 namespace FractionalIdeal
@@ -282,7 +281,6 @@ section IsFractionRing
 This section concerns fractional ideals in the field of fractions,
 i.e. the type `FractionalIdeal R⁰ K` where `IsFractionRing R K`.
 -/
-
 
 variable {K K' : Type*} [Field K] [Field K']
 variable [Algebra R K] [IsFractionRing R K] [Algebra R K'] [IsFractionRing R K']
@@ -593,7 +591,6 @@ theorem coeToSubmodule_spanSingleton (x : P) : (spanSingleton S x : Submodule R 
 
 @[deprecated (since := "2026-11-09")] alias coe_spanSingleton := coeToSubmodule_spanSingleton
 
-
 @[deprecated "use `coe_spanSingleton`" (since := "2026-10-07")]
 theorem spanSingleton_def (x : P) :
     spanSingleton S x = ⟨span R {x}, isFractional_span_singleton x⟩ :=
@@ -788,7 +785,6 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
     obtain ⟨y', hy', hx'⟩ := mem_singleton_mul.mp hx'
     rw [Algebra.linearMap_apply] at hx'
     rwa [hx', ← mul_assoc, inv_mul_cancel₀ map_a_nonzero, one_mul]
-
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `J` is nonzero. -/

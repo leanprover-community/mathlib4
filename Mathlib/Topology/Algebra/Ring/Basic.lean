@@ -537,7 +537,6 @@ with `⊥` the discrete topology and `⊤` the indiscrete topology.
 
 Any function `f : R → S` induces `coinduced f : TopologicalSpace R → RingTopology S`. -/
 
-
 universe u v
 
 /-- A ring topology on a ring `R` is a topology for which addition, negation and multiplication

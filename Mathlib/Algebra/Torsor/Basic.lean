@@ -26,7 +26,6 @@ increasing imports there.
 
 open scoped Pointwise
 
-
 section General
 
 variable {G : Type*} {P : Type*} [Group G] [T : Torsor G P]

@@ -17,7 +17,6 @@ This file defines the lexicographic order on `Finsupp`.
 
 @[expose] public section
 
-
 variable {α N : Type*}
 
 namespace Finsupp
@@ -175,7 +174,6 @@ with the *weak* inequality `≤`.  This is actually necessary: addition on `Lex 
 be monotone, when it is "just" monotone on `N`.
 
 See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample. -/
-
 
 section Left
 

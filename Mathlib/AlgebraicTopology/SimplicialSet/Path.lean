@@ -140,7 +140,6 @@ lemma map_arrow (f : Path X m) (σ : X ⟶ Y) (i : Fin m) :
     (f.map σ).arrow i = σ.app (op ⦋1⦌ₙ₊₁) (f.arrow i) :=
   rfl
 
-
 lemma map_interval (f : Path X m) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ m) :
     (f.map σ).interval j l h = (f.interval j l h).map σ :=
   rfl

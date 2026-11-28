@@ -43,9 +43,7 @@ support finitely-supported functions, as in `Finset.finsuppAntidiag` from
 
 @[expose] public section
 
-
 /-! ### Lists -/
-
 
 namespace List.Nat
 
@@ -162,7 +160,6 @@ end List.Nat
 
 /-! ### Multisets -/
 
-
 namespace Multiset.Nat
 
 /-- `Multiset.Nat.antidiagonalTuple k n` is a multiset of `k`-tuples summing to `n` -/
@@ -198,7 +195,6 @@ theorem antidiagonalTuple_two (n : ℕ) :
 end Multiset.Nat
 
 /-! ### Finsets -/
-
 
 namespace Finset.Nat
 

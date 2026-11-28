@@ -179,7 +179,6 @@ instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] : (cyclesFunctor
 
 end LeftHomology
 
-
 section RightHomology
 
 variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}

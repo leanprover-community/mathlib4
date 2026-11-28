@@ -26,7 +26,6 @@ lie subalgebra, normalizer, idealizer, cartan subalgebra
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 variable {R : Type u} {L : Type v}

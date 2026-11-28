@@ -59,7 +59,6 @@ lemma relIndex_zmultiples_mul (a b : ℕ) :
 
 end Int
 
-
 namespace AddAction
 
 open AddSubgroup AddMonoidHom AddEquiv Function

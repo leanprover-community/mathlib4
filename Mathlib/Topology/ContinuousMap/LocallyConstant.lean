@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 namespace LocallyConstant
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]

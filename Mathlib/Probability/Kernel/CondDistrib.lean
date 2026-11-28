@@ -46,7 +46,6 @@ respect to `m`.
 
 @[expose] public section
 
-
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped ENNReal MeasureTheory ProbabilityTheory

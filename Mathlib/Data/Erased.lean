@@ -20,7 +20,6 @@ represented as `0`, just like types and proofs.
 
 @[expose] public section
 
-
 universe u
 
 namespace Erased

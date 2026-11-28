@@ -57,7 +57,6 @@ We mostly follow the proof from [Kallenberg, *Foundations of modern probability*
 
 @[expose] public section
 
-
 open TopologicalSpace Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
@@ -127,7 +126,6 @@ as required.
 
 To obtain the general case, we simply apply the above to $((f_n - a)^+)_n$.
 -/
-
 
 /-- `lowerCrossingTimeAux a f c N` is the first time `f` reached below `a` after time `c` before
 time `N`. -/
@@ -704,7 +702,6 @@ $$
 $U_N(a, b)$ is measurable as $\{U_N(a, b) < N\}$ is a measurable set since $U_N(a, b)$ is a
 stopping time.
 -/
-
 
 theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     ∑ i ∈ Finset.Ico 1 (N + 1), {n | upperCrossingTime a b f N n ω < N}.indicator 1 i := by

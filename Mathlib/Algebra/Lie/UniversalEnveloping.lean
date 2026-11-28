@@ -36,7 +36,6 @@ lie algebra, universal enveloping algebra, tensor algebra
 
 @[expose] public section
 
-
 universe u₁ u₂ u₃
 
 variable (R : Type u₁) (L : Type u₂)

@@ -31,7 +31,6 @@ namespace MeasureTheory.Measure
 variable {α R : Type*} {mα : MeasurableSpace α}
   {μ μ₁ μ₂ ν ν' : Measure α} {s t : Set α}
 
-
 /-- Measures are partially ordered. -/
 instance : PartialOrder (Measure α) where
   le m₁ m₂ := ∀ s, m₁ s ≤ m₂ s

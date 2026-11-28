@@ -565,7 +565,6 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     liftCochain_v_descCochain_v φ α.val β α' (Cochain.ofHom β') (zero_add 1) (neg_add_cancel 1) 0
     (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
 
-
 section
 
 open Preadditive Category

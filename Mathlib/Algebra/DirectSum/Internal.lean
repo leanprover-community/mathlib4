@@ -53,7 +53,6 @@ internally graded ring
 
 @[expose] public section
 
-
 open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
@@ -86,7 +85,6 @@ section DirectSum
 variable [DecidableEq ι]
 
 /-! #### From `AddSubmonoid`s and `AddSubgroup`s -/
-
 
 namespace SetLike
 

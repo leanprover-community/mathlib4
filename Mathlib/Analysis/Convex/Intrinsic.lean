@@ -132,7 +132,6 @@ theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P)
 Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
 -/
 
-
 theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
   refine image_subset_iff.2 fun x hx => ?_
   refine ⟨Set.inclusion (affineSpan_mono _ h) x, ?_, rfl⟩

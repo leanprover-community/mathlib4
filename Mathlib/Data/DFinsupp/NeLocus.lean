@@ -25,7 +25,6 @@ Let `N : α → Type*` be a type family, assume that `N a` has a `0` for all `a 
 
 @[expose] public section
 
-
 variable {α : Type*} {N : α → Type*}
 
 namespace DFinsupp

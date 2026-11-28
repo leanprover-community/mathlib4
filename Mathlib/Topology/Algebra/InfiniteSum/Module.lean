@@ -59,8 +59,6 @@ lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [Conti
 
 end ConstSMul
 
-
-
 variable {ι κ R R₂ M M₂ : Type*}
 
 section SMulConst
@@ -176,8 +174,6 @@ protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂]
   rw [e.symm_apply_apply _]
 
 end HasSum
-
-
 
 section automorphize
 

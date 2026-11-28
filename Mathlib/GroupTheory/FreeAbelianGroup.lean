@@ -115,7 +115,6 @@ instance : CommGroup (FreeCommGroup α) :=
 instance : Inhabited (FreeCommGroup α) :=
   ⟨1⟩
 
-
 variable {α}
 
 namespace FreeCommGroup

@@ -223,7 +223,6 @@ theorem Filter.Tendsto.nnNorm' (h : Tendsto f l (ð“ a)) : Tendsto (fun x => â€
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm]
 alias Filter.Tendsto.nnnorm' := Filter.Tendsto.nnNorm'
 
-
 end
 
 section

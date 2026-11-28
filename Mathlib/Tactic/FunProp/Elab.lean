@@ -124,8 +124,6 @@ def funPropTac : Tactic
 
   | _ => throwUnsupportedSyntax
 
-
-
 /-- Command that prints all function properties attached to a function.
 
 For example
@@ -168,14 +166,12 @@ elab "#print_fun_prop_theorems " funIdent:ident funProp:(ident)? : command => do
       pure ()
     logInfo msg
 
-
   match funProp? with
   | none =>
     for (funProp,thms) in theorems do
       logTheorems funProp thms
   | some funProp =>
     logTheorems funProp (theorems.getD funProp #[])
-
 
 end Meta.FunProp
 

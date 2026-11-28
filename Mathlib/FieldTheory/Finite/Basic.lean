@@ -49,7 +49,6 @@ diamonds, as `Fintype` carries data.
 
 @[expose] public section
 
-
 variable {K : Type*} {R : Type*}
 
 local notation "q" => Fintype.card K

@@ -24,7 +24,6 @@ I suspect this is harder than is usually made out.
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory

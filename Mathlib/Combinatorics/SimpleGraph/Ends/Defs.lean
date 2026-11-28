@@ -22,7 +22,6 @@ assigning, to each finite set of vertices, the connected components of its compl
 
 @[expose] public section
 
-
 universe u
 
 variable {V : Type u} (G : SimpleGraph V) (K L M : Set V)

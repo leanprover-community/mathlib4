@@ -177,7 +177,6 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
 
 /-! ### Simple cases -/
 
-
 theorem multinomial_univ_two (a b : ℕ) :
     multinomial Finset.univ ![a, b] = (a + b)! / (a ! * b !) := by
   rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two]
@@ -410,7 +409,6 @@ theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {
   simp
 
 namespace List
-
 
 lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List α) :
     l.toFinsupp.sum (fun _ a ↦ a) = l.sum := by

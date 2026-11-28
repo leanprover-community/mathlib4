@@ -22,7 +22,6 @@ TODO: generalize universe
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v v' u u'

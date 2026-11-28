@@ -48,7 +48,6 @@ For the Flypitch project:
 
 @[expose] public section
 
-
 universe u v w u' v'
 
 namespace FirstOrder

@@ -49,7 +49,6 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 
 @[expose] public section
 
-
 universe w w' v u
 
 namespace CategoryTheory

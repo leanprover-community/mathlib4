@@ -19,7 +19,6 @@ whose forgetful functors both reflect isomorphisms, itself reflects isomorphisms
 
 public section
 
-
 universe t₁ t₂ w
 
 namespace CategoryTheory

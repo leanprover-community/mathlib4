@@ -874,7 +874,6 @@ lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
     p.length = (LTSeries.longestOf α).length :=
   le_antisymm (longestOf_is_longest _) (is_longest _)
 
-
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h
 

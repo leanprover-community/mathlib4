@@ -28,7 +28,6 @@ trivial `simp` lemmas, and define the following operations on `RingHom`s and sim
 
 @[expose] public section
 
-
 variable {R R' S S' T : Type*}
 
 namespace Prod

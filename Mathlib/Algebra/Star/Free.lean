@@ -21,7 +21,6 @@ to avoid importing `Algebra.Star.Basic` into the entire hierarchy.
 
 @[expose] public section
 
-
 namespace FreeMonoid
 
 variable {α : Type*}

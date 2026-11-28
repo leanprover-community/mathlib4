@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 namespace CategoryTheory
 
 variable {α : Type*} [Ring α]

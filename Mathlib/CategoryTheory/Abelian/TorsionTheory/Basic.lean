@@ -81,7 +81,6 @@ torsion theory itself. -/
 class IsTorsionClass (P : ObjectProperty C) : Prop where
   leftOrthogonal_rightOrthogonal_eq (P) : P.rightOrthogonal.leftOrthogonal = P := by cat_disch
 
-
 /-- A property of objects `P` is a torsion-free class if `P` is the right orthogonal of its
 left orthogonal, i.e. `P.leftOrthogonal.rightOrthogonal = P`. Equivalently, `P` is the
 torsion-free class of some torsion theory, namely `TorsionTheory P.leftOrthogonal P`; see

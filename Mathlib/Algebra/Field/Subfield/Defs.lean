@@ -48,7 +48,6 @@ subfield, subfields
 
 @[expose] public section
 
-
 universe u v w
 
 variable {K : Type u}
@@ -323,7 +322,6 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
   rfl
 
 /-! ### Partial order -/
-
 
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl

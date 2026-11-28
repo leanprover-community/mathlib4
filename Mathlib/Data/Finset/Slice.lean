@@ -30,7 +30,6 @@ the set family made of its `r`-sets.
 
 @[expose] public section
 
-
 open Finset Nat
 
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
@@ -40,7 +39,6 @@ namespace Set
 variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
 /-! ### Families of `r`-sets -/
-
 
 /-- `Sized r A` means that every Finset in `A` has size `r`. -/
 def Sized (r : ℕ) (A : Set (Finset α)) : Prop := ∀ ⦃x⦄, x ∈ A → #x = r
@@ -106,7 +104,6 @@ theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 end Sized
 
 /-! ### Slices -/
-
 
 section Slice
 

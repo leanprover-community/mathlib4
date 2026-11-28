@@ -31,7 +31,6 @@ This file allows to blow partitions up into parts of controlled size. Given a pa
 
 @[expose] public section
 
-
 open Finset Nat
 
 namespace Finpartition

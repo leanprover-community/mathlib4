@@ -35,7 +35,6 @@ following <https://stacks.math.columbia.edu/tag/007X>.
 
 assert_not_exists CommRingCat
 
-
 universe v u
 
 noncomputable section

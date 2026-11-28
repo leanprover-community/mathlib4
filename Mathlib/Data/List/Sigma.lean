@@ -42,7 +42,6 @@ variable {α : Type u} {α' : Type u'} {β : α → Type v} {β' : α' → Type 
 
 /-! ### `keys` -/
 
-
 /-- List of keys from a list of key-value pairs -/
 def keys : List (Sigma β) → List α :=
   map Sigma.fst
@@ -78,7 +77,6 @@ theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s 
   grind
 
 /-! ### `NodupKeys` -/
-
 
 /-- Determines whether the store uses a key several times. -/
 @[grind]
@@ -276,7 +274,6 @@ theorem sublist_dlookup {l₁ l₂ : List (Sigma β)} {a : α} {b : β a}
 
 /-! ### `lookupAll` -/
 
-
 /-- `lookup_all a l` is the list of all values in `l` corresponding to the key `a`. -/
 def lookupAll (a : α) : List (Sigma β) → List (β a)
   | [] => []
@@ -355,7 +352,6 @@ theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodu
 
 /-! ### `kreplace` -/
 
-
 /-- Replaces the first value with key `a` by `b`. -/
 def kreplace (a : α) (b : β a) : List (Sigma β) → List (Sigma β) :=
   lookmap fun s => if a = s.1 then some ⟨a, b⟩ else none
@@ -396,7 +392,6 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
     exact (h (h_2.symm.trans h_1)).elim
 
 /-! ### `kerase` -/
-
 
 /-- Remove the first pair with the key `a`. -/
 def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
@@ -555,7 +550,6 @@ theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
 
 /-! ### `kinsert` -/
 
-
 /-- Insert the pair `⟨a, b⟩` and erase the first pair with the key `a`. -/
 def kinsert (a : α) (b : β a) (l : List (Sigma β)) : List (Sigma β) :=
   ⟨a, b⟩ :: kerase a l
@@ -584,7 +578,6 @@ theorem dlookup_kinsert_ne {a a'} {b' : β a'} {l : List (Sigma β)} (h : a ≠ 
 
 /-! ### `kextract` -/
 
-
 /-- Finds the first entry with a given key `a` and returns its value (as an `Option` because there
 might be no entry with key `a`) alongside with the rest of the entries. -/
 def kextract (a : α) : List (Sigma β) → Option (β a) × List (Sigma β)
@@ -606,7 +599,6 @@ theorem kextract_eq_dlookup_kerase (a : α) :
     · simp [Ne.symm h, kextract_eq_dlookup_kerase a l, kerase]
 
 /-! ### `dedupKeys` -/
-
 
 /-- Remove entries with duplicate keys from `l : List (Sigma β)`. -/
 def dedupKeys : List (Sigma β) → List (Sigma β) :=
@@ -659,7 +651,6 @@ theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     exact sizeOf_cons_le_sizeOf_cons x (le_trans (sizeOf_kerase x.fst xs.dedupKeys) h)
 
 /-! ### `kunion` -/
-
 
 /-- `kunion l₁ l₂` is the append to l₁ of l₂ after, for each key in l₁, the
 first matching pair in l₂ is erased. -/

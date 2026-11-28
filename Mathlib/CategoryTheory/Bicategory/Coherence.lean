@@ -37,7 +37,6 @@ theorem follows immediately from this fact.
 
 @[expose] public section
 
-
 open Quiver (Path)
 
 open Quiver.Path

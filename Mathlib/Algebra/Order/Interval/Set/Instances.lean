@@ -49,7 +49,6 @@ variable {R : Type*}
 
 /-! ### Instances for `↥(Set.Icc 0 1)` -/
 
-
 namespace Set.Icc
 
 section Preorder
@@ -196,7 +195,6 @@ end OrderedAddCommGroup
 end Set.Icc
 
 /-! ### Instances for `↥(Set.Ico 0 1)` -/
-
 
 namespace Set.Ico
 

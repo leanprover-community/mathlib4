@@ -29,7 +29,6 @@ path graph on `n` vertices.
 
 @[expose] public section
 
-
 open Order OrderDual Relation
 
 namespace SimpleGraph

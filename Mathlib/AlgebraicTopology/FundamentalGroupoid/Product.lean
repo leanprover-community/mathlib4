@@ -28,7 +28,6 @@ In this file, we give the following definitions/theorems:
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped FundamentalGroupoid CategoryTheory

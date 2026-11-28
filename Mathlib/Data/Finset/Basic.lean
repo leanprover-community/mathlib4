@@ -193,7 +193,6 @@ lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :
 
 /-! ### sdiff -/
 
-
 section Sdiff
 
 variable [DecidableEq α] {s t : Finset α} {a b : α}
@@ -437,7 +436,6 @@ end Filter
 
 /-! ### range -/
 
-
 section Range
 
 open Nat
@@ -543,7 +541,6 @@ theorem Nonempty.not_empty_toList {s : Finset α} (hs : s.Nonempty) : ¬s.toList
 end ToList
 
 /-! ### choose -/
-
 
 section Choose
 

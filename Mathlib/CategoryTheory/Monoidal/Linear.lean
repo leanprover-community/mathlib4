@@ -20,7 +20,6 @@ tensor product of morphisms is `R`-linear in both factors.
 
 public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits

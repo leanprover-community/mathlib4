@@ -432,7 +432,6 @@ end Indep
 
 /-! ### Deducing `Indep` from `iIndep` -/
 
-
 section FromIndepToIndep
 
 variable {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
@@ -458,7 +457,6 @@ end FromIndepToIndep
 
 Independence of measurable spaces is equivalent to independence of generating π-systems.
 -/
-
 
 section FromMeasurableSpacesToSetsOfSets
 
@@ -567,7 +565,6 @@ We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
 * `IndepSet s t μ ↔ IndepSets {s} {t} μ`.
 -/
 
-
 variable {m₁ m₂ _mΩ : MeasurableSpace Ω} {μ : Measure Ω} {s t : Set Ω} (S T : Set (Set Ω))
 
 theorem indepSet_iff_indepSets_singleton (hs_meas : MeasurableSet s)
@@ -635,7 +632,6 @@ section IndepFun
 
 /-! ### Independence of random variables
 -/
-
 
 variable {β β' γ γ' : Type*} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → β} {g : Ω → β'}
 

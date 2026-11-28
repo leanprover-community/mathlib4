@@ -42,7 +42,6 @@ The constructions of the ring homomorphisms go through an auxiliary constructor
 
 @[expose] public section
 
-
 noncomputable section
 
 open Nat IsLocalRing Padic
@@ -54,7 +53,6 @@ variable {p : ℕ} [hp_prime : Fact p.Prime]
 section RingHoms
 
 /-! ### Ring homomorphisms to `ZMod p` and `ZMod (p ^ n)` -/
-
 
 variable (p) (r : ℚ)
 
@@ -522,11 +520,9 @@ section lift
 
 /-! ### Universal property as projective limit -/
 
-
 open CauSeq PadicSeq
 
 variable {R : Type*} [NonAssocSemiring R] {p : Nat} (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
-
 
 /-- Given a family of ring homs `f : Π n : ℕ, R →+* ZMod (p ^ n)`,
 `nthHom f r` is an integer-valued sequence

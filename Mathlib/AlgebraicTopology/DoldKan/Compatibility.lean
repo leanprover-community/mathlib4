@@ -43,7 +43,6 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category Functor
 
 namespace AlgebraicTopology

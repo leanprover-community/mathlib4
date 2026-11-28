@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
-
 /-!
 # Kernel and range of group homomorphisms
 

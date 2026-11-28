@@ -32,7 +32,6 @@ theorem shiftLeft'_true_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n
 
 /-! ### `size` -/
 
-
 @[simp]
 theorem size_zero : size 0 = 0 := rfl
 

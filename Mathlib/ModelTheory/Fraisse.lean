@@ -68,7 +68,6 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 
 @[expose] public section
 
-
 universe u v w w'
 
 open scoped FirstOrder
@@ -84,7 +83,6 @@ open Structure Substructure
 variable (L : Language.{u, v})
 
 /-! ### The Age of a Structure and Fraïssé Classes -/
-
 
 /-- The age of a structure `M` is the class of finitely-generated structures that embed into it. -/
 def age (M : Type w) [L.Structure M] : Set (Bundled.{w} L.Structure) :=

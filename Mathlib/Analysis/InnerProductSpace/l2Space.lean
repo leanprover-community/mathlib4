@@ -102,7 +102,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-! ### Inner product space structure on `lp G 2` -/
 
-
 namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
@@ -173,7 +172,6 @@ theorem inner_single_right [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
 end lp
 
 /-! ### Identification of a general Hilbert space `E` with a Hilbert sum -/
-
 
 namespace OrthogonalFamily
 
@@ -365,7 +363,6 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
 end IsHilbertSum
 
 /-! ### Hilbert bases -/
-
 
 section
 

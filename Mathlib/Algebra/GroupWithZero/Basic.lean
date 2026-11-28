@@ -360,13 +360,11 @@ theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
     a * b⁻¹ * b = a * (b⁻¹ * b) := mul_assoc _ _ _
     _ = a := by simp [h]
 
-
 @[simp high] -- should take priority over `IsUnit.mul_inv_cancel_left`
 theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :=
   calc
     a⁻¹ * (a * b) = a⁻¹ * a * b := (mul_assoc _ _ _).symm
     _ = b := by simp [h]
-
 
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
@@ -416,7 +414,6 @@ theorem mul_self_mul_inv (a : G₀) : a * a * a⁻¹ = a := by
   · rw [h, inv_zero, mul_zero]
   · rw [mul_assoc, mul_inv_cancel₀ h, mul_one]
 
-
 /-- Multiplying `a` by its inverse and then by itself results in `a`
 (whether or not `a` is zero). -/
 @[simp]
@@ -425,7 +422,6 @@ theorem mul_inv_mul_cancel (a : G₀) : a * a⁻¹ * a = a := by
   · rw [h, inv_zero, mul_zero]
   · rw [mul_inv_cancel₀ h, one_mul]
 
-
 /-- Multiplying `a⁻¹` by `a` twice results in `a` (whether or not `a`
 is zero). -/
 @[simp]
@@ -433,7 +429,6 @@ theorem inv_mul_mul_self (a : G₀) : a⁻¹ * a * a = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
   · rw [inv_mul_cancel₀ h, one_mul]
-
 
 /-- Multiplying `a` by itself and then dividing by itself results in `a`, whether or not `a` is
 zero. -/
@@ -452,7 +447,6 @@ theorem div_self_mul_self' (a : G₀) : a / (a * a) = a⁻¹ :=
   calc
     a / (a * a) = a⁻¹⁻¹ * a⁻¹ * a⁻¹ := by simp [mul_inv_rev]
     _ = a⁻¹ := inv_mul_mul_self _
-
 
 theorem one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
   simpa only [one_div] using inv_ne_zero h

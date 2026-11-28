@@ -27,7 +27,6 @@ when needed. To construct instances for concrete numbers,
 
 @[expose] public section
 
-
 variable {R K : Type*}
 
 /-- When two is invertible, every element is `Even`. -/
@@ -123,7 +122,6 @@ instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) :=
 A few `Invertible n` instances for small numerals `n`. Feel free to add your own
 number when you need its inverse.
 -/
-
 
 instance invertibleTwo : Invertible (2 : K) :=
   invertibleOfNonzero (mod_cast (by decide : 2 ≠ 0))

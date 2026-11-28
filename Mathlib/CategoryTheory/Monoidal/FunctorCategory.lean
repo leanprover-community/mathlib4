@@ -21,7 +21,6 @@ The initial intended application is tensor product of presheaves.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory

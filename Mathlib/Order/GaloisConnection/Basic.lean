@@ -42,7 +42,6 @@ intersection.
 
 @[expose] public section
 
-
 open Function OrderDual Set
 
 universe u v w x

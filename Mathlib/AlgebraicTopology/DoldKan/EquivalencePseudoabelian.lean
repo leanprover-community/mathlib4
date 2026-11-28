@@ -37,7 +37,6 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 
 @[expose] public section
 
-
 suppress_compilation
 noncomputable section
 

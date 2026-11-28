@@ -80,7 +80,6 @@ set_option linter.style.longLine false in
 [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
-
 universe u
 
 open MvFunctor
@@ -103,7 +102,6 @@ open MvFunctor (LiftP LiftR)
 /-!
 ### Show that every MvQPF is a lawful MvFunctor.
 -/
-
 
 protected theorem id_map {α : TypeVec n} (x : F α) : TypeVec.id <$$> x = x := by
   rw [← abs_repr x, ← abs_map]

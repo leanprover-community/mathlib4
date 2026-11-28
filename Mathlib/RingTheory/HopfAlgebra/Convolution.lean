@@ -194,7 +194,6 @@ lemma id_antipode_cancel :
   simp [convMul_def, convOne_def, toConv.injEq, ← toLinearMap_injective.eq_iff, lmul'_toLinearMap,
     AlgebraTensorModule.map_eq, ← LinearMap.lTensor_def, mul_antipode_lTensor_comul]
 
-
 lemma counitAlgHom_comp_antipodeAlgHom :
     (counitAlgHom R A).comp (HopfAlgebra.antipodeAlgHom R A) = counitAlgHom R A :=
   AlgHom.toLinearMap_injective <| by simp

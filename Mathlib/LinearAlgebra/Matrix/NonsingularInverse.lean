@@ -54,7 +54,6 @@ matrix inverse, cramer, cramer's rule, adjugate
 
 @[expose] public section
 
-
 namespace Matrix
 
 universe u u' v
@@ -65,7 +64,6 @@ open Matrix Equiv Equiv.Perm Finset
 open scoped Ring
 
 /-! ### Matrices are `Invertible` iff their determinants are -/
-
 
 section Invertible
 
@@ -131,7 +129,6 @@ theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).d
 
 /-! #### Variants of the statements above with `IsUnit` -/
 
-
 theorem isUnit_det_of_invertible [Invertible A] : IsUnit A.det :=
   @isUnit_of_invertible _ _ _ (detInvertibleOfInvertible A)
 
@@ -161,7 +158,6 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
   exact h
 
 /-! ### A noncomputable `Inv` instance  -/
-
 
 /-- The inverse of a square matrix, when it is invertible (and zero otherwise). -/
 noncomputable instance inv : Inv (Matrix n n α) :=
@@ -683,7 +679,6 @@ Note that the simp-normal form of `Matrix.reindex` is `Matrix.submatrix`, so we 
 results about only the latter.
 -/
 
-
 section Submatrix
 
 variable [Fintype m]
@@ -771,9 +766,7 @@ theorem inv_kronecker [Fintype m] [DecidableEq m]
   · apply inv_eq_right_inv
     rw [← mul_kronecker_mul, ← one_kronecker_one, mul_nonsing_inv _ hA, mul_nonsing_inv _ hB]
 
-
 /-! ### More results about determinants -/
-
 
 section Det
 
@@ -790,7 +783,6 @@ theorem det_conj' {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
 end Det
 
 /-! ### More results about traces -/
-
 
 section trace
 

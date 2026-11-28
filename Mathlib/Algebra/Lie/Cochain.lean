@@ -88,7 +88,6 @@ lemma add_apply_apply (a b : twoCochain R L M) (x y : L) :
     (a + b) x y = a x y + b x y := by
   rfl
 
-
 @[simp]
 lemma smul_apply_apply (r : R) (a : twoCochain R L M) (x y : L) :
     (r • a) x y = r • (a x y) := by

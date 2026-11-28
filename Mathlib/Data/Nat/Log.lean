@@ -54,7 +54,6 @@ namespace Nat
 
 /-! ### Floor logarithm -/
 
-
 /-- `log b n`, is the logarithm of natural number `n` in base `b`. It returns the largest `k : ℕ`
 such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
 @[pp_nodot]
@@ -328,7 +327,6 @@ lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
         rwa [Nat.pow_le_one_iff (Nat.ne_of_gt hk)]
 
 /-! ### Ceil logarithm -/
-
 
 /-- `clog b n`, is the upper logarithm of natural number `n` in base `b`. It returns the smallest
 `k : ℕ` such that `n ≤ b^k`, so if `b^k = n`, it returns exactly `k`. -/

@@ -84,7 +84,6 @@ open Polynomial
 
 open scoped Polynomial
 
-
 noncomputable section
 
 variable {R : Type*}
@@ -357,7 +356,6 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
     · simp only [spectralValueTerms, ite_eq_right hm, h_le]
 
 end BddBySpectralValue
-
 
 section spectralNorm
 

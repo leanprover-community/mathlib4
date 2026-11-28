@@ -30,7 +30,6 @@ matrix, reindex
 
 @[expose] public section
 
-
 namespace Matrix
 
 open Equiv Matrix

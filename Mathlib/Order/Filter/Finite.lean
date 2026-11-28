@@ -50,7 +50,6 @@ theorem iInter_mem {β : Sort v} {s : β → Set α} [Finite β] : (⋂ i, s i) 
 
 end Filter
 
-
 namespace Filter
 
 variable {α : Type u} {β : Type v} {ι : Sort x}
@@ -169,7 +168,6 @@ theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → F
   lift s to (i : t) → {s // s ∈ l i} using hsl
   rcases @Subtype.exists_pi_extension ι (fun i => { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
   exact ⟨fun i => s i, fun i => (s i).property, hsd.set_of_subtype _ _⟩
-
 
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by

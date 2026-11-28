@@ -23,7 +23,6 @@ has the left lifting property in `C` with respect to `F.map p`.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category

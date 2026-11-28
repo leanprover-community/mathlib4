@@ -32,7 +32,6 @@ See also `RingTheory.Coprime.Lemmas` for further development of coprime elements
 
 @[expose] public section
 
-
 universe u v
 
 section CommSemiring

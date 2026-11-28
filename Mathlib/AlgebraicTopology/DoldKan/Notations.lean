@@ -22,7 +22,6 @@ as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 
 public section
 
-
 @[inherit_doc]
 scoped[DoldKan] notation "K[" X "]" => AlgebraicTopology.AlternatingFaceMapComplex.obj X
 

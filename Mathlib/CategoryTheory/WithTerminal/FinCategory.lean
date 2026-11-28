@@ -21,7 +21,6 @@ and likewise if `C` has finitely many morphisms as well.
 
 @[expose] public section
 
-
 universe v u
 
 variable (C : Type u) [CategoryTheory.Category.{v} C]

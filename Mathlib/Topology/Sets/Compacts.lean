@@ -24,7 +24,6 @@ For a topological space `α`,
 
 @[expose] public section
 
-
 open Set
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]

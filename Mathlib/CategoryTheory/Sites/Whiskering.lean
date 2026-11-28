@@ -28,7 +28,6 @@ Given a natural transformation `η : F ⟶ G`, we obtain a natural transformatio
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits CategoryTheory.Functor

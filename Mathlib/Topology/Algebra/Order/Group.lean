@@ -23,7 +23,6 @@ We also prove continuity of `abs : G → G` and provide convenience lemmas like 
 
 public section
 
-
 open Set Filter Function
 
 open scoped Topology

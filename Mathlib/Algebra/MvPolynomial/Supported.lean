@@ -28,7 +28,6 @@ variables, polynomial, vars
 
 @[expose] public section
 
-
 universe u v w
 
 namespace MvPolynomial

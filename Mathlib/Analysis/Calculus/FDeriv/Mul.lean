@@ -50,7 +50,6 @@ field: e.g., they work for `c : E → ℂ` and `f : E → F` provided that `F` i
 normed vector space.
 -/
 
-
 variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
@@ -162,7 +161,6 @@ section Mul
 /-! ### Derivative of the product of two functions -/
 
 open scoped RightActions
-
 
 variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}

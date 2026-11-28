@@ -23,7 +23,6 @@ namespace Set
 
 variable {α : Type u} {s t u s₁ s₂ t₁ t₂ : Set α}
 
-
 /-! ### Disjointness -/
 
 protected theorem disjoint_iff : Disjoint s t ↔ s ∩ t ⊆ ∅ :=

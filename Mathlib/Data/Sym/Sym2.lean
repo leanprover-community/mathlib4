@@ -304,7 +304,6 @@ variable {x : α}
 
 /-! ### Membership and set coercion -/
 
-
 /-- This is a predicate that determines whether a given term is a member of a term of the
 symmetric square.  From this point of view, the symmetric square is the subtype of
 cardinality-two multisets on `α`.
@@ -607,7 +606,6 @@ section Relations
 
 /-! ### Declarations about symmetric relations -/
 
-
 variable {r r₁ r₂ : α → α → Prop}
 
 /-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
@@ -852,7 +850,6 @@ end ToFinset
 section SymEquiv
 
 /-! ### Equivalence to the second symmetric power -/
-
 
 attribute [local instance] List.Vector.Perm.isSetoid
 

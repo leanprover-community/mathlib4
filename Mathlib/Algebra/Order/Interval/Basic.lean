@@ -21,7 +21,6 @@ full precision operations.
 
 @[expose] public section
 
-
 open Function Set
 
 open scoped Pointwise
@@ -31,7 +30,6 @@ universe u
 variable {ι α : Type*}
 
 /-! ### One/zero -/
-
 
 section One
 
@@ -122,7 +120,6 @@ end One
 
 Note that this multiplication does not apply to `ℚ` or `ℝ`.
 -/
-
 
 section Mul
 
@@ -311,7 +308,6 @@ is not a thing and probably should not become one).
 However, this means that we can't use `to_additive` in this section.
 -/
 
-
 section Sub
 
 variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] [AddLeftMono α]
@@ -369,7 +365,6 @@ end Sub
 Note that this division does not apply to `ℚ` or `ℝ`.
 -/
 
-
 section Div
 
 variable [Preorder α] [CommGroup α] [MulLeftMono α]
@@ -422,7 +417,6 @@ end Interval
 end Div
 
 /-! ### Negation/inversion -/
-
 
 section Inv
 

@@ -37,7 +37,6 @@ Bézout's lemma, Bezout's lemma
 
 /-! ### Extended Euclidean algorithm -/
 
-
 namespace Nat
 
 /-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
@@ -153,7 +152,6 @@ theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (
 end Nat
 
 /-! ### Divisibility over ℤ -/
-
 
 namespace Int
 

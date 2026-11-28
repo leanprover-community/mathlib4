@@ -49,7 +49,6 @@ intermediate value theorem, connected space, connected set
 
 public section
 
-
 open Filter OrderDual TopologicalSpace Function Set
 open scoped Topology Filter Interval
 
@@ -196,7 +195,6 @@ In this section we prove the following results:
   `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
   of positive numbers cannot be represented as `Set.Ioi _`.
 -/
-
 
 /-- If a preconnected set contains endpoints of an interval, then it includes the whole interval. -/
 theorem IsPreconnected.Icc_subset {s : Set α} (hs : IsPreconnected s) {a b : α} (ha : a ∈ s)
@@ -576,7 +574,6 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
 In this section we prove several versions of the Intermediate Value Theorem for a function
 continuous on an interval.
 -/
-
 
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderClosedTopology δ]
 

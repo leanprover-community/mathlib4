@@ -55,7 +55,6 @@ variable {M : Type*} {M' : Type*}
 
 section Semiring
 
-
 variable {v : ι → M}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
 variable [Module R M] [Module R M']
@@ -421,7 +420,6 @@ theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : Li
 end Module
 
 /-! ### Properties which require `Ring R` -/
-
 
 section Module
 

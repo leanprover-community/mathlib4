@@ -15,7 +15,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 noncomputable section
 
 instance (priority := 900) RCLike.measurableSpace {𝕜 : Type*} [RCLike 𝕜] : MeasurableSpace 𝕜 :=

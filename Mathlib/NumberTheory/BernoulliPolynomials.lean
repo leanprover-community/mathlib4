@@ -34,7 +34,6 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Nat Polynomial

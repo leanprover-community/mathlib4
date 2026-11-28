@@ -29,7 +29,6 @@ Assume `α` is a Fintype:
 
 @[expose] public section
 
-
 open Equiv Finset Function
 
 namespace Equiv.Perm

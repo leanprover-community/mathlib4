@@ -28,7 +28,6 @@ the functor associating to each `Y` the cocones over `K` with cone point `G.obj 
 
 @[expose] public section
 
-
 open Opposite
 
 namespace CategoryTheory
@@ -123,7 +122,6 @@ noncomputable instance (priority := 100)
         { lifts := fun c _ =>
             { liftedCocone := mapCoconeInv H c
               validLift := mapCoconeMapCoconeInv H c } } }
-
 
 -- verify the preserve_colimits instance works as expected:
 noncomputable example (E : C ⥤ D) [E.IsEquivalence] (c : Cocone K) (h : IsColimit c) :
@@ -231,7 +229,6 @@ noncomputable instance (priority := 100)
         { lifts := fun c _ =>
             { liftedCone := mapConeInv H c
               validLift := mapConeMapConeInv H c } } }
-
 
 -- verify the preserve_limits instance works as expected:
 noncomputable example (E : D ⥤ C) [E.IsEquivalence] (c : Cone K) (h : IsLimit c) :

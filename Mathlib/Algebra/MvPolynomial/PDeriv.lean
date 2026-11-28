@@ -41,7 +41,6 @@ As in other polynomial files, we typically use the notation:
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v

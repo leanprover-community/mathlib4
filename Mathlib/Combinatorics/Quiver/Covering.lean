@@ -49,7 +49,6 @@ Cover, covering, quiver, path, lift
 
 @[expose] public section
 
-
 open Function Quiver
 
 universe u v w

@@ -32,7 +32,6 @@ a field structure, and so can all types with prime power cardinalities, and this
 
 public section
 
-
 local notation "‖" x "‖" => Fintype.card x
 
 open scoped Cardinal nonZeroDivisors

@@ -22,7 +22,6 @@ the limit of the parallel pair `f,0`, as well as the dual result.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v₁ v₂ u₁ u₂

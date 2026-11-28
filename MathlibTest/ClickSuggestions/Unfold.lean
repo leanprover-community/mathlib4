@@ -79,7 +79,6 @@ info: Unfolds for Function.Injective fun x => x:
 #guard_msgs in
 #unfold? Function.Injective (fun x : Nat => x)
 
-
 variable (A B : Set Nat) (n : Nat)
 
 /--

@@ -1047,7 +1047,6 @@ instance : CompleteSpace ℚ_[p] := by
 
 /-! ### Valuation on `ℚ_[p]` -/
 
-
 /-- `Padic.valuation` lifts the `p`-adic valuation on rationals to `ℚ_[p]`. -/
 def valuation : ℚ_[p] → ℤ :=
   Quotient.lift (@PadicSeq.valuation p _) fun f g h ↦ by
@@ -1243,7 +1242,6 @@ theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
 section NormLEIff
 
 /-! ### Various characterizations of open unit balls -/
-
 
 theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :
     ‖x‖ ≤ (p : ℝ) ^ n ↔ ‖x‖ < (p : ℝ) ^ (n + 1) := by

@@ -20,7 +20,6 @@ We also define a morphism property `W.paths : MorphismProperty (Paths C)` for an
 
 @[expose] public section
 
-
 universe v₁ u₁
 
 namespace CategoryTheory.Paths

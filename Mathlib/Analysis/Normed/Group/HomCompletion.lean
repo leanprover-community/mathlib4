@@ -53,7 +53,6 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set NormedAddGroupHom UniformSpace

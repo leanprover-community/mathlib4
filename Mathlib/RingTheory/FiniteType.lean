@@ -543,7 +543,6 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
     rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
-
 variable [Monoid M]
 
 /-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,

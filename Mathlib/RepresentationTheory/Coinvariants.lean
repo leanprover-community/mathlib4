@@ -196,7 +196,6 @@ noncomputable abbrev quotientToCoinvariants :
 
 end
 
-
 section Finsupp
 
 open Finsupp Coinvariants
@@ -450,7 +449,6 @@ noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
   map_comp f g := by ext; simp
 
 section Finsupp
-
 
 open MonoidalCategory Finsupp
 

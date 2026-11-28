@@ -852,7 +852,6 @@ theorem IsBasis'.isBasis (hI : M.IsBasis' I X) (hX : X ⊆ M.E := by aesop_mat) 
 theorem IsBasis'.subset (hI : M.IsBasis' I X) : I ⊆ X :=
   hI.1.2
 
-
 @[aesop unsafe 15% (rule_sets := [Matroid])]
 theorem IsBasis.subset_ground (hI : M.IsBasis I X) : X ⊆ M.E :=
   hI.2

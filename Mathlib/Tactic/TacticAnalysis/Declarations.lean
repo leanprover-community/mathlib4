@@ -109,7 +109,6 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
         return none
     }
 
-
 /-- Convert a term syntax to a grindParam syntax (wrapping in grindLemma).
 If the term is a simple identifier (like `pi_pos`), wrap it in an explicit application
 `(id pi_pos)` so grind treats it as a term rather than an e-matching theorem. -/

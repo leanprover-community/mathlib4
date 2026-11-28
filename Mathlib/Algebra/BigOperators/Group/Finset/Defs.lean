@@ -605,7 +605,6 @@ theorem sum_filter_count_eq_countP [DecidableEq ι] (p : ι → Prop) [Decidable
 
 open Multiset
 
-
 @[to_additive]
 theorem prod_mem_multiset [DecidableEq ι] (m : Multiset ι) (f : { x // x ∈ m } → M) (g : ι → M)
     (hfg : ∀ x, f x = g x) : ∏ x : { x // x ∈ m }, f x = ∏ x ∈ m.toFinset, g x := by
@@ -822,9 +821,7 @@ theorem Units.coe_prod [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
 
-
 /-! ### `Additive`, `Multiplicative` -/
-
 
 open Additive Multiplicative
 

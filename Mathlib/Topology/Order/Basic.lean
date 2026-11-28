@@ -50,7 +50,6 @@ for specific types.
 
 @[expose] public section
 
-
 open Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)

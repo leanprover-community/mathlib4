@@ -15,7 +15,6 @@ We define the category structure on a sigma-type (disjoint union) of categories.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 namespace Sigma

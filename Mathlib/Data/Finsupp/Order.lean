@@ -41,7 +41,6 @@ namespace Finsupp
 
 /-! ### Order structures -/
 
-
 section Zero
 
 variable [Zero α]

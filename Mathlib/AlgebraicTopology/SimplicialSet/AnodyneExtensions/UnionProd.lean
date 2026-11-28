@@ -46,7 +46,6 @@ The type (I) simplices for the pairing are those `x` such that there exists `l`
 such that the predicate `IsIndex` hold. The corresponding type (II) simplex
 is obtained by removing `x (l.pred _)` from the walk.
 
-
 ## References
 
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]

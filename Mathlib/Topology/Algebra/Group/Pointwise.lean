@@ -22,7 +22,6 @@ universe u v w x
 
 variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
-
 /-!
 ### Topological operations on pointwise sums and products
 

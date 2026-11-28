@@ -221,7 +221,6 @@ after we convert to a representation and back to a module,
 we have `Module k[G] (restrictScalars k k[G] M)`.
 -/
 
-
 @[simp]
 theorem ofModule_asAlgebraHom_apply_apply (r : k[G])
     (m : RestrictScalars k k[G] M) :

@@ -70,7 +70,6 @@ local notation "J" => o.rightAngleRotation
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped RealInnerProductSpace ComplexConjugate

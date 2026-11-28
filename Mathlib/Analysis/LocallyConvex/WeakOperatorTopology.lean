@@ -62,7 +62,6 @@ structure ContinuousLinearMapWOT {𝕜₁ 𝕜₂ : Type*} [Semiring 𝕜₁] [S
   /-- The continuous linear map underlying an element of `E →SWOT[σ] F`. -/
   toCLM : E →SL[σ] F
 
-
 namespace ContinuousLinearMapWOT
 
 section Notation
@@ -436,7 +435,6 @@ def _root_.ContinuousLinearMap.WOTofCLM : (E →SL[σ] F) →L[𝕜₂] (E →SW
   cont := continuous_ofCLM
 
 end toWOT_continuous
-
 
 section Comp
 

@@ -18,7 +18,6 @@ import Mathlib.Algebra.Ring.CharZero
 
 public section
 
-
 variable {α : Type*}
 
 open Function Int

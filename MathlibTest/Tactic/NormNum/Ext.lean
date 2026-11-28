@@ -151,7 +151,6 @@ example : Nat.minFac 121 = 11 := by norm_num1
 example : Nat.minFac 221 = 13 := by norm_num1
 example : Nat.minFac (2 ^ 19 - 1) = 2 ^ 19 - 1 := by norm_num1
 
-
 -- randomized tests
 example : Nat.gcd 35 29 = 1 := by norm_num1
 example : Int.gcd 35 29 = 1 := by norm_num1
@@ -469,7 +468,6 @@ example : Int.fract (2 : R) = 0 := by norm_num1
 example : round (-3 : R) = -3 := by norm_num1
 example : Int.fract (-3 : R) = 0 := by norm_num1
 
-
 end Ring
 
 section Semifield
@@ -646,6 +644,5 @@ example : Irrational
 -- Large numerator does not affect performance.
 -- We only need to check that it is coprime with the denominator.
 example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
-
 
 end irrational

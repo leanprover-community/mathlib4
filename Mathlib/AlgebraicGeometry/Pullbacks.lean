@@ -25,7 +25,6 @@ constructed via tensor products.
 
 @[expose] public section
 
-
 universe u v w
 
 noncomputable section

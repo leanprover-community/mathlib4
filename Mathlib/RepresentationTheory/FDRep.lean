@@ -56,7 +56,6 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-
 /-- The category of finitely generated `R`-linear representations of a monoid `G`.
 
 Note that `R` can be any ring,

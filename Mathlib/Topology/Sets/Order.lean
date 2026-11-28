@@ -15,13 +15,11 @@ In this file we define the type of clopen upper sets.
 
 @[expose] public section
 
-
 open Set TopologicalSpace
 
 variable {α : Type*} [TopologicalSpace α] [LE α]
 
 /-! ### Compact open sets -/
-
 
 /-- The type of clopen upper sets of a topological space. -/
 structure ClopenUpperSet (α : Type*) [TopologicalSpace α] [LE α] extends Clopens α where

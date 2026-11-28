@@ -19,7 +19,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open OrderDual Set
 
 variable {α β γ : Type*}

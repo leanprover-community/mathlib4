@@ -28,7 +28,6 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 
 public section
 
-
 namespace RingHom
 
 open scoped TensorProduct

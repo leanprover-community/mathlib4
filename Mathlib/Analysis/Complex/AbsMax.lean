@@ -83,7 +83,6 @@ maximum modulus principle, complex analysis
 
 public section
 
-
 open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
@@ -377,7 +376,6 @@ end StrictConvex
 In this section we prove corollaries of the maximum modulus principle that relate the values of a
 function on a set to its values on the frontier of this set.
 -/
-
 
 variable [Nontrivial E]
 

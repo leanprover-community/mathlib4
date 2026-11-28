@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 /-!
 # SeminormFromConst
 
-
 In this file, we prove [BGR, Proposition 1.3.2/2][bosch-guntzer-remmert] : starting from a
 power-multiplicative seminorm on a commutative ring `R` and a nonzero `c : R`, we create a new
 power-multiplicative seminorm for which `c` is multiplicative.

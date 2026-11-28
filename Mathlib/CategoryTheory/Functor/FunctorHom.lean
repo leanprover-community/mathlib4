@@ -24,7 +24,6 @@ See `Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`.
 
 @[expose] public section
 
-
 universe w v' v u u'
 
 open CategoryTheory MonoidalCategory

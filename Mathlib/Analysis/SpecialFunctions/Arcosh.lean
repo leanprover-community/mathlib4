@@ -45,7 +45,6 @@ arcosh, arccosh, argcosh, acosh
 
 @[expose] public section
 
-
 noncomputable section
 
 open Function Set

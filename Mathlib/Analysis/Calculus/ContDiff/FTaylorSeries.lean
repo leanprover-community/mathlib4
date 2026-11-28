@@ -42,7 +42,6 @@ Let `f : E → F` be a map between normed vector spaces over a nontrivially norm
   It is a continuous multilinear map from `E^n` to `F`, defined as a derivative of
   `iteratedFDeriv 𝕜 (n-1) f` if one exists, and `0` otherwise.
 
-
 ### Side of the composition, and universe issues
 
 With a naïve direct definition, the `n`-th derivative of a function belongs to the space
@@ -103,7 +102,6 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 -/
 
 @[expose] public section
-
 
 noncomputable section
 
@@ -388,7 +386,6 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right :
   | (n : ℕ) => exact hasFTaylorSeriesUpToOn_succ_nat_iff_right
 
 /-! ### Iterated derivative within a set -/
-
 
 variable (𝕜)
 
@@ -797,7 +794,6 @@ lemma HasFTaylorSeriesUpTo.tsupport_subset {m : ℕ} (h : m ≤ n)
   exact (continuousMultilinearCurryFin0 _ _ _).map_eq_zero_iff (x := x)
 
 /-! ### Iterated derivative -/
-
 
 variable (𝕜)
 

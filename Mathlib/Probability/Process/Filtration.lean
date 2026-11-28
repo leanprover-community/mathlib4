@@ -39,7 +39,6 @@ filtration, stochastic process
 
 @[expose] public section
 
-
 open Filter TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology

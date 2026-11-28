@@ -32,7 +32,6 @@ transcendence basis, transcendence degree, transcendence
 
 @[expose] public section
 
-
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra

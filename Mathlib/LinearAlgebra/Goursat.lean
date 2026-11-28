@@ -38,7 +38,6 @@ This is the first submodule appearing in Goursat's lemma. See `Subgroup.goursat`
 def goursatFst : Submodule R M :=
   (LinearMap.ker <| (LinearMap.snd R M N).comp L.subtype).map ((LinearMap.fst R M N).comp L.subtype)
 
-
 variable (L) in
 /-- For `L` a subgroup of `M × N`, `L.goursatSnd` is the kernel of the projection map `L → M`,
 considered as a subgroup of `N`.

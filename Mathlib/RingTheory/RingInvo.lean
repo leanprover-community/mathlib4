@@ -46,7 +46,6 @@ class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
 
-
 /-- Turn an element of a type `F` satisfying `RingInvoClass F R` into an actual
 `RingInvo`. This is declared as the default coercion from `F` to `RingInvo R`. -/
 @[coe]

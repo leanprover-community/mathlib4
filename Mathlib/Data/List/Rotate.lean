@@ -27,7 +27,6 @@ rotated, rotation, permutation, cycle
 
 @[expose] public section
 
-
 universe u
 
 variable {α : Type u}

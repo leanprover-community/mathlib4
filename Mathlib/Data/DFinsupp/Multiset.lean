@@ -109,7 +109,6 @@ theorem toDFinsupp_union (s t : Multiset α) : toDFinsupp (s ∪ t) = toDFinsupp
 
 end Multiset
 
-
 namespace DFinsupp
 
 variable [DecidableEq α] {f g : Π₀ _a : α, ℕ}

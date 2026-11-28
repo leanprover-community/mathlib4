@@ -25,7 +25,6 @@ variable {a b m n p : ℕ}
 
 /-! ## Lemmas characterising when `n.factorization p = 0` -/
 
-
 theorem factorization_eq_zero_of_lt {n p : ℕ} (h : n < p) : n.factorization p = 0 :=
   Finsupp.notMem_support_iff.mp (mt le_of_mem_primeFactors (not_le_of_gt h))
 
@@ -436,7 +435,6 @@ theorem factorization_eq_card_pow_dvd_of_lt (hm : m.Prime) (hn : 0 < n) (hb : n 
   rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by lia)]
 
 /-! ### Factorization and coprimes -/
-
 
 /-- If `p` is a prime factor of `a` then the power of `p` in `a` is the same that in `a * b`,
 for any `b` coprime to `a`. -/

@@ -27,7 +27,6 @@ Moreover, this equivalence is compatible with the forgetful functors to `ModuleC
 
 suppress_compilation
 
-
 universe v u
 
 open CategoryTheory

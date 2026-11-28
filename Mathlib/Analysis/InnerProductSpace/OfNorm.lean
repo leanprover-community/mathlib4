@@ -55,7 +55,6 @@ inner product space, Hilbert space, norm
 
 @[expose] public section
 
-
 open RCLike
 
 open scoped ComplexConjugate

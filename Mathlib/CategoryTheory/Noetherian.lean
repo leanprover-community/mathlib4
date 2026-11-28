@@ -27,7 +27,6 @@ The Jordan-Hölder theorem, following https://stacks.math.columbia.edu/tag/0FCK.
 
 public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits

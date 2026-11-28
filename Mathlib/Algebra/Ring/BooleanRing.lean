@@ -117,7 +117,6 @@ instance : BooleanRing PUnit :=
 
 /-! ### Turning a Boolean ring into a Boolean algebra -/
 
-
 section RingToAlgebra
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
@@ -335,7 +334,6 @@ end RingToAlgebra
 
 /-! ### Turning a Boolean algebra into a Boolean ring -/
 
-
 section AlgebraToRing
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
@@ -518,7 +516,6 @@ theorem BoundedLatticeHom.asBoolRing_comp (g : BoundedLatticeHom β γ) (f : Bou
 end AlgebraToRing
 
 /-! ### Equivalence between Boolean rings and Boolean algebras -/
-
 
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and
 `α`. -/

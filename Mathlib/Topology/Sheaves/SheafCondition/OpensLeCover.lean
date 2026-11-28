@@ -35,7 +35,6 @@ like `pairwise_intersections` and `equalizer_products`.
 
 @[expose] public section
 
-
 universe w
 
 noncomputable section

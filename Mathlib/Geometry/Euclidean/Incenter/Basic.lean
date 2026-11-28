@@ -58,7 +58,6 @@ duplicated.
 
 @[expose] public section
 
-
 open EuclideanGeometry
 open scoped Finset RealInnerProductSpace
 

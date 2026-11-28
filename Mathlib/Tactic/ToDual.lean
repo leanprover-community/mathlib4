@@ -9,7 +9,6 @@ public import Mathlib.Tactic.Translate.ToDual
 
 import all Init.Core  -- TODO: for accessing proofs
 
-
 /-!
 ## `@[to_dual]` attributes for basic types
 -/

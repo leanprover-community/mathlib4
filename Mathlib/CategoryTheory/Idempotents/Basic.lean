@@ -34,7 +34,6 @@ preadditive categories).
 
 public section
 
-
 open CategoryTheory
 
 open CategoryTheory.Category

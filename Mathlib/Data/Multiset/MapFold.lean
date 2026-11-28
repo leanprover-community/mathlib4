@@ -38,7 +38,6 @@ namespace Multiset
 
 /-! ### `Multiset.map` -/
 
-
 /-- `map f s` is the lift of the list `map` operation. The multiplicity
   of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity)
   such that `f a = b`. -/
@@ -216,7 +215,6 @@ theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f
 
 /-! ### `Multiset.fold` -/
 
-
 section foldl
 
 /-- `foldl f H b s` is the lift of the list operation `foldl f b l`,
@@ -377,7 +375,6 @@ lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
 end sub
 
 /-! ### Lift a relation to `Multiset`s -/
-
 
 section Rel
 

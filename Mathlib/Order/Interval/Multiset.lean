@@ -35,7 +35,6 @@ Do we really need this file at all? (March 2024)
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 namespace Multiset

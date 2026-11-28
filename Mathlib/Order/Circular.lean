@@ -156,7 +156,6 @@ export CircularOrder (btw_total)
 
 /-! ### Circular preorders -/
 
-
 section CircularPreorder
 
 variable {α : Type*} [CircularPreorder α]
@@ -244,7 +243,6 @@ end CircularPreorder
 
 /-! ### Circular partial orders -/
 
-
 section CircularPartialOrder
 
 variable {α : Type*} [CircularPartialOrder α]
@@ -257,7 +255,6 @@ theorem Btw.btw.antisymm {a b c : α} (h : btw a b c) : btw c b a → a = b ∨ 
 end CircularPartialOrder
 
 /-! ### Circular orders -/
-
 
 section CircularOrder
 
@@ -291,7 +288,6 @@ theorem btw_iff_not_sbtw {a b c : α} : btw a b c ↔ ¬sbtw c b a :=
 end CircularOrder
 
 /-! ### Circular intervals -/
-
 
 namespace Set
 
@@ -340,7 +336,6 @@ end CircularOrder
 end Set
 
 /-! ### Circularizing instances -/
-
 
 /-- The betweenness relation obtained from "looping around" `≤`.
 See note [reducible non-instances]. -/
@@ -417,7 +412,6 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
       · exact Or.inr (Or.inr <| Or.inl ⟨hba, hac⟩) }
 
 /-! ### Dual constructions -/
-
 
 namespace OrderDual
 

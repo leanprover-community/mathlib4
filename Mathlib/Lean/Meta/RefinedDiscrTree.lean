@@ -60,7 +60,6 @@ and includes many more features.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
   applied lambda expressions or let-expressions are indexed by `Key.opaque`.
 
-
 ## Lazy computation
 
 To encode an `Expr` as a sequence of `Key`s, we start with a `LazyEntry` and
@@ -70,7 +69,6 @@ and lazy entries, or returns `none` if the last key has been reached already.
 
 The `RefinedDiscrTree` then stores these `LazyEntries` at its leaves, and evaluates them
 only if the lookup algorithm reaches this leaf.
-
 
 ## Alternative optimizations
 
@@ -87,7 +85,6 @@ different lemmas anyways.
 
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
 `fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
-
 
 ## Matching vs Unification
 

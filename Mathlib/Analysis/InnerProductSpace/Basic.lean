@@ -29,7 +29,6 @@ inner product space, Hilbert space, norm
 
 @[expose] public section
 
-
 noncomputable section
 
 open RCLike Real Filter Topology Finsupp
@@ -121,7 +120,6 @@ theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * �
 
 theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_right, Algebra.smul_def]
-
 
 variable (𝕜)
 

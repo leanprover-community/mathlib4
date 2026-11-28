@@ -42,7 +42,6 @@ frobenius number, chicken mcnugget, chinese remainder theorem, AddSubmonoid.clos
 
 @[expose] public section
 
-
 open Nat
 
 /-- A natural number `n` is the **Frobenius number** of a set of natural numbers `s` if it is an

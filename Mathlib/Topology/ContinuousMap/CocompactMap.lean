@@ -16,13 +16,11 @@ is equivalent to many other conditions, including that preimages of compact sets
 
 @[expose] public section
 
-
 universe u v w
 
 open Filter Set
 
 /-! ### Cocompact continuous maps -/
-
 
 /-- A *cocompact continuous map* is a continuous function between topological spaces which
 tends to the cocompact filter along the cocompact filter. Functions for which preimages of compact

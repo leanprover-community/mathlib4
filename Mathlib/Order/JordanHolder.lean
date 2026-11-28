@@ -58,7 +58,6 @@ Provide instances of `JordanHolderLattice` for subgroups.
 
 @[expose] public section
 
-
 universe u
 
 open Set RelSeries

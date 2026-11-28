@@ -256,7 +256,6 @@ protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] :
 
 /-! ### Intervals as finsets -/
 
-
 namespace Finset
 
 section Preorder
@@ -487,7 +486,6 @@ meta def elabFinsetBuilderIxx : TermElab
 end Mathlib.Meta
 
 /-! ### Finiteness of `Set` intervals -/
-
 
 namespace Set
 
@@ -791,7 +789,6 @@ Adding a `⊤` to a locally finite `OrderTop` keeps it locally finite.
 Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 -/
 
-
 namespace WithTop
 
 /-- Given a finset on `α`, lift it to being a finset on `WithTop α`
@@ -887,7 +884,6 @@ variable [Preorder α] [Preorder β]
 
 /-! #### Transfer locally finite orders across order isomorphisms -/
 
-
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
 abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
@@ -912,7 +908,6 @@ abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : Local
 end OrderIso
 
 /-! #### Subtype of a locally finite order -/
-
 
 variable [Preorder α] (p : α → Prop) [DecidablePred p]
 
@@ -1010,7 +1005,6 @@ theorem map_subtype_embedding_Ioi (hp : ∀ ⦃a x⦄, a ≤ x → p a → p x) 
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Ioi.1 hx).le a.prop
 
 end LocallyFiniteOrderTop
-
 
 end Finset
 

@@ -33,7 +33,6 @@ worth reconsidering namespacing the definitions here.
 
 @[expose] public section
 
-
 open Function Set Filter Topology
 
 variable {X α α' β γ δ M R : Type*}

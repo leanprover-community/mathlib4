@@ -25,7 +25,6 @@ open UpperHalfPlane Real Complex EisensteinSeries ModularForm
 
 open scoped Manifold
 
-
 --This proof was provided by Gauss to the sphere packing project.
 /-- The weight 2 Eisenstein series `E2` is MDifferentiable -/
 lemma E2_mdifferentiable : MDiff E2 := by

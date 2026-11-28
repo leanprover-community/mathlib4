@@ -25,7 +25,6 @@ types.
 
 public section
 
-
 open CategoryTheory
 
 open CategoryTheory.Functor

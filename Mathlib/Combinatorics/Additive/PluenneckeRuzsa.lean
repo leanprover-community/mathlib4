@@ -78,7 +78,6 @@ theorem ruzsa_triangle_inequality_invMul_invMul_invMul (A B C : Finset G) :
     ruzsa_triangle_inequality_div_div_div (G := Gᵐᵒᵖ) (C.map opEquiv.toEmbedding)
       (B.map opEquiv.toEmbedding) (A.map opEquiv.toEmbedding)
 
-
 /-- **Ruzsa's triangle inequality**. Div-mul-mul version. -/
 @[to_additive /-- **Ruzsa's triangle inequality**. Sub-add-add version. -/]
 theorem ruzsa_triangle_inequality_div_mul_mul (A B C : Finset G) :
@@ -96,7 +95,6 @@ theorem ruzsa_triangle_inequality_mulInv_mul_mul (A B C : Finset G) :
 theorem ruzsa_triangle_inequality_invMul_mul_mul (A B C : Finset G) :
     #B * #(A⁻¹ * C) ≤ #(B * A) * #(B * C) := by
   simpa using ruzsa_triangle_inequality_invMul_invMul_invMul A B⁻¹ C
-
 
 /-- **Ruzsa's triangle inequality**. Mul-div-mul version. -/
 @[to_additive /-- **Ruzsa's triangle inequality**. Add-sub-add version. -/]

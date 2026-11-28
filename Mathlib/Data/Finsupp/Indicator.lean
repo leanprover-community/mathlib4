@@ -22,7 +22,6 @@ This file defines `Finsupp.indicator` to help create finsupps from finsets.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset Function

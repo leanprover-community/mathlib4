@@ -20,7 +20,6 @@ of commutative monoids.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v u

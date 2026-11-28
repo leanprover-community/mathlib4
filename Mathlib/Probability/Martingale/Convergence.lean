@@ -42,7 +42,6 @@ theorems.
 
 public section
 
-
 open TopologicalSpace Filter MeasureTheory.Filtration
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
@@ -100,7 +99,6 @@ of a stochastic process if it exists, otherwise returning 0. Hence, instead of s
 existence statement, we phrase the a.e. martingale convergence theorem by showing that a
 submartingale converges to its `limitProcess` almost everywhere.
 -/
-
 
 /-- If a stochastic process has a finite number of upcrossings from below `a` to above `b`,
 then it does not frequently visit both below `a` and above `b`. -/
@@ -297,7 +295,6 @@ does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. mar
 theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
 -/
-
 
 /-- Part a of the **L¹ martingale convergence theorem**: a uniformly integrable submartingale
 strongly adapted to the filtration `ℱ` converges a.e. and in L¹ to an integrable function which is

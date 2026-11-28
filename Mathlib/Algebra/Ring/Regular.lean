@@ -19,7 +19,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 variable {α : Type*}
 
 /-- Left `Mul` by a `k : α` over `[Ring α]` is injective, if `k` is not a zero divisor.

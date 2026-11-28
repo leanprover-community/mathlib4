@@ -22,7 +22,6 @@ there.
 
 public section
 
-
 namespace MultilinearMap
 
 variable {ι R M₂ : Type*} {M₁ : ι → Type*}

@@ -39,7 +39,6 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 @[expose] public section
 
-
 noncomputable section
 
 /-- `WittVector p R` is the ring of `p`-typical Witt vectors over the commutative ring `R`,
@@ -154,7 +153,6 @@ def wittPow (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (X 0 ^ n)
 
 variable {p}
-
 
 /-- An auxiliary definition used in `WittVector.eval`.
 Evaluates a polynomial whose variables come from the disjoint union of `k` copies of `ℕ`,

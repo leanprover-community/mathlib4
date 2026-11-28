@@ -18,7 +18,6 @@ In this file, we show that if a functor preserves spans and cospans, then it pre
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory

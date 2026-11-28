@@ -154,7 +154,6 @@ theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s 
 
 /-! ### type coercion -/
 
-
 protected theorem forall_coe {α : Type*} (s : Finset α) (p : s → Prop) :
     (∀ x : s, p x) ↔ ∀ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
@@ -179,7 +178,6 @@ theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Sort _) = s :=
   rfl
 
 /-! ### Subset and strict subset relations -/
-
 
 section Subset
 
@@ -298,7 +296,6 @@ end Subset
 attribute [local trans] Subset.trans Superset.trans
 
 /-! ### Order embedding from `Finset α` to `Set α` -/
-
 
 /-- Coercion to `Set α` as an `OrderEmbedding`. -/
 def coeEmb : Finset α ↪o Set α :=

@@ -143,7 +143,6 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
 
 end CommGroup
 
-
 /-! We initialize the projections for the group structures for `@[simps]` here.
 
 The lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the

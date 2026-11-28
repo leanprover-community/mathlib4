@@ -20,7 +20,6 @@ and `homologyFunctor` is additive.
 
 @[expose] public section
 
-
 universe v u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex

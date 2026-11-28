@@ -40,7 +40,6 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Complex Function Metric

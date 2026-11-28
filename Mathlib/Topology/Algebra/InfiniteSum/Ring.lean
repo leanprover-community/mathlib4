@@ -162,7 +162,6 @@ We first establish results about arbitrary index types, `ι` and `κ`, and then 
 #### Arbitrary index types
 -/
 
-
 section tsum_mul_tsum
 
 variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [IsTopologicalSemiring α]
@@ -201,7 +200,6 @@ where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which 
 `Finset` `Finset.antidiagonal n`.
 This in fact allows us to generalize to any type satisfying `[Finset.HasAntidiagonal A]`
 -/
-
 
 section CauchyProduct
 

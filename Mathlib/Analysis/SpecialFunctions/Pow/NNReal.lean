@@ -1075,7 +1075,6 @@ end ENNReal
 -- ## Tactic extensions for powers on `ℝ≥0` and `ℝ≥0∞`
 -- -/
 
-
 -- namespace NormNum
 
 -- theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :

@@ -22,7 +22,6 @@ group `CategoryTheory.Aut X`, which is equipped with a bijection with `X ≅ X`.
 
 @[expose] public section
 
-
 universe v v' u u'
 
 namespace CategoryTheory

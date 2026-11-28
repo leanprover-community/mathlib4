@@ -929,7 +929,6 @@ lemma iSup_mul_le {ι : Type*} {u v : ι → ℝ≥0∞} :
     ⨆ i, u i * v i ≤ (⨆ i, u i) * ⨆ i, v i :=
   iSup_le fun i ↦ mul_le_mul' (le_iSup u i) (le_iSup v i)
 
-
 lemma le_iInf_mul_iInf {g : κ → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : ∃ j, g j ≠ ∞)
     (ha : ∀ i j, a ≤ f i * g j) : a ≤ (⨅ i, f i) * ⨅ j, g j := by
   rw [← iInf_ne_top_subtype]

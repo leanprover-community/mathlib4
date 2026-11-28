@@ -81,7 +81,6 @@ section ToMatrix'
 This section deals with the conversion between matrices and bilinear forms on `n → R₂`.
 -/
 
-
 variable [DecidableEq n] [DecidableEq o]
 
 /-- The linear equivalence between bilinear forms on `n → R` and `n × n` matrices -/
@@ -177,7 +176,6 @@ section ToMatrix
 This section deals with the conversion between matrices and bilinear forms on
 a module with a fixed basis.
 -/
-
 
 variable [DecidableEq n] (b : Basis n R₁ M₁)
 
@@ -392,7 +390,6 @@ theorem _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₂} (b : Bas
     (Matrix.toBilin b M).Nondegenerate ↔ M.Nondegenerate :=
   Matrix.nondegenerate_toLinearMap₂_iff b b
 
-
 theorem _root_.Matrix.SeparatingLeft.toBilin' {M : Matrix ι ι R₂} (h : M.SeparatingLeft) :
     M.toBilin'.SeparatingLeft :=
   h.toLinearMap₂'
@@ -410,7 +407,6 @@ theorem _root_.Matrix.SeparatingLeft.toBilin {M : Matrix ι ι R₂} (h : M.Sepa
 theorem _root_.Matrix.separatingLeft_toBilin_iff {M : Matrix ι ι R₂} (b : Basis ι R₂ M₂) :
     (Matrix.toBilin b M).SeparatingLeft ↔ M.SeparatingLeft :=
   Matrix.separatingLeft_toLinearMap₂_iff b b
-
 
 theorem _root_.Matrix.SeparatingRight.toBilin' {M : Matrix ι ι R₂} (h : M.SeparatingRight) :
     M.toBilin'.SeparatingRight :=
@@ -489,7 +485,6 @@ theorem separatingRight_toMatrix_iff {B : BilinForm R₂ M₂} (b : Basis ι R�
 theorem SeparatingRight.toMatrix {B : BilinForm R₂ M₂} (h : B.SeparatingRight) (b : Basis ι R₂ M₂) :
     (BilinForm.toMatrix b B).SeparatingRight :=
   (separatingRight_toMatrix_iff b).mpr h
-
 
 /-! Some shorthands for combining the above with `Matrix.Nondegenerate.of_det_ne_zero` -/
 

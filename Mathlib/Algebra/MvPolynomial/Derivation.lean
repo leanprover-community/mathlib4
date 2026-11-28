@@ -22,7 +22,6 @@ builds a derivation from its values on `X i`s and a linear equivalence
 
 @[expose] public section
 
-
 namespace MvPolynomial
 
 noncomputable section

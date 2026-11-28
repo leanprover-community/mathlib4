@@ -33,7 +33,6 @@ You should not assume that there has been any effort to state lemmas as generall
 
 @[expose] public section
 
-
 universe u v w
 
 open Cardinal Submodule Module Function

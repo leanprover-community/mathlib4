@@ -44,13 +44,11 @@ greater than `(1 - ε)`.
 
 @[expose] public section
 
-
 open Finset
 
 variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 /-! ### Graph uniformity -/
-
 
 namespace SimpleGraph
 
@@ -190,7 +188,6 @@ theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : 
 end SimpleGraph
 
 /-! ### Uniform partitions -/
-
 
 variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph α)
   [DecidableRel G.Adj] {ε δ : 𝕜} {u v : Finset α}

@@ -38,7 +38,6 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 @[expose] public section
 
-
 variable {R A B : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.

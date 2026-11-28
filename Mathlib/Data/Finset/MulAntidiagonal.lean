@@ -17,7 +17,6 @@ given that `s` and `t` are well-ordered. -/
 
 @[expose] public section
 
-
 namespace Set
 
 open scoped Pointwise

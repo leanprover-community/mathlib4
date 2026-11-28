@@ -74,7 +74,6 @@ Diophantine approximation, Dirichlet's approximation theorem, continued fraction
 
 @[expose] public section
 
-
 namespace Real
 
 section Dirichlet
@@ -85,7 +84,6 @@ section Dirichlet
 We show that for any real number `ξ` and positive natural `n`, there is a fraction `q`
 such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
 -/
-
 
 open Finset Int
 
@@ -195,7 +193,6 @@ We show that an irrational real number `ξ` has infinitely many "good rational a
 i.e., fractions `x/y` in lowest terms such that `|ξ - x/y| < 1/y^2`.
 -/
 
-
 open Set
 
 /-- Given any rational approximation `q` to the irrational real number `ξ`, there is
@@ -242,7 +239,6 @@ namespace Rat
 We now show that a rational number `ξ` has only finitely many good rational
 approximations.
 -/
-
 
 open Set
 
@@ -325,7 +321,6 @@ by making the statement slightly stronger. Namely, we assume that $|\xi - x/y| <
 when $y \ge 2$ and $-\frac{1}{2} < \xi - x < 1$ when $y = 1$.
 -/
 
-
 section Convergent
 
 namespace Real
@@ -335,7 +330,6 @@ open Int
 /-!
 ### Convergents: definition and API lemmas
 -/
-
 
 /-- We give a direct recursive definition of the convergents of the continued fraction
 expansion of a real number `ξ`. The main reason for that is that we want to have the
@@ -385,7 +379,6 @@ end Convergent
 /-!
 ### The key technical condition for the induction proof
 -/
-
 
 namespace Real
 
@@ -514,7 +507,6 @@ end
 /-!
 ### The main result
 -/
-
 
 /-- The technical version of *Legendre's Theorem*. -/
 theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :

@@ -265,7 +265,6 @@ end of_surjective
 
 section BaseChange
 
-
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable (B : Type*) [CommRing B] [Algebra R B]

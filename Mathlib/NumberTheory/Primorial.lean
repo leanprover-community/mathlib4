@@ -29,7 +29,6 @@ than or equal to `n`.
 
 @[expose] public section
 
-
 open Finset
 
 open Nat

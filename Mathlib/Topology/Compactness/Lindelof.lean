@@ -39,7 +39,6 @@ We define the following properties for sets in a topological space:
 @[expose] public section
 open Set Filter Topology TopologicalSpace
 
-
 universe u v
 
 variable {X : Type u} {Y : Type v} {ι : Type*}
@@ -256,7 +255,6 @@ theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X}
   rw [biUnion_image]
   exact hd.2
 
-
 /-- A set `s` is Lindelöf if for every open cover of `s`, there exists a countable subcover. -/
 theorem isLindelof_of_countable_subcover
     (h : ∀ {ι : Type u} (U : ι → Set X), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
@@ -335,7 +333,6 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
     simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
     intro x hx
     exact mem_biUnion is ((hr i is).2 hx)
-
 
 theorem Set.Finite.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) :=
@@ -568,7 +565,6 @@ theorem nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelo
 
 theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelofSpace X :=
   ⟨nonLindelofSpace_of_neBot, fun _ => inferInstance⟩
-
 
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩

@@ -21,7 +21,6 @@ subsemiring `map`, `comap` and range (`rangeS`) of a `RingHom` etc.
 
 @[expose] public section
 
-
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [NonAssocSemiring R] (M : Submonoid R)
@@ -921,7 +920,6 @@ The only new result is `Subsemiring.module`.
 When `R` is commutative, `Algebra.ofSubsemiring` provides a stronger result than those found in
 this file, which uses the same scalar action.
 -/
-
 
 section Actions
 

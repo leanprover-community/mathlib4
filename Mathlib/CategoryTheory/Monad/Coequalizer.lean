@@ -28,7 +28,6 @@ Please try to keep them in sync.
 
 @[expose] public section
 
-
 universe v₁ u₁
 
 namespace CategoryTheory
@@ -44,7 +43,6 @@ variable {T : Monad C} (X : Algebra T)
 /-!
 Show that any algebra is a coequalizer of free algebras.
 -/
-
 
 /-- The top map in the coequalizer diagram we will construct. -/
 @[simps!]

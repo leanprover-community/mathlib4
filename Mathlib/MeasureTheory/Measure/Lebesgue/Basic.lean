@@ -30,7 +30,6 @@ additive Haar measure on a finite-dimensional real vector space.
 
 @[expose] public section
 
-
 assert_not_exists MeasureTheory.integral
 
 noncomputable section
@@ -44,7 +43,6 @@ open scoped ENNReal NNReal Topology
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals
 -/
-
 
 namespace Real
 
@@ -232,7 +230,6 @@ theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a :
 ### Volume of a box in `ℝⁿ`
 -/
 
-
 theorem volume_Icc_pi {a b : ι → ℝ} : volume (Icc a b) = ∏ i, ENNReal.ofReal (b i - a i) := by
   rw [← pi_univ_Icc, volume_pi_pi]
   simp only [Real.volume_Icc]
@@ -303,7 +300,6 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fi
 ### Images of the Lebesgue measure under multiplication in ℝ
 -/
 
-
 theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
   refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
@@ -349,7 +345,6 @@ theorem volume_preimage_mul_right {a : ℝ} (h : a ≠ 0) (s : Set ℝ) :
 /-!
 ### Images of the Lebesgue measure under translation/linear maps in ℝⁿ
 -/
-
 
 open Matrix
 

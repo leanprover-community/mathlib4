@@ -26,7 +26,6 @@ divisible by `X`.
 
 @[expose] public section
 
-
 namespace Polynomial
 
 section Semiring

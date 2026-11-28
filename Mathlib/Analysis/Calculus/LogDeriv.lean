@@ -180,7 +180,6 @@ lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : S
       simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
         (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
 
-
 /-- At a simple zero of an analytic function, the logarithmic residue
 `(w - x) * logDeriv f w` tends to 1. -/
 theorem AnalyticAt.tendsto_mul_logDeriv_simple_zero [CompleteSpace 𝕜]

@@ -30,7 +30,6 @@ correlate in the uniform measure.
 
 public section
 
-
 open Finset
 
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}

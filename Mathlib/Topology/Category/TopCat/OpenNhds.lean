@@ -28,7 +28,6 @@ Besides `OpenNhds`, the main constructions here are:
 
 @[expose] public section
 
-
 open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u

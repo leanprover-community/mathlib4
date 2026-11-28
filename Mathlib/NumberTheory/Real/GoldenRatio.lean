@@ -24,7 +24,6 @@ Binet's formula.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial
@@ -113,7 +112,6 @@ theorem neg_one_lt_goldenConj : -1 < ψ := by
 /-!
 ## Irrationality
 -/
-
 
 /-- The golden ratio is irrational. -/
 theorem goldenRatio_irrational : Irrational φ := by

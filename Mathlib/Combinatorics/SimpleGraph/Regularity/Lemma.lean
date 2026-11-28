@@ -65,7 +65,6 @@ We currently only prove the equipartition version of SRL.
 
 public section
 
-
 open Finpartition Finset Fintype Function SzemerediRegularity
 
 variable {α : Type*} [DecidableEq α] [Fintype α] (G : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ}

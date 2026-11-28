@@ -173,7 +173,6 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [d, sub_le_iff_le_add, zero_add] using this
 
-
 /-- A set where `μ ≤ ν` (and the reverse inequality on the complement),
 defined via measurable set and measure restriction comparisons. -/
 structure IsHahnDecomposition (μ ν : Measure α) (s : Set α) : Prop where

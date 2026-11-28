@@ -33,7 +33,6 @@ convex, convex body
 
 public section
 
-
 open scoped Pointwise Topology NNReal
 
 variable {V : Type*}

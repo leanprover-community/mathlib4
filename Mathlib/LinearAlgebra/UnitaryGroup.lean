@@ -40,7 +40,6 @@ matrix group, group, unitary group, orthogonal group
 
 @[expose] public section
 
-
 universe u v
 
 namespace Matrix

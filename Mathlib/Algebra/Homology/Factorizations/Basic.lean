@@ -35,7 +35,6 @@ of total derived functors (and a refactor of the sequence of derived functors).
 
 @[expose] public section
 
-
 open CategoryTheory Abelian Limits
 
 variable {C : Type*} [Category* C] [Abelian C]

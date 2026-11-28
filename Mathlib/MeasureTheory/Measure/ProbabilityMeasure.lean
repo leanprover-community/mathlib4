@@ -74,7 +74,6 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Filter BoundedContinuousFunction Topology
@@ -95,7 +94,6 @@ equipped with the topology of weak convergence of measures. Since every probabil
 finite measure, this is implemented as the induced topology from the mapping
 `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`.
 -/
-
 
 /-- Probability measures are defined as the subtype of measures that have the property of being
 probability measures (i.e., their total mass is one). -/

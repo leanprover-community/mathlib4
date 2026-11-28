@@ -25,7 +25,6 @@ induce cover-preserving functors, and that open embeddings induce continuous fun
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory TopologicalSpace Topology
@@ -160,7 +159,6 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
   rintro U S hU _ ⟨x, hx, rfl⟩
   obtain ⟨V, i, hV, hxV⟩ := hU x hx
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
-
 
 lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
     h.functor.IsContinuous (Opens.grothendieckTopology X)

@@ -26,7 +26,6 @@ end of a polynomial
 
 @[expose] public section
 
-
 noncomputable section
 
 open AddMonoidAlgebra Function Polynomial Finset

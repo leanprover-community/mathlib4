@@ -33,7 +33,6 @@ derivative, polynomial
 
 public section
 
-
 universe u
 
 open scoped Polynomial
@@ -45,7 +44,6 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜
 namespace Polynomial
 
 /-! ### Derivative of a polynomial -/
-
 
 variable {R : Type*} [CommSemiring R] [Algebra R 𝕜]
 variable (p : 𝕜[X]) (q : R[X])

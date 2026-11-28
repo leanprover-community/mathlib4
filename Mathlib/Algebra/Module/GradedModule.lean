@@ -26,7 +26,6 @@ graded module
 
 @[expose] public section
 
-
 section
 
 open DirectSum

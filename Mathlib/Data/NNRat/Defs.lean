@@ -324,7 +324,6 @@ theorem Rat.coe_nnabs (x : ℚ) : (Rat.nnabs x : ℚ) = abs x := rfl
 
 /-! ### Numerator and denominator -/
 
-
 namespace NNRat
 
 variable {p q : ℚ≥0}

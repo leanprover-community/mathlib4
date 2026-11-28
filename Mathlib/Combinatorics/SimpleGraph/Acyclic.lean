@@ -41,7 +41,6 @@ acyclic graphs, trees
 
 @[expose] public section
 
-
 namespace SimpleGraph
 
 open Walk

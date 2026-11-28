@@ -30,7 +30,6 @@ purposes, and the system is set up so that they imply the correct granular typec
 If those are enough for you, you may stop reading here! Else, beware that what
 follows is a bit technical.
 
-
 In all that follows, `α` and `β` are orders which have a `0` and such that `α` acts on `β` by scalar
 multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence
 `•` should be considered here as a mostly arbitrary function `α → β → β`.
@@ -1239,7 +1238,6 @@ instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosRefle
     obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
 
 end SMul
-
 
 section SMulWithZero
 variable [∀ i, Zero (β i)] [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]

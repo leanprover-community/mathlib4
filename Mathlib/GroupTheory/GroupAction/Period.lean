@@ -123,5 +123,4 @@ theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M)
 
 end MonoidExponent
 
-
 end MulAction

@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Matrix.Array  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (Qq dependency)
 
-
 /-!
 # Certificates for list-based matrix literals
 

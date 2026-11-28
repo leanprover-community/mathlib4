@@ -54,7 +54,6 @@ Notations:
 - `Bool` = {`true`, `false`}.
 -/
 
-
 /-- The hypercube in dimension `n`. -/
 abbrev Q (n : ℕ) :=
   Fin n → Bool
@@ -148,7 +147,6 @@ end Q
 
 /-! ### The vector space -/
 
-
 /-- The free vector space on vertices of a hypercube, defined inductively. -/
 def V : ℕ → Type
   | 0 => ℝ
@@ -168,7 +166,6 @@ theorem ext {n : ℕ} {p q : V n.succ} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p
 variable (n : ℕ)
 
 /-! `V n` is a real vector space whose equality relation is computable. -/
-
 
 instance : DecidableEq (V n) := by
   induction n
@@ -243,7 +240,6 @@ theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
 since this cardinal is finite, as a natural number in `finrank_V` -/
 
-
 theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
@@ -258,7 +254,6 @@ theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
 
 /-! ### The linear map -/
 
-
 /-- The linear operator $f_n$ corresponding to Huang's matrix $A_n$,
 defined inductively as a ℝ-linear map from `V n` to `V n`. -/
 noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
@@ -269,7 +264,6 @@ noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
 /-! The preceding definition uses linear map constructions to automatically
 get that `f` is linear, but its values are somewhat buried as a side-effect.
 The next two lemmas unbury them. -/
-
 
 @[simp]
 theorem f_zero : f 0 = 0 :=
@@ -284,7 +278,6 @@ theorem f_succ_apply (v : V n.succ) : f n.succ v = (f n v.1 + v.2, v.1 - f n v.2
 /-! In the next statement, the explicit conversion `(n : ℝ)` of `n` to a real number
 is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
-
 
 set_option backward.isDefEq.respectTransparency false in
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
@@ -319,11 +312,9 @@ noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
 
 /-! In the following lemmas, `m` will denote a natural number. -/
 
-
 variable {m : ℕ}
 
 /-! Again we unpack what are the values of `g`. -/
-
 
 set_option backward.isDefEq.respectTransparency false in
 theorem g_apply : ∀ v, g m v = (f m v + √(m + 1) • v, v) := by
@@ -350,25 +341,20 @@ theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 
 In this section, in order to enforce that `n` is positive, we write it as
 `m + 1` for some natural number `m`. -/
 
-
 /-! `dim X` will denote the dimension of a subspace `X` as a cardinal. -/
-
 
 local notation "dim " X:70 => Module.rank ℝ { x // x ∈ X }
 
 /-! `fdim X` will denote the (finite) dimension of a subspace `X` as a natural number. -/
 
-
 local notation "fdim" => finrank ℝ
 
 /-! `Span S` will denote the ℝ-subspace spanned by `S`. -/
-
 
 local notation "Span" => Submodule.span ℝ
 
 /-! `Card X` will denote the cardinal of a subset of a finite type, as a
 natural number. -/
-
 
 local notation "Card " X:70 => #(Set.toFinset X)
 

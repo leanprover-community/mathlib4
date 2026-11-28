@@ -23,7 +23,6 @@ public section
 
 namespace Lean.Meta.RefinedDiscrTree
 
-
 /-- Discrimination tree key. -/
 inductive Key where
   /-- A metavariable. This key matches with anything. -/

@@ -27,7 +27,6 @@ and strictly less than `n`.
 
 @[expose] public section
 
-
 open Nat
 
 namespace List

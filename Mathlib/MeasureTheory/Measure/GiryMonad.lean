@@ -32,7 +32,6 @@ giry monad
 
 @[expose] public section
 
-
 noncomputable section
 
 open ENNReal Set Filter

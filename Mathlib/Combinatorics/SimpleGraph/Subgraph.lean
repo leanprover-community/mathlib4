@@ -47,7 +47,6 @@ sub-relation of the adjacency relation of the simple graph.
 
 @[expose] public section
 
-
 universe u v
 
 namespace SimpleGraph
@@ -928,7 +927,6 @@ section MkProperties
 
 /-! ### Properties of `singletonSubgraph` and `subgraphOfAdj` -/
 
-
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
 
 instance (v : V) : Unique (G.singletonSubgraph v).verts :=
@@ -1061,7 +1059,6 @@ variable {G : SimpleGraph V}
 
 /-! ### Subgraphs of subgraphs -/
 
-
 /-- Given a subgraph of a subgraph of `G`, construct a subgraph of `G`. -/
 protected abbrev coeSubgraph {G' : G.Subgraph} : G'.coe.Subgraph → G.Subgraph :=
   Subgraph.map G'.hom
@@ -1111,7 +1108,6 @@ lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
     simp [H.edge_vert h, H.edge_vert h.symm]
 
 /-! ### Edge deletion -/
-
 
 /-- Given a subgraph `G'` and a set of vertex pairs, remove all of the corresponding edges
 from its edge set, if present.
@@ -1205,7 +1201,6 @@ theorem spanningCoe_deleteEdges_le (G' : G.Subgraph) (s : Set (Sym2 V)) :
 end DeleteEdges
 
 /-! ### Induced subgraphs -/
-
 
 /- Given a subgraph, we can change its vertex set while removing any invalid edges, which
 gives induced subgraphs. See also `SimpleGraph.induce` for the `SimpleGraph` version, which,

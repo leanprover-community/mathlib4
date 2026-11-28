@@ -20,7 +20,6 @@ More precisely, the inclusion creates such limits.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w' w v v₁ v₂ u u₁ u₂

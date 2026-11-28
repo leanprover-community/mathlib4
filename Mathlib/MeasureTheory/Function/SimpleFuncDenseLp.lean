@@ -44,9 +44,7 @@ For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ --
 
 @[expose] public section
 
-
 noncomputable section
-
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
@@ -225,7 +223,6 @@ end Lp
 
 /-! ### L1 approximation by simple functions -/
 
-
 section Integrable
 
 variable [MeasurableSpace β]
@@ -281,7 +278,6 @@ A simple function `f : α →ₛ E` into a normed group `E` verifies, for a meas
 - for `0 < p < ∞`,
   `MemLp f p μ ↔ Integrable f μ ↔ f.FinMeasSupp μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞`.
 -/
-
 
 theorem exists_forall_norm_le (f : α →ₛ F) : ∃ C, ∀ x, ‖f x‖ ≤ C :=
   exists_forall_le (f.map fun x => ‖x‖)
@@ -384,7 +380,6 @@ open SimpleFunc
 
 /-! Construction of the space of `Lp` simple functions, and its dense embedding into `Lp`. -/
 
-
 namespace Lp
 
 open AEEqFun
@@ -417,8 +412,6 @@ section Instances
 
 /-! Simple functions in Lp space form a `NormedSpace`. -/
 
-
-
 protected theorem eq' {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
   Subtype.ext ∘ Subtype.ext
 
@@ -427,7 +420,6 @@ then the next few lemmas, putting a normed `𝕜`-group structure on `Lp.simpleF
 unnecessary.  But instead, `Lp.simpleFunc E p μ` is defined as an `AddSubgroup` of `Lp E p μ`,
 which does not permit this (but has the advantage of working when `E` itself is a normed group,
 i.e. has no scalar action). -/
-
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 

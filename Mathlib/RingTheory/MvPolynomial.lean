@@ -22,7 +22,6 @@ finitely supported functions from the indexing set to `ℕ`.
 
 public section
 
-
 noncomputable section
 
 open Submodule

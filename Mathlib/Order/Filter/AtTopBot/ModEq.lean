@@ -25,7 +25,6 @@ In this file we prove that `m ≡ d [MOD n]` frequently as `m → ∞`.
 
 public section
 
-
 open Filter
 
 namespace Nat

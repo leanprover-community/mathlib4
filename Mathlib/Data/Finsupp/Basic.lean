@@ -35,7 +35,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset Function
@@ -45,7 +44,6 @@ variable {α β γ ι M N P G H R S : Type*}
 namespace Finsupp
 
 /-! ### Declarations about `graph` -/
-
 
 section Graph
 
@@ -109,7 +107,6 @@ end Finsupp
 
 /-! ### Declarations about `mapRange` -/
 
-
 section MapRange
 
 namespace Finsupp
@@ -129,7 +126,6 @@ end Finsupp
 end MapRange
 
 /-! ### Declarations about `equivCongrLeft` -/
-
 
 section EquivCongrLeft
 
@@ -251,7 +247,6 @@ end Rat
 end CastFinsupp
 
 /-! ### Declarations about `mapDomain` -/
-
 
 namespace Finsupp
 
@@ -496,7 +491,6 @@ end MapDomain
 
 /-! ### Declarations about `comapDomain` -/
 
-
 section ComapDomain
 
 /-- Given `f : α → β`, `l : β →₀ M` and a proof `hf` that `f` is injective on
@@ -645,9 +639,7 @@ end FInjective
 
 end ComapDomain
 
-
 /-! ### Declarations about `Finsupp.filter` -/
-
 
 section Filter
 
@@ -740,7 +732,6 @@ end Filter
 
 /-! ### Declarations about `frange` -/
 
-
 section Frange
 
 variable [Zero M]
@@ -773,7 +764,6 @@ theorem finite_range (f : α →₀ M) : (Set.range f).Finite :=
 end Frange
 
 /-! ### Declarations about `Finsupp.subtypeDomain` -/
-
 
 section SubtypeDomain
 
@@ -927,7 +917,6 @@ theorem mem_support_finsetSum [AddCommMonoid M] {s : Finset ι} {h : ι → α �
 
 /-! ### Declarations about `curry` and `uncurry` -/
 
-
 section Uncurry
 
 variable [Zero M]
@@ -1037,7 +1026,6 @@ noncomputable def curryAddEquiv : (α × β →₀ M) ≃+ (α →₀ β →₀ 
 end
 
 /-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
-
 
 section Sum
 variable [Zero γ]
@@ -1317,7 +1305,6 @@ end Finsupp
 namespace Finsupp
 
 /-! ### Declarations about sigma types -/
-
 
 section Sigma
 

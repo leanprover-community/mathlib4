@@ -68,9 +68,7 @@ namespace AkraBazziRecurrence
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
 variable [Nonempty α] (R : AkraBazziRecurrence T g a b r)
 
-
 local notation "ε" => smoothingFn
-
 
 /-!
 ### Technical lemmas

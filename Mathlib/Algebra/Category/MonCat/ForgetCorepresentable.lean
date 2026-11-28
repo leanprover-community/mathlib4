@@ -50,7 +50,6 @@ def MonCat.coyonedaObjIsoForget :
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftPowersHom M.carrier).symm).toIso
 
-
 /-- The forgetful functor `CommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def CommMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget CommMonCat.{u} :=

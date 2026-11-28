@@ -27,7 +27,6 @@ namespace MonoidAlgebra
 
 /-! #### Non-unital, non-associative algebra structure -/
 
-
 section NonUnitalNonAssocAlgebra
 
 variable (R) [Semiring R] [Mul M] [NonUnitalNonAssocSemiring A]

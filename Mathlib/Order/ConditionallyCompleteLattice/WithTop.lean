@@ -276,7 +276,6 @@ the empty set.
 This result can be used to show that the extended reals `[-∞, ∞]` are a complete linear order.
 -/
 
-
 /-- Adding a top element to a conditionally complete lattice
 gives a conditionally complete lattice -/
 @[to_dual

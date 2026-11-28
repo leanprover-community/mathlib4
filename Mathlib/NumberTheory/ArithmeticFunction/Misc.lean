@@ -475,5 +475,4 @@ meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e :=
     | _ => return .nonnegative q(Nat.zero_le _)
   | _, _, _ => throwError "not ArithmeticFunction.sigma"
 
-
 end Mathlib.Meta.Positivity

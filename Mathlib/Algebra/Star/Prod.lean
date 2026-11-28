@@ -20,7 +20,6 @@ This file provides basic results about the star on product types defined in
 
 public section
 
-
 universe u v w
 
 variable {R : Type u} {S : Type v}

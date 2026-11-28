@@ -43,7 +43,6 @@ cramer, cramer's rule, adjugate
 
 @[expose] public section
 
-
 namespace Matrix
 
 universe u v w
@@ -62,7 +61,6 @@ section Cramer
   After defining `cramerMap` and showing it is linear,
   we will restrict our proofs to using `cramer`.
 -/
-
 
 variable (A : Matrix n n α) (b : n → α)
 
@@ -174,7 +172,6 @@ section Adjugate
 Define the `adjugate` matrix and a few equations.
 These will hold for any matrix over a commutative ring.
 -/
-
 
 /-- The adjugate matrix is the transpose of the cofactor matrix.
 

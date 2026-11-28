@@ -118,7 +118,6 @@ lemma mulI_orthogonal_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.s
     Units.inv_mk, Units.smul_mk_apply]
   simp [inner_real_eq_re_inner]
 
-
 lemma mulI_orthogonal (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.mulIᗮ := by
   rw [mulI_orthogonal_eq_symplComp]
 

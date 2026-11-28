@@ -40,7 +40,6 @@ are.
 
 public section
 
-
 variable {ι : Type*} {α : ι → Type*}
 
 namespace PSigma

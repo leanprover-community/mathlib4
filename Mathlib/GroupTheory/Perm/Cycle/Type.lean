@@ -253,7 +253,6 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
-
 theorem cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub
     {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
     (g * f⁻¹).cycleType = g.cycleType - f.cycleType :=

@@ -31,7 +31,6 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 
 @[expose] public section
 
-
 open Real EuclideanGeometry Real Module
 
 open scoped RealInnerProductSpace
@@ -46,7 +45,6 @@ namespace InnerProductGeometry
 This section develops some results on spheres in real inner product spaces,
 which are used to deduce corresponding results for Euclidean affine spaces.
 -/
-
 
 theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, x = k • y)
     (h₃ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
@@ -74,7 +72,6 @@ namespace EuclideanGeometry
 
 This section develops some results on spheres in Euclidean affine spaces.
 -/
-
 
 open InnerProductGeometry EuclideanGeometry
 

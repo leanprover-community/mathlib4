@@ -33,7 +33,6 @@ open CategoryTheory.Functor
 section
 variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
 
-
 variable (A) in
 /-- The structural isomorphism for composition of `pseudofunctorRight`. -/
 def mapCompRight (F : B ⥤ C) (G : C ⥤ D) :

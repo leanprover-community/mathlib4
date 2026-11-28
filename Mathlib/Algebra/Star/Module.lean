@@ -32,7 +32,6 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 
 @[expose] public section
 
-
 section SMulLemmas
 
 variable {R M : Type*}

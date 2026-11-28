@@ -122,7 +122,6 @@ attribute [reassoc (attr := simp)] ComonadHom.app_ε ComonadHom.app_δ
 instance : Quiver (Monad C) where
   Hom := MonadHom
 
-
 @[to_dual (attr := ext)]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext h

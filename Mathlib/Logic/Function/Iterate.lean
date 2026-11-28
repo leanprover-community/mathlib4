@@ -31,7 +31,6 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 @[expose] public section
 
-
 universe u v
 
 variable {α : Type u} {β : Type v}

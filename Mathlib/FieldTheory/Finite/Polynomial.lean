@@ -20,7 +20,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 namespace MvPolynomial
 
 variable {σ : Type*}

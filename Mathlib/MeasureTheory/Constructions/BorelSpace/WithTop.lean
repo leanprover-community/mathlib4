@@ -29,7 +29,6 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 
 @[expose] public section
 
-
 namespace WithTop
 
 variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]

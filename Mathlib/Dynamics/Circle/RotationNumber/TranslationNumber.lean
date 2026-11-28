@@ -250,7 +250,6 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 ### Translate by a constant
 -/
 
-
 /-- The map `y ↦ x + y` as a `CircleDeg1Lift`. More precisely, we define a homomorphism from
 `Multiplicative ℝ` to `CircleDeg1Liftˣ`, so the translation by `x` is
 `translation (Multiplicative.ofAdd x)`. -/
@@ -345,7 +344,6 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
 /-!
 ### Pointwise order on circle maps
 -/
-
 
 /-- Monotone circle maps form a lattice with respect to the pointwise order -/
 noncomputable instance : Lattice CircleDeg1Lift where
@@ -490,7 +488,6 @@ If we know that `f x` is `≤`/`<`/`≥`/`>`/`=` to `x + m`, then we have a simi
 For `≤`, `≥`, and `=` we formulate both `of` (implication) and `iff` versions because implications
 work for `n = 0`. For `<` and `>` we formulate only `iff` versions.
 -/
-
 
 theorem iterate_le_of_map_le_add_int {x : ℝ} {m : ℤ} (h : f x ≤ x + m) (n : ℕ) :
     f^[n] x ≤ x + n * m := by

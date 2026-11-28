@@ -355,7 +355,6 @@ instance : Lattice ℤ := inferInstance
 
 /-! ### Dual order -/
 
-
 open OrderDual
 
 @[to_dual (attr := simp)]
@@ -379,7 +378,6 @@ variable [LinearOrder α]
 end LinearOrder
 
 /-! ### Function lattices -/
-
 
 namespace Pi
 
@@ -426,7 +424,6 @@ end Function
 /-!
 ### Monotone functions and lattices
 -/
-
 
 namespace Monotone
 
@@ -591,7 +588,6 @@ end AntitoneOn
 ### Products of (semi-)lattices
 -/
 
-
 namespace Prod
 
 variable (α β)
@@ -638,7 +634,6 @@ end Prod
 /-!
 ### Subtypes of (semi-)lattices
 -/
-
 
 namespace Subtype
 

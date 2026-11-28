@@ -23,11 +23,9 @@ bounded.
 
 @[expose] public section
 
-
 universe u v
 
 open CategoryTheory
-
 
 /-- The category of finite partial orders with monotone functions. -/
 structure FinPartOrd extends PartOrd where

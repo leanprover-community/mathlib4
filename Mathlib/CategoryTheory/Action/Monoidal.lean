@@ -155,7 +155,6 @@ lemma FunctorCategoryEquivalence.functor_μ (A B : Action V G) :
 lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
     δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
 
-
 variable (H : Type*) [Group H]
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
@@ -233,7 +232,6 @@ noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
       simp only [tensorObj_V, tensor_ρ]
       simp [types_tensorObj_def]
       rfl
-
 
 /-- An isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on `Gⁿ⁺¹` and
 `G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,

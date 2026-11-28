@@ -27,7 +27,6 @@ open List
 
 section sort
 
-
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ b)

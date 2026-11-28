@@ -29,7 +29,6 @@ ball/sphere with another center and radius.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Metric Real Set Topology

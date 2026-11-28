@@ -9,7 +9,6 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
-
 /-!
 ## Main results
 

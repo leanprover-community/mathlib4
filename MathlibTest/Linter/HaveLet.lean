@@ -4,7 +4,6 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Tauto
 
-
 -- #adaptation_note
 -- The haveLet linter started failing after https://github.com/leanprover/lean4/pull/6299
 -- Disabling async elaboration fixes it, but of course we're not going to do that globally.

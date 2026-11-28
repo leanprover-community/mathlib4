@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
-
 open ArithmeticFunction
 
 -- access notation `ζ`, `μ` and `σ`

@@ -28,7 +28,6 @@ the usual way this is considered.
 
 public section
 
-
 variable {x y : ℂ}
 
 namespace Complex

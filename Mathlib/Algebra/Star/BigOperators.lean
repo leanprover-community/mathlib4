@@ -16,7 +16,6 @@ These results are kept separate from `Algebra.Star.Basic` to avoid it needing to
 
 public section
 
-
 variable {R : Type*}
 
 @[simp]

@@ -21,7 +21,6 @@ affine map.
 
 @[expose] public section
 
-
 namespace AffineSubspace
 
 variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]

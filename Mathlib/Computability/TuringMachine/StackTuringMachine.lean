@@ -73,7 +73,6 @@ open Function (update iterate_succ iterate_succ_apply iterate_succ' iterate_succ
 
 namespace Turing
 
-
 /-!
 ## The TM2 model
 
@@ -100,7 +99,6 @@ Given a designated stack `k` and a value `L : List (Γ k)`, the initial configur
 stacks empty except the designated "input" stack; in `eval` this designated stack also functions
 as the output stack.
 -/
-
 
 namespace TM2
 
@@ -326,7 +324,6 @@ Because of the shuttling, emulation overhead is `O(n)`, where `n` is the current
 length of all stacks. Therefore a program that takes `k` steps to run in TM2 takes `O((m+k)k)`
 steps to run when emulated in TM1, where `m` is the length of the input.
 -/
-
 
 namespace TM2to1
 

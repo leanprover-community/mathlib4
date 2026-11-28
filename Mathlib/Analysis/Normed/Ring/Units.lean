@@ -121,7 +121,6 @@ theorem inverse_one_sub_nth_order (n : ℕ) :
   Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_one_sub_nth_order' n <| by
     rwa [← dist_zero_right]⟩
 
-
 /-- The formula
 `Ring.inverse (x + t) =
   (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`

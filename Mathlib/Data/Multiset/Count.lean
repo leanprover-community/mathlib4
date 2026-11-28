@@ -29,9 +29,7 @@ section
 
 variable (p : α → Prop) [DecidablePred p]
 
-
 /-! ### countP -/
-
 
 /-- `countP p s` counts the number of elements of `s` (with multiplicity) that
   satisfy `p`. -/
@@ -114,7 +112,6 @@ theorem countP_congr {s s' : Multiset α} (hs : s = s')
 end
 
 /-! ### Multiplicity of an element -/
-
 
 section
 

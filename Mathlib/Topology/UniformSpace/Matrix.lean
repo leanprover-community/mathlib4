@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 open scoped Uniformity
 
 variable (m n 𝕜 : Type*) [UniformSpace 𝕜]

@@ -36,7 +36,6 @@ section IntegralRecursion
 We evaluate the integral of `cos (2 * z * x) * cos x ^ n`, for any complex `z` and even integers
 `n`, via repeated integration by parts. -/
 
-
 variable {z : ℂ} {n : ℕ}
 
 theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
@@ -250,7 +249,6 @@ The main theorem `Complex.tendsto_euler_sin_prod`, and its real variant
 stating that the sequence of measures on `[0, π/2]` given by integration against `cos x ^ n`
 (suitably normalised) tends to the Dirac measure at 0, as a special case of the general result
 `tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
-
 
 theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
     Tendsto

@@ -56,7 +56,6 @@ and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
 
 @[expose] public section
 
-
 open CategoryTheory
 
 open CategoryTheory.Preadditive

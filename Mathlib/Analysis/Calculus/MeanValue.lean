@@ -61,7 +61,6 @@ open scoped Topology NNReal
 
 /-! ### One-dimensional fencing inequalities -/
 
-
 /-- General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
@@ -205,7 +204,6 @@ theorem image_le_of_deriv_right_le_deriv_boundary {f f' : ℝ → ℝ} {a b : �
     (hf' x hx).liminf_right_slope_le (lt_of_le_of_lt (bound x hx) hr)
 
 /-! ### Vector-valued functions `f : ℝ → E` -/
-
 
 section
 

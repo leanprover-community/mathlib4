@@ -67,7 +67,6 @@ pigeonhole principle
 
 public section
 
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {M : Type w} [DecidableEq β]
@@ -109,7 +108,6 @@ variable [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 /-!
 #### Strict inequality versions
 -/
-
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, strict inequality version:
 if the total weight of a finite set of pigeons is greater than `n • b`, and they are sorted into
@@ -153,7 +151,6 @@ theorem exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul
 /-!
 #### Non-strict inequality versions
 -/
-
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, non-strict inequality
 version: if the total weight of a finite set of pigeons is greater than or equal to `n • b`, and
@@ -215,7 +212,6 @@ not need the assumption `∀ a ∈ s, f a ∈ t`.
 So, we prove four theorems: `Finset.exists_lt_card_fiber_of_maps_to_of_mul_lt_card`,
 `Finset.exists_le_card_fiber_of_maps_to_of_mul_le_card`,
 `Finset.exists_card_fiber_lt_of_card_lt_mul`, and `Finset.exists_card_fiber_le_of_card_le_mul`. -/
-
 
 /-- The pigeonhole principle for finitely many pigeons counted by heads: there is a pigeonhole with
 at least as many pigeons as the ceiling of the average number of pigeons across all pigeonholes. -/
@@ -333,7 +329,6 @@ variable [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 In this section we specialize theorems from the previous section to the special case of functions
 between `Fintype`s and `s = univ`, `t = univ`. In this case the assumption `∀ x ∈ s, f x ∈ t` always
 holds, so we have four theorems instead of eight. -/
-
 
 /-- The pigeonhole principle for finitely many pigeons of different weights, strict inequality
 version: there is a pigeonhole with the total weight of pigeons in it greater than `b` provided that

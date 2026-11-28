@@ -567,7 +567,6 @@ section Aeval
 
 /-! ### The algebra of multivariate polynomials -/
 
-
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
 

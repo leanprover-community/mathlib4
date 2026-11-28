@@ -22,7 +22,6 @@ they guarantee that occurrences of `α` are positive.
 
 @[expose] public section
 
-
 universe u v
 
 open MvFunctor

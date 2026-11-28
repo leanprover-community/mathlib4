@@ -20,7 +20,6 @@ This file gives the trigonometric characterizations of Chebyshev polynomials, fo
 
 public section
 
-
 namespace Polynomial.Chebyshev
 
 open Polynomial

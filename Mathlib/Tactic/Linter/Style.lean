@@ -167,7 +167,6 @@ initialize addModuleLinter missingEndLinter
 
 end Style.missingEnd
 
-
 /-!
 ### The "longFile" linter
 

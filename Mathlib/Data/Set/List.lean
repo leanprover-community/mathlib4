@@ -19,7 +19,6 @@ In this file we prove lemmas about range of some operations on lists.
 
 public section
 
-
 open List
 
 variable {α β : Type*} (l : List α)

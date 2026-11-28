@@ -39,7 +39,6 @@ multiset enumeration
 
 @[expose] public section
 
-
 variable {α β : Type*} [DecidableEq α] [DecidableEq β] {m : Multiset α}
 
 namespace Multiset

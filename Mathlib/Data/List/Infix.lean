@@ -331,7 +331,6 @@ end InitsTails
 
 /-! ### insert -/
 
-
 section Insert
 
 variable [DecidableEq α]

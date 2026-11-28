@@ -818,7 +818,6 @@ lemma ext_closure {M₁ M₂ : Matroid α} (h : ∀ X, M₁.closure X = M₂.clo
   ext_indep (by simpa using h univ)
     (fun _ _ ↦ by simp_rw [indep_iff_forall_closure_sdiff_ne, h])
 
-
 section Spanning
 
 variable {S T I B : Set α}

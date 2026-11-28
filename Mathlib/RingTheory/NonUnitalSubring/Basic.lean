@@ -69,7 +69,6 @@ non-unital subring
 
 @[expose] public section
 
-
 universe u v w
 
 section Basic
@@ -97,7 +96,6 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
   sum_mem h
 
 /-! ## top -/
-
 
 /-- The non-unital subring `R` of the ring `R`. -/
 instance : Top (NonUnitalSubring R) :=
@@ -140,7 +138,6 @@ variable {R : Type u} {S : Type v} {T : Type*}
   (s : NonUnitalSubring R)
 
 /-! ## comap -/
-
 
 /-- The preimage of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
 def comap {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
@@ -252,7 +249,6 @@ section Order
 variable {R : Type u} [NonUnitalNonAssocRing R]
 
 /-! ## bot -/
-
 
 instance : Bot (NonUnitalSubring R) :=
   ⟨(0 : R →ₙ+* R).range⟩

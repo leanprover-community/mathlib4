@@ -29,7 +29,6 @@ The dual is also given.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v₁ v₂ u₁ u₂

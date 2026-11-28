@@ -37,7 +37,6 @@ namespace Finset
 
 /-! ### prod -/
 
-
 section Prod
 
 variable {s s' : Finset α} {t t' : Finset β} {a : α} {b : β}

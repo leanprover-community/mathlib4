@@ -92,7 +92,6 @@ and move it back to the root namespace.
 
 @[expose] public section
 
-
 namespace NormedSpace
 
 open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics FormalMultilinearSeries

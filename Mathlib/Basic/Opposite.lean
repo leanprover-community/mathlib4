@@ -17,7 +17,6 @@ opposite category, with all arrows reversed.
 
 @[expose] public section
 
-
 universe v u
 
 -- morphism levels before object levels. See note [category theory universes].

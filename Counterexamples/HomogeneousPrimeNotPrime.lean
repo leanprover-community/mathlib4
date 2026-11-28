@@ -139,7 +139,6 @@ theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Set.image_singleton]
   rfl
 
-
 theorem homogeneous_mem_or_mem : ∀ {x y : R × R},
     SetLike.IsHomogeneousElem (grading R) x → SetLike.IsHomogeneousElem (grading R) y →
     x * y ∈ I → x ∈ I ∨ y ∈ I := by

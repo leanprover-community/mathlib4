@@ -21,7 +21,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 section ComplexSubfield
 
 open Complex Set

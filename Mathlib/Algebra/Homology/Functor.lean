@@ -26,7 +26,6 @@ In fact there is an equivalence of categories
 
 @[expose] public section
 
-
 universe v u
 
 open CategoryTheory Limits

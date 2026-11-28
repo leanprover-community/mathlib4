@@ -110,7 +110,6 @@ lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
       Submodule.colon_inf_eq_left_of_subset (Set.singleton_subset_iff.mpr hk)
     exact ⟨I, hI, (by simpa [hcol] using hI_le)⟩
 
-
 @[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type*) [AddCommMonoid M] [Module A M] :
     IsTorsion F M ↔ ∀ m : M, IsTorsionElem F m :=
   Iff.rfl

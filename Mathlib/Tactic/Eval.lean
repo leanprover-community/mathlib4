@@ -17,7 +17,6 @@ in the interpreter, and interpolates it into the expression.
 
 public meta section
 
-
 open Qq Lean Elab Term
 
 namespace Mathlib.Meta

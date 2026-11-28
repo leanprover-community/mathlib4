@@ -50,7 +50,6 @@ Let `R, S` be rings and `f : R →+* S`
 
 suppress_compilation
 
-
 open CategoryTheory Limits
 
 namespace ModuleCat
@@ -137,7 +136,6 @@ theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring
     {M : ModuleCat.{v} S} (r : R) (m : M) :
     r • (show (restrictScalars f).obj M from m) = f r • m :=
   rfl
-
 
 instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [CommRing S]
     (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :

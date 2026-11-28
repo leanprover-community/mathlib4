@@ -20,7 +20,6 @@ We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁}

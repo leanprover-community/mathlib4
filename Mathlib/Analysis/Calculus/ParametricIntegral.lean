@@ -23,7 +23,6 @@ to guarantee that `f` is continuous using the dominated convergence theorem. In 
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.
 
-
 ## Main results
 
 As explained above, all results express the derivative of a parametric integral as the integral of
@@ -69,7 +68,6 @@ integral, derivative
 -/
 
 public section
-
 
 open TopologicalSpace MeasureTheory Filter Metric Set
 

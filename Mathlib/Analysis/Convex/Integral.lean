@@ -37,7 +37,6 @@ convex, integral, center mass, average value, Jensen's inequality
 
 public section
 
-
 open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function
 
 open scoped Topology ENNReal Convex
@@ -48,7 +47,6 @@ variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [Normed
 /-!
 ### Non-strict Jensen's inequality
 -/
-
 
 /-- If `μ` is a probability measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the expected value of `f` belongs to `s`:
@@ -210,7 +208,6 @@ theorem ConcaveOn.le_map_integral [IsProbabilityMeasure μ] (hg : ConcaveOn ℝ 
 /-!
 ### Strict Jensen's inequality
 -/
-
 
 /-- If `f : α → E` is an integrable function, then either it is a.e. equal to the constant
 `⨍ x, f x ∂μ` or there exists a measurable set such that `μ t ≠ 0`, `μ tᶜ ≠ 0`, and the average

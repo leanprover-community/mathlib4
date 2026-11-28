@@ -448,9 +448,7 @@ end
 ### Upper semicontinuous functions
 -/
 
-
 /-! #### Basic dot notation interface for upper semicontinuity -/
-
 
 theorem UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperSemicontinuousWithinAt f t x :=

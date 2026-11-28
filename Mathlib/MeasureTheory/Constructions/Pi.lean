@@ -708,7 +708,6 @@ measures of corresponding sets (images or preimages) have equal measures and fun
 `f` have equal integrals, see lemmas in the `MeasureTheory.measurePreserving` prefix.
 -/
 
-
 section MeasurePreserving
 
 variable {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]

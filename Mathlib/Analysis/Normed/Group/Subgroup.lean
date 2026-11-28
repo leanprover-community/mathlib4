@@ -73,7 +73,6 @@ end Subgroup
 
 /-! ### Subgroup classes of normed groups -/
 
-
 namespace SubgroupClass
 
 section SeminormedGroup

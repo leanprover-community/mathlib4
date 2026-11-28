@@ -24,7 +24,6 @@ This file provides these sharp bounds, both in the upper-bounded and analogous l
 
 public section
 
-
 namespace Finset
 
 /-- Sharp upper bound for the sum of a finset of integers that is bounded above, `Ioc` version. -/

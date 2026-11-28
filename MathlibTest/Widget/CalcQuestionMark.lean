@@ -20,7 +20,6 @@ example : 1 = 1 := by
   have := 0
   calc?
 
-
 /--
 info: Create calc tactic:
   [apply] calc

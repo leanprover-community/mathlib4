@@ -34,7 +34,6 @@ We also give analogues of all these notions in the additive world.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped NNReal ENNReal Pointwise Topology

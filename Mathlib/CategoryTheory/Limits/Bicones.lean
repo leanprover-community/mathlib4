@@ -27,7 +27,6 @@ This is used in `CategoryTheory.Functor.Flat`.
 
 @[expose] public section
 
-
 universe v₁ u₁
 
 noncomputable section

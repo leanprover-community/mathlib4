@@ -1197,7 +1197,6 @@ end Equiv
 The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 -/
 
-
 section MapRange
 
 variable [∀ i, AddZeroClass (β i)] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]

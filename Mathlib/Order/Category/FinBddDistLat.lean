@@ -21,7 +21,6 @@ bounded lattice homomorphisms.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

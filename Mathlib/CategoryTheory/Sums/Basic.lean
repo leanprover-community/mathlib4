@@ -37,7 +37,6 @@ We further define sums of functors and natural transformations, written `F.sum G
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄

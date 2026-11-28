@@ -53,7 +53,6 @@ meta instance Rat.Arbitrary : Arbitrary Rat where
 
 meta instance Rat.sampleableExt : SampleableExt Rat := by infer_instance
 
-
 meta instance PNat.Arbitrary : Arbitrary PNat where
   arbitrary := do
     let n ← chooseNat

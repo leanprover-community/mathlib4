@@ -84,7 +84,6 @@ Urysohn's lemma, normal topological space, locally compact topological space
 
 @[expose] public noncomputable section
 
-
 variable {X : Type*} [TopologicalSpace X]
 
 open Set Filter TopologicalSpace Filter
@@ -92,7 +91,6 @@ open Set Filter TopologicalSpace Filter
 open scoped Topology Pointwise
 
 namespace Urysohns
-
 
 /--
 An auxiliary type for the proof of Urysohn's lemma: a pair of a closed set `C` and its open

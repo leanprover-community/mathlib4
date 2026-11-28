@@ -40,7 +40,6 @@ integrable function
 
 public section
 
-
 open scoped MeasureTheory Topology Interval NNReal ENNReal
 
 open MeasureTheory TopologicalSpace Set Filter Asymptotics intervalIntegral

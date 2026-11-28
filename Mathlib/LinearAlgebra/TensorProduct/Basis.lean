@@ -21,7 +21,6 @@ and shows that the tensor product of free modules is again free.
 
 @[expose] public section
 
-
 noncomputable section
 
 open LinearMap Module

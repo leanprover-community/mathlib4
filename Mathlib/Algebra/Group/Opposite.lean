@@ -266,7 +266,6 @@ end MulOpposite
 ### Multiplicative structures on `αᵃᵒᵖ`
 -/
 
-
 namespace AddOpposite
 
 instance instSemigroup [Semigroup α] : Semigroup αᵃᵒᵖ := unop_injective.semigroup _ fun _ _ ↦ rfl

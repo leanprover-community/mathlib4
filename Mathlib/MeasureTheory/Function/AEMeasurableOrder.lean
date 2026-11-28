@@ -27,7 +27,6 @@ as possible.
 
 public section
 
-
 open ENNReal MeasureTheory Set TopologicalSpace
 
 variable {α : Type*} {m : MeasurableSpace α} (μ : Measure α)

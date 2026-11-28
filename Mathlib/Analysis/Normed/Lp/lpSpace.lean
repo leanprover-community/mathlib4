@@ -67,7 +67,6 @@ variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞}
 ### `Memℓp` predicate
 -/
 
-
 /-- The property that `f : ∀ i : α, E i`
 * is finitely supported, if `p = 0`, or
 * admits an upper bound for `Set.range (fun i ↦ ‖f i‖)`, if `p = ∞`, or
@@ -338,7 +337,6 @@ end Memℓp
 
 The space of elements of `∀ i, E i` satisfying the predicate `Memℓp`.
 -/
-
 
 /-- We define `PreLp E` to be a type synonym for `∀ i, E i` which, importantly, does not inherit
 the `pi` topology on `∀ i, E i` (otherwise this topology would descend to `lp E p` and conflict
@@ -1243,7 +1241,6 @@ def linearMapOfLE (h : p ≤ q) : lp E p →ₗ[𝕜] lp E q where
 lemma coe_linearMapOfLE_apply (h : p ≤ q) (f : lp E p) :
     ⇑(linearMapOfLE 𝕜 E h f) = f := by
   ext; rfl
-
 
 @[simp]
 lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :

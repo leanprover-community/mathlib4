@@ -35,7 +35,6 @@ statements for the coordinate functions, for instance.
 If you wish to endow a type synonym of `α × β` with the `L^p` distance, you can use
 `pseudoMetricSpaceToProd` and the declarations below that one.
 
-
 ## Implementation notes
 
 This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.
@@ -157,7 +156,6 @@ In this section we define the `edist`, `dist` and `norm` functions on `WithLp p 
 assuming `[Fact (1 ≤ p)]` or metric properties of the spaces `α` and `β`. This allows us to provide
 the rewrite lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.toReal`.
 -/
-
 
 section EDist
 
@@ -318,7 +316,6 @@ TODO: the results about uniformity and bornology should be using the tools in
 `Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
-
 
 variable [hp : Fact (1 ≤ p)]
 
@@ -960,7 +957,6 @@ def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
   map_add' _f _g := rfl
   map_smul' _c _f := rfl
   norm_map' x := prod_norm_toLp (ofLp x)
-
 
 end IsBoundedSMul
 

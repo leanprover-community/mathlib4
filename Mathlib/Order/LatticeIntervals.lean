@@ -29,7 +29,6 @@ In the following, `*` can represent either `c`, `o`, or `i`.
 
 public section
 
-
 variable {α : Type*}
 
 namespace Set

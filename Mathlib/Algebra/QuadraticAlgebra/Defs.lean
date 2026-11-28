@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
-
 /-!
 # Quadratic Algebra
 

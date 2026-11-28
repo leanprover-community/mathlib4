@@ -22,13 +22,11 @@ given by `f =Θ[l] g ↔ f =O[l] g ∧ g =O[l] f`.
 
 public section
 
-
 open Filter
 
 open scoped Topology
 
 namespace Asymptotics
-
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
   {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*}

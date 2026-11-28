@@ -37,7 +37,6 @@ This file defines what it means for a set over a first-order structure to be def
 
 @[expose] public section
 
-
 universe u v w u₁
 
 namespace Set

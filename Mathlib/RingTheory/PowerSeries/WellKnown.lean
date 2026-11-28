@@ -28,7 +28,6 @@ In this file we define the following power series:
 
 @[expose] public section
 
-
 namespace PowerSeries
 
 section Ring
@@ -211,6 +210,5 @@ theorem map_cos : map f (cos A) = cos A' := by
   simp [cos, apply_ite f]
 
 end Field
-
 
 end PowerSeries

@@ -38,7 +38,6 @@ We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 @[expose] public section
 
-
 universe w w' v v' u₁ u₂ u₃
 
 noncomputable section
@@ -425,7 +424,6 @@ as the special case `A := 𝟙_ V` with the trivial half-braiding,
 and when defining `enrichedNatTransYoneda F G` we use the half-braidings
 coming from the ambient braiding on `V`.)
 -/
-
 
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.

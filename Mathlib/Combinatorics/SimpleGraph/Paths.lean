@@ -814,7 +814,6 @@ theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
 
 end Path
 
-
 /-! ### Walks to paths -/
 
 namespace Walk

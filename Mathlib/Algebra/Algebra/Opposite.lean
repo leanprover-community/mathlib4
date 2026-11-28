@@ -29,7 +29,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 variable {R S A B : Type*}
 
 open MulOpposite

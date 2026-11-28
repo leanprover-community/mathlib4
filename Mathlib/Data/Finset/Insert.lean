@@ -53,7 +53,6 @@ attribute [local trans] Subset.trans Superset.trans
 
 /-! ### singleton -/
 
-
 section Singleton
 
 variable {s : Finset α} {a b : α}
@@ -230,7 +229,6 @@ instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := 
 end Singleton
 
 /-! ### cons -/
-
 
 section Cons
 

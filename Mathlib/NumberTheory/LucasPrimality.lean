@@ -32,7 +32,6 @@ to `1`.
 
 public section
 
-
 /-- If `a^(p-1) = 1 mod p`, but `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`, then `p`
 is prime. This is true because `a` has order `p-1` in the multiplicative group mod `p`, so this
 group must itself have order `p-1`, which only happens when `p` is prime.

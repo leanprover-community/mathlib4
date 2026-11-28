@@ -33,7 +33,6 @@ presieve, pullback
 
 @[expose] public section
 
-
 universe w v₁ v₂ u₁
 
 namespace CategoryTheory

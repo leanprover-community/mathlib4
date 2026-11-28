@@ -430,7 +430,6 @@ theorem curveIntegral_fun_sub (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveInt
     ∫ᶜ x in γ, (ω₁ x - ω₂ x) = ∫ᶜ x in γ, ω₁ x - ∫ᶜ x in γ, ω₂ x :=
   curveIntegral_sub h₁ h₂
 
-
 section RestrictScalars
 
 variable {𝕝 : Type*} [RCLike 𝕝] [NormedSpace 𝕝 F] [NormedSpace 𝕝 E]

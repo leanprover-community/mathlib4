@@ -35,7 +35,6 @@ and natural isomorphisms between functors.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory

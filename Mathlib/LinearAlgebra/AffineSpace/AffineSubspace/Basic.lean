@@ -40,14 +40,12 @@ variable [AffineSpace V P]
 
 end
 
-
 namespace AffineSubspace
 
 variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 variable {k P}
-
 
 /-- Given a point in an affine subspace, a result of subtracting that point on the right is in the
 direction if and only if the other point is in the subspace. -/
@@ -378,7 +376,6 @@ difference (reversed). -/
 theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
     v ∈ vectorSpan k ({p₁, p₂} : Set P) ↔ ∃ r : k, r • (p₂ -ᵥ p₁) = v := by
   rw [vectorSpan_pair_rev, Submodule.mem_span_singleton]
-
 
 /-- A combination of two points expressed with `lineMap` lies in their affine span. -/
 theorem AffineMap.lineMap_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :

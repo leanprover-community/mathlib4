@@ -338,7 +338,6 @@ theorem updateCol_comm [DecidableEq n] (A : Matrix m n α) {j j' : n} (h : j ≠
 
 /-! Updating rows and columns commutes in the obvious way with reindexing the matrix. -/
 
-
 theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l)
     (r : o → α) (e : l ≃ m) (f : o ≃ n) :
     updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
@@ -362,7 +361,6 @@ theorem submatrix_updateCol_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m 
   Eq.trans (by simp_rw [Equiv.apply_symm_apply]) (updateCol_submatrix_equiv A _ _ e f).symm
 
 /-! `reindex` versions of the above `submatrix` lemmas for convenience. -/
-
 
 theorem updateRow_reindex [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l) (r : o → α)
     (e : m ≃ l) (f : n ≃ o) :

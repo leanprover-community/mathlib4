@@ -46,7 +46,6 @@ namespace Grpd
 instance : Inhabited Grpd :=
   ⟨Bundled.of (SingleObj PUnit)⟩
 
-
 instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
   C.str
 

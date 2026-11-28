@@ -38,7 +38,6 @@ The limit of this diagram then constitutes the colimit presheaf.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v' u' v u

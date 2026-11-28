@@ -17,7 +17,6 @@ Most of the former contents of this file have been moved to Batteries.
 
 @[expose] public section
 
-
 universe u v w x
 
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}

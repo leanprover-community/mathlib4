@@ -90,7 +90,6 @@ graded monoid
 
 @[expose] public section
 
-
 variable {ι : Type*}
 
 /-- A type alias of sigma types for graded monoids. -/
@@ -267,7 +266,6 @@ The various `g*` instances are enough to promote the `AddCommMonoid (A 0)` struc
 types of multiplicative structure.
 -/
 
-
 section GradeZero
 
 variable (A : ι → Type*)
@@ -363,7 +361,6 @@ end GradedMonoid
 
 /-! ### Dependent products of graded elements -/
 
-
 section DProd
 
 variable {α : Type*} {A : ι → Type*} [AddMonoid ι] [GradedMonoid.GMonoid A]
@@ -431,7 +428,6 @@ end DProd
 
 /-! ### Concrete instances -/
 
-
 section
 
 variable (ι) {R : Type*}
@@ -474,7 +470,6 @@ theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α
 end
 
 /-! ### Shorthands for creating instance of the above typeclasses for collections of subobjects -/
-
 
 section Subobjects
 

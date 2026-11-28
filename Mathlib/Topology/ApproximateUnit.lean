@@ -72,7 +72,6 @@ lemma iff_le_nhds_one [SeparatelyContinuousMul α] {l : Filter α} [l.NeBot] :
     IsApproximateUnit l ↔ l ≤ 𝓝 1 := by
   simpa [iff_neBot_and_le_nhds_one] using fun _ ↦ ‹_›
 
-
 end TopologicalMonoid
 
 end Filter.IsApproximateUnit

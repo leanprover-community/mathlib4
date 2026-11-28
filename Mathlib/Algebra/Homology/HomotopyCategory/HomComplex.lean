@@ -756,7 +756,6 @@ lemma δ_comp_ofHom {n : ℤ} (z₁ : Cochain F G n) (f : G ⟶ K) (m : ℤ) :
       (δ n m z₁).comp (Cochain.ofHom f) (add_zero m) := by
   rw [← Cocycle.ofHom_coe, δ_comp_zero_cocycle]
 
-
 @[simp]
 lemma δ_zero_cocycle_comp {n : ℤ} (z₁ : Cocycle F G 0) (z₂ : Cochain G K n) (m : ℤ) :
     δ n m (z₁.val.comp z₂ (zero_add n)) =

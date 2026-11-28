@@ -32,7 +32,6 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 @[expose] public section
 
-
 open Finset Fintype Function Real
 
 namespace SzemerediRegularity
@@ -246,7 +245,6 @@ meta def evalInitialBound : PositivityExt where eval {u α} _ pα? e :=
     assertInstancesCommute
     pure (.positive q(SzemerediRegularity.initialBound_pos $ε $l))
   | _, _, _ => throwError "not initialBound"
-
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by positivity
 

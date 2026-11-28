@@ -201,7 +201,6 @@ end Ordinal
 
 /-! ### Results about injectivity and surjectivity -/
 
-
 theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
     ¬ Surjective f := by
   intro h

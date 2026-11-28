@@ -55,7 +55,6 @@ variable {α : Type*} {β : Type*}
 
 /-! ### Basic properties of Polish spaces -/
 
-
 /-- A Polish space is a topological space with second countable topology, that can be endowed
 with a metric for which it is complete.
 

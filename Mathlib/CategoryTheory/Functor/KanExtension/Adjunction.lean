@@ -243,7 +243,6 @@ lemma ι_colimitIsoColimitGrothendieck_hom (X : C) :
 
 end HasPointwiseLeftKanExtension
 
-
 section
 
 variable [Full L] [Faithful L]

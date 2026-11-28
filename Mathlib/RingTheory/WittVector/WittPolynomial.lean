@@ -58,7 +58,6 @@ In this file we use the following notation
 
 @[expose] public section
 
-
 open MvPolynomial
 
 open Finset hiding map
@@ -87,7 +86,6 @@ theorem wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
 
 /-! We set up notation locally to this file, to keep statements short and comprehensible.
 This allows us to simply write `W n` or `W_ ℤ n`. -/
-
 
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
@@ -184,7 +182,6 @@ If `p` is invertible in `R`, then the Witt polynomials form a basis
 of the polynomial algebra `MvPolynomial ℕ R`.
 The polynomials `xInTermsOfW` give the coordinate transformation in the backwards direction.
 -/
-
 
 /-- The `xInTermsOfW p R n` is the polynomial on the basis of Witt polynomials
 that corresponds to the ordinary `X n`. -/

@@ -80,7 +80,6 @@ end
 example : Countable T1 := inferInstance
 example : Countable T2 := inferInstance
 
-
 /-!
 Not supported: nested inductive types
 -/

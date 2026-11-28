@@ -81,7 +81,6 @@ For statements without an `Extr` variant we list the min variant.
 
 @[expose] public section
 
-
 universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
@@ -94,7 +93,6 @@ variable [Preorder β] [Preorder γ]
 variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 
 /-! ### Definitions -/
-
 
 /-- `IsMinFilter f l a` means that `f a ≤ f x` for all `x` in some `l`-neighborhood of `a` -/
 def IsMinFilter : Prop :=
@@ -165,7 +163,6 @@ theorem IsMaxFilter.tendsto_principal_Iic (h : IsMaxFilter f l a) : Tendsto f l 
 
 /-! ### Conversion to `IsExtr*` -/
 
-
 theorem IsMinFilter.isExtrFilter (h : IsMinFilter f l a) :  IsExtrFilter f l a :=
   Or.inl h
 
@@ -187,7 +184,6 @@ theorem IsMaxOn.isExtrOn (h : IsMaxOn f s a) : IsExtrOn f s a :=
 @[deprecated (since := "2026-07-17")] alias IsMaxOn.isExtr := IsMaxOn.isExtrOn
 
 /-! ### Constant function -/
-
 
 theorem isMinFilter_const {b : β} : IsMinFilter (fun _ => b) l a :=
   univ_mem' fun _ => le_rfl
@@ -214,7 +210,6 @@ lemma eventuallyEq_of_isMinFilter_of_isMaxFilter {β : Type*} [PartialOrder β] 
   filter_upwards [h₁, h₂] using by grind
 
 /-! ### Order dual -/
-
 
 open OrderDual (toDual)
 
@@ -249,7 +244,6 @@ alias ⟨IsMaxOn.undual, IsMinOn.dual⟩ := isMaxOn_dual_iff
 alias ⟨IsExtrOn.undual, IsExtrOn.dual⟩ := isExtrOn_dual_iff
 
 /-! ### Operations on the filter/set -/
-
 
 theorem IsMinFilter.filter_mono (h : IsMinFilter f l a) (hl : l' ≤ l) : IsMinFilter f l' a :=
   hl h
@@ -294,7 +288,6 @@ theorem IsExtrOn.inter (hf : IsExtrOn f s a) (t) : IsExtrOn f (s ∩ t) a :=
   hf.of_subset inter_subset_left
 
 /-! ### Composition with (anti)monotone functions -/
-
 
 theorem IsMinFilter.comp_mono (hf : IsMinFilter f l a) {g : β → γ} (hg : Monotone g) :
     IsMinFilter (g ∘ f) l a :=
@@ -367,7 +360,6 @@ theorem IsMaxOn.bicomp_mono [Preorder δ] {op : β → γ → δ}
 
 /-! ### Composition with `Tendsto` -/
 
-
 theorem IsMinFilter.comp_of_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMinFilter f l (g b))
     (hg : Tendsto g l' l) : IsMinFilter (f ∘ g) l' b :=
   hg hf
@@ -428,7 +420,6 @@ end Preorder
 
 /-! ### Pointwise addition -/
 
-
 section OrderedAddCommMonoid
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
@@ -453,7 +444,6 @@ theorem IsMaxOn.add (hf : IsMaxOn f s a) (hg : IsMaxOn g s a) : IsMaxOn (fun x =
 end OrderedAddCommMonoid
 
 /-! ### Pointwise negation and subtraction -/
-
 
 section OrderedAddCommGroup
 
@@ -495,7 +485,6 @@ theorem IsMaxOn.sub (hf : IsMaxOn f s a) (hg : IsMinOn g s a) :
 end OrderedAddCommGroup
 
 /-! ### Pointwise `sup`/`inf` -/
-
 
 section SemilatticeSup
 
@@ -542,7 +531,6 @@ theorem IsMaxOn.inf (hf : IsMaxOn f s a) (hg : IsMaxOn g s a) : IsMaxOn (fun x =
 end SemilatticeInf
 
 /-! ### Pointwise `min`/`max` -/
-
 
 section LinearOrder
 
@@ -726,7 +714,6 @@ section Eventually
 
 /-! ### Relation with `eventually` comparisons of two functions -/
 
-
 theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
@@ -767,7 +754,6 @@ theorem Filter.EventuallyEq.isExtrFilter_iff {α β : Type*} [Preorder β] {f g 
 end Eventually
 
 /-! ### `isMaxOn`/`isMinOn` imply `ciSup`/`ciInf` -/
-
 
 section ConditionallyCompleteLinearOrder
 

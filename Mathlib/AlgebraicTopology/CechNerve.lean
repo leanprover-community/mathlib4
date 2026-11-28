@@ -31,7 +31,6 @@ object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When
 
 @[expose] public section
 
-
 open CategoryTheory Limits
 
 open scoped Simplicial

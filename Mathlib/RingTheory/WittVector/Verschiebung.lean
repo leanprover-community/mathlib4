@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.WittVector.IsPoly
 
 @[expose] public section
 
-
 namespace WittVector
 
 open MvPolynomial
@@ -188,7 +187,6 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
       if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) :=
   aeval_verschiebungPoly_wittPolynomial n
-
 
 end
 

@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.OrderOfElement
 
 import Mathlib.Algebra.Group.TypeTags.Finite
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

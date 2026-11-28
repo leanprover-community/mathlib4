@@ -31,7 +31,6 @@ outer measure
 
 public section
 
-
 open Set Function Filter
 open scoped NNReal Topology ENNReal
 

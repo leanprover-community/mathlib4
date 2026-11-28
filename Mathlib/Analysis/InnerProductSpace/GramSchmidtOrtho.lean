@@ -34,7 +34,6 @@ and outputs a set of orthogonal vectors which have the same span.
 
 @[expose] public section
 
-
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]

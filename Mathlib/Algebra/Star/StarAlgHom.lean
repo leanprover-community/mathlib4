@@ -46,7 +46,6 @@ open EquivLike
 
 /-! ### Non-unital star algebra homomorphisms -/
 
-
 /-- A *non-unital ⋆-algebra homomorphism* is a non-unital algebra homomorphism between
 non-unital `R`-algebras `A` and `B` equipped with a `star` operation, and this homomorphism is
 also `star`-preserving. -/
@@ -273,7 +272,6 @@ end NonUnitalStarAlgHom
 
 /-! ### Unital star algebra homomorphisms -/
 
-
 section Unital
 
 /-- A *⋆-algebra homomorphism* is an algebra homomorphism between `R`-algebras `A` and `B`
@@ -460,7 +458,6 @@ end Unital
 /-! ### Operations on the product type
 
 Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg). -/
-
 
 namespace NonUnitalStarAlgHom
 

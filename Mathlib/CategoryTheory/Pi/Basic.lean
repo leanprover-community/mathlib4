@@ -27,7 +27,6 @@ universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
-
 /-- `pi C` gives the Cartesian product of an indexed family of categories.
 -/
 instance pi : Category.{max w₀ v₁} (∀ i, C i) where

@@ -414,7 +414,6 @@ info: MDifferentiableWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSel
 #guard_msgs in
 #check MDiff[s] f
 
-
 -- Normed space to a field.
 variable {f : E → 𝕜} {s : Set E} {x : E}
 

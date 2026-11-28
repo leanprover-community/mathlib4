@@ -31,7 +31,6 @@ admits an additive valuation given by `orderTop`.
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {Γ R : Type*}

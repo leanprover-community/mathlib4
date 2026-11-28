@@ -22,7 +22,6 @@ Monoidal structure
 
 @[expose] public section
 
-
 open CategoryTheory
 
 universe u

@@ -16,7 +16,6 @@ Further facts relying on Gauss sums.
 
 public section
 
-
 /-!
 ### Basic properties of the quadratic character
 
@@ -24,7 +23,6 @@ We prove some properties of the quadratic character.
 We work with a finite field `F` here.
 The interesting case is when the characteristic of `F` is odd.
 -/
-
 
 section SpecialValues
 

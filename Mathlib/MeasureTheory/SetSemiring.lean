@@ -385,7 +385,6 @@ end disjointOfDiffUnion
 
 section disjointOfUnion
 
-
 variable {j : Set α} {J : Finset (Set α)}
 
 open MeasureTheory Order

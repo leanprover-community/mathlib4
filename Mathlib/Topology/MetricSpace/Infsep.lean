@@ -29,7 +29,6 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 
 @[expose] public section
 
-
 variable {α β : Type*}
 
 namespace Set

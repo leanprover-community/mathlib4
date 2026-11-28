@@ -61,11 +61,9 @@ these arguments are also present on the `noncomputable` equivs.
 
 @[expose] public section
 
-
 variable {ι : Type*} {R : Type*} {M : Type*}
 
 /-! ### Basic definitions and lemmas -/
-
 
 section Defs
 
@@ -134,7 +132,6 @@ end Defs
 
 /-! ### Lemmas about arithmetic operations -/
 
-
 section Lemmas
 
 namespace Finsupp
@@ -197,7 +194,6 @@ end DFinsupp
 end Lemmas
 
 /-! ### Bundled `Equiv`s -/
-
 
 section Equivs
 

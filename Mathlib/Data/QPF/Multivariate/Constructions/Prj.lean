@@ -19,7 +19,6 @@ functor `F` such that `F (α₀..αᵢ₋₁, αᵢ, αᵢ₊₁..αₙ₋₁) =
 
 @[expose] public section
 
-
 universe u v
 
 namespace MvQPF

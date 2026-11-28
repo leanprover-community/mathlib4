@@ -30,7 +30,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function OrderDual
 
 variable {F α β γ δ : Type*}
@@ -162,7 +161,6 @@ instance [Preorder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] [Bounde
   ⟨BoundedOrderHomClass.toBoundedOrderHom⟩
 
 /-! ### Top and bot homomorphisms -/
-
 
 namespace TopHom
 
@@ -467,7 +465,6 @@ theorem cancel_left {g : BoundedOrderHom β γ} {f₁ f₂ : BoundedOrderHom α 
 end BoundedOrderHom
 
 /-! ### Dual homs -/
-
 
 namespace TopHom
 

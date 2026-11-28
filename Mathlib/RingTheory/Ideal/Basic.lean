@@ -29,7 +29,6 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 @[expose] public section
 
-
 variable {ι α β : Type*}
 
 open Set Function

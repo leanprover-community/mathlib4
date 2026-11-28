@@ -30,7 +30,6 @@ logarithm, continuity
 
 @[expose] public section
 
-
 open Set Filter Function
 
 open scoped Topology

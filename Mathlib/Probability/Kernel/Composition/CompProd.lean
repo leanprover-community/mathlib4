@@ -39,7 +39,6 @@ that convention because it fits better with the use of the name `comp` elsewhere
 
 public section
 
-
 open MeasureTheory
 
 open scoped ENNReal
@@ -217,7 +216,6 @@ section Ae
 
 /-! ### `ae` filter of the composition-product -/
 
-
 variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
 
 theorem ae_kernel_lt_top (a : α) (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
@@ -306,7 +304,6 @@ end Restrict
 section Lintegral
 
 /-! ### Lebesgue integral -/
-
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
 theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)

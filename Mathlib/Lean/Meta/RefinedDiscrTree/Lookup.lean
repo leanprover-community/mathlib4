@@ -118,7 +118,6 @@ private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   setTrie trie node
   return node
 
-
 /--
 A match result contains the results from matching a term against
 patterns in the discrimination tree.
@@ -167,7 +166,6 @@ private structure PartialMatch where
   We use a `List Key`, in the reverse order. -/
   treeStars : Std.HashMap Nat (List Key) := {}
   deriving Inhabited
-
 
 /--
 Add to the `todo` stack all matches that result from a `.star` in the query expression.

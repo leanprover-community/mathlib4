@@ -56,7 +56,6 @@ info: fun₀
 
 end PrettyPrinter
 
-
 /-! ## (computable) number theory examples -/
 
 /-- info: fun₀ | 2 => 2 | 7 => 1 -/

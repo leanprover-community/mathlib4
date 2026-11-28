@@ -29,7 +29,6 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 @[expose] public section
 
-
 open Polynomial
 
 section PolynomialDetermination

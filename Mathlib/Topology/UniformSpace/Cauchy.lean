@@ -820,7 +820,6 @@ entourage includes one of `U_n`. Then any Cauchy filter `f` generates a decreasi
 sets `s_n ∈ f` such that `s_n × s_n ⊆ U_n`. Choose a sequence `x_n∈s_n`. It is easy to show
 that this is a Cauchy sequence. If this sequence converges to some `a`, then `f ≤ 𝓝 a`. -/
 
-
 namespace SequentiallyComplete
 
 variable {f : Filter α} (hf : Cauchy f) {U : ℕ → SetRel α α} (U_mem : ∀ n, U n ∈ 𝓤 α)

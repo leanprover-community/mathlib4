@@ -18,7 +18,6 @@ on these types.
 
 public section
 
-
 open Set Filter Bornology Function
 
 open Filter
@@ -48,7 +47,6 @@ namespace Bornology
 /-!
 ### Bounded sets in `α × β`
 -/
-
 
 theorem cobounded_prod : cobounded (α × β) = (cobounded α).coprod (cobounded β) :=
   rfl
@@ -92,7 +90,6 @@ theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
 ### Bounded sets in `Π i, X i`
 -/
 
-
 theorem cobounded_pi : cobounded (∀ i, X i) = Filter.coprodᵢ fun i => cobounded (X i) :=
   rfl
 
@@ -122,7 +119,6 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
 ### Bounded sets in `{x // p x}`
 -/
 
-
 theorem isBounded_induced {α β : Type*} [Bornology β] {f : α → β} {s : Set α} :
     @IsBounded α (Bornology.induced f) s ↔ IsBounded (f '' s) :=
   compl_mem_comap
@@ -139,7 +135,6 @@ end Bornology
 /-!
 ### Bounded spaces
 -/
-
 
 open Bornology
 
@@ -173,7 +168,6 @@ instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
 The bornology on those type synonyms is inherited without change.
 -/
 
-
 instance : Bornology (Additive α) :=
   ‹Bornology α›
 
@@ -191,7 +185,6 @@ instance [BoundedSpace α] : BoundedSpace (Multiplicative α) :=
 
 The bornology on this type synonym is inherited without change.
 -/
-
 
 instance : Bornology αᵒᵈ :=
   ‹Bornology α›

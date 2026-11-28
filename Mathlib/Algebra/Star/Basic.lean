@@ -458,7 +458,6 @@ end
 
 /-! ### Instances -/
 
-
 namespace Units
 
 variable [Monoid R] [StarMul R]

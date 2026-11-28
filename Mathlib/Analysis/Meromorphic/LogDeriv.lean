@@ -135,7 +135,6 @@ theorem Meromorphic.logDeriv_zpow_eventuallyEq (hf : Meromorphic f) (n : ℤ) :
     logDeriv (f ^ n) =ᶠ[codiscrete 𝕜] n • logDeriv f := by
   apply MeromorphicOn.logDeriv_zpow_eventuallyEq (meromorphicOn_univ.mpr hf)
 
-
 /--
 The logarithmic derivative converts products into sums: away from a codiscrete subset of `U`, the
 logarithmic derivative of a finite product of integer powers of meromorphic functions is the

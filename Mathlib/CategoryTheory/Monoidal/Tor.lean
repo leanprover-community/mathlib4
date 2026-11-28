@@ -27,7 +27,6 @@ Possibly it's best to axiomatize delta functors, and obtain a unique characteris
 
 @[expose] public section
 
-
 assert_not_exists ModuleCat.abelian
 
 noncomputable section

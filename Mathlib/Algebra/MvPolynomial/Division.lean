@@ -32,7 +32,6 @@ Where possible, the results in this file should be first proved in the generalit
 
 @[expose] public section
 
-
 variable {σ R : Type*} [CommSemiring R]
 
 namespace MvPolynomial
@@ -41,7 +40,6 @@ section CopiedDeclarations
 
 /-! Please ensure the declarations in this section are direct translations of `AddMonoidAlgebra`
 results. -/
-
 
 /-- Divide by `monomial 1 s`, discarding terms not divisible by this. -/
 noncomputable def divMonomial (p : MvPolynomial σ R) (s : σ →₀ ℕ) : MvPolynomial σ R :=
@@ -181,7 +179,6 @@ theorem X_dvd_iff_modMonomial_eq_zero {i : σ} {x : MvPolynomial σ R} :
 end XLemmas
 
 /-! ### Some results about dvd (`∣`) on `monomial` and `X` -/
-
 
 theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     monomial i r ∣ monomial j s ↔ (s = 0 ∨ i ≤ j) ∧ r ∣ s := by

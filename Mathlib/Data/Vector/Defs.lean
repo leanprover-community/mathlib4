@@ -55,7 +55,6 @@ whose first element is a and with l as the rest of the list. -/
 def cons : α → Vector α n → Vector α (Nat.succ n)
   | a, ⟨v, h⟩ => ⟨a :: v, congrArg Nat.succ h⟩
 
-
 /-- The length of a vector. -/
 @[reducible, nolint unusedArguments]
 def length (_ : Vector α n) : ℕ :=
@@ -200,7 +199,6 @@ def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by omega) (replicate (min n i) fill ++ take (n - i) v)
 
 end Shift
-
 
 /-! ### Basic Theorems -/
 /-- Vector is determined by the underlying list. -/

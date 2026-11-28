@@ -26,7 +26,6 @@ provide `HasUpperLowerClosure`, an ad hoc axiomatisation of the properties we ne
 
 public section
 
-
 open Set
 
 open scoped Pointwise

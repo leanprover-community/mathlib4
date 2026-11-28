@@ -29,7 +29,6 @@ instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
 
 @[expose] public section
 
-
 namespace CategoryTheory.Limits
 
 open CategoryTheory CategoryTheory.Functor

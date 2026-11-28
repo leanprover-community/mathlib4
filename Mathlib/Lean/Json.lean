@@ -19,7 +19,6 @@ public section
 
 universe u
 
-
 namespace Lean
 
 deriving instance FromJson, ToJson for PUnit

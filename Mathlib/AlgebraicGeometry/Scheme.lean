@@ -21,7 +21,6 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
-
 universe u
 
 noncomputable section

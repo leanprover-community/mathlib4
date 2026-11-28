@@ -59,7 +59,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/

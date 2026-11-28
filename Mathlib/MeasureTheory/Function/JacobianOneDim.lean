@@ -29,7 +29,6 @@ the interval integral and with stronger requirements on the integrand.
 
 public section
 
-
 open MeasureTheory MeasureTheory.Measure Filter Set Module
   TopologicalSpace ContinuousLinearMap
 

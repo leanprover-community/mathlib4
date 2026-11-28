@@ -269,7 +269,6 @@ theorem TendstoLocallyUniformly.inv (hf : TendstoLocallyUniformly F f l) :
 
 end LocalUniformConvergence
 
-
 @[to_additive]
 instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Group β]
     [ContinuousDiv β] [CompactSpace β] :

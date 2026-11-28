@@ -74,7 +74,6 @@ variable {M N P σ : Type*}
 ### Conversion to/from `Additive`/`Multiplicative`
 -/
 
-
 section
 
 variable [Mul M]
@@ -159,7 +158,6 @@ open Set
 /-!
 ### `comap` and `map`
 -/
-
 
 variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 

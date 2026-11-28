@@ -417,7 +417,6 @@ rather than typeclasses, with coercions back to `X ⟶ Y`.
 Presumably we could write `X ↪ Y` and `X ↠ Y`.
 -/
 
-
 @[to_dual (attr := simp) (reorder := f g' g) cancel_iso_inv_right]
 theorem cancel_iso_hom_left {X Y Z : C} (f : X ≅ Y) (g g' : Y ⟶ Z) :
     f.hom ≫ g = f.hom ≫ g' ↔ g = g' := by

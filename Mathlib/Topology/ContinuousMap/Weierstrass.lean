@@ -26,7 +26,6 @@ and then, by precomposing with suitable affine functions,
 
 public section
 
-
 open ContinuousMap Filter
 
 open scoped unitInterval

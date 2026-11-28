@@ -57,7 +57,6 @@ diffeomorphism, manifold
 
 @[expose] public section
 
-
 open scoped Manifold Topology ContDiff
 
 open Function Set
@@ -82,7 +81,6 @@ and `I'`, denoted as `M ≃ₘ^n⟮I, I'⟯ M'` (in the `Manifold` namespace). -
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : CMDiff n toEquiv
   protected contMDiff_invFun : CMDiff n toEquiv.symm
-
 
 end Defs
 

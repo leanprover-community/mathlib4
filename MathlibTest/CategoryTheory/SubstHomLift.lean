@@ -8,7 +8,6 @@ open CategoryTheory Category
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒳] [Category.{v₂} 𝒮] (p : 𝒳 ⥤ 𝒮)
 
-
 /-- Testing simple substitution -/
 example {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : f = f := by
   subst_hom_lift p f φ

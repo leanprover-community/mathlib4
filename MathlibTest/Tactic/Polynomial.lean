@@ -2,7 +2,6 @@ module
 import Mathlib.Tactic.Polynomial.Basic
 import Mathlib.RingTheory.MvPolynomial
 
-
 /-! # The `polynomial` tactic -/
 
 axiom sorryPolynomialTest {P : Prop} : P

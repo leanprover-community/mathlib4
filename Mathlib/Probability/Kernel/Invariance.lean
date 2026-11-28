@@ -20,7 +20,6 @@ kernel `μ.bind κ` is the same measure.
 
 @[expose] public section
 
-
 open MeasureTheory
 
 open scoped MeasureTheory ENNReal ProbabilityTheory

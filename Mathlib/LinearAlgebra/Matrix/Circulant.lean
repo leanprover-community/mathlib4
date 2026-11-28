@@ -36,7 +36,6 @@ circulant, matrix
 
 @[expose] public section
 
-
 variable {α β n R : Type*}
 
 namespace Matrix

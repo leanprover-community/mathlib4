@@ -50,7 +50,6 @@ namespace SimpleFunc
 
 /-! ### Pointwise approximation by simple functions -/
 
-
 variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
 
 /-- `nearestPtInd e N x` is the index `k` such that `e k` is the nearest point to `x` among the

@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal

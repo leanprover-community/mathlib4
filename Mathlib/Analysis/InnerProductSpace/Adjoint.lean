@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
-
 /-!
 # Adjoint of operators on Hilbert spaces
 
@@ -58,7 +57,6 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpac
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-! ### Adjoint operator -/
-
 
 open InnerProductSpace
 
@@ -351,7 +349,6 @@ end ContinuousLinearMap
 @[expose] public section
 
 /-! ### Self-adjoint operators -/
-
 
 namespace IsSelfAdjoint
 

@@ -130,7 +130,6 @@ end
 
 end
 
-
 instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
   Functor.isRightAdjoint_of_iso (pushforwardId S).symm
 

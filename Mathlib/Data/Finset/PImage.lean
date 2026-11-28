@@ -24,7 +24,6 @@ finite set, image, partial function
 
 @[expose] public section
 
-
 variable {α β : Type*}
 
 namespace Part

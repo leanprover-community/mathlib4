@@ -21,7 +21,6 @@ Note properties of reflective functors relating to limits and colimits are inclu
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section

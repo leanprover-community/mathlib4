@@ -23,7 +23,6 @@ shrinking lemma, metric space
 
 public section
 
-
 universe u v
 
 open Set Metric

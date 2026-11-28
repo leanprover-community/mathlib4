@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 namespace Int
 
 theorem isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by

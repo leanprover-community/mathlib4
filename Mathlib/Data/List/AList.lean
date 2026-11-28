@@ -35,7 +35,6 @@ provides ways to access, modify, and combine `AList`s.
 
 @[expose] public section
 
-
 universe u v w
 
 open List
@@ -68,7 +67,6 @@ instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) :
 
 /-! ### keys -/
 
-
 /-- The list of keys of an association list. -/
 def keys (s : AList β) : List α :=
   s.entries.keys
@@ -81,7 +79,6 @@ theorem keys_mk (l : List (Sigma β)) (h) : (AList.mk l h).keys = l.keys :=
   rfl
 
 /-! ### mem -/
-
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
 instance : Membership α (AList β) :=
@@ -98,7 +95,6 @@ theorem mem_mk {l : List (Sigma β)} {h} {x : α} : x ∈ AList.mk l h ↔ x ∈
   .rfl
 
 /-! ### empty -/
-
 
 /-- The empty association list. -/
 instance : EmptyCollection (AList β) :=
@@ -121,7 +117,6 @@ theorem keys_empty : (∅ : AList β).keys = [] :=
 
 /-! ### singleton -/
 
-
 /-- The singleton association list. -/
 def singleton (a : α) (b : β a) : AList β :=
   ⟨[⟨a, b⟩], nodupKeys_singleton _⟩
@@ -135,7 +130,6 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = [a] :=
   rfl
 
 /-! ### lookup -/
-
 
 section
 
@@ -207,7 +201,6 @@ def foldl {δ : Type w} (f : δ → ∀ a, β a → δ) (d : δ) (m : AList β) 
 
 /-! ### erase -/
 
-
 section
 
 variable [DecidableEq α]
@@ -240,7 +233,6 @@ theorem erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase
   ext kerase_kerase
 
 /-! ### insert -/
-
 
 /-- Insert a key-value pair into an association list and erase any existing pair
   with the same key. -/
@@ -363,7 +355,6 @@ theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
 
 /-! ### extract -/
 
-
 /-- Erase a key from the map, and return the corresponding value, if found. -/
 def extract (a : α) (s : AList β) : Option (β a) × AList β :=
   have : (kextract a s.entries).2.NodupKeys := by
@@ -376,7 +367,6 @@ theorem extract_eq_lookup_erase (a : α) (s : AList β) : extract a s = (lookup 
   simp [extract]; constructor <;> rfl
 
 /-! ### union -/
-
 
 /-- `s₁ ∪ s₂` is the key-based union of two association lists. It is
 left-biased: if there exists an `a ∈ s₁`, `lookup a (s₁ ∪ s₂) = lookup a s₁`.
@@ -442,7 +432,6 @@ theorem union_assoc {s₁ s₂ s₃ : AList β} : (s₁ ∪ s₂ ∪ s₃).entri
 end
 
 /-! ### disjoint -/
-
 
 /-- Two associative lists are disjoint if they have no common keys. -/
 def Disjoint (s₁ s₂ : AList β) : Prop :=

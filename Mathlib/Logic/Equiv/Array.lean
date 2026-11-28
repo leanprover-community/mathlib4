@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 namespace Equiv
 
 /-- The natural equivalence between arrays and lists. -/

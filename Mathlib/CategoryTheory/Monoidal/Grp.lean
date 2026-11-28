@@ -497,7 +497,6 @@ lemma whiskerLeft_hom_hom {G H : Grp C} (f : G ⟶ H) (I : Grp C) :
 lemma whiskerRight_hom_hom (G : Grp C) {H I : Grp C} (f : H ⟶ I) :
     (G ◁ f).hom.hom = G.X ◁ f.hom.hom := rfl
 
-
 @[to_additive (attr := simp)]
 lemma leftUnitor_hom_hom_hom (G : Grp C) : (λ_ G).hom.hom.hom = (λ_ G.X).hom := rfl
 @[to_additive (attr := simp)]

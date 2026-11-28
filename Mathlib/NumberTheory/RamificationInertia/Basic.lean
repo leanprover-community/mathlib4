@@ -44,7 +44,6 @@ deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-
 
 @[expose] public section
 
-
 namespace Ideal
 
 universe u v
@@ -500,7 +499,6 @@ end FactLeComap
 section FactorsMap
 
 /-! ## Properties of the factors of `p.map (algebraMap R S)` -/
-
 
 variable [IsDedekindDomain S]
 

@@ -175,7 +175,6 @@ instance Comp.ToFormat : ToFormat Comp :=
 
 /-! ### Parsing into linear form -/
 
-
 /-! ### Control -/
 
 /-- Metadata about preprocessors, for trace output. -/

@@ -20,7 +20,6 @@ TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Limits

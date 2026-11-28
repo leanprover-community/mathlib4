@@ -28,7 +28,6 @@ This file contains results related to classifying algebraically closed fields.
 
 @[expose] public section
 
-
 universe u v w
 
 open scoped Cardinal Polynomial

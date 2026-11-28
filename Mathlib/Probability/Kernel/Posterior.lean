@@ -202,7 +202,6 @@ lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
 
 end StandardBorelSpace
 
-
 section CountableOrCountablyGenerated
 
 variable [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]

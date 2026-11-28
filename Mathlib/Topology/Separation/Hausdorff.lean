@@ -273,7 +273,6 @@ In this section we use explicit `Nonempty X` instances for `lim` and `limUnder`.
 are useful without a `Nonempty X` instance.
 -/
 
-
 theorem lim_eq {x : X} [NeBot f] (h : f ≤ 𝓝 x) : @lim _ _ ⟨x⟩ f = x :=
   tendsto_nhds_unique (le_nhds_lim ⟨x, h⟩) h
 

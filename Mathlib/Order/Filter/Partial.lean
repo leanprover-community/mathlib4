@@ -44,7 +44,6 @@ cases of the definitions for relations.
 
 @[expose] public section
 
-
 universe u v w
 
 namespace Filter
@@ -54,7 +53,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 open Filter
 
 /-! ### Relations -/
-
 
 /-- The forward map of a filter under a relation. Generalization of `Filter.map` to relations. Note
 that `Rel.core` generalizes `Set.preimage`. -/
@@ -192,7 +190,6 @@ theorem tendsto_iff_rtendsto' (l₁ : Filter α) (l₂ : Filter β) (f : α → 
   simp [tendsto_def, Function.graph, rtendsto'_def, SetRel.preimage, Set.preimage]
 
 /-! ### Partial functions -/
-
 
 /-- The forward map of a filter under a partial function. Generalization of `Filter.map` to partial
 functions. -/

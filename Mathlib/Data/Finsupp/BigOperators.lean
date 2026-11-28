@@ -35,7 +35,6 @@ it is a member of the support of a member of the collection:
 
 public section
 
-
 variable {ι M : Type*} [DecidableEq ι]
 
 theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :

@@ -26,7 +26,6 @@ characteristic, cardinality, ring
 
 public section
 
-
 /-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide
 the characteristic. -/
 theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime]

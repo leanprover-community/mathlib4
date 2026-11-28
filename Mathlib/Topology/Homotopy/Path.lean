@@ -35,7 +35,6 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 
 @[expose] public section
 
-
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]

@@ -76,7 +76,6 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
 public section
 
-
 variable {α β : Type*}
 
 open Filter Set
@@ -142,7 +141,6 @@ protected theorem Tendsto.Ioo {l₁ l₂ : Filter α} [TendstoIxxClass Ioo l₁ 
     {u₁ u₂ : β → α} (h₁ : Tendsto u₁ lb l₁) (h₂ : Tendsto u₂ lb l₁) :
     Tendsto (fun x => Ioo (u₁ x) (u₂ x)) lb l₂.smallSets :=
   (@TendstoIxxClass.tendsto_Ixx α Set.Ioo _ _ _).comp <| h₁.prodMk h₂
-
 
 instance tendsto_Icc_atTop_atTop : TendstoIxxClass Icc (atTop : Filter α) atTop :=
   (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>

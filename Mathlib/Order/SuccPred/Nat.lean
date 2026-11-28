@@ -25,7 +25,6 @@ In this file, we show that `ℕ` is both an archimedean `succOrder` and an archi
 
 public section
 
-
 open Function Order
 
 namespace Nat

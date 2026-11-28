@@ -17,7 +17,6 @@ such as irreducibility under the assumption `B` is a domain.
 
 @[expose] public section
 
-
 open Polynomial Set Function
 
 variable {A B B' : Type*}

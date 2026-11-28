@@ -37,7 +37,6 @@ We denote by `f⁻ x` the left limit of `f` at `x`, and by `f⁺ x` its right li
   are the same, modulo the replacement of `leftLim` with `rightLim`.
 -/
 
-
 public section
 
 open Filter Set MeasureTheory VectorMeasure

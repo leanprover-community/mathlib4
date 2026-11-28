@@ -203,7 +203,6 @@ instance map_isHomLift : IsHomLift p g (map p f φ hf' φ') :=
 lemma fac : φ ≫ (map p f φ hf' φ') = φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.2
 
-
 /-- Given a diagram
 ```
 a --φ--> b        b'

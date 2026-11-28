@@ -28,7 +28,6 @@ use to show the class number of the ring of integers of a function field is fini
 
 @[expose] public section
 
-
 namespace Polynomial
 
 open AbsoluteValue Real

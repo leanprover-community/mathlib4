@@ -32,7 +32,6 @@ normed, lattice, ordered, group
 
 public section
 
-
 /-!
 ### Normed lattice ordered groups
 

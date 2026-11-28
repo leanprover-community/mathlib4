@@ -25,7 +25,6 @@ every monomorphism or epimorphism is normal, and deduce that these categories ar
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory
@@ -255,7 +254,6 @@ def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isColimit
     · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
     · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
-
 
 /-- A normal mono becomes a normal epi in the opposite category. -/
 @[instance_reducible]

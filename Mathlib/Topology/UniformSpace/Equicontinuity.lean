@@ -81,7 +81,6 @@ equicontinuity, uniform convergence, ascoli
 
 @[expose] public section
 
-
 section
 
 open UniformSpace Filter Set Topology Function

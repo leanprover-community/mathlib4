@@ -84,7 +84,6 @@ weak convergence of measures, finite measure
 
 @[expose] public section
 
-
 noncomputable section
 
 open BoundedContinuousFunction Filter MeasureTheory Set Topology
@@ -108,7 +107,6 @@ measures `μ` on `Ω` with continuous bounded nonnegative functions `f : Ω →�
 and using the associated weak topology (essentially the weak-star topology on the dual of
 `Ω →ᵇ ℝ≥0`).
 -/
-
 
 variable {Ω : Type*} [MeasurableSpace Ω] {s t : Set Ω}
 
@@ -624,7 +622,6 @@ section FiniteMeasureBoundedConvergence
 This section is about bounded convergence theorems for finite measures.
 -/
 
-
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 /-- A bounded convergence theorem for a finite measure:
@@ -693,7 +690,6 @@ section FiniteMeasureConvergenceByBoundedContinuousFunctions
 In this section we characterize the weak convergence of finite measures by the usual (defining)
 condition that the integrals of all bounded continuous real-valued functions converge.
 -/
-
 
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
@@ -842,7 +838,6 @@ lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F 
   continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
-
 
 section comap
 

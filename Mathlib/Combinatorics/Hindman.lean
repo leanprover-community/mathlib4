@@ -45,7 +45,6 @@ Ramsey theory, ultrafilter
 
 @[expose] public section
 
-
 open Filter
 
 /-- Multiplication of ultrafilters given by `∀ᶠ m in U*V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m*m')`. -/

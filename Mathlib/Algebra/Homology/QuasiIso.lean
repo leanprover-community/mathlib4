@@ -19,7 +19,6 @@ A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
 @[expose] public section
 
-
 open CategoryTheory Limits
 
 universe v u

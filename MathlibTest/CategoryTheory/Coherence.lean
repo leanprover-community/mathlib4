@@ -91,7 +91,6 @@ section Bicategory
 
 open scoped Bicategory
 
-
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simps

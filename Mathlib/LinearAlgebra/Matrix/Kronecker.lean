@@ -41,7 +41,6 @@ These require `open Kronecker`:
 
 @[expose] public section
 
-
 namespace Matrix
 open scoped RightActions
 
@@ -262,7 +261,6 @@ end KroneckerMap
 
 /-! ### Specialization to `Matrix.kroneckerMap (*)` -/
 
-
 section Kronecker
 
 open Matrix
@@ -289,7 +287,6 @@ def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
 
 /-! What follows is a copy, in order, of every `Matrix.kroneckerMap` lemma above that has
 hypotheses which can be filled by properties of `*`. -/
-
 
 theorem zero_kronecker [MulZeroClass α] (B : Matrix n p α) : (0 : Matrix l m α) ⊗ₖ B = 0 :=
   kroneckerMap_zero_left _ zero_mul B
@@ -415,7 +412,6 @@ end Kronecker
 
 /-! ### Specialization to `Matrix.kroneckerMap (⊗ₜ)` -/
 
-
 section KroneckerTmul
 
 variable (R)
@@ -461,7 +457,6 @@ theorem kroneckerTMulBilinear_apply [Semiring S] [Module S α] [SMulCommClass R 
 
 /-! What follows is a copy, in order, of every `Matrix.kroneckerMap` lemma above that has
 hypotheses which can be filled by properties of `⊗ₜ`. -/
-
 
 theorem zero_kroneckerTMul (B : Matrix n p β) : (0 : Matrix l m α) ⊗ₖₜ[R] B = 0 :=
   kroneckerMap_zero_left _ (zero_tmul α) B

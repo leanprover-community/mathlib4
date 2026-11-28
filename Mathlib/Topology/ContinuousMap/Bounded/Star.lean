@@ -44,7 +44,6 @@ In summary, if `β` is a C⋆-algebra over `𝕜`, then so is `α →ᵇ β`; no
 completeness is guaranteed when `β` is complete (see
 `BoundedContinuousFunction.complete`). -/
 
-
 section NormedAddCommGroup
 
 variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α] [SeminormedAddCommGroup β]

@@ -19,7 +19,6 @@ bounded bilinear maps.
 
 public section
 
-
 open Asymptotics
 
 open scoped Topology

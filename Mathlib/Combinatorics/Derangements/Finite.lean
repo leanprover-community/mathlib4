@@ -30,7 +30,6 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 
 @[expose] public section
 
-
 open derangements Equiv Fintype
 
 variable {α : Type*} [DecidableEq α] [Fintype α]

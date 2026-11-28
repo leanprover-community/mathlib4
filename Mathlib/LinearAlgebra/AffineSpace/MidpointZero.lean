@@ -23,7 +23,6 @@ midpoint
 
 public section
 
-
 open AffineMap AffineEquiv
 
 theorem lineMap_inv_two {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]

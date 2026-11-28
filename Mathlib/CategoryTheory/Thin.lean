@@ -26,7 +26,6 @@ in each direction.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory

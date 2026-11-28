@@ -29,7 +29,6 @@ finite field, trace, norm
 
 public section
 
-
 namespace FiniteField
 
 open Fintype

@@ -26,7 +26,6 @@ category.
 
 @[expose] public section
 
-
 universe w v u -- morphism levels before object levels. See note [category_theory universes].
 
 open CategoryTheory CategoryTheory.Limits

@@ -235,7 +235,6 @@ section circleEquivGen
 For the classification of Pythagorean triples, we will use a parametrization of the unit circle.
 -/
 
-
 variable {K : Type*} [Field K]
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041

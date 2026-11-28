@@ -51,7 +51,6 @@ If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g 
 
 public section
 
-
 open Equiv Equiv.Perm Finset Function OrderDual
 
 variable {ι α β : Type*} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]

@@ -35,7 +35,6 @@ traversable bitraversable functor bifunctor applicative
 
 public section
 
-
 universe u
 
 variable {t : Type u → Type u → Type u} [Bitraversable t]

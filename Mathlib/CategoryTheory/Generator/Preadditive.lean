@@ -20,7 +20,6 @@ preadditive categories.
 
 public section
 
-
 universe v u
 
 open CategoryTheory Opposite

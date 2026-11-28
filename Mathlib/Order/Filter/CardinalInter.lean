@@ -36,7 +36,6 @@ filter, cardinal
 
 @[expose] public section
 
-
 open Set Filter Cardinal
 
 universe u

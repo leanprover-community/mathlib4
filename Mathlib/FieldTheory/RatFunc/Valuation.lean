@@ -32,7 +32,6 @@ function field, ring of integers
 
 @[expose] public section
 
-
 public noncomputable section
 
 namespace RatFunc

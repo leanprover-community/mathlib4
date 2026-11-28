@@ -50,7 +50,6 @@ compression, UV-compression, shadow
 
 @[expose] public section
 
-
 open Finset
 
 variable {α : Type*}
@@ -69,7 +68,6 @@ theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
 namespace UV
 
 /-! ### UV-compression in generalized Boolean algebras -/
-
 
 section GeneralizedBooleanAlgebra
 

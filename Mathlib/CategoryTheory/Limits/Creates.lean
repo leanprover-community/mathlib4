@@ -17,7 +17,6 @@ limits for `K`.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 noncomputable section

@@ -31,7 +31,6 @@ identities.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 namespace Functor

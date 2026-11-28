@@ -22,7 +22,6 @@ convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaa
 
 public section
 
-
 open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology
 
 open Module (finrank)

@@ -28,7 +28,6 @@ This file states some results about evaluating cyclotomic polynomials in various
 
 public section
 
-
 namespace Polynomial
 
 open Finset Nat

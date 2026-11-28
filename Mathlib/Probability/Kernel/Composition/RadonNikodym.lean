@@ -33,7 +33,6 @@ If `α` is countable or `β` is countably generated, the kernels have a Radon-Ni
   (with the same measure) equals `∂κ/∂η`.
 -/
 
-
 public section
 
 open MeasureTheory Set

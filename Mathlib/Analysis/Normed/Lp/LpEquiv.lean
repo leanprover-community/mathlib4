@@ -45,7 +45,6 @@ open scoped ENNReal
 
 section LpPiLp
 
-
 variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
 section Finite
@@ -131,7 +130,6 @@ noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) 
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
   map_add' _f _g := rfl
 
-
 theorem coe_addEquiv_lpBCF (f : lp (fun _ : α ↦ E) ∞) : (AddEquiv.lpBCF f : α → E) = f :=
   rfl
 
@@ -145,7 +143,6 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
   { AddEquiv.lpBCF with
     map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
-
 
 variable {𝕜 E}
 
@@ -178,7 +175,6 @@ variable (α)
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
   { RingEquiv.lpBCF with map_smul' _ _ := rfl }
-
 
 variable {α 𝕜}
 

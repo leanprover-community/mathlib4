@@ -11,7 +11,6 @@ public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
-
 open MeasureTheory TopologicalSpace
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]

@@ -33,13 +33,11 @@ As corollaries, we get:
 
 public section
 
-
 open Finset Set Convex
 
 variable {𝕜 E β ι : Type*}
 
 /-! ### Jensen's inequality -/
-
 
 section Jensen
 
@@ -328,7 +326,6 @@ theorem StrictConcaveOn.lt_map_sum_iff_of_nonneg' (hf : StrictConcaveOn 𝕜 s f
 end Jensen
 
 /-! ### Maximum principle -/
-
 
 section MaximumPrinciple
 

@@ -27,8 +27,6 @@ commutative ring, field of fractions
 
 @[expose] public section
 
-
-
 open Function
 
 namespace IsLocalization
@@ -37,7 +35,6 @@ section LocalizationLocalization
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
 variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
-
 
 section
 

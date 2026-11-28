@@ -19,7 +19,6 @@ the scalar restriction of a linear map.
 
 public section
 
-
 open Filter ContinuousLinearMap Set
 
 section RestrictScalars
@@ -31,7 +30,6 @@ If a function is differentiable over `ℂ`, then it is differentiable over `ℝ`
 we give variants of this statement, in the general situation where `ℂ` and `ℝ` are replaced
 respectively by `𝕜'` and `𝕜` where `𝕜'` is a normed algebra over `𝕜`.
 -/
-
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']

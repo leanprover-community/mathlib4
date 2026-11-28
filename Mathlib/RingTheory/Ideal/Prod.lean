@@ -21,7 +21,6 @@ product `I × J`, viewed as an ideal of `R × S`. In `ideal_prod_eq` we show tha
 
 @[expose] public section
 
-
 universe u v
 
 variable {R : Type u} {S : Type v} [Semiring R] [Semiring S] (I : Ideal R) (J : Ideal S)

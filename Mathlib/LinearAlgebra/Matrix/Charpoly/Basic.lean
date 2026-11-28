@@ -42,7 +42,6 @@ variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
 variable (M₁₁ : Matrix m m R) (M₁₂ : Matrix m n R) (M₂₁ : Matrix n m R) (M₂₂ M : Matrix n n R)
 variable (i j : n)
 
-
 /-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
 The determinant of this matrix is the characteristic polynomial.
 -/

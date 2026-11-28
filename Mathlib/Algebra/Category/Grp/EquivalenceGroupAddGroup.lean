@@ -19,7 +19,6 @@ This file contains two equivalences:
 
 @[expose] public section
 
-
 open CategoryTheory
 
 namespace GrpCat

@@ -25,7 +25,6 @@ should be generalised and moved to this file.
 
 @[expose] public section
 
-
 universe v u u₂ v₂
 
 namespace CategoryTheory

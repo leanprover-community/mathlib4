@@ -24,7 +24,6 @@ on sets before defining what an equivalence is.
 
 @[expose] public section
 
-
 open Function Set
 
 universe u v w z

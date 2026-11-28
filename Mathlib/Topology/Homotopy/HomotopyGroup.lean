@@ -42,7 +42,6 @@ We provide a group instance using path composition and show commutativity when `
 
 @[expose] public section
 
-
 open scoped unitInterval Topology
 
 open Homeomorph
@@ -269,7 +268,6 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
   source' := by ext t; refine p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl ?_⟩; simp
   target' := by ext t; refine p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr ?_⟩; simp
-
 
 theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|

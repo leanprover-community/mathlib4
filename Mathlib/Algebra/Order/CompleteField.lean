@@ -72,7 +72,6 @@ the rationals. Hence we define `LinearOrderedField.cutMap β : α → Set β` wh
 "rationals in `β`" that are less than `a`.
 -/
 
-
 section CutMap
 
 variable [Field α] [LinearOrder α]
@@ -145,7 +144,6 @@ open LinearOrderedField
 
 `LinearOrderedField.cutMap` spits out a `Set β`. To get something in `β`, we now take the supremum.
 -/
-
 
 section InducedMap
 

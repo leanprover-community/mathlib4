@@ -204,7 +204,6 @@ inheritance paths in dependent type theory: a case study in functional
 analysis](https://hal.inria.fr/hal-02463336).
 -/
 
-
 /-!
 ### Design note on `AddMonoid` and `Monoid`
 

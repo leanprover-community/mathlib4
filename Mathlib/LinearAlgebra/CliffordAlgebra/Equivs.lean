@@ -59,11 +59,9 @@ and vice-versa:
 
 @[expose] public section
 
-
 open CliffordAlgebra
 
 /-! ### The clifford algebra isomorphic to a ring -/
-
 
 namespace CliffordAlgebraRing
 
@@ -112,7 +110,6 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
 end CliffordAlgebraRing
 
 /-! ### The clifford algebra isomorphic to the complex numbers -/
-
 
 namespace CliffordAlgebraComplex
 
@@ -216,7 +213,6 @@ theorem ofComplex_conj (c : ℂ) : ofComplex (conj c) = involute (ofComplex c) :
 end CliffordAlgebraComplex
 
 /-! ### The clifford algebra isomorphic to the quaternions -/
-
 
 namespace CliffordAlgebraQuaternion
 
@@ -327,7 +323,6 @@ theorem ofQuaternion_star (q : ℍ[R,c₁,0,c₂]) : ofQuaternion (star q) = sta
 end CliffordAlgebraQuaternion
 
 /-! ### The clifford algebra isomorphic to the dual numbers -/
-
 
 namespace CliffordAlgebraDualNumber
 

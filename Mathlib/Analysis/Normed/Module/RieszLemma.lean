@@ -26,7 +26,6 @@ the closure of a set `s` of optimal distance from a point in `x` to the frontier
 
 public section
 
-
 open Set Metric
 
 variable {𝕜 : Type*} [NormedField 𝕜]

@@ -124,7 +124,6 @@ def HasForget₂.mk' (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (f
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
 
-
 variable (C D) in
 /-- Composition of `HasForget₂` instances. -/
 @[reducible]

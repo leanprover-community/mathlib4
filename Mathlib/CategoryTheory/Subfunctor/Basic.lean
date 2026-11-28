@@ -23,7 +23,6 @@ We define subfunctors of a type-valued functors.
 
 @[expose] public section
 
-
 universe w v u
 
 open Opposite CategoryTheory ConcreteCategory

@@ -31,7 +31,6 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 
 public section
 
-
 namespace Complex
 
 open Polynomial Real

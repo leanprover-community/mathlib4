@@ -393,7 +393,6 @@ theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
   rw [← sum_equiv_comp_eval_eq_elim C hsC ho, Equiv.toFun_as_coe,
     EquivLike.range_comp (e := sum_equiv C hsC ho)]
 
-
 set_option backward.isDefEq.respectTransparency.types false in
 theorem square_commutes : SumEval C ho ∘ Sum.inl =
     ModuleCat.ofHom (πs C o) ∘ eval (π C (ord I · < o)) := by

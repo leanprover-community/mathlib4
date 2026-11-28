@@ -23,7 +23,6 @@ Cartesian products of functions, and functions into Pi-types.
 
 public section
 
-
 open Filter Asymptotics ContinuousLinearMap Set
 
 section
@@ -43,7 +42,6 @@ variable {L : Filter (E × E)}
 section CartesianProduct
 
 /-! ### Derivative of the Cartesian product of two functions -/
-
 
 section Prod
 
@@ -343,7 +341,6 @@ theorem:
   and is designed to deduce differentiability of the components `fun x ↦ Φ x i` from
   differentiability of `Φ`.
 -/
-
 
 variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}

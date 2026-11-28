@@ -51,7 +51,6 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 @[expose] public section
 
-
 assert_not_exists Cardinal
 
 noncomputable section
@@ -64,7 +63,6 @@ variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*} {s : Set ι}
 variable {M : Type*} {M' : Type*} {V : Type u}
 
 section Semiring
-
 
 variable {v : ι → M}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
@@ -394,7 +392,6 @@ end Module
 
 /-! ### Properties which require `Ring R` -/
 
-
 section Module
 
 variable {v : ι → M}
@@ -583,7 +580,6 @@ lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [M
 
 These can be considered generalizations of properties of linear independence in vector spaces.
 -/
-
 
 section Module
 

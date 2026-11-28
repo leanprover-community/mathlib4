@@ -35,7 +35,6 @@ requiring users to write `ModuleCat' ℤ A` when `A` is merely a ring.)
 
 @[expose] public section
 
-
 universe v u w
 
 open CategoryTheory

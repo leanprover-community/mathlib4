@@ -41,7 +41,6 @@ open Multiset
 
 /-! ### range -/
 
-
 section Range
 
 open Nat

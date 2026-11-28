@@ -25,7 +25,6 @@ TODO: Generalise the results here from the concrete `Completion` to any `Abstrac
 
 public section
 
-
 universe u v w x y
 
 open scoped Uniformity

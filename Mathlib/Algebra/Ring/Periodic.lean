@@ -37,7 +37,6 @@ namespace Function
 
 /-! ### Periodicity -/
 
-
 /-- A function `f` is said to be `Periodic` with period `c` if for all `x`, `f (x + c) = f x`. -/
 @[simp, wikidata Q184743]
 def Periodic [Add α] (f : α → β) (c : α) : Prop :=

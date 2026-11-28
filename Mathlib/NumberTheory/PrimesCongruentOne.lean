@@ -19,7 +19,6 @@ We prove that, for any positive `k : ℕ`, there are infinitely many primes `p` 
 
 public section
 
-
 namespace Nat
 
 open Polynomial Nat Filter

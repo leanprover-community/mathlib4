@@ -19,7 +19,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function Topology
 
 section ContinuousMapClass
@@ -36,7 +35,6 @@ theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinA
 end ContinuousMapClass
 
 /-! ### Continuous maps -/
-
 
 namespace ContinuousMap
 

@@ -42,7 +42,6 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
 
 @[expose] public section
 
-
 variable {n : ℕ} [NeZero n] (K : Type*) [Field K] {L : Type*} {μ : L}
 
 open Polynomial IsCyclotomicExtension

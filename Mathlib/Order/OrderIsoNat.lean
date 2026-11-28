@@ -29,7 +29,6 @@ defines the limit value of an eventually-constant sequence.
 
 @[expose] public section
 
-
 variable {α β : Type*}
 
 namespace RelEmbedding

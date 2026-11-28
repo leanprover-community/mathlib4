@@ -21,11 +21,9 @@ relevant forgetful functors to topological spaces and commutative rings.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory
-
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where

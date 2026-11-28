@@ -26,7 +26,6 @@ the number of `false`s by at most one. We provide several versions of these stat
 
 public section
 
-
 namespace List
 
 @[simp]

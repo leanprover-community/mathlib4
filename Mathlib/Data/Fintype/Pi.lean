@@ -189,7 +189,6 @@ The implementation of these constructors ideally should be no more than `Set.toF
 after possibly setting up some `Fintype` and classical `Decidable` instances.
 -/
 
-
 section SetFiniteConstructors
 
 section Pi

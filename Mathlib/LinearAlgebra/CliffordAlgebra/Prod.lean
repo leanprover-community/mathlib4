@@ -38,7 +38,6 @@ open scoped TensorProduct
 
 namespace CliffordAlgebra
 
-
 section map_mul_map
 
 variable {Q₁ Q₂ Qₙ}

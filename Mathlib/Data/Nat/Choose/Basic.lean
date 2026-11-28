@@ -307,9 +307,7 @@ def fast_choose n k := Nat.descFactorial n k / Nat.factorial k
 @[csimp] lemma choose_eq_fast_choose : Nat.choose = fast_choose :=
   funext (fun _ => funext (Nat.choose_eq_descFactorial_div_factorial _))
 
-
 /-! ### Inequalities -/
-
 
 /-- Show that `Nat.choose` is increasing for small values of the right argument. -/
 theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) :
@@ -339,7 +337,6 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     apply zero_le
 
 /-! #### Inequalities about increasing the first argument -/
-
 
 theorem choose_le_succ (a c : ℕ) : choose a c ≤ choose a.succ c := by
   cases c <;> grind

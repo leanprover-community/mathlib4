@@ -47,7 +47,6 @@ This definition is equivalent to left exact functors (functors that preserves fi
 
 @[expose] public section
 
-
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory
@@ -284,7 +283,6 @@ end HasLimit
 section SmallCategory
 
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
-
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)

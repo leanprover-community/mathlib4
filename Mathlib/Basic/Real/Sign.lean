@@ -26,7 +26,6 @@ sign function
 
 @[expose] public section
 
-
 namespace Real
 
 /-- The sign function that maps negative real numbers to -1, positive numbers to 1, and 0

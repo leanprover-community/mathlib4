@@ -32,9 +32,7 @@ It is a finite field with `p ^ n` elements.
 
 @[expose] public section
 
-
 noncomputable section
-
 
 open Polynomial Finset
 

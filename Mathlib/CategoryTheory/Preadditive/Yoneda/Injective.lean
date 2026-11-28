@@ -22,7 +22,6 @@ An object is injective iff the preadditive yoneda functor on it preserves epimor
 
 public section
 
-
 universe v u
 
 open Opposite

@@ -161,7 +161,6 @@ protected theorem map_pow (i : M₁ →ₗ[R] M₁) (j : M₂ →ₗ[R] M₂) (n
 
 end map
 
-
 section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]

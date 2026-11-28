@@ -44,7 +44,6 @@ shadow, set family
 
 @[expose] public section
 
-
 open Finset Nat
 
 variable {α : Type*}

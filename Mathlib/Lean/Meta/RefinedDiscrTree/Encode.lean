@@ -174,7 +174,6 @@ private def encodingStep (e : Expr) (root : Bool) : LazyM Key := do
     MetaM (List (Key × LazyEntry)) := do
   (encodingStepWithEta e true (← mkInitLazyEntry labelledStars)).run { bvars := [] }
 
-
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool := true) :
     MetaM (List (Key × LazyEntry)) := do
@@ -183,7 +182,6 @@ def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool := true) :
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 private def initializeLazyEntry (e : Expr) (labelledStars : Bool) : MetaM (Key × LazyEntry) := do
   ((encodingStep e true).run { bvars := [] }).run (← mkInitLazyEntry labelledStars)
-
 
 /-- Auxiliary function for `evalLazyEntry` -/
 private partial def evalLazyEntryAux (entry : LazyEntry) (eta : Bool) :

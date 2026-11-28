@@ -165,7 +165,6 @@ end L1
 
 namespace Integrable
 
-
 /-- Construct the equivalence class `[f]` of an integrable function `f`, as a member of the
 space `Lp β 1 μ`. -/
 def toL1 (f : α → β) (hf : Integrable f μ) : α →₁[μ] β :=

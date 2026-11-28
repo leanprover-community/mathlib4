@@ -27,7 +27,6 @@ As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of 
 
 @[expose] public section
 
-
 universe v u
 
 open CategoryTheory SimplexCategory Truncated

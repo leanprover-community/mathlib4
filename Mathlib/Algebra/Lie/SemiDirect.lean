@@ -19,12 +19,10 @@ algebra homomorphism  `ψ : L → LieDerivation  R K K`, the underlying set of t
 itself a Lie algebra and that it fits into an exact sequence `H → (SemiDirectSum K L ψ) → L`, i.e.
 forms an extension of `L`.
 
-
 ## References
 
 * https://en.wikipedia.org/wiki/Lie_algebra_extension#By_semidirect_sum
 -/
-
 
 @[expose] public section
 
@@ -44,7 +42,6 @@ The semi-direct sum of two Lie algebras `K` and `L` over `R`, relative to a Lie 
 
 @[inherit_doc]
 notation:35 K " ⋊⁅" ψ:35 "⁆ " L:35 => SemiDirectSum K L ψ
-
 
 namespace SemiDirectSum
 

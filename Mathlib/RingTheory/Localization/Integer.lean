@@ -30,7 +30,6 @@ open scoped Finset
 
 @[expose] public section
 
-
 variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
 variable [Algebra R S]
 

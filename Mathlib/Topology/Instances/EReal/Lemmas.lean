@@ -182,7 +182,6 @@ lemma tendsto_coe_nhds_bot_iff {f : α → ℝ} {l : Filter α} :
 lemma tendsto_coe_atBot : Tendsto Real.toEReal atBot (𝓝 ⊥) :=
   tendsto_coe_nhds_bot_iff.2 tendsto_id
 
-
 lemma tendsto_toReal_atTop : Tendsto EReal.toReal (𝓝[≠] ⊤) atTop := by
   rw [nhdsWithin_top, tendsto_map'_iff]
   exact tendsto_id

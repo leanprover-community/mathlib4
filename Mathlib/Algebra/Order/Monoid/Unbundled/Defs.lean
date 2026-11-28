@@ -59,7 +59,6 @@ This is unergonomic. Inline in `MulLeftMono` and friends.
 
 @[expose] public section
 
-
 -- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`?
 -- TODO: relationship with `Con/AddCon`
 -- TODO: include equivalence of `LeftCancelSemigroup` with
@@ -323,7 +322,6 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
     exact h a⁻¹ bc
 
-
 @[to_additive]
 instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
     ContravariantClass N N (swap (· * ·)) r :=
@@ -338,7 +336,6 @@ instance Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N] [MulRightMono 
 theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N] [MulRightStrictMono N] :
     MulRightReflectLT N :=
   inferInstance
-
 
 section Trans
 

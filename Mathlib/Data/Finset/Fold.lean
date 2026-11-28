@@ -25,7 +25,6 @@ variable {α β γ : Type*}
 
 /-! ### fold -/
 
-
 section Fold
 
 variable (op : β → β → β) [hc : Std.Commutative op] [ha : Std.Associative op]

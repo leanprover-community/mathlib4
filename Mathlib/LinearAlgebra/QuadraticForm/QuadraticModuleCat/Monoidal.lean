@@ -59,7 +59,6 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-
 instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   tensorObj := instMonoidalCategory.tensorObj
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
@@ -69,7 +68,6 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   associator X Y Z := ofIso (tensorAssoc X.form Y.form Z.form)
   leftUnitor X := ofIso (tensorLId X.form)
   rightUnitor X := ofIso (tensorRId X.form)
-
 
 theorem toIsometry_tensorHom {K L M N : QuadraticModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
     (f ⊗ₘ g).toIsometry = f.toIsometry.tmul g.toIsometry :=

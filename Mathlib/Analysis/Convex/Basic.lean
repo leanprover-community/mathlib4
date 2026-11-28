@@ -27,7 +27,6 @@ Generalize all this file to affine spaces.
 
 @[expose] public section
 
-
 variable {𝕜 E F β : Type*}
 
 open LinearMap Set
@@ -35,7 +34,6 @@ open LinearMap Set
 open scoped Convex Pointwise
 
 /-! ### Convexity of sets -/
-
 
 section OrderedSemiring
 
@@ -588,7 +586,6 @@ end LinearOrderedField
 Relates `Convex` and `OrdConnected`.
 -/
 
-
 section
 
 theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
@@ -614,7 +611,6 @@ alias ⟨Convex.ordConnected, _⟩ := convex_iff_ordConnected
 end
 
 /-! #### Convexity of submodules/subspaces -/
-
 
 namespace Submodule
 

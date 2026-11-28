@@ -45,7 +45,6 @@ Upgrade `Equiv.sigma_congr_left`, `Equiv.sigma_congr`, `Equiv.sigma_assoc`,
 
 @[expose] public section
 
-
 namespace Sigma
 
 variable {ι : Type*} {α : ι → Type*}
@@ -119,7 +118,6 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 /-! ### Lexicographical order on `Sigma` -/
 
-
 namespace Lex
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
 notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
@@ -161,8 +159,6 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
   { Lex.preorder with
     le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
-
-
 
 /-- The lexicographical linear order on a sigma type. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :

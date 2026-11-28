@@ -1159,7 +1159,6 @@ the target is a metric space is primed. We follow the same convention here, thus
 with primes.
 -/
 
-
 namespace Uniform
 
 variable [UniformSpace α]

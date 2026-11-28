@@ -39,7 +39,6 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 
 @[expose] public section
 
-
 open Bundle Set IsManifold OpenPartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle ContDiff

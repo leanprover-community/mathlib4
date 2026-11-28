@@ -46,7 +46,6 @@ We also generate additive versions of all theorems in this file using the `to_ad
 
 @[expose] public section
 
-
 open scoped ENNReal Pointwise Topology NNReal ENNReal MeasureTheory
 
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Filter
@@ -575,7 +574,6 @@ include hs
 
 section Group
 
-
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
   simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff, inter_comm s,
@@ -810,7 +808,6 @@ lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotie
     QuotientMeasureEqMeasurePreimage ν μ := by
   simpa [h] using fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
 
-
 /-- If a fundamental domain has volume 0, then `QuotientMeasureEqMeasurePreimage` holds. -/
 @[to_additive /-- If an additive fundamental domain has volume 0, then
 `AddQuotientMeasureEqMeasurePreimage` holds. -/]
@@ -882,7 +879,6 @@ theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
 end QuotientMeasureEqMeasurePreimage
 
 section QuotientMeasureEqMeasurePreimage
-
 
 variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G]
   [SMulInvariantMeasure G α volume] [MeasurableConstSMul G α]

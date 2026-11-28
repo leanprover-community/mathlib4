@@ -313,7 +313,6 @@ lemma below since the below lemma does not require `V` to be finite dimensional.
 `BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal` does not require `B` to be nondegenerate
 on the whole space. -/
 
-
 /-- The restriction of a reflexive, non-degenerate bilinear form on the orthogonal complement of
 the span of a singleton is also non-degenerate. -/
 theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b₁ : B.Nondegenerate)

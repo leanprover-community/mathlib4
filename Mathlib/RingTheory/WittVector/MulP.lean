@@ -27,7 +27,6 @@ and Verschiebung is equal to multiplication by `p`.
 
 @[expose] public section
 
-
 namespace WittVector
 
 variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]

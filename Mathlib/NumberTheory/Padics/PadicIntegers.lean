@@ -51,7 +51,6 @@ p-adic, p adic, padic, p-adic integer
 
 @[expose] public section
 
-
 open Padic Metric IsLocalRing
 
 noncomputable section

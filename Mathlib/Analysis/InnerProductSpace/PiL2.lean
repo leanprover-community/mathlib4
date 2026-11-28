@@ -62,7 +62,6 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 @[expose] public section
 
-
 open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum WithLp
 
@@ -910,7 +909,6 @@ open Module
 
 /-! ### Matrix representation of an orthonormal basis with respect to another -/
 
-
 section ToMatrix
 
 variable [DecidableEq ι]
@@ -986,7 +984,6 @@ end Real
 end ToMatrix
 
 /-! ### Existence of orthonormal basis, etc. -/
-
 
 section FiniteDimensional
 

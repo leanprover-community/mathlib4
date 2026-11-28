@@ -23,7 +23,6 @@ of characteristic `0`.
 
 public section
 
-
 open Nat
 
 variable (K : Type*)

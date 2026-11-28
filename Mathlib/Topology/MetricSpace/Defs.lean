@@ -224,7 +224,6 @@ instance : MetricSpace PUnit.{u + 1} where
 The distance on those type synonyms is inherited without change.
 -/
 
-
 open Additive Multiplicative
 
 section

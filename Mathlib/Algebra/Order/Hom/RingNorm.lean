@@ -9,7 +9,6 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Hom.GroupNorm
 public import Mathlib.Algebra.Order.Ring.Defs
 
-
 /-!
 # Algebraic order homomorphism classes
 

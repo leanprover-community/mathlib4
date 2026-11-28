@@ -740,7 +740,6 @@ def divMod (c b a : FractionalIdeal R⁰ K) : K :=
   if h : a ≤ c ∧ a ≠ 0 ∧ b ≠ 0 then
     (IsDedekindDomain.exists_add_spanSingleton_mul_eq h.1 h.2.1 h.2.2).choose else 0
 
-
 lemma divMod_spec
     {a b c : FractionalIdeal R⁰ K} (hac : a ≤ c) (ha : a ≠ 0) (hb : b ≠ 0) :
     a + spanSingleton R⁰ (c.divMod b a) * b = c := by

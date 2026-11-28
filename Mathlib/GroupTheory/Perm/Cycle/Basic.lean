@@ -37,7 +37,6 @@ In the following, `f : Equiv.Perm β`.
 
 @[expose] public section
 
-
 open Equiv Function Finset
 
 variable {ι α β : Type*}
@@ -822,7 +821,6 @@ protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   obtain rfl | ⟨a, ha⟩ := s.eq_empty_or_nonempty
   · exact Set.countable_empty
   · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono fun y hy ↦ hs.2 ha hy
-
 
 end IsCycleOn
 

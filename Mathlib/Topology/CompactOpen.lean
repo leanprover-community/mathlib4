@@ -31,14 +31,12 @@ topological spaces.
   `C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z)`, `f ↦ (fst ∘ f, snd ∘ f)`. It exists if `Y` and `Z` are
   R₁ spaces, or if `X` is an R₁ space.
 
-
 ## Tags
 
 compact-open, curry, function space
 -/
 
 @[expose] public section
-
 
 open Set Filter TopologicalSpace Topology
 

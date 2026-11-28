@@ -30,7 +30,6 @@ lagrange multiplier, local extremum
 
 public section
 
-
 open Filter Set
 
 open scoped Topology Filter

@@ -27,7 +27,6 @@ A monad "is just" a monoid in the category of endofunctors.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category MonObj

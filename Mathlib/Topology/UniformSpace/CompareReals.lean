@@ -53,7 +53,6 @@ real numbers, completion, uniform spaces
 
 @[expose] public section
 
-
 open Set Function Filter CauSeq UniformSpace
 
 /-- The metric space uniform structure on ℚ (which presupposes the existence

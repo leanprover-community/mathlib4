@@ -19,7 +19,6 @@ as the greatest fixpoint of a polynomial functor.
 
 @[expose] public section
 
-
 universe u uA uB v w
 
 open Nat Function

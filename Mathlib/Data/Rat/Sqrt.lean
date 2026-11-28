@@ -23,7 +23,6 @@ and proves several theorems about it.
 
 @[expose] public section
 
-
 namespace Rat
 
 /-- Square root function on rational numbers, defined by taking the (integer) square root of the

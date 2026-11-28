@@ -20,7 +20,6 @@ order are locally finite and calculates the cardinality of their intervals.
 
 public section
 
-
 open Finset Fintype
 
 variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]

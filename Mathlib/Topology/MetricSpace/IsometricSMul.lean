@@ -32,7 +32,6 @@ these two notions are equivalent. A group with a right-invariant metric can be a
 
 @[expose] public section
 
-
 open Set
 
 open scoped ENNReal Pointwise

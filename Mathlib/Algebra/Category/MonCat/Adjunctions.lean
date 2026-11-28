@@ -31,7 +31,6 @@ from monoids to semigroups.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

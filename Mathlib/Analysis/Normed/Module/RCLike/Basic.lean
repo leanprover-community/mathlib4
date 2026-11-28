@@ -32,7 +32,6 @@ This file exists mainly to avoid importing `RCLike` in the main normed space the
 
 public section
 
-
 open Metric
 
 variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]

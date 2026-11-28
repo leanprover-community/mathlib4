@@ -51,7 +51,6 @@ Taylor polynomial, Taylor's theorem
 
 @[expose] public section
 
-
 open scoped Interval Topology Nat
 
 open Set
@@ -288,9 +287,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
   convert _root_.taylor_tendsto hs hx₀s hf with x
   simp [div_eq_inv_mul]
 
-
 /-! ### Taylor's theorem with mean value type remainder estimate -/
-
 
 /-- **Taylor's theorem** with the general mean value form of the remainder.
 

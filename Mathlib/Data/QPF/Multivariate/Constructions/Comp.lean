@@ -19,7 +19,6 @@ and show that it preserves the QPF structure
 
 @[expose] public section
 
-
 universe u
 
 namespace MvQPF

@@ -430,7 +430,6 @@ We provide these for `AddMonoidHom`, `MonoidHom`, `RingHom`, `AddEquiv`, and `Mu
 Lemmas for `LinearMap` and `LinearEquiv` are in another file.
 -/
 
-
 section
 
 variable [DecidableEq ι]
@@ -453,7 +452,6 @@ theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g
 end MonoidHom
 
 /-! The above lemmas, repeated for `DFinsupp.sumAddHom`. -/
-
 
 namespace AddMonoidHom
 

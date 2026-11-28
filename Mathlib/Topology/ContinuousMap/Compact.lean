@@ -84,7 +84,6 @@ instance instMetricSpace {β : Type*} [MetricSpace β] :
     MetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
 
-
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
 -/
@@ -438,7 +437,6 @@ variable [PseudoMetricSpace α] [CompactSpace α] [PseudoMetricSpace β]
 We now set up some declarations making it convenient to use uniform continuity.
 -/
 
-
 theorem uniform_continuity (f : C(α, β)) (ε : ℝ) (h : 0 < ε) :
     ∃ δ > 0, ∀ {x y}, dist x y < δ → dist (f x) (f y) < ε :=
   Metric.uniformContinuous_iff.mp (CompactSpace.uniformContinuous_of_continuous f.continuous) ε h
@@ -497,7 +495,6 @@ In this section, if `β` is a normed ⋆-group, then so is the space of
 continuous functions from `α` to `β`, by using the star operation pointwise.
 
 Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C⋆-ring. -/
-
 
 section NormedSpace
 

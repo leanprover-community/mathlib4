@@ -32,7 +32,6 @@ This file proves statements about limits and continuity of functions involving `
 
 public section
 
-
 open Filter Function Int Set Topology
 
 namespace FloorSemiring

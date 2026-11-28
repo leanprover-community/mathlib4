@@ -122,7 +122,6 @@ instance : Algebra (𝓞 K) K := inferInstanceAs _
 instance : IsTorsionFree (𝓞 K) K :=
   inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
 
-
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
 

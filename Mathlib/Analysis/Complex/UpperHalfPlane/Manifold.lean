@@ -216,7 +216,6 @@ lemma meromorphicOrderAt_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) 
 
 end Complex
 
-
 section Real
 
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the

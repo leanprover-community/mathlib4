@@ -42,7 +42,6 @@ operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `Continuou
 `Continuous`.
 -/
 
-
 variable {α β G₀ : Type*}
 
 section DivConst
@@ -273,7 +272,6 @@ theorem Continuous.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (
 end Div
 
 /-! ### Left and right multiplication as homeomorphisms -/
-
 
 namespace Homeomorph
 

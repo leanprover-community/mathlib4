@@ -21,7 +21,6 @@ The structure of a metric space on `ℤ` is introduced in this file, induced fro
 
 public section
 
-
 noncomputable section
 
 open Filter Metric Set Topology

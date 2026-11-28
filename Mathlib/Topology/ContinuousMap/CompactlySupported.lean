@@ -403,7 +403,6 @@ It is possible to equip `C_c(α, β)` with a pointwise `star` operation whenever
 The `StarAddMonoid` class on `C_c(α, β)` is inherited from their counterparts on `α →ᵇ β`.
 -/
 
-
 variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar β]
 
 instance : Star C_c(α, β) where
@@ -565,7 +564,6 @@ end IsOrderedAddMonoid
 For each `β` with sufficient structure, there is a contravariant functor `C_c(-, β)` from the
 category of topological spaces with morphisms given by `CocompactMap`s.
 -/
-
 
 variable {δ : Type*} [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 

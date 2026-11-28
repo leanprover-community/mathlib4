@@ -42,7 +42,6 @@ The implementation of these constructors ideally should be no more than `Set.toF
 after possibly setting up some `Fintype` and classical `Decidable` instances.
 -/
 
-
 section SetFiniteConstructors
 
 /-- There are finitely many subsets of a given finite set -/

@@ -21,7 +21,6 @@ This file establishes the cardinality of `α ↪ β` in full generality.
 
 public section
 
-
 local notation "|" x "|" => Finset.card x
 
 local notation "‖" x "‖" => Fintype.card x

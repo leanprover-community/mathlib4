@@ -30,7 +30,6 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 @[expose] public section
 
-
 namespace Ideal
 
 -- Universes need to be explicit to avoid bad universe levels in `quotCotangent`

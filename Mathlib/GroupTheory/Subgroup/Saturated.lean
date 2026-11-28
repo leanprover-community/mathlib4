@@ -17,7 +17,6 @@ subgroup, subgroups
 
 @[expose] public section
 
-
 namespace Submonoid
 
 variable {G : Type*} [Monoid G]

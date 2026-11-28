@@ -43,7 +43,6 @@ number field, infinite places
 
 @[expose] public section
 
-
 open scoped Finset Topology
 
 namespace NumberField

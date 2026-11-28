@@ -27,7 +27,6 @@ topological spaces X and Y.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w v u

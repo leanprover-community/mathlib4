@@ -23,7 +23,6 @@ and `Mathlib/Algebra/Ring/Submonoid/Pointwise.lean`. Where possible, try to keep
 
 @[expose] public section
 
-
 open Set
 
 variable {M R : Type*}
@@ -126,7 +125,6 @@ theorem subset_pointwise_smul_iff {a : M} {S T : Subsemiring R} : S ≤ a • T 
   subset_smul_set_iff
 
 /-! TODO: add `equiv_smul` like we have for subgroup. -/
-
 
 end Group
 

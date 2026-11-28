@@ -51,7 +51,6 @@ namespace Topology.ClosureCompl
 
 variable {X : Type*} [TopologicalSpace X] {s t : Set X}
 
-
 /-- The six closed sets obtained from a given set `s` are given by applying
 `k, kc, kck, kckc, kckck, kckckc` to `s`. -/
 def theClosedSix (s : Set X) : Multiset (Set X) :=

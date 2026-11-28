@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 public section
 
-
 universe uD uE uF
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

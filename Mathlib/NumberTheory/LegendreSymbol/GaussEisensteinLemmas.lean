@@ -21,7 +21,6 @@ The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 
 public section
 
-
 open Finset Nat
 
 open scoped Nat

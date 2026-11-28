@@ -39,7 +39,6 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial Set Function Finsupp AddMonoidAlgebra

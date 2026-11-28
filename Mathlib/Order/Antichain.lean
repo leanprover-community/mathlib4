@@ -319,7 +319,6 @@ end PartialOrder
 
 /-! ### Strong antichains -/
 
-
 /-- A strong (upward) antichain is a set such that no two distinct elements are related to a common
 element. -/
 def IsStrongAntichain (r : α → α → Prop) (s : Set α) : Prop :=
@@ -423,12 +422,10 @@ end General
 
 /-! ### Weak antichains -/
 
-
 section Pi
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
   {a b : ∀ i, α i}
-
 
 @[inherit_doc]
 local infixl:50 " ≺ " => StrongLT

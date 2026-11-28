@@ -27,7 +27,6 @@ duplicate, multiplicity, nodup, `nub`
 
 public section
 
-
 universe u
 
 namespace List

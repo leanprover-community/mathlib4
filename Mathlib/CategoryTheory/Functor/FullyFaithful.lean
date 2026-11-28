@@ -32,7 +32,6 @@ equivalence if and only if it is fully faithful and essentially surjective.
 
 @[expose] public section
 
-
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -255,7 +254,6 @@ end FullyFaithful
 
 end Functor
 
-
 section
 
 variable (F : C ⥤ D) [F.Full] [F.Faithful] {X Y : C}
@@ -265,7 +263,6 @@ then the original morphisms is also an isomorphism.
 -/
 theorem isIso_of_fully_faithful (f : X ⟶ Y) [IsIso (F.map f)] : IsIso f :=
   ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
-
 
 end
 

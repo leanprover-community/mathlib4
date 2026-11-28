@@ -23,7 +23,6 @@ intersection with compact sets is finite.
 
 public section
 
-
 noncomputable section
 
 open Filter Int Metric Set TopologicalSpace

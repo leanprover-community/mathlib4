@@ -236,12 +236,10 @@ theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
   rw [← nhdsWithin_univ b, h, nhdsWithin_union]
   exact ⟨mem_of_superset hL (by simp), mem_of_superset hR (by simp)⟩
 
-
 /-- Writing a punctured neighborhood filter as a sup of left and right filters. -/
 lemma punctured_nhds_eq_nhdsWithin_sup_nhdsWithin [LinearOrder α] {x : α} :
     𝓝[≠] x = 𝓝[<] x ⊔ 𝓝[>] x := by
   rw [← Iio_union_Ioi, nhdsWithin_union]
-
 
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
 theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}

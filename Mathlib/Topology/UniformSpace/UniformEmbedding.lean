@@ -16,7 +16,6 @@ Extension of uniform continuous functions.
 
 @[expose] public section
 
-
 open Filter Function Set Uniformity Topology
 open scoped SetRel
 

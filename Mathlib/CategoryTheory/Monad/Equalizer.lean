@@ -28,7 +28,6 @@ Please try to keep them in sync.
 
 @[expose] public section
 
-
 universe v₁ u₁
 
 namespace CategoryTheory
@@ -44,7 +43,6 @@ variable {T : Comonad C} (X : Coalgebra T)
 /-!
 Show that any coalgebra is an equalizer of cofree coalgebras.
 -/
-
 
 /-- The top map in the equalizer diagram we will construct. -/
 @[simps!]

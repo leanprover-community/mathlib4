@@ -35,7 +35,6 @@ choosing `S` to itself be a submodule of morphisms.
 
 @[expose] public section
 
-
 namespace CliffordAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]

@@ -914,7 +914,6 @@ attribute [scoped instance] PiCountable.emetricSpace
 section PseudoMetricSpace
 variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
 
-
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
@@ -1066,7 +1065,6 @@ lemma isUniformEmbedding_embed (separating_f : Pairwise fun x y ↦ ∃ i, f i x
   let := emetricSpace separating_f; isometry_embed.isUniformEmbedding
 
 end EMetricSpace
-
 
 section MetricSpace
 variable [∀ i, MetricSpace (Y i)]

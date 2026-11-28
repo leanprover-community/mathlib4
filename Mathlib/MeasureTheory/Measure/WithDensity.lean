@@ -58,7 +58,6 @@ theorem withDensity_apply_le (f : α → ℝ≥0∞) (s : Set α) :
     (withDensity_apply f (measurableSet_toMeasurable (withDensity μ f) s)).symm
   _ = μ.withDensity f s := measure_toMeasurable s
 
-
 /-! In the next theorem, the s-finiteness assumption is necessary. Here is a counterexample
 without this assumption. Let `α` be an uncountable space, let `x₀` be some fixed point, and consider
 the σ-algebra made of those sets which are countable and do not contain `x₀`, and of their

@@ -24,7 +24,6 @@ finite and calculates the cardinality of its finite intervals.
 
 @[expose] public section
 
-
 open DFinsupp Finset
 
 open scoped Pointwise

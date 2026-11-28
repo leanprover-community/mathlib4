@@ -31,7 +31,6 @@ on `Ω` allows us to do so.
 
 public section
 
-
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped ENNReal MeasureTheory ProbabilityTheory

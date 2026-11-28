@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 
-
 /-!
 # Sup Norm of Polynomials
 
@@ -37,7 +36,6 @@ sometimes called the polynomial's _length_. The `l^2` norm sometimes arises due 
 theorem implying that the squared `l^2` norm of a complex polynomial is the integral of the norm of
 the polynomial's value on the unit circle.
 -/
-
 
 @[expose] public section supnorm_seminorm
 

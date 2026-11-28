@@ -47,7 +47,6 @@ open map, closed map, embedding, quotient map, identification map
 
 public section
 
-
 open Set Filter Function
 
 open TopologicalSpace Topology Filter
@@ -570,7 +569,6 @@ theorem of_nonempty (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s))
 
 theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
-
 
 theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : IsQuotientMap f :=

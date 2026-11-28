@@ -42,7 +42,6 @@ is in the `ENNReal` namespace.
 - `geom_mean_le_arith_mean3_weighted` : weighted version for three numbers;
 - `geom_mean_le_arith_mean4_weighted` : weighted version for four numbers.
 
-
 ### HM-GM inequality:
 
 The inequality says that the harmonic mean of a tuple of positive numbers is less than or equal
@@ -111,7 +110,6 @@ less than or equal to the sum of the maximum values of the summands.
 
 public section
 
-
 universe u v
 
 open Finset NNReal
@@ -122,7 +120,6 @@ variable {ι : Type u} (s : Finset ι)
 section GeomMeanLEArithMean
 
 /-! ### AM-GM inequality -/
-
 
 namespace Real
 
@@ -510,7 +507,6 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 
   · exact fun i hi ↦ by positivity [hz i hi]
   · rw [Real.inv_rpow]; apply fun i hi ↦ le_of_lt (hz i hi); assumption
 
-
 /-- **HM-GM inequality**: The harmonic mean is less than or equal to the geometric mean. -/
 theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 < z i) :
@@ -531,11 +527,9 @@ end Real
 
 end HarmMeanLEGeomMean
 
-
 section Young
 
 /-! ### Young's inequality -/
-
 
 namespace Real
 
@@ -625,7 +619,6 @@ end Young
 section HoelderMinkowski
 
 /-! ### Hölder's and Minkowski's inequalities -/
-
 
 namespace NNReal
 

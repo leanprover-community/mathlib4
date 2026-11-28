@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 open scoped Polynomial
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]

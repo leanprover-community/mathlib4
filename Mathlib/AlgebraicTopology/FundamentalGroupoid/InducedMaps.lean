@@ -195,7 +195,6 @@ It is clear that the diagram commutes (`H₀ ≫ g(p) = d = f(p) ≫ H₁`), but
 many of the paths do not have defeq starting/ending points, so we end up needing some casting.
 -/
 
-
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),

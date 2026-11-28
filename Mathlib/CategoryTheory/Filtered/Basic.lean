@@ -63,7 +63,6 @@ This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 
 @[expose] public section
 
-
 open Function
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
@@ -874,7 +873,6 @@ lemma wideCospan [IsCofilteredOrEmpty C]
   exact ⟨k, _, _, fun x ↦ hk _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))⟩
 
 end Nonempty
-
 
 section OfCone
 

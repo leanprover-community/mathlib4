@@ -31,7 +31,6 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Opposite CategoryTheory.Idempotents
 

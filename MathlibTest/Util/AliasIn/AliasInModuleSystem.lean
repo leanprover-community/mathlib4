@@ -40,7 +40,6 @@ Use `@[alias_in Baz.Qux 2]` instead.
 #guard_msgs in
 @[alias_in Baz.Qux 3] def Foo.Bar.baz4 : Nat := 2
 
-
 /--
 error: Bar.baz4 has only 1 namespaces, cannot remove 3.
 Use `@[alias_in Baz.Qux.Foo 1]` instead.
@@ -55,7 +54,6 @@ Use `@[alias_in Baz.Qux.Foo 1]` instead.
 /-- error: The `alias_in` attribute cannot be scoped. -/
 #guard_msgs in
 @[scoped alias_in Baz] def non.scoped : Nat := 2
-
 
 /-- Look at this docstring! -/
 @[alias_in Baz] def Foo.Bar.baz5 : Nat := 2
@@ -84,7 +82,6 @@ section
 /-- error: The `alias_in` attribute cannot be used for private declarations. -/
 #guard_msgs in
 @[alias_in Baz] def Foo.Bar.baz8 : Nat := 2
-
 
 #guard_msgs in
 @[alias_in Baz] public def Foo.Bar.baz9 : Nat := 2

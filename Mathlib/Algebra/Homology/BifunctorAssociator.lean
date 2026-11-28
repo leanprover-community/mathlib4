@@ -274,7 +274,6 @@ lemma d₃_eq (i₁ : ι₁) (i₂ : ι₂) {i₃ i₃' : ι₃} (h₃ : c₃.Re
   obtain rfl := c₃.next_eq' h₃
   rfl
 
-
 section
 
 variable [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]

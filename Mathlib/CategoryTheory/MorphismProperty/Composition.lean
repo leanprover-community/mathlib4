@@ -20,7 +20,6 @@ which means that `P f → P g → P (f ≫ g)`. We also introduce the type class
 
 @[expose] public section
 
-
 universe w v v' u u'
 
 namespace CategoryTheory

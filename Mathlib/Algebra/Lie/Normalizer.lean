@@ -35,7 +35,6 @@ lie algebra, normalizer
 
 @[expose] public section
 
-
 variable {R L M M' : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]

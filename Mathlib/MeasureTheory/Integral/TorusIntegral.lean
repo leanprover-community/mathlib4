@@ -58,7 +58,6 @@ integral, torus
 
 @[expose] public section
 
-
 variable {n : ℕ}
 variable {E : Type*} [NormedAddCommGroup E]
 

@@ -24,7 +24,6 @@ Comma, Slice, Coslice, Over, Under
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃

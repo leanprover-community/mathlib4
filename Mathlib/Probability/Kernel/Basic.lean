@@ -283,7 +283,6 @@ theorem setLIntegral_restrict (κ : Kernel α β) (hs : MeasurableSet s) (a : α
     (t : Set β) : ∫⁻ b in t, f b ∂κ.restrict hs a = ∫⁻ b in t ∩ s, f b ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
 
-
 instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (κ.restrict hs) := by
   refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩

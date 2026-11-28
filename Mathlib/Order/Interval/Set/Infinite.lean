@@ -22,7 +22,6 @@ preorder is an infinite type.
 
 public section
 
-
 variable {α : Type*} [Preorder α]
 
 /-- A nonempty preorder with no maximal element is infinite. -/

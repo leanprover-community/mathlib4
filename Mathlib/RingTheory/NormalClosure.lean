@@ -52,7 +52,6 @@ local notation3 "L" => FractionRing S
 local notation3 "E" => IntermediateField.normalClosure (FractionRing R) (FractionRing S)
     (AlgebraicClosure (FractionRing S))
 
-
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/

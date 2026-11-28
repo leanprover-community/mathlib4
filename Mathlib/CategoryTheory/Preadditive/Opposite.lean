@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open Opposite
 
 namespace CategoryTheory

@@ -20,7 +20,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 universe s t w v u r
 
 open CategoryTheory

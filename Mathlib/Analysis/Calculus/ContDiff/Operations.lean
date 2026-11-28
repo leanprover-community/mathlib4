@@ -541,7 +541,6 @@ theorem ContDiffOn.div_const {f : E → 𝕜'} {n} (hf : ContDiffOn 𝕜 n f s) 
 theorem ContDiff.div_const {f : E → 𝕜'} {n} (hf : ContDiff 𝕜 n f) (c : 𝕜') :
     ContDiff 𝕜 n fun x => f x / c := by simpa only [div_eq_mul_inv] using hf.mul contDiff_const
 
-
 end MulProd
 
 /-! ### Scalar multiplication -/
@@ -1016,7 +1015,6 @@ differentiable over `ℝ`. In this paragraph, we give variants of this statement
 situation where `ℂ` and `ℝ` are replaced respectively by `𝕜'` and `𝕜` where `𝕜'` is a normed algebra
 over `𝕜`.
 -/
-
 
 variable (𝕜)
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']

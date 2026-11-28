@@ -34,7 +34,6 @@ public import Mathlib.Topology.GDelta.MetrizableSpace
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter MeasureTheory Set Topology

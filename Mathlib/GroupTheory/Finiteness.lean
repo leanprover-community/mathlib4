@@ -456,7 +456,6 @@ end
 
 /-! ### Monoids and submonoids -/
 
-
 open scoped Pointwise
 
 variable {M N : Type*} [Monoid M]
@@ -654,7 +653,6 @@ theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
   inferInstance
 
 /-! ### Groups and subgroups -/
-
 
 variable {G H : Type*} [Group G] [AddGroup H]
 

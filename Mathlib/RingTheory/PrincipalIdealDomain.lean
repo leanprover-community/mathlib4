@@ -39,7 +39,6 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 
 @[expose] public section
 
-
 universe u v
 
 variable {R : Type u} {M : Type v}

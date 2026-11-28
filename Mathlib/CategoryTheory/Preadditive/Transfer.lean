@@ -30,7 +30,6 @@ variable {F : C ⥤ D} (hF : F.FullyFaithful)
 
 namespace Preadditive
 
-
 /-- If `D` is a preadditive category, any fully faithful functor `F : C ⥤ D` induces a preadditive
 structure on `C`. -/
 @[instance_reducible]

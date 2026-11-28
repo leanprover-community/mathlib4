@@ -33,7 +33,6 @@ namespace Presheaf
 variable {FA : A → A → Type*} {CA : A → Type*}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
 
-
 lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where
   equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)

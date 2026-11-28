@@ -38,7 +38,6 @@ attribute [gcongr] mt Or.imp forall_imp Exists.imp
 -- `positivity`, unlike the `1 ≤ a` side condition of the more general `pow_le_pow_right₀`.
 attribute [gcongr high] Nat.pow_le_pow_right
 
-
 /-! We also use `assumption` to discharge side goals.
 In a further downstream file, `positivity` will also be registered as a discharger.
 From that point, `positivity` will be tried before `assumption` is: that is perfectly fine. -/

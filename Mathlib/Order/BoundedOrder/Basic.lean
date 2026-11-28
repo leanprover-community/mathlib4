@@ -259,9 +259,7 @@ instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
 
 end OrderDual
 
-
 /-! ### Bounded order -/
-
 
 /-- A bounded order describes an order `(≤)` with a top and bottom element,
   denoted `⊤` and `⊥` respectively. -/
@@ -375,7 +373,6 @@ abbrev BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f 
 end lift
 
 /-! ### Subtype, order dual, product lattices -/
-
 
 namespace Subtype
 

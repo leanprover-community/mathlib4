@@ -37,7 +37,6 @@ Given a group `G` and a ring `R`:
 
 @[expose] public section
 
-
 open Filter Set TopologicalSpace Function
 
 open Filter Pointwise

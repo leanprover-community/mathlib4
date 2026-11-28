@@ -50,7 +50,6 @@ As in other polynomial files, we typically use the notation:
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
@@ -70,7 +69,6 @@ variable [CommSemiring R] {p q : MvPolynomial σ R}
 section Degrees
 
 /-! ### `degrees` -/
-
 
 /-- The maximal degrees of each variable in a multi-variable polynomial, expressed as a multiset.
 
@@ -210,7 +208,6 @@ end Degrees
 section DegreeOf
 
 /-! ### `degreeOf` -/
-
 
 /-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
@@ -426,7 +423,6 @@ end DegreeOf
 section TotalDegree
 
 /-! ### `totalDegree` -/
-
 
 /-- `totalDegree p` gives the maximum |s| over the monomials X^s in `p` -/
 def totalDegree (p : MvPolynomial σ R) : ℕ :=

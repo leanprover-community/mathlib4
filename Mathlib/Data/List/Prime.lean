@@ -19,7 +19,6 @@ This file contains some theorems relating `Prime` and products of `List`s.
 
 public section
 
-
 open List
 
 section CommMonoidWithZero

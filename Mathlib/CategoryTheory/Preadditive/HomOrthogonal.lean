@@ -39,7 +39,6 @@ This is preliminary to defining semisimple categories.
 
 @[expose] public section
 
-
 open Matrix CategoryTheory.Limits
 
 universe v u
@@ -181,7 +180,6 @@ end
 The hypothesis that `End (s i)` has invariant basis number is automatically satisfied
 if `s i` is simple (as then `End (s i)` is a division ring).
 -/
-
 
 variable [∀ i, InvariantBasisNumber (End (s i))]
 

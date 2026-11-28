@@ -462,7 +462,6 @@ lemma leibniz_identity_lieBracket (hn : minSmoothness 𝕜 2 ≤ n) {U V W : E �
   simp only [← lieBracketWithin_univ, ← contDiffWithinAt_univ] at hU hV hW ⊢
   exact leibniz_identity_lieBracketWithin hn uniqueDiffOn_univ (by simp) (mem_univ _) hU hV hW
 
-
 /-!
 ### The pullback of vector fields in a vector space
 -/

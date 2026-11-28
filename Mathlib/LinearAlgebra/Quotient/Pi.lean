@@ -25,7 +25,6 @@ and the direct sum of quotients of modules by submodules.
 
 @[expose] public section
 
-
 namespace Submodule
 
 open LinearMap

@@ -36,7 +36,6 @@ derivative, chain rule
 
 public section
 
-
 universe u v w
 
 open scoped Topology Filter ENNReal
@@ -63,7 +62,6 @@ because the `comp` version with the shorter name will show up much more often in
 The formula for the derivative involves `smul` in `scomp` lemmas, which can be reduced to
 usual multiplication in `comp` lemmas.
 -/
-
 
 /- For composition lemmas, we put x explicit to help the elaborator, as otherwise Lean tends to
 get confused since there are too many possibilities for composition -/

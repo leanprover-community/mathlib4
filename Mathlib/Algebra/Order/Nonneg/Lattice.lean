@@ -50,7 +50,6 @@ protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCo
   haveI : Inhabited (Ici a) := ⟨a, le_rfl⟩
   inferInstanceAs <| ConditionallyCompleteLinearOrder (Ici a)
 
-
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.

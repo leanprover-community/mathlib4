@@ -169,7 +169,6 @@ Fiber bundle, topological bundle, structure group
 
 @[expose] public section
 
-
 variable {ι B F X : Type*} [TopologicalSpace X]
 
 open TopologicalSpace Filter Set Bundle Topology

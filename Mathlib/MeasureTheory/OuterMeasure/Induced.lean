@@ -38,7 +38,6 @@ namespace MeasureTheory
 
 open OuterMeasure
 
-
 section Extend
 
 variable {R α : Type*} {P : α → Prop}
@@ -262,7 +261,6 @@ end ExtendSet
 
 /-! If `P` is `MeasurableSet` for some measurable space, then we can remove some hypotheses of the
   above lemmas. -/
-
 
 section MeasurableSpace
 

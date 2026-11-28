@@ -264,7 +264,6 @@ The `SNum` representation uses a bit string, essentially a list of 0 (`false`) a
 and the negation of the MSB is sign-extended to all higher bits.
 -/
 
-
 namespace NzsNum
 
 @[inherit_doc]

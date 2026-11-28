@@ -35,7 +35,6 @@ open scoped Finset
 
 @[expose] public section
 
-
 open Function Multiset
 
 variable {ι : Type*}

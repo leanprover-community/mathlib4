@@ -49,7 +49,6 @@ Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace AlgebraicGeometry

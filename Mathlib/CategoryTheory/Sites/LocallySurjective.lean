@@ -27,7 +27,6 @@ import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 
 @[expose] public section
 
-
 universe w v u v' u' w'
 
 open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor Limits

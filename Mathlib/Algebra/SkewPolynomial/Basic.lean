@@ -101,7 +101,6 @@ section Semiring
 
 variable [Semiring R] {p q : SkewPolynomial R}
 
-
 lemma zero_def : (0 : SkewPolynomial R) = (0 : SkewMonoidAlgebra R (Multiplicative ℕ)) := rfl
 
 variable {S : Type*}

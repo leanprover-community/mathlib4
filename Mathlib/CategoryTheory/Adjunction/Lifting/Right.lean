@@ -61,7 +61,6 @@ Please try to keep them in sync.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category Limits

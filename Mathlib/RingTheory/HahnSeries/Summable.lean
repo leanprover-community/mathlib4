@@ -51,7 +51,6 @@ commutative domain.
 
 @[expose] public section
 
-
 open Finset Function
 
 open scoped Pointwise
@@ -142,7 +141,6 @@ theorem coe_zero : ((0 : SummableFamily Γ R α) : α → R⟦Γ⟧) = 0 :=
 
 theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
-
 
 section SMul
 
@@ -362,7 +360,6 @@ theorem coe_sub (s t : SummableFamily Γ R α) : ⇑(s - t) = s - t :=
 
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
-
 
 instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub

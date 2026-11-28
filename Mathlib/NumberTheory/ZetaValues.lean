@@ -43,7 +43,6 @@ section BernoulliFunProps
 
 /-! Simple properties of the Bernoulli polynomial, as a function `ℝ → ℝ`. -/
 
-
 /-- The function `x ↦ Bₖ(x) : ℝ → ℝ`. -/
 def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
   (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli k)).eval x
@@ -215,7 +214,6 @@ section BernoulliFourierCoeffs
 
 /-! Compute the Fourier coefficients of the Bernoulli functions via integration by parts. -/
 
-
 /-- The `n`-th Fourier coefficient of the `k`-th Bernoulli function on the interval `[0, 1]`. -/
 def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
   AddCircle.fourierCoeffOn zero_lt_one (fun x => bernoulliFun k x) n
@@ -268,7 +266,6 @@ section BernoulliPeriodized
 /-! In this section we use the above evaluations of the Fourier coefficients of Bernoulli
 polynomials, together with the theorem `AddCircle.hasSum_fourier_series_apply_of_summable` from
 Fourier theory, to obtain an explicit formula for `∑ (n:ℤ), 1 / n ^ k * fourier n x`. -/
-
 
 /-- The Bernoulli polynomial, extended from `[0, 1)` to the unit circle. -/
 def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=

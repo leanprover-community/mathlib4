@@ -24,7 +24,6 @@ This file defines notions of lists of points in an affine space being in order o
 
 @[expose] public section
 
-
 variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap

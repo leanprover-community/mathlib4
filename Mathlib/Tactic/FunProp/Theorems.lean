@@ -92,7 +92,6 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     | _ => return none
   | _ => return none
 
-
 /-- Structure holding information about lambda theorem. -/
 structure LambdaTheorem where
   /-- Name of function property -/
@@ -108,7 +107,6 @@ structure LambdaTheorems where
   /-- map: function property name × theorem type → lambda theorem -/
   theorems : Std.HashMap (Name × LambdaTheoremType) (Array LambdaTheorem) := {}
   deriving Inhabited
-
 
 /-- Return proof of lambda theorem -/
 def LambdaTheorem.getProof (thm : LambdaTheorem) : MetaM Expr := do
@@ -132,7 +130,6 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
 def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Array LambdaTheorem) := do
   return (lambdaTheoremsExt.getState (← getEnv)).theorems.getD (funPropName,type) #[]
-
 
 --------------------------------------------------------------------------------
 
@@ -191,7 +188,6 @@ structure FunctionTheorems where
     TreeMap Name (TreeMap Name (Array FunctionTheorem) Name.quickCmp) Name.quickCmp := {}
   deriving Inhabited
 
-
 /-- return proof of function theorem -/
 def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   match thm.thmOrigin with
@@ -223,7 +219,6 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
   return (functionTheoremsExt.getState (← getEnv)).theorems.getD funName {}
     |>.getD funPropName #[]
-
 
 --------------------------------------------------------------------------------
 
@@ -265,7 +260,6 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
-
 /-- Get morphism theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
@@ -277,9 +271,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   modify ({ · with morTheorems := ⟨thms⟩ })
   return candidates.toArray
 
-
 --------------------------------------------------------------------------------
-
 
 /-- There are four types of theorems:
 - lam - theorem about basic lambda calculus terms
@@ -317,7 +309,6 @@ inductive Theorem where
   | function   (thm : FunctionTheorem)
   | mor        (thm : GeneralTheorem)
   | transition (thm : GeneralTheorem)
-
 
 /-- For a theorem declaration `declName` return `fun_prop` theorem. It correctly detects which
 type of theorem it is. -/
@@ -376,7 +367,6 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         throwError "Not a valid `fun_prop` theorem!"
     | _ =>
       throwError "unrecognized theoremType `{← ppExpr b}`"
-
 
 /-- Register theorem `declName` with `fun_prop`. -/
 def addTheorem (declName : Name) (attrKind : AttributeKind := .global)

@@ -53,7 +53,6 @@ glue presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v u

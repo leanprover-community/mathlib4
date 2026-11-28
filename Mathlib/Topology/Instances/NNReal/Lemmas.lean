@@ -139,7 +139,6 @@ theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (
 theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
   nhds_bot_basis
 
-
 @[norm_cast]
 theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
     HasSum (fun a => (f a : ℝ)) (r : ℝ) L ↔ HasSum f r L := by

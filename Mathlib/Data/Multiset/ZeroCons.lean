@@ -48,7 +48,6 @@ namespace Multiset
 
 /-! ### Empty multiset -/
 
-
 /-- `0 : Multiset α` is the empty set -/
 protected def zero : Multiset α :=
   @nil α
@@ -241,7 +240,6 @@ end Mem
 
 /-! ### Singleton -/
 
-
 instance : Singleton α (Multiset α) :=
   ⟨fun a => a ::ₘ 0⟩
 
@@ -282,7 +280,6 @@ theorem pair_comm (x y : α) : ({x, y} : Multiset α) = {y, x} :=
   cons_swap x y 0
 
 /-! ### `Multiset.Subset` -/
-
 
 section Subset
 variable {s : Multiset α} {a : α}

@@ -30,7 +30,6 @@ still of type `α` while elements of a subtype aren't.
 
 @[expose] public section
 
-
 open Function
 
 namespace Subtype

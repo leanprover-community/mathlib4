@@ -64,7 +64,6 @@ classical lie algebra, special linear, symplectic, orthogonal
 
 @[expose] public section
 
-
 universe u₁ u₂
 
 namespace LieAlgebra

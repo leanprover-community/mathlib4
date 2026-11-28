@@ -22,7 +22,6 @@ The only result so far is a characterization of Cauchy filters in topological gr
 
 @[expose] public section
 
-
 open uniformity Filter
 
 open Filter

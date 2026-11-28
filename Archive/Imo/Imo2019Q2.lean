@@ -35,7 +35,6 @@ angles used are modulo `2 * π`, so parts of the angle chase that are only valid
 as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
-
 library_note «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
@@ -57,7 +56,6 @@ considered when the problem was formulated and contestants might not have been e
 with them. A reference to a point being on a side or a segment is expressed directly with `Wbtw`
 rather than more literally with `affineSegment`.
 -/
-
 
 open Affine Affine.Simplex EuclideanGeometry Module
 open scoped Real
@@ -131,7 +129,6 @@ def symm : Imo2019q2Cfg V Pt where
 
 /-! ### Configuration properties that are obvious from the diagram, and construction of the
 points `A₂` and `B₂` -/
-
 
 theorem A_ne_B : cfg.A ≠ cfg.B :=
   cfg.affineIndependent_ABC.injective.ne (by decide : (0 : Fin 3) ≠ 1)
@@ -235,7 +232,6 @@ theorem sOppSide_CB_Q_Q₁ : line[ℝ, cfg.C, cfg.B].SOppSide cfg.Q cfg.Q₁ :=
   cfg.sbtw_Q_A₁_Q₁.sOppSide_of_notMem_of_mem cfg.Q_notMem_CB cfg.wbtw_B_A₁_C.symm.mem_affineSpan
 
 /-! ### Relate the orientations of different angles in the configuration -/
-
 
 section Oriented
 
@@ -365,7 +361,6 @@ theorem wbtw_B_Q_B₂ : Wbtw ℝ cfg.B cfg.Q cfg.B₂ :=
 
 /-! ### The first equality in the first angle chase in the solution -/
 
-
 section Oriented
 
 variable [Module.Oriented ℝ V (Fin 2)]
@@ -384,7 +379,6 @@ theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
 end Oriented
 
 /-! ### More obvious configuration properties -/
-
 
 theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set Pt) := by
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
@@ -438,7 +432,6 @@ theorem Q_mem_ω : cfg.Q ∈ cfg.ω :=
 
 /-! ### The rest of the first angle chase in the solution -/
 
-
 section Oriented
 
 variable [Module.Oriented ℝ V (Fin 2)]
@@ -458,7 +451,6 @@ theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_QB₂A₂ :
 end Oriented
 
 /-! ### Conclusions from that first angle chase -/
-
 
 theorem cospherical_QPB₂A₂ : Cospherical ({cfg.Q, cfg.P, cfg.B₂, cfg.A₂} : Set Pt) :=
   cospherical_of_two_zsmul_oangle_eq_of_not_collinear
@@ -481,7 +473,6 @@ theorem symm_ω : cfg.symm.ω = cfg.ω := by
     simp
 
 /-! ### The second angle chase in the solution -/
-
 
 section Oriented
 
@@ -509,7 +500,6 @@ end Oriented
 
 /-! ### Conclusions from that second angle chase -/
 
-
 theorem not_collinear_CA₂A₁ : ¬Collinear ℝ ({cfg.C, cfg.A₂, cfg.A₁} : Set Pt) := by
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_CA₂A₁_eq_two_zsmul_oangle_CBA,
     Set.pair_comm, Set.insert_comm, Set.pair_comm]
@@ -522,7 +512,6 @@ theorem cospherical_A₁Q₁CA₂ : Cospherical ({cfg.A₁, cfg.Q₁, cfg.C, cfg
     cfg.two_zsmul_oangle_CA₂A₁_eq_two_zsmul_oangle_CQ₁A₁ cfg.not_collinear_CA₂A₁
 
 /-! ### The third angle chase in the solution -/
-
 
 section Oriented
 
@@ -546,7 +535,6 @@ theorem two_zsmul_oangle_QQ₁A₂_eq_two_zsmul_oangle_QPA₂ :
 end Oriented
 
 /-! ### Conclusions from that third angle chase -/
-
 
 theorem Q₁_mem_ω : cfg.Q₁ ∈ cfg.ω :=
   Affine.Triangle.mem_circumsphere_of_two_zsmul_oangle_eq (by decide : (0 : Fin 3) ≠ 1)

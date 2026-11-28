@@ -22,11 +22,9 @@ by a tactic that analyses the shape of `CommRing` and `RingHom`.
 
 @[expose] public section
 
-
 universe u v
 
 open CategoryTheory Limits
-
 
 namespace RingCat.Colimits
 
@@ -36,7 +34,6 @@ free ring on the disjoint union of all the rings in the diagram,
 then taking the quotient by the ring laws within each ring,
 and the identifications given by the morphisms in the diagram.
 -/
-
 
 variable {J : Type v} [SmallCategory J] (F : J ⥤ RingCat.{v})
 
@@ -330,7 +327,6 @@ free commutative ring on the disjoint union of all the commutative rings in the 
 then taking the quotient by the commutative ring laws within each commutative ring,
 and the identifications given by the morphisms in the diagram.
 -/
-
 
 variable {J : Type v} [SmallCategory J] (F : J ⥤ CommRingCat.{v})
 

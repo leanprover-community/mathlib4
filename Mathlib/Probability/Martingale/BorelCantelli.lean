@@ -35,7 +35,6 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
 
 @[expose] public section
 
-
 open Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
@@ -207,7 +206,6 @@ $$
 $$
 almost everywhere, the result follows.
 -/
-
 
 theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : Martingale f ℱ μ)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :

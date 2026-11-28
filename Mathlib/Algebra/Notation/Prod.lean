@@ -171,5 +171,4 @@ theorem star_def (x : R × S) : star x = (star x.1, star x.2) := rfl
 
 end Star
 
-
 end Prod

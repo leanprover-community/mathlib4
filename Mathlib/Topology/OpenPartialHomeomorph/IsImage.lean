@@ -205,7 +205,6 @@ theorem preimage_frontier (s : Set Y) :
 
 end IsImage
 
-
 section restrOpen
 /-!
 ## Restriction
@@ -300,7 +299,6 @@ theorem ofSet_univ_eq_refl : ofSet univ isOpen_univ = OpenPartialHomeomorph.refl
   ext <;> simp
 
 end ofSet
-
 
 /-! `EqOnSource`: equivalence on their source -/
 section EqOnSource

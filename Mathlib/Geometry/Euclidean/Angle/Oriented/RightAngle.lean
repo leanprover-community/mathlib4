@@ -20,7 +20,6 @@ degenerate) right-angled triangles in real inner product spaces and Euclidean af
 
 public section
 
-
 open scoped EuclideanGeometry
 
 open scoped Real

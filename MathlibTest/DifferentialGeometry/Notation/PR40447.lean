@@ -69,7 +69,6 @@ variable {V' : (E × E')→ Type*} [TopologicalSpace (TotalSpace F V')] [∀ x, 
   [FiberBundle F V'] {f : N → TotalSpace F V'} {x : N} in
 #check mfderiv% f x
 
-
 -- Fiber bundles with more complicated fibers, e.g. products of normed spaces.
 
 /-- info: mfderiv% f x : TangentSpace J x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, F × F)) (f x) -/

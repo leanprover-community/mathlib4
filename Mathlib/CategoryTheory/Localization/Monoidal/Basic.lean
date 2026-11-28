@@ -459,5 +459,4 @@ lemma associator_inv (X Y Z : C) :
             (Functor.OplaxMonoidal.δ (L') X Y) ▷ ((L').obj Z) := by
   simp
 
-
 end CategoryTheory

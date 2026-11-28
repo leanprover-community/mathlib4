@@ -51,7 +51,6 @@ def cdotLinter (stx : Syntax) : CommandElabM Unit := do
         Linter.logLintIf linter.style.cdot stx
           m!"This central dot `·` is isolated; please merge it with the next line."
 
-
 /-! ### The `dollarSyntax` linter -/
 
 /--
@@ -67,7 +66,6 @@ public register_option linter.style.dollarSyntax : Bool := {
 def dollarLinter (stx : Syntax) : CommandElabM Unit := do
   Linter.logLintIf linter.style.dollarSyntax stx
     m!"Please use `<|` instead of `$` for the pipe operator."
-
 
 /-! ### The `lambdaSyntax` linter -/
 
@@ -86,7 +84,6 @@ def lambdaLinter (stx : Syntax) : CommandElabM Unit := do
     Linter.logLintIf linter.style.lambdaSyntax stx[0] m!"\
       Please use `fun` and not `λ` to define anonymous functions.\n\
       The `λ` syntax is deprecated in mathlib4."
-
 
 /-! ### The auxiliary declaration linter -/
 
@@ -128,7 +125,6 @@ def auxLemmaLinter (stx : Syntax) : CommandElabM Unit := do
     logLintIf linter.auxLemma stx
       m!"`{stx.getId}` refers to an auto-generated auxiliary declaration. \
         These are not stable across refactors; consider using a different approach."
-
 
 /-!
 ### The `oldObtain` linter, against stream-of-consciousness `obtain`

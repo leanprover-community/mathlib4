@@ -31,7 +31,6 @@ Show the analogous results for functors which reflect or create (co)limits.
 
 @[expose] public section
 
-
 open CategoryTheory
 
 open Opposite
@@ -198,7 +197,6 @@ lemma preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts [HasEquali
     intros
     apply preservesLimit_of_preservesEqualizers_and_product
 
-
 /-- If G preserves equalizers and products, it preserves all limits. -/
 lemma preservesLimits_of_preservesEqualizers_and_products [HasEqualizers C]
     [HasProducts.{w} C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
@@ -304,7 +302,6 @@ noncomputable def createsFiniteLimitsOfCreatesTerminalAndPullbacks [HasTerminal 
 /-!
 We now dualize the above constructions, resorting to copy-paste.
 -/
-
 
 -- We hide the "implementation details" inside a namespace
 namespace HasColimitOfHasCoproductsOfHasCoequalizers

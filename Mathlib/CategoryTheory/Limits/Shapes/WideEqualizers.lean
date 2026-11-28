@@ -45,7 +45,6 @@ general limits can be used.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory.Limits

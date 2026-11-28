@@ -43,7 +43,6 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 
 @[expose] public section
 
-
 universe w
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
@@ -93,7 +92,6 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert! Finset.sum_const x
   simp [-coe_lmul_eq_mul]
-
 
 /-- The trace map from `R` to itself is the identity map. -/
 @[simp] theorem trace_self : trace R R = LinearMap.id := by

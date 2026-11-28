@@ -57,7 +57,6 @@ local extremum, tangent cone, Fermat's Theorem
 
 public section
 
-
 universe u v
 
 open Filter Set

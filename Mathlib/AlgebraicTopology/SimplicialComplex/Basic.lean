@@ -42,7 +42,6 @@ name `Geometry.SimplicialComplex` using affine combinations in another file.
 
 @[expose] public section
 
-
 open Finset Set
 
 variable (ι : Type*)
@@ -148,7 +147,6 @@ def map {α β : Type*} [DecidableEq β] (K : PreAbstractSimplicialComplex α) (
       exact ⟨t', (K.isRelLowerSet_faces hs').2 ht' (Finset.image_nonempty.mp ht), rfl⟩
 
 end PreAbstractSimplicialComplex
-
 
 /--
 An `AbstractSimplicialComplex` is a `PreAbstractSimplicialComplex` which contains all singletons.

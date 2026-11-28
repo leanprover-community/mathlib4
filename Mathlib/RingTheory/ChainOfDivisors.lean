@@ -28,7 +28,6 @@ and the set of factors of `a`.
   between the set of factors of `a : M` and `b : N` then for any prime `p ∣ a`,
   `multiplicity p a = multiplicity (d p) b`
 
-
 ## TODO
 
 - Create a structure for chains of divisors.
@@ -242,7 +241,6 @@ section
 variable [UniqueFactorizationMonoid N] [UniqueFactorizationMonoid M]
 
 open DivisorChain
-
 
 set_option linter.overlappingInstances false
 

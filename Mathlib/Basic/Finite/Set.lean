@@ -22,7 +22,6 @@ finiteness, finite sets
 
 public section
 
-
 open Set
 
 universe u v w

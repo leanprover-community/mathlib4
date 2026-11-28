@@ -28,7 +28,6 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 @[expose] public section
 
-
 universe u v w
 
 namespace Ideal

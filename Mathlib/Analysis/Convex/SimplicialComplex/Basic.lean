@@ -43,7 +43,6 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 @[expose] public section
 
-
 open Finset Set
 
 variable (𝕜 E : Type*) [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
@@ -134,7 +133,6 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
 
 /-! ### Vertices -/
 
-
 /-- The vertices of a simplicial complex are its zero-dimensional faces. -/
 def vertices (K : SimplicialComplex 𝕜 E) : Set E :=
   { x | {x} ∈ K.faces }
@@ -170,7 +168,6 @@ theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
 
 /-! ### Facets -/
 
-
 /-- A facet of a simplicial complex is a maximal face. -/
 def facets (K : SimplicialComplex 𝕜 E) : Set (Finset E) :=
   { s ∈ K.faces | ∀ ⦃t⦄, t ∈ K.faces → s ⊆ t → s = t }
@@ -195,7 +192,6 @@ theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t
 
 `K ≤ L` means that `K.faces ⊆ L.faces`.
 -/
-
 
 -- `HasSSubset.SSubset.ne` would be handy here
 variable (𝕜 E)

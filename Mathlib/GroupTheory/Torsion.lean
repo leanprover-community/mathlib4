@@ -43,7 +43,6 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 
 @[expose] public section
 
-
 variable {G H : Type*}
 
 section

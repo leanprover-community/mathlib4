@@ -26,7 +26,6 @@ We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 
 @[expose] public section
 
-
 namespace ULift
 
 universe u v w

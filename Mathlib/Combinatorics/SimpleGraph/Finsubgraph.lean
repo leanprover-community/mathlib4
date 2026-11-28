@@ -37,7 +37,6 @@ finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraphHomFunctor` restri
 
 @[expose] public section
 
-
 open Set CategoryTheory
 
 universe u v

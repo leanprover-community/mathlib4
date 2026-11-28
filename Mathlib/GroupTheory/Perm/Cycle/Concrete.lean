@@ -42,7 +42,6 @@ on recursion over `Finset.univ`.
 
 @[expose] public section
 
-
 open Equiv Equiv.Perm List
 
 variable {α : Type*}

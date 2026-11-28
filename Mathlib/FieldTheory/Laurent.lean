@@ -24,7 +24,6 @@ An auxiliary definition is provided first to make the construction of the `AlgHo
 
 @[expose] public section
 
-
 universe u
 
 namespace RatFunc

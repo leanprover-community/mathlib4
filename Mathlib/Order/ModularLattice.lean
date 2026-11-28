@@ -55,7 +55,6 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 @[expose] public section
 
-
 open Set
 
 variable {α : Type*}

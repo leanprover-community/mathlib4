@@ -35,7 +35,6 @@ quaternion, normed ring, normed space, normed algebra
 
 @[expose] public noncomputable section
 
-
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
 
 open scoped RealInnerProductSpace

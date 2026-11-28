@@ -36,7 +36,6 @@ Eulerian trails
 
 @[expose] public section
 
-
 namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}

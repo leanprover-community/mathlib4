@@ -33,7 +33,6 @@ left with angle less than `π`.
 
 @[expose] public section
 
-
 open Filter Finset
 
 open scoped Topology

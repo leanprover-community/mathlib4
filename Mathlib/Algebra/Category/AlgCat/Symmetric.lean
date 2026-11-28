@@ -22,7 +22,6 @@ In this file we show:
 public section
 open CategoryTheory
 
-
 noncomputable section
 
 universe v u

@@ -21,7 +21,6 @@ on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 @[expose] public section
 
-
 namespace Valuation
 
 variable {R Γ₀ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]

@@ -153,7 +153,6 @@ deriving Category, ConcreteCategory
 
 namespace DiscreteContAction
 
-
 set_option backward.isDefEq.respectTransparency.types false in
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
   inferInstanceAs <| HasForget₂ (ObjectProperty.FullSubcategory _) _

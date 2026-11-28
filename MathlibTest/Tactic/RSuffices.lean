@@ -55,7 +55,6 @@ example (x y : α ⊕ β) : True := by
     trivial
   exact ⟨x, y⟩
 
-
 protected def Set.foo {α β} (_ : Set α) (_ : Set β) : Set (α × β) := ∅
 
 example {α} (V : Set α) (w : True → ∃ p, p ∈ (V.foo V) ∩ (V.foo V)) : True := by

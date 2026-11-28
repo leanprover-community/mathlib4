@@ -50,7 +50,6 @@ weak-star, weak dual, duality
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter
@@ -182,7 +181,6 @@ section Ring
 variable [TopologicalSpace 𝕜] [CommRing 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E]
 variable [AddCommGroup F] [Module 𝕜 F]
-
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 

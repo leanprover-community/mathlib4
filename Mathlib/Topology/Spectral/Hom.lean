@@ -27,7 +27,6 @@ Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/S
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -100,7 +99,6 @@ instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpa
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
 
 /-! ### Spectral maps -/
-
 
 namespace SpectralMap
 

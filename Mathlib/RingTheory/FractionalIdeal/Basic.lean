@@ -59,7 +59,6 @@ fractional ideal, fractional ideals, invertible ideal
 
 @[expose] public section
 
-
 open IsLocalization Pointwise nonZeroDivisors
 
 section Defs
@@ -172,7 +171,6 @@ instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P
 theorem mem_coeToSubmodule {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
   Iff.rfl
 @[deprecated (since := "2026-11-09")] alias mem_coe := mem_coeToSubmodule
-
 
 /-- Partially-applied version of `FractionalIdeal.ext`. -/
 theorem coeToSubmodule_ext {I J : FractionalIdeal S P} :
@@ -428,7 +426,6 @@ section Lattice
 Defines the order on fractional ideals as inclusion of their underlying sets,
 and ports the lattice structure on submodules to fractional ideals.
 -/
-
 
 @[simp]
 theorem coeToSubmodule_le_coeToSubmodule {I J : FractionalIdeal S P} :

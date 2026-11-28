@@ -150,7 +150,6 @@ lemma pepin_primality' (n : ℕ) (h : 3 ^ ((fermatNumber n - 1) / 2) = (-1 : ZMo
   congr
   rw [fermatNumber, add_tsub_cancel_right, Nat.pow_div Nat.one_le_two_pow Nat.zero_lt_two]
 
-
 /-- Prime factors of `a ^ (2 ^ n) + 1` are of form `k * 2 ^ (n + 1) + 1`. -/
 lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2)
     (hpdvd : p ∣ a ^ (2 ^ n) + 1) :
@@ -189,7 +188,6 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
   rw [fermatNumber] at hpdvd
   rw [← natCast_eq_zero_iff, Nat.cast_add _ 1, Nat.cast_one, Nat.cast_pow] at hpdvd ⊢
   rwa [natCast_val, ZMod.cast_id, pow_succ', pow_mul, sq, ← ha]
-
 
 -- TODO: move to NumberTheory.Mersenne, once we have that.
 /-!

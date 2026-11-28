@@ -34,7 +34,6 @@ generators, relations, group presentations
 
 @[expose] public section
 
-
 variable {α β : Type*}
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with

@@ -19,7 +19,6 @@ Typeclasses representing categories with (co)products over finite indexing types
 
 public section
 
-
 universe w v u
 
 open CategoryTheory

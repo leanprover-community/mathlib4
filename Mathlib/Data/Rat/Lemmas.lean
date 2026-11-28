@@ -17,7 +17,6 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 
 @[expose] public section
 
-
 namespace Rat
 
 -- TODO: move this to Lean
@@ -152,7 +151,6 @@ theorem add_num_den (q r : ℚ) :
   have hrd : (r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.2 r.den_pos
   conv_lhs => rw [← num_divInt_den q, ← num_divInt_den r, divInt_add_divInt _ _ hqd hrd]
   rw [mul_comm r.num q.den]
-
 
 theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.den := by
   constructor
@@ -329,7 +327,6 @@ protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ
 /-!
 ### Denominator as `ℕ+`
 -/
-
 
 section PNatDen
 

@@ -42,7 +42,6 @@ respectively as "`Set`" and "ZFC set".
 
 @[expose] public section
 
-
 universe u
 
 /-- The ZFC universe of sets consists of the type of pre-sets,

@@ -38,11 +38,9 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 
 @[expose] public section
 
-
 namespace ADEInequality
 
 open Multiset
-
 
 /-- `A' q r := {1,q,r}` is a `Multiset ℕ+`
 that is a solution to the inequality

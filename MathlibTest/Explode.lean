@@ -98,7 +98,6 @@ info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 -/
 #guard_msgs in #explode theorem_3
 
-
 theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
   fun U ↦ fun W ↦ fun hPQ ↦ fun hNQ ↦ fun hP ↦ False.elim (hNQ (hPQ hP))
 
@@ -146,7 +145,6 @@ info: lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
 14│0,1,2,3,13│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
 #guard_msgs in #explode lemma_5
-
 
 lemma lemma_6 : ∀ p q : Prop, (p → q) → p → q :=
   fun p h hpq hp ↦ hpq hp

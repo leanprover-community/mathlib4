@@ -20,7 +20,6 @@ convex hulls of finite sets.
 
 @[expose] public section
 
-
 open Set
 
 variable {ι : Sort*} {𝕜 E : Type*}

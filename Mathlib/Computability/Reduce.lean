@@ -29,7 +29,6 @@ computability, reducibility, reduction
 
 @[expose] public section
 
-
 universe u v w
 
 open Function

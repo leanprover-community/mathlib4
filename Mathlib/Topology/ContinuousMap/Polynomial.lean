@@ -25,7 +25,6 @@ public import Mathlib.Topology.UnitInterval
 
 @[expose] public section
 
-
 variable {R : Type*}
 
 open Polynomial
@@ -60,7 +59,6 @@ open ContinuousMap in
 lemma toContinuousMapOn_X_eq_restrict_id (s : Set R) :
     X.toContinuousMapOn s = restrict s (.id R) := by
   ext; simp
-
 
 -- TODO some lemmas about when `toContinuousMapOn` is injective?
 end

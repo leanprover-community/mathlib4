@@ -33,7 +33,6 @@ Prove the invariance property of the Dyson e-transform.
 
 @[expose] public section
 
-
 open MulOpposite
 
 open scoped Pointwise
@@ -43,7 +42,6 @@ variable {α : Type*} [DecidableEq α]
 namespace Finset
 
 /-! ### Dyson e-transform -/
-
 
 section CommGroup
 
@@ -101,7 +99,6 @@ decrease the sum of the size of the sets (and then the other increases it).
 This pair of transforms doesn't seem to be named in the literature. It is used by Sanders in his
 bound on Roth numbers, and by DeVos in his proof of Cauchy-Davenport.
 -/
-
 
 section Group
 

@@ -30,7 +30,6 @@ We define the subsheaf of a type-valued presheaf.
 
 @[expose] public section
 
-
 universe w v u
 
 open Opposite CategoryTheory
@@ -208,7 +207,6 @@ def Sheaf.toImage {F F' : Sheaf J (Type w)} (f : F ⟶ F') : F ⟶ Sheaf.image f
 @[simps]
 def Sheaf.imageι {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Sheaf.image f ⟶ F' :=
   ⟨Subfunctor.ι _⟩
-
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]

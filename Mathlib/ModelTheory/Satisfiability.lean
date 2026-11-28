@@ -46,8 +46,6 @@ This file deals with the satisfiability of first-order theories, as well as equi
 
 @[expose] public section
 
-
-
 universe u v w w'
 
 open Cardinal CategoryTheory

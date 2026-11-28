@@ -23,7 +23,6 @@ and a measurable set `aeSeqSet hf p`, such that
 
 @[expose] public noncomputable section
 
-
 open MeasureTheory
 
 variable {ι : Sort*} {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}

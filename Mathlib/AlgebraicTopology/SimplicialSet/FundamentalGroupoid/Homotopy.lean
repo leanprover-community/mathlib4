@@ -63,7 +63,6 @@ of the upper right triangle is justified by
 `Edge.CompStruct.ofSimplicialObjectHomotopy'`.
 -/
 
-
 variable (h : SimplicialObject.Homotopy f g)
 
 /-- The edge connecting `f.app _ x` and `g.app _ x`

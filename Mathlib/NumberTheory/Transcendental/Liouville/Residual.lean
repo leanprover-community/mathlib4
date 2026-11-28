@@ -22,7 +22,6 @@ similar statement about irrational numbers.
 
 public section
 
-
 open scoped Filter
 
 open Filter Set Metric

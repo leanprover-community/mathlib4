@@ -92,7 +92,6 @@ def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   /-- The universe lift functor for additive groups is faithful. -/]
 instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 
-
 /-- The universe lift functor for groups is full.
 -/
 @[to_additive

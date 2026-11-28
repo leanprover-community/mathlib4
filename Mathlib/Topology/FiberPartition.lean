@@ -23,7 +23,6 @@ set, and the forgetful functor from the category of condensed sets to the catego
 
 @[expose] public section
 
-
 open Function
 
 variable {S Y : Type*} (f : S → Y)

@@ -14,7 +14,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 namespace Set
 
 variable {α : Type*}
@@ -56,7 +55,6 @@ theorem swap_mem_mulAntidiagonal_aux [CommMagma α] {s t : Set α} {a : α} {x :
     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
-
 
 namespace MulAntidiagonal
 

@@ -38,7 +38,6 @@ function (and `π'` to represent the reindexed version).
 
 @[expose] public section
 
-
 namespace Nat
 
 open Finset

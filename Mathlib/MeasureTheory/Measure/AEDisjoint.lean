@@ -20,7 +20,6 @@ measure theory.
 
 @[expose] public section
 
-
 open Set Function
 
 namespace MeasureTheory

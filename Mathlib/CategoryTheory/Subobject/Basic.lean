@@ -72,7 +72,6 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 
 @[expose] public section
 
-
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
@@ -93,7 +92,6 @@ Since `MonoOver X` is a thin category, we use `ThinSkeleton` to take the quotien
 Essentially all the structure defined above on `MonoOver X` descends to `Subobject X`,
 with morphisms becoming inequalities, and isomorphisms becoming equations.
 -/
-
 
 /-- The category of subobjects of `X : C`, defined as isomorphism classes of monomorphisms into `X`.
 -/

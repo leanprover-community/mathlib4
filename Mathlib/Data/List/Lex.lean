@@ -29,7 +29,6 @@ Related files are:
 
 public section
 
-
 namespace List
 
 open Nat

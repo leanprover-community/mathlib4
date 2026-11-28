@@ -74,7 +74,6 @@ test_sorry
 
 end stub_lemmas
 
-
 /-! ## Tests for `MfldSetTac` -/
 section tests
 

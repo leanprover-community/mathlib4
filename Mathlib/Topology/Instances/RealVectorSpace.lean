@@ -20,7 +20,6 @@ over `ℝ` is `ℝ`-linear
 
 @[expose] public section
 
-
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [ContinuousSMul ℝ F] [T2Space F]
 

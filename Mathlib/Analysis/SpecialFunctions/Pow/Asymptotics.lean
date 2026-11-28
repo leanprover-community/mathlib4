@@ -26,7 +26,6 @@ open scoped Topology
 ## Limits at `+∞`
 -/
 
-
 section Limits
 
 open Real Filter
@@ -163,7 +162,6 @@ end Limits
 /-!
 ## Asymptotic results: `IsBigO`, `IsLittleO` and `IsTheta`
 -/
-
 
 namespace Complex
 

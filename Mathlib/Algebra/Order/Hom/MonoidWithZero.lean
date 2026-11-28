@@ -32,7 +32,6 @@ monoid with zero
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}

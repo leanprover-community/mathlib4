@@ -52,7 +52,6 @@ Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
 
 @[expose] public section
 
-
 namespace Pell
 
 open Nat

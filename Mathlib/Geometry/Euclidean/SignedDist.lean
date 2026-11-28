@@ -30,7 +30,6 @@ reference point.
 
 @[expose] public section
 
-
 open EuclideanGeometry NormedSpace
 open scoped RealInnerProductSpace
 

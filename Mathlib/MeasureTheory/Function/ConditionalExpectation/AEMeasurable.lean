@@ -35,7 +35,6 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
 
 @[expose] public section
 
-
 open TopologicalSpace Filter
 
 open scoped ENNReal MeasureTheory
@@ -65,7 +64,6 @@ variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
 section LpMeas
 
 /-! ## The subset `lpMeas` of `Lp` functions a.e. measurable with respect to a sub-sigma-algebra -/
-
 
 variable (F)
 
@@ -122,7 +120,6 @@ section CompleteSubspace
 We define an `IsometryEquiv` between `lpMeasSubgroup` and the `Lp` space corresponding to the
 measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of
 `lpMeasSubgroup` (and `lpMeas`). -/
-
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α}
 

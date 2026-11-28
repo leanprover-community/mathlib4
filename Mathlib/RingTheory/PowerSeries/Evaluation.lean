@@ -102,7 +102,6 @@ protected theorem HasEval.X :
   rw [hasEval_iff]
   exact MvPowerSeries.HasEval.X
 
-
 variable [IsTopologicalRing S] [IsLinearTopology S S]
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/

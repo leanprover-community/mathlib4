@@ -50,7 +50,6 @@ x : Nat
 example (x : Nat) : True := by
   have := x + _
 
-
 /-!
 `#check` cannot be used to accidentally assign metavariables, since it saves the state.
 This is in contrasted against `have`.
@@ -99,7 +98,6 @@ example (x : Nat) : True := by
   let y : Nat := ?a
   have := (by refine rfl : ?a = x)
   trace_state
-
 
 /-! The same tests for check' -/
 

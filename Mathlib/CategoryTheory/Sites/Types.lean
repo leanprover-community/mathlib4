@@ -22,7 +22,6 @@ Then we prove that the topology defined is the canonical topology.
 
 @[expose] public section
 
-
 universe u
 
 namespace CategoryTheory
@@ -203,6 +202,5 @@ theorem typesGrothendieckTopology_eq_canonical :
         ext y
         exact hsx.elim <| S.downward_closed hf (↾fun _ => y)
   simp [ConcreteCategory.hom_ext_iff] at this
-
 
 end CategoryTheory

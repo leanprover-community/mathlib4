@@ -32,7 +32,6 @@ characteristic function, Taylor expansion
 
 public section
 
-
 open Complex Set VectorFourier
 
 open scoped ProbabilityTheory Nat RealInnerProductSpace Topology

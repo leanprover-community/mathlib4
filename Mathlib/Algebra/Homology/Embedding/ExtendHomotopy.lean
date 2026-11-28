@@ -161,7 +161,6 @@ lemma ofExtend_extend (h : Homotopy f g) (e : c.Embedding c') [e.IsRelIff] :
   ext i j
   simp [ofExtend_hom, h.extend_hom_eq e rfl rfl]
 
-
 /-- If `e : c.Embedding c'` is an embedding of complex shapes,
 `f` and `g` are morphism between cochain complexes of shape `c`,
 this is the bijection between homotopies between `f` and `g`,

@@ -79,7 +79,6 @@ run_meta do
 #guard_msgs in
 #log_keys 2 ≥ 3
 
-
 /-- info: ℕ → @Eq ℕ #0 5 -/
 #guard_msgs in
 #log_keys ∀ x : Nat, x = 5
@@ -121,8 +120,6 @@ open Finset in
 #guard_msgs in
 #log_keys Int.sqrt $ (-id : Int → Int) 6
 
-
-
 /--
 info: @Function.Bijective
   ℕ
@@ -152,7 +149,6 @@ info: Nat.sqrt
 #guard_msgs in
 #log_keys Nat.sqrt $ ((2•1+ᵥid)+4*5/id^9 : Nat → Nat) 5
 
-
 /-- info: @Function.Bijective ℕ ℕ (λ, @HPow.hPow ℕ ℕ * * #0 #0) -/
 #guard_msgs in
 #log_keys Function.Bijective fun x => x^x
@@ -173,7 +169,6 @@ info: Nat.sqrt
 #guard_msgs in
 #log_keys id fun (α : Type) [Ring α] => (2•3 : α)
 
-
 /-- info: @Function.Bijective ℕ ℕ (λ, 4) -/
 #guard_msgs in
 #log_keys Function.Bijective fun _ : Nat => 4
@@ -181,7 +176,6 @@ info: Nat.sqrt
 /-- info: λ, @OfNat.ofNat ℕ 4 * -/
 #guard_msgs in
 #log_keys fun _ : Nat => 4
-
 
 -- metavariables in a lambda body
 /-- info: @Function.Bijective ℕ ℕ (λ, *0) -/

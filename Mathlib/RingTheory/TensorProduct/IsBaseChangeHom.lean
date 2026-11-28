@@ -210,7 +210,6 @@ theorem endHom_toMatrix (f : M →ₗ[R] M) :
   simp only [toMatrix_apply, Matrix.map_apply]
   simp only [basis_apply, endHom_comp_apply, basis_repr_comp_apply]
 
-
 end Matrix
 
 section determinant

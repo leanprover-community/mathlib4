@@ -74,7 +74,6 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 
 public section
 
-
 variable (A : Type*)
 
 /-- A (non-commutative) Jordan multiplication. -/
@@ -123,7 +122,6 @@ local notation "R" => AddMonoid.End.mulRight
 /-!
 The Jordan axioms can be expressed in terms of commuting multiplication operators.
 -/
-
 
 section Commute
 

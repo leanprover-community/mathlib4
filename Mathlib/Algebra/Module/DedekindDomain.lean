@@ -22,7 +22,6 @@ direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and
 
 public section
 
-
 universe u v
 
 variable {R : Type u} [CommRing R] [IsDedekindDomain R] {M : Type v} [AddCommGroup M] [Module R M]

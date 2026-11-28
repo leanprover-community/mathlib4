@@ -27,7 +27,6 @@ We provide some instances for finite and free modules involving matrices.
 
 public section
 
-
 universe u u' v w
 
 variable (R : Type u) (S : Type u') (M : Type v) (N : Type w)

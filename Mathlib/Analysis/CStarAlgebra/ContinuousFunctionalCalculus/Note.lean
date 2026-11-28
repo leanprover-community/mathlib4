@@ -18,7 +18,6 @@ as the organizational structure within Mathlib.
 
 public section
 
-
 library_note «continuous functional calculus» /--
 # The continuous functional calculus
 

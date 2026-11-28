@@ -46,7 +46,6 @@ weak dual, seminorm
 
 @[expose] public section
 
-
 variable {𝕜 E F : Type*}
 
 open scoped Topology

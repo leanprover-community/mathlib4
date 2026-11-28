@@ -302,7 +302,6 @@ lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i
   intro j hj
   exact (Subfunctor.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)
 
-
 /-- Given `i` and `j` in `Fin (n + 1)` such that `j ≠ i`, this is
 the inclusion of `stdSimplex.face {j}ᶜ` in the horn `horn n i`. -/
 def faceι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :

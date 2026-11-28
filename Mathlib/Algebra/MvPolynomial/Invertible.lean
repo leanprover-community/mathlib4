@@ -17,7 +17,6 @@ invertible elements in the ring of polynomials.
 
 public section
 
-
 open MvPolynomial
 
 noncomputable instance MvPolynomial.invertibleC (σ : Type*) {R : Type*} [CommSemiring R] (r : R)

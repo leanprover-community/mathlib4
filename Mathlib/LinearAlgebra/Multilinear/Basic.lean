@@ -17,7 +17,6 @@ public import Mathlib.Tactic.Abel
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
-
 /-!
 # Multilinear maps
 

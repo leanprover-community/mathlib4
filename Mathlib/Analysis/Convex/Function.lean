@@ -1092,7 +1092,6 @@ theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
 
 end OrderIso
 
-
 section LinearOrderedField
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 

@@ -98,7 +98,6 @@ variable {l m n p R}
 
 end Module
 
-
 variable [CommSemiring R]
 variable [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable (n R A)

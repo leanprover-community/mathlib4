@@ -37,7 +37,6 @@ We give methods for computing coefficients of the characteristic polynomial.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v w z

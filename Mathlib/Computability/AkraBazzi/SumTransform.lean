@@ -32,7 +32,6 @@ We develop further preliminaries required for the theorem, up to the sum transfo
   namely `n^p (1 + ∑ g(u) / u^(p+1))`, together with positivity statements along the branches
   `r i n`.
 
-
 ## References
 
 * Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations
@@ -555,7 +554,6 @@ noncomputable def sumTransform (p : ℝ) (g : ℝ → ℝ) (n₀ n : ℕ) :=
 
 lemma sumTransform_def {p : ℝ} {g : ℝ → ℝ} {n₀ n : ℕ} :
     sumTransform p g n₀ n = n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1) := rfl
-
 
 variable (g) (a) (b)
 /-- The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely

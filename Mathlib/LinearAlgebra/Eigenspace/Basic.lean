@@ -52,7 +52,6 @@ eigenspace, eigenvector, eigenvalue, eigen
 
 @[expose] public section
 
-
 universe u v w
 
 namespace Module

@@ -262,7 +262,6 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 
 /-! ### The outer measure associated to a Stieltjes function -/
 
-
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/

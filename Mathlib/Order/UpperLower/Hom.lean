@@ -20,7 +20,6 @@ In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.I
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 namespace UpperSet

@@ -113,7 +113,6 @@ noncomputable section
 ### The `IsPoly` predicate
 -/
 
-
 theorem poly_eq_of_wittPolynomial_aeval_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
     (h : ∀ n, aeval f (wittPolynomial p ℤ n) = aeval g (wittPolynomial p ℤ n)) : f = g := by
   ext1 n
@@ -404,7 +403,6 @@ macro_rules
   | `(tactic| ghost_simp $[[$simpArgs,*]]?) => do
     let args := simpArgs.map (·.getElems) |>.getD #[]
     `(tactic| simp only [← sub_eq_add_neg, ghost_simps, $args,*])
-
 
 /-- `ghost_calc` is a tactic for proving identities between polynomial functions.
 Typically, when faced with a goal like

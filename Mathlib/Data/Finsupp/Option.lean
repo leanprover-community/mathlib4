@@ -37,7 +37,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset Function

@@ -19,7 +19,6 @@ In this file, we construct the equivalence of categories
 
 @[expose] public section
 
-
 open CategoryTheory.Category
 
 open CategoryTheory.Idempotents.Karoubi

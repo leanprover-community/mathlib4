@@ -131,7 +131,6 @@ end Mem
 
 /-! ### `Multiset.Subset` -/
 
-
 section Subset
 variable {s : Multiset α} {a : α}
 
@@ -170,7 +169,6 @@ theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a
 end Subset
 
 /-! ### Partial order on `Multiset`s -/
-
 
 /-- `s ≤ t` means that `s` is a sublist of `t` (up to permutation).
   Equivalently, `s ≤ t` means that `count a s ≤ count a t` for all `a`. -/
@@ -214,7 +212,6 @@ theorem leInductionOn {C : Multiset α → Multiset α → Prop} {s t : Multiset
 end
 
 /-! ### Cardinality -/
-
 
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/

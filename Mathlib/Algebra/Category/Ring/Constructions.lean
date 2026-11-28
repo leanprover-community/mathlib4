@@ -230,7 +230,6 @@ def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
 
 end BinaryCoproduct
 
-
 section Terminal
 
 instance (X : CommRingCat.{u}) : Unique (X ⟶ CommRingCat.of.{u} PUnit) :=

@@ -150,7 +150,6 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     else
       return [result, ({ name, symm := true }, ← initializeLazyEntryWithEta rhs)]
 
-
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
     MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) := do
@@ -170,8 +169,6 @@ private instance : Inhabited ExtState where
 
 private initialize importedRewriteLemmasExt : EnvExtension ExtState ←
   registerEnvExtension (IO.mkRef none)
-
-
 
 /-! ### Computing the Rewrites -/
 
@@ -197,7 +194,6 @@ def getModuleCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
   let moduleTreeRef ← createModuleTreeRef addRewriteEntry
   let matchResult ← findModuleMatches moduleTreeRef e
   return matchResult.flatten
-
 
 /-- A rewrite lemma that has been applied to an expression. -/
 structure Rewrite where
@@ -347,9 +343,7 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
     filtered := filtered.push rw
   return filtered
 
-
 /-! ### User interface -/
-
 
 /-- Return syntax for the rewrite tactic `rw [e]`. -/
 def mkRewrite (occ : Option Nat) (symm : Bool) (e : Term) (loc : Option Name) :
@@ -556,7 +550,6 @@ elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
-
 
 /-- Represent a `Rewrite` as `MessageData`. -/
 def Rewrite.toMessageData (rw : Rewrite) (name : Name) : MetaM MessageData := do

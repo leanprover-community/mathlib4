@@ -193,7 +193,6 @@ lemma SurjectiveOnStalks.baseChange' [Algebra R T] [Algebra R S]
       (hf.baseChange (S := T))
         -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
 
-
 -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
 private lemma SurjectiveOnStalks.tensorProductMap_id
     {S' : Type*} [CommRing S'] [Algebra R S] [Algebra R T] [Algebra R S']

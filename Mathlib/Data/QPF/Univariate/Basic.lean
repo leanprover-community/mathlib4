@@ -39,7 +39,6 @@ The present theory focuses on the univariate case for qpfs
 
 @[expose] public section
 
-
 universe u u' v
 
 /-- Quotients of polynomial functors.

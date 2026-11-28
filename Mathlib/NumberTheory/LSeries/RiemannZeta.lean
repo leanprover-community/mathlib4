@@ -47,7 +47,6 @@ proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 
 @[expose] public section
 
-
 open CharZero Set Filter HurwitzZeta
 
 open Complex hiding exp continuous_exp

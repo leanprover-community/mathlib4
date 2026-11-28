@@ -40,7 +40,6 @@ Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 
 @[expose] public section
 
-
 namespace Matrix
 
 universe u
@@ -324,7 +323,6 @@ number of elements in the vector, which is taken modulo that number
 of elements by virtue of the semantics of `bit0` and `bit1` and of
 addition on `Fin n`).
 -/
-
 
 /-- `vecAppend ho u v` appends two vectors of lengths `m` and `n` to produce
 one of length `o = m + n`. This is a variant of `Fin.append` with an additional `ho` argument,

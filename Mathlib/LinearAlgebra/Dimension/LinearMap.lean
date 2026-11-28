@@ -21,7 +21,6 @@ import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 public section
 
-
 noncomputable section
 
 universe u v v' v''

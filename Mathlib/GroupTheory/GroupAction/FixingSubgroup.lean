@@ -38,7 +38,6 @@ TODO :
 
 @[expose] public section
 
-
 section Monoid
 
 open MulAction

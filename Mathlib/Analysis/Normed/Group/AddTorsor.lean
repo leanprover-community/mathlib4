@@ -24,7 +24,6 @@ spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open NNReal
@@ -83,7 +82,6 @@ theorem nnDist_eq_nnNorm_vsub (x y : P) : nnDist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 
 @[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_vsub := nnDist_eq_nnNorm_vsub
-
 
 /-- The distance equals the norm of subtracting two points. In this
 lemma, it is necessary to have `V` as an explicit argument; otherwise

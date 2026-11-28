@@ -18,7 +18,6 @@ We show that evaluation of functors has adjoints, given the existence of (co)pro
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits

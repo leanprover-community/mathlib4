@@ -24,7 +24,6 @@ then we could provide the instances for types with decidable equality.
 
 @[expose] public section
 
-
 universe u
 
 open Function
@@ -53,7 +52,6 @@ end Functor
 
 /-! ### Pure -/
 
-
 protected instance pure : Pure Finset :=
   ⟨fun x => {x}⟩
 
@@ -61,7 +59,6 @@ protected instance pure : Pure Finset :=
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
 
 /-! ### Applicative functor -/
-
 
 section Applicative
 
@@ -144,7 +141,6 @@ end Applicative
 
 /-! ### Monad -/
 
-
 section Monad
 
 variable [∀ P, Decidable P]
@@ -167,7 +163,6 @@ end Monad
 
 /-! ### Alternative functor -/
 
-
 section Alternative
 
 variable [∀ P, Decidable P]
@@ -187,7 +182,6 @@ instance : LawfulAlternative Finset where
 end Alternative
 
 /-! ### Traversable functor -/
-
 
 section Traversable
 

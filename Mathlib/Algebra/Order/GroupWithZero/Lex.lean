@@ -64,7 +64,6 @@ lemma fst_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preor
   refine WithZero.forall.mpr ?_
   simp +contextual [WithZero.forall, Prod.le_def]
 
-
 lemma snd_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀] :
     Monotone (snd M₀ N₀) := by
   refine WithZero.forall.mpr ?_

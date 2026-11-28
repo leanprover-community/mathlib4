@@ -17,7 +17,6 @@ In this file we prove properties of `Filter.PTendsto` etc. in topological spaces
 
 @[expose] public section
 
-
 open Filter
 
 open scoped Topology
@@ -43,7 +42,6 @@ theorem ptendsto'_nhds {f : Y →. X} {l : Filter Y} {x : X} :
   rtendsto'_nhds
 
 /-! ### Continuity and partial functions -/
-
 
 variable [TopologicalSpace Y]
 

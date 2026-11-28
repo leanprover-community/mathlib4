@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 variable {ι M M₀ R : Type*}
 
 namespace Multiset

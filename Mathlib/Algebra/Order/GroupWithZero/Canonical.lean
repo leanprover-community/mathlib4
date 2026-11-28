@@ -398,7 +398,6 @@ instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
 
 end PartialOrder
 
-
 section Lattice
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithZero α) where

@@ -10,7 +10,6 @@ public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Basic
 
-
 /-!
 # `zify` tactic
 
@@ -112,7 +111,6 @@ attribute [zify_simps ←] Int.ofNat_inj Int.ofNat_le Int.ofNat_lt Int.ofNat_dvd
   not_congr Int.ofNat_inj.symm
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
-
 
 -- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumptions like
 -- `m < n` or more generally `m + k ≤ n`. We add two lemmas to increase the probability that

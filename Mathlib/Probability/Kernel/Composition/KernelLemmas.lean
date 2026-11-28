@@ -25,7 +25,6 @@ compositions/products.
 
 public section
 
-
 open MeasureTheory ProbabilityTheory
 
 open scoped ENNReal

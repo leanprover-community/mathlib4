@@ -110,7 +110,6 @@ def app (f : Expr) (arg : Arg) : Expr :=
   | none => f.app arg.expr
   | some coe => (coe.app f).app arg.expr
 
-
 /-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
 
 `∀ x, p x` is represented as `Forall p`. -/
@@ -137,7 +136,6 @@ where
     | .forallE x t b bi, _ => do
       go (← mkAppM ``Forall #[.lam x t b bi]) #[]
     | f, as => k f as.reverse
-
 
 /--
 If the given expression is a sequence of morphism applications `f a₁ .. aₙ`, return `f`.

@@ -51,7 +51,6 @@ ideal, cofinal, dense, countable, generic
 
 @[expose] public section
 
-
 open Function Set
 
 namespace Order

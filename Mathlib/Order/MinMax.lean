@@ -23,7 +23,6 @@ min, max
 
 public section
 
-
 universe u v
 
 variable {α : Type u} {β : Type v}

@@ -40,7 +40,6 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory

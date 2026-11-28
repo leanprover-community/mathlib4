@@ -18,7 +18,6 @@ and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCo
 
 @[expose] public section
 
-
 universe w v₁ v₂ u₁ u₂
 
 noncomputable section

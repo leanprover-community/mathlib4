@@ -28,7 +28,6 @@ Liouville numbers.
 
 @[expose] public section
 
-
 /-- A Liouville number is a real number `x` such that for every natural number `n`, there exist
 `a, b ∈ ℤ` with `1 < b` such that `0 < |x - a/b| < 1/bⁿ`.
 In the implementation, the condition `x ≠ a/b` replaces the traditional equivalent `0 < |x - a/b|`.

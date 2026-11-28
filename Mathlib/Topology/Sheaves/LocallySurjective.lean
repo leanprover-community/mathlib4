@@ -26,7 +26,6 @@ We prove that these are equivalent.
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

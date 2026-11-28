@@ -22,7 +22,6 @@ example [AddCommGroup α] (a : α) : 0 + a = a := by abel1
 example [AddCommGroup α] (n : ℕ) (a : α) : n • a = n • a := by abel1
 example [AddCommGroup α] (n : ℕ) (a : α) : 0 + n • a = n • a := by abel1
 
-
 example [AddCommMonoid α] (a b c d e : α) :
   a + (b + (a + (c + (a + (d + (a + e)))))) = e + d + c + b + 4 • a := by abel1
 example [AddCommGroup α] (a b c d e : α) :

@@ -31,7 +31,6 @@ partition of unity
 
 public section
 
-
 open Set Function
 
 open scoped Topology

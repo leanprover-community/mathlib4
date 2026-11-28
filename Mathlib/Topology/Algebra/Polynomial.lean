@@ -39,7 +39,6 @@ Polynomial, continuity
 
 public section
 
-
 open IsAbsoluteValue Filter
 
 namespace Polynomial

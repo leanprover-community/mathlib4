@@ -18,8 +18,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
-
 @[inherit_doc]
 notation:25 M " →L⋆[" R "] " M₂ => ContinuousLinearMap (starRingEnd R) M M₂
 

@@ -31,7 +31,6 @@ This file defines notions of two points being on the same or opposite sides of a
 
 @[expose] public section
 
-
 variable {R V V' P P' : Type*}
 
 open AffineEquiv AffineMap

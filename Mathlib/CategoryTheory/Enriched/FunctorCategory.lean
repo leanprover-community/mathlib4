@@ -287,7 +287,6 @@ noncomputable abbrev precompEnrichedHom
 
 end
 
-
 section
 
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,

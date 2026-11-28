@@ -20,7 +20,6 @@ function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a 
 
 public section
 
-
 open TopologicalSpace Metric Set Filter Asymptotics Function
 
 open scoped Topology Filter NNReal Real

@@ -72,7 +72,6 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 @[expose] public section
 
-
 noncomputable section
 
 open DirectSum

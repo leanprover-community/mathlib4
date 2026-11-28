@@ -16,7 +16,6 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 @[expose] public section
 
-
 noncomputable section
 
 open AddMonoidAlgebra Polynomial

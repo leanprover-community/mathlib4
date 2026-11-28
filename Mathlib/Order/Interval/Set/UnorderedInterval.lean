@@ -43,7 +43,6 @@ make the notation available.
 
 @[expose] public section
 
-
 open Function
 
 open OrderDual (toDual ofDual)

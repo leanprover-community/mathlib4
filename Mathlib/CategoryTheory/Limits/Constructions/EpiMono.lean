@@ -20,7 +20,6 @@ We also provide the dual version for epimorphisms.
 
 public section
 
-
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory

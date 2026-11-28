@@ -1091,7 +1091,6 @@ variable {Q₂ : QuadraticMap R₂ M N}
 def PosDef (Q₂ : QuadraticMap R₂ M N) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 
-
 theorem PosDef.smul {R} [CommSemiring R] [PartialOrder R]
     [Module R M] [Module R N] [PosSMulStrictMono R N]
     {Q : QuadraticMap R M N} (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) :=

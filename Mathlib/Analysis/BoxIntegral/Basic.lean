@@ -751,7 +751,6 @@ theorem integrable_of_bounded_and_ae_continuous [CompleteSpace E] {I : Box ι} {
   integrable_of_bounded_and_ae_continuousWithinAt l hb μ <|
     Eventually.filter_mono (ae_mono μ.restrict_le_self) (hc.mono fun _ h ↦ h.continuousWithinAt)
 
-
 /-- A continuous function is box-integrable with respect to any locally finite measure.
 
 This is true for any volume with bounded variation. -/

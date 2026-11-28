@@ -427,7 +427,6 @@ end Int
 
 /-! ### Square-free prover -/
 
-
 open NormNum
 
 namespace Tactic

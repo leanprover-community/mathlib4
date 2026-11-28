@@ -70,7 +70,6 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -960,7 +959,6 @@ instance (F : Cᵒᵖ ⥤ D) [Final F] : F.rightOp.Initial :=
   inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Initial
 
 end
-
 
 end Functor
 

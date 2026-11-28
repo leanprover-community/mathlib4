@@ -25,7 +25,6 @@ We prove that `𝟙 (T.obj Y)` is the initial object in `T`-structured objects w
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [category theory universes].

@@ -34,7 +34,6 @@ See `Mathlib/AlgebraicTopology/DoldKan/Equivalence.lean`.
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section
@@ -53,7 +52,6 @@ attribute [local instance] Abelian.hasPullbacks
 
 /-! The definitions in this namespace are all auxiliary definitions for `NormalizedMooreComplex`
 and should usually only be accessed via that. -/
-
 
 namespace NormalizedMooreComplex
 

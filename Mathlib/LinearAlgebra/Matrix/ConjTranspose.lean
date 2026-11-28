@@ -22,14 +22,12 @@ The scope `Matrix` gives the following notation:
 
 @[expose] public section
 
-
 universe u u' v w
 
 variable {l m n o : Type*}
 variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
-
 
 /-- The conjugate transpose of a matrix defined in term of `star`.
 

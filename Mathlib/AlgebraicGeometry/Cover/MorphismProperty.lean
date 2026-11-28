@@ -28,7 +28,6 @@ immersions can be used to deduce these assumptions in the general case.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits

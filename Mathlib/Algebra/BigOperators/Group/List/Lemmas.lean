@@ -153,7 +153,6 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
 
 end List
 
-
 namespace List
 
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/

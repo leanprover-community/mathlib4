@@ -259,7 +259,6 @@ example : 1 = 1 := by
   apply_fun f using (g f)
   rfl
 
-
 def funFamily (_i : ℕ) : Bool → Bool := id
 
 -- `apply_fun` should not silence errors in `assumption`

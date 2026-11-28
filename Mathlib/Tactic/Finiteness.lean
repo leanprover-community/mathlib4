@@ -93,7 +93,6 @@ macro_rules
 | `(tactic| finiteness? $c:Aesop.tactic_clause* [$h,*]) =>
   `(tactic| · ($[have := $h];*); finiteness? $c*)
 
-
 @[tactic_alt finiteness]
 syntax (name := finiteness_nonterminal)
 "finiteness_nonterminal" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic

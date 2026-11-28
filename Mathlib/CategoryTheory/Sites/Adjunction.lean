@@ -21,7 +21,6 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open GrothendieckTopology Limits Opposite CategoryTheory.Functor

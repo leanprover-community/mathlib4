@@ -39,7 +39,6 @@ is that when `C = Type`, filtered colimits commute with finite limits.
 
 @[expose] public section
 
-
 universe v₁ v₂ v u₁ u₂ u
 
 open CategoryTheory Functor

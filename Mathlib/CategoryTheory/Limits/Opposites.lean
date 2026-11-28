@@ -18,7 +18,6 @@ We construct limits and colimits in the opposite categories.
 
 @[expose] public section
 
-
 universe w v₁ v₂ u₁ u₂
 
 noncomputable section

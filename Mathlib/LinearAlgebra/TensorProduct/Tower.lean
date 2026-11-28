@@ -638,7 +638,6 @@ open TensorProduct
 ### The base-change of a linear map of `R`-modules to a linear map of `A`-modules
 -/
 
-
 section Semiring
 
 variable {R A B M N P : Type*} [CommSemiring R]

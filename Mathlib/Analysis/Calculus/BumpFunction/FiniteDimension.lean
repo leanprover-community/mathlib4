@@ -33,7 +33,6 @@ lying between the indicator functions of two nested intervals.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Metric TopologicalSpace Function MeasureTheory Module

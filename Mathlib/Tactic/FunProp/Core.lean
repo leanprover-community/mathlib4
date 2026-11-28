@@ -24,7 +24,6 @@ open Lean Meta Qq
 
 namespace Meta.FunProp
 
-
 /-- Synthesize instance of type `type` and
   1. assign it to `x` if `x` is meta variable
   2. check it is equal to `x` -/
@@ -42,8 +41,6 @@ synthesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
     trace[Meta.Tactic.fun_prop]
       "{← ppOrigin thmId}, failed to synthesize instance{indentExpr type}"
     return false
-
-
 
 /-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with
 discharger. -/
@@ -111,7 +108,6 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
 
   return true
 
-
 /-- Try to apply theorem - core function -/
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -128,7 +124,6 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
   else
     trace[Meta.Tactic.fun_prop] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
     return none
-
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
 def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
@@ -169,12 +164,10 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
   else
     go
 
-
 /-- Try to apply a theorem `thmOrigin` to the goal `e`. -/
 def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Option Result))
     (newMCtxDepth : Bool := false) : FunPropM (Option Result) :=
   tryTheoremWithHint? e thmOrigin #[] funProp newMCtxDepth
-
 
 /--
 Try to prove `e` using the *identity lambda theorem*.
@@ -276,7 +269,6 @@ def applyPiRule (funPropDecl : FunPropDecl) (e : Expr)
 
   return none
 
-
 /--
 Try to prove `e = q(P (fun x ↦ let y := φ x; ψ x y)`.
 
@@ -324,7 +316,6 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
       funProp (e.setArg (funPropDecl.funArgId) f)
 
   | _ => throwError "expected expression of the form `fun x ↦ lam y := ..; ..`"
-
 
 /-- Prove function property of using *morphism theorems*. -/
 def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
@@ -394,7 +385,6 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     else
       let .comp f g ← fData.peeloffArgDecomposition | return none
       applyCompRule funPropDecl e f g funProp
-
 
 /-- Prove function property of `fun f ↦ f x₁ ... xₙ`. -/
 def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
@@ -478,7 +468,6 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       | .eq => t.mainArgs.size < s.mainArgs.size)
 
   return thms
-
 
 /-- Try to apply *function theorems* `thms` to `e`. -/
 def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
@@ -568,7 +557,6 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
     return none
 
-
 /-- Prove function property of `fun x ↦ f x₁ ... xₙ` where `f` is declared function. -/
 def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -615,9 +603,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyTransitionRules e funProp then
       return r
 
-
   return none
-
 
 /-- Cache result if it does not have any subgoals. -/
 def cacheResult (e : Expr) (r : Result) : FunPropM Result := do -- return proof?
@@ -627,7 +613,6 @@ def cacheResult (e : Expr) (r : Result) : FunPropM Result := do -- return proof?
 /-- Cache for failed goals such that `fun_prop` can fail fast next time. -/
 def cacheFailure (e : Expr) : FunPropM Unit := do -- return proof?
   modify (fun s => { s with failureCache := s.failureCache.insert e })
-
 
 mutual
   /-- Main `funProp` function. Returns proof of `e`. -/
@@ -665,7 +650,6 @@ mutual
         else
           cacheFailure e
           return none
-
 
   /-- Main `funProp` function. Returns proof of `e`. -/
   private partial def main (e : Expr) : FunPropM (Option Result) := do

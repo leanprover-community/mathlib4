@@ -354,7 +354,6 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     keys := { relName, head := lhsHead, arity := lhsArgs.size } :: keys
   return { keys, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
 
-
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
 conclusion of a form such as `f x₁ y z₁ ∼ f x₂ y z₂`; that is, a relation between the application of
 a function to two argument lists, in which the "varying argument" pairs (here `x₁`/`x₂` and

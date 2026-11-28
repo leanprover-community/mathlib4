@@ -33,7 +33,6 @@ lie algebra, ring commutator, adjoint action
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 section OfAssociative
@@ -259,7 +258,6 @@ instance : IsFaithful R (Module.End R M) M where
 end LieModule
 
 end IsFaithful
-
 
 section
 

@@ -219,7 +219,6 @@ In this section we show that continuous functions valued in a topological group 
 the structure of a group.
 -/
 
-
 section Subtype
 
 /-- The `Submonoid` of continuous maps `α → β`. -/
@@ -389,7 +388,6 @@ In this section we show that continuous functions valued in a topological semiri
 the structure of a ring.
 -/
 
-
 section Subtype
 
 /-- The subsemiring of continuous maps `α → β`. -/
@@ -498,7 +496,6 @@ section ModuleStructure
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
 -/
-
 
 section Subtype
 
@@ -645,7 +642,6 @@ section AlgebraStructure
 In this section we show that continuous functions valued in a topological algebra `A` over a ring
 `R` inherit the structure of an algebra. Note that the hypothesis that `A` is a topological algebra
 is obtained by requiring that `A` be both a `ContinuousSMul` and a `IsTopologicalSemiring`. -/
-
 
 section Subtype
 

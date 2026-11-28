@@ -88,7 +88,6 @@ variable {M : Type*} {M' : Type*} {V : Type u}
 
 section Semiring
 
-
 variable {v : ι → M}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
 variable [Module R M] [Module R M']
@@ -903,7 +902,6 @@ end Module
 
 These can be considered generalizations of properties of linear independence in vector spaces.
 -/
-
 
 section Module
 

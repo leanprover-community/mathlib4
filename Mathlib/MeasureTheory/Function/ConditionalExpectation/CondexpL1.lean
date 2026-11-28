@@ -31,7 +31,6 @@ The conditional expectation of an `L²` function is defined in
 
 @[expose] public section
 
-
 noncomputable section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
@@ -64,11 +63,9 @@ takes `x : G` to the conditional expectation of the indicator of the set `s` wit
 seen as an element of `α →₁[μ] G`.
 -/
 
-
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α} [NormedSpace ℝ G]
 
 section CondexpIndL1Fin
-
 
 /-- Conditional expectation of the indicator of a measurable set with finite measure,
 as a function in L1. -/
@@ -144,7 +141,6 @@ theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
 end CondexpIndL1Fin
 
 section CondexpIndL1
-
 
 open scoped Classical in
 /-- Conditional expectation of the indicator of a set, as a function in L1. Its value for sets
@@ -308,7 +304,6 @@ theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [PartialOrder E] [NormedSpa
 end CondexpInd
 
 section CondexpL1
-
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}

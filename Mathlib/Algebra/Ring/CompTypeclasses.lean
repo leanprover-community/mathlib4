@@ -44,7 +44,6 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 
 @[expose] public section
 
-
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 

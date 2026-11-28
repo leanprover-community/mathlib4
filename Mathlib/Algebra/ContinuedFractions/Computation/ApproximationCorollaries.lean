@@ -66,7 +66,6 @@ section Convergence
 We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/
 
-
 open Nat
 
 theorem of_convergence_epsilon :

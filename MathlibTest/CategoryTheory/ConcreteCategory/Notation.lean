@@ -91,7 +91,6 @@ Expected a type whose head constant `FooCat` has an associated declaration `FooC
 #guard_msgs in
 example : ℕ := ↧ℤ
 
-
 /--
 error: `↧` failed: the expected type must be known, but it is
   ?_

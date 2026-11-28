@@ -232,7 +232,6 @@ end MulOpposite
 
 section Unital
 
-
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by

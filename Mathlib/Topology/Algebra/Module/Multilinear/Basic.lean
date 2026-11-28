@@ -37,7 +37,6 @@ especially when defining iterated derivatives.
 
 @[expose] public section
 
-
 open Function Fin
 
 universe u v w w₁ w₁' w₂ w₃ w₄
@@ -617,7 +616,6 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
 
 end Module
 
-
 section Algebra
 
 variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
@@ -693,7 +691,6 @@ variable (R ι) in
 `m i` (multiplied by a fixed reference element `z` in the target module) -/
 protected def mkPiRing (z : M) : ContinuousMultilinearMap R (fun _ : ι => R) M :=
   (ContinuousMultilinearMap.mkPiAlgebra R ι R).smulRight z
-
 
 @[simp]
 theorem mkPiRing_apply (z : M) (m : ι → R) :

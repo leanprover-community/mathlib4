@@ -25,7 +25,6 @@ diag, diagonal, matrix
 
 @[expose] public section
 
-
 namespace Matrix
 
 variable {α β R n m : Type*}

@@ -210,7 +210,6 @@ example (s t : MySet α) (f g : α → β) (h1 : s = t) (h2 : f = g) :
     MySet.image f s = MySet.image g t := by
   congr!
 
-
 example (c : Prop → Prop → Prop → Prop) (x x' y z z' : Prop)
     (h₀ : x ↔ x') (h₁ : z ↔ z') : c x y z ↔ c x' y z' := by
   congr!
@@ -346,7 +345,6 @@ example
     {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr! -beqEq
-
 
 /-!
 Check that congruence theorem generator operates at default transparency.

@@ -30,7 +30,6 @@ open Multiset
 
 /-! ### pi -/
 
-
 section Pi
 
 variable {α : Type*}

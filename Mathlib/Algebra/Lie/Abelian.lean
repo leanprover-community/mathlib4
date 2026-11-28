@@ -33,7 +33,6 @@ lie algebra, abelian, commutative, center
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 /-- A Lie (ring) module is trivial iff all brackets vanish. -/

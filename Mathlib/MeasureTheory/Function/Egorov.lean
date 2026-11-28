@@ -23,7 +23,6 @@ convergence in measure.
 
 @[expose] public section
 
-
 noncomputable section
 
 open ENNReal Filter Set

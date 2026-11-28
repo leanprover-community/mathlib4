@@ -18,9 +18,7 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
 
-
 /-! ## Scalar action instances -/
-
 
 section SMul
 
@@ -122,7 +120,6 @@ end SMul
 
 /-! ## `Multiplicative` instances -/
 
-
 section Multiplicative
 
 example : @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid =
@@ -132,7 +129,6 @@ example : @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid =
 end Multiplicative
 
 /-! ## `Finsupp` instances -/
-
 
 section Finsupp
 
@@ -210,7 +206,6 @@ end Polynomial
 
 /-! ## `Subtype` instances -/
 
-
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
@@ -223,7 +218,6 @@ example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableLT α]
 end Subtype
 
 /-! ## `ZMod` instances -/
-
 
 section ZMod
 

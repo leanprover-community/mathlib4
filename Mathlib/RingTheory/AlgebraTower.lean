@@ -67,7 +67,6 @@ variable {R} {ι M : Type*} [CommSemiring R] [Semiring A] [AddCommMonoid M]
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
-
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 @[simps! -isSimp repr_apply_apply]

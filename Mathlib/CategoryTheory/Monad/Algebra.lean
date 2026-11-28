@@ -25,7 +25,6 @@ cofree functors, respectively from and to the original category.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category

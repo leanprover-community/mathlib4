@@ -35,7 +35,6 @@ identical no matter the choice of field of fractions for `R`.
 
 @[expose] public noncomputable section
 
-
 variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors

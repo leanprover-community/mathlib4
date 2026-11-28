@@ -22,7 +22,6 @@ open Lean Meta Elab Term Command Simps
 meta def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
   simpExtension.getState env |>.lemmaNames.contains <| .decl declName
 
-
 structure Foo1 : Type where
   Projone : Nat
   two : Bool
@@ -52,7 +51,6 @@ def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x ↦ (x.elim.1,
 
 initialize_simps_projections Foo2
 
-
 /--
 trace: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
     Generated projections for Foo2:
@@ -60,7 +58,6 @@ trace: [simps.verbose] The projections for this structure have already been init
 -/
 #guard_msgs in
 initialize_simps_projections Foo2
-
 
 @[simps]
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
@@ -106,7 +103,6 @@ class Something (α : Type _) where
 
 instance {α : Type _} [Something α] : Add α :=
   ⟨fun x y ↦ Something.op x y y⟩
-
 
 initialize_simps_projections Something
 
@@ -336,7 +332,6 @@ run_cmd liftTermElabM do
   guard <| env.find? `let3_snd |>.isSome
   guard <| env.find? `let4_snd |>.isSome
 
-
 namespace specify
 -- todo: error when naming arguments
 @[simps fst] def specify1 : ℕ × ℕ × ℕ := (1, 2, 3)
@@ -411,7 +406,6 @@ example {α} {b : Bool} {x} (h : (⟨3, 5⟩ : MyProd _ _) = x) : (@test α).ext
   (by intro x; simp [Equiv'.left_inv _ _]),
   (by intro x; simp [Equiv'.right_inv _ _])⟩
 
-
 example {α β γ : Type} (f : α ≃ β) (g : β ≃ γ) (x : α) {z : γ} (h : g.toFun (f.toFun x) = z) :
   (f.trans g).toFun x = z := by
   dsimp only [Equiv'.trans_toFun]
@@ -426,7 +420,6 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
 
 @[simps +simpRhs] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
   ⟨fun n ↦ n, fun n ↦ n, by intro n; rfl, by intro n; rfl⟩
-
 
 /- test that we don't recursively take projections of `prod` and `PProd` -/
 @[simps] def pprodEquivProd2 : PProd ℕ ℕ ≃ ℕ × ℕ :=
@@ -633,7 +626,6 @@ section
 attribute [local instance] new_bar
 example (x : ℕ) : x * - 0 ⊆ - x := by simp
 end
-
 
 end coercing
 
@@ -1147,7 +1139,6 @@ example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
     P_toFun  := fun _ _ h ↦ h
     P_invFun := fun _ _ h ↦ h }
 
-
 example {α : Type} (x z : α) (h : foo.rfl x = z) : (foo2 α).toEquiv' x = z := by
   dsimp only [foo2_toEquiv']
   guard_target = foo.rfl x = z
@@ -1327,7 +1318,6 @@ class Artificial (n : Nat) where
   one : Nat
 
 initialize_simps_projections Artificial
-
 
 namespace UnderScoreDigit
 

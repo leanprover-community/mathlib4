@@ -26,7 +26,6 @@ namespace TensorPower
 variable (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
   (n : ℕ)
 
-
 /-- The canonical multilinear map from `n` copies of the dual of the module `M`
 to the dual of `⨂[R]^n M`. -/
 noncomputable def multilinearMapToDual :

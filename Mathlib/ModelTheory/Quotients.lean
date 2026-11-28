@@ -23,7 +23,6 @@ This file defines prestructures and quotients of first-order structures.
 
 public section
 
-
 namespace FirstOrder
 
 namespace Language

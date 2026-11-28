@@ -92,7 +92,6 @@ theorem opNorm_mulLeftRight_le :
     ‖mulLeftRight 𝕜 R‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 R x
 
-
 /-- This is a mixin class for non-unital normed algebras which states that the left-regular
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
 a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addition, so is every

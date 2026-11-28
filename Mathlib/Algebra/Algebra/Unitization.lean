@@ -58,7 +58,6 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 
 @[expose] public section
 
-
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a structure wrapper for
 `R × A`. -/
 @[ext]
@@ -179,7 +178,6 @@ end Basic
 /-! ### Structures inherited from `Prod`
 
 Additive operators and scalar multiplication operate elementwise. -/
-
 
 section Additive
 
@@ -423,7 +421,6 @@ end Additive
 
 /-! ### Multiplicative structure -/
 
-
 section Mul
 
 variable {R A : Type*}
@@ -568,7 +565,6 @@ end Mul
 
 /-! ### Star structure -/
 
-
 section Star
 
 variable {R A : Type*}
@@ -622,7 +618,6 @@ instance instIsProperStar [Semiring R] [StarAddMonoid R] [IsProperStar R]
 end Star
 
 /-! ### Algebra structure -/
-
 
 section Algebra
 
@@ -772,7 +767,6 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         rw [add_add_add_comm]
   commutes' := fun r => by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
-
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to
@@ -926,7 +920,6 @@ section StarNormal
 
 variable {R A : Type*} [Semiring R]
 variable [StarAddMonoid R] [Star A] {a : A}
-
 
 @[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by

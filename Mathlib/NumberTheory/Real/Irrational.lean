@@ -27,7 +27,6 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 
 @[expose] public section
 
-
 open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
@@ -52,7 +51,6 @@ theorem Transcendental.irrational {r : ℝ} (tr : Transcendental ℚ r) : Irrati
 /-!
 ### Irrationality of roots of integer and rational numbers
 -/
-
 
 /-- If `x^n`, `n > 0`, is integer and is not the `n`-th power of an integer, then
 `x` is irrational. -/
@@ -165,7 +163,6 @@ instance (q : ℚ) : Decidable (Irrational (√q)) :=
 #### Coercion of a rational/integer/natural number is not irrational
 -/
 
-
 namespace Irrational
 
 variable {x : ℝ}
@@ -173,7 +170,6 @@ variable {x : ℝ}
 /-!
 #### Irrational number is not equal to a rational/integer/natural number
 -/
-
 
 theorem ne_rat (h : Irrational x) (q : ℚ) : x ≠ q := fun hq => h ⟨q, hq.symm⟩
 
@@ -212,7 +208,6 @@ variable (q : ℚ) {x y : ℝ}
 #### Addition of rational/integer/natural numbers
 -/
 
-
 /-- If `x + y` is irrational, then at least one of `x` and `y` is irrational. -/
 theorem add_cases : Irrational (x + y) → Irrational x ∨ Irrational y := by
   delta Irrational
@@ -250,7 +245,6 @@ theorem add_natCast (h : Irrational x) (m : ℕ) : Irrational (x + m) :=
 #### Negation
 -/
 
-
 theorem of_neg (h : Irrational (-x)) : Irrational x := fun ⟨q, hx⟩ => h ⟨-q, by rw [cast_neg, hx]⟩
 
 protected theorem neg (h : Irrational x) : Irrational (-x) :=
@@ -259,7 +253,6 @@ protected theorem neg (h : Irrational x) : Irrational (-x) :=
 /-!
 #### Subtraction of rational/integer/natural numbers
 -/
-
 
 theorem sub_ratCast (h : Irrational x) : Irrational (x - q) := by
   simpa only [sub_eq_add_neg, cast_neg] using h.add_ratCast (-q)
@@ -288,7 +281,6 @@ theorem of_natCast_sub (m : ℕ) (h : Irrational (m - x)) : Irrational x :=
 /-!
 #### Multiplication by rational numbers
 -/
-
 
 theorem mul_cases : Irrational (x * y) → Irrational x ∨ Irrational y := by
   delta Irrational
@@ -326,7 +318,6 @@ theorem natCast_mul (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (m 
 #### Inverse
 -/
 
-
 theorem of_inv (h : Irrational x⁻¹) : Irrational x := fun ⟨q, hq⟩ => h <| hq ▸ ⟨q⁻¹, q.cast_inv⟩
 
 protected theorem inv (h : Irrational x) : Irrational x⁻¹ :=
@@ -335,7 +326,6 @@ protected theorem inv (h : Irrational x) : Irrational x⁻¹ :=
 /-!
 #### Division
 -/
-
 
 theorem div_cases (h : Irrational (x / y)) : Irrational x ∨ Irrational y :=
   h.mul_cases.imp id of_inv
@@ -373,7 +363,6 @@ theorem of_one_div (h : Irrational (1 / x)) : Irrational x :=
 /-!
 #### Natural and integer power
 -/
-
 
 theorem of_mul_self (h : Irrational (x * x)) : Irrational x :=
   h.mul_cases.elim id id
@@ -428,7 +417,6 @@ open Irrational
 /-!
 ### Simplification lemmas about operations
 -/
-
 
 @[simp]
 theorem irrational_ratCast_add_iff : Irrational (q + x) ↔ Irrational x :=

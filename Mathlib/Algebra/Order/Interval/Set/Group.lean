@@ -14,7 +14,6 @@ public import Mathlib.Order.Interval.Set.Basic
 
 public section
 
-
 variable {α : Type*}
 
 namespace Set
@@ -24,7 +23,6 @@ section OrderedCommGroup
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {a c d : α}
 
 /-! `inv_mem_Ixx_iff`, `sub_mem_Ixx_iff` -/
-
 
 @[to_additive]
 theorem inv_mem_Icc_iff : a⁻¹ ∈ Set.Icc c d ↔ a ∈ Set.Icc d⁻¹ c⁻¹ :=

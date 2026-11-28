@@ -35,7 +35,6 @@ export ContinuousStar (continuous_star)
 
 section Continuity
 
-
 variable {α R : Type*} [TopologicalSpace R]
 
 section Star

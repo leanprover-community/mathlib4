@@ -20,7 +20,6 @@ is holomorphic.
 
 @[expose] public section
 
-
 open Set MeasureTheory Metric Function
 
 open scoped Interval Real

@@ -21,7 +21,6 @@ Finally, we prove a few lemmas about filter bases of `𝓝ˢ (Iic a)` and `𝓝�
 
 public section
 
-
 open Set Filter OrderDual
 open scoped Topology
 

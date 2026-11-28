@@ -26,7 +26,6 @@ Define the valuation on the tilt, and define a characteristic predicate for the 
 
 @[expose] public section
 
-
 universe u₁ u₂ u₃ u₄
 
 open scoped NNReal

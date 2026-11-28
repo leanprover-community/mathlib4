@@ -360,7 +360,6 @@ lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProd
 
 section EpiMono
 
-
 section
 
 variable [HasZeroMorphisms C] [HasFiniteBiproducts C]

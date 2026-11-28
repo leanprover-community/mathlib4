@@ -118,7 +118,6 @@ theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trail
 
 end NoZeroDivisors
 
-
 section CommRing
 
 variable [CommRing R]

@@ -40,7 +40,6 @@ modulo the additional relations making the inclusion of `M` into an `R`-linear m
 
 @[expose] public section
 
-
 variable (R : Type*) [CommSemiring R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 

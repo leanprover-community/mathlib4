@@ -214,7 +214,6 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
   exact presheafHom_isSheafFor F G S
     (fun _ _ => ((Presheaf.isSheaf_iff_isLimit J G).1 hG _ (J.pullback_stable _ hS)).some)
 
-
 /-- The underlying presheaf of `sheafHom F G`. It is isomorphic to `presheafHom F.1 G.1`
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where

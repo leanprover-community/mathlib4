@@ -21,7 +21,6 @@ applies, e.g., to the case when `R = N` is a division ring.
 
 public section
 
-
 universe u v w
 
 variable {R : Type u} {M : Type v} {N : Type w} [Ring R] [TopologicalSpace R] [TopologicalSpace M]

@@ -37,7 +37,6 @@ Show that the dual of a strong epimorphism is a strong monomorphism, and vice ve
 
 public section
 
-
 universe v u
 
 namespace CategoryTheory

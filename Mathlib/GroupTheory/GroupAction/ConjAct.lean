@@ -151,7 +151,6 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
   smul_mul := by simp [units_smul_def, mul_assoc]
   smul_one := by simp [units_smul_def]
 
-
 instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
     SMulCommClass α (ConjAct Mˣ) M where
   smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]

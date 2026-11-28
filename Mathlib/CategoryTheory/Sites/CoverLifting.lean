@@ -42,7 +42,6 @@ small colimits.
 
 @[expose] public section
 
-
 universe w' w v v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section

@@ -168,7 +168,6 @@ register_option linter.translate.warnInvalid : Bool := {
   descr := "Linter used by translate attributes that warns when a translation was not added
     because of being invalid." }
 
-
 /-- Linter used by translate attributes that checks if the given declaration name is
     equal to the automatically generated name -/
 @[deprecated linter.translate.generateName (since := "2026-10-12")]

@@ -28,7 +28,6 @@ See `Analysis.InnerProductSpace.ConformalLinearMap` for
 * `isConformalMap_iff`: a map between inner product spaces is conformal
   iff it preserves inner products up to a fixed scalar factor.
 
-
 ## Tags
 
 conformal
@@ -39,7 +38,6 @@ The definition of conformality in this file does NOT require the maps to be orie
 -/
 
 @[expose] public section
-
 
 noncomputable section
 

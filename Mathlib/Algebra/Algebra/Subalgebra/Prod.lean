@@ -23,7 +23,6 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 @[expose] public section
 
-
 namespace Subalgebra
 
 open Algebra

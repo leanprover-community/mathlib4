@@ -20,7 +20,6 @@ and is used by category theory files which do not need everything imported by `D
 
 public section
 
-
 universe u v
 
 open Mathlib

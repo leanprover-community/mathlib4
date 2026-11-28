@@ -21,7 +21,6 @@ not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the c
 
 public section
 
-
 open Filter Set
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]

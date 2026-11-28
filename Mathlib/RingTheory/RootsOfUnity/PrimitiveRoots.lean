@@ -56,7 +56,6 @@ open Polynomial Finset
 
 variable {M N G R S F : Type*} [CommMonoid M] [CommMonoid N] [DivisionCommMonoid G]
 
-
 /-- An element `ζ` is a primitive `k`-th root of unity if `ζ ^ k = 1`,
 and if `l` satisfies `ζ ^ l = 1` then `k ∣ l`. -/
 @[mk_iff IsPrimitiveRoot.iff_def]

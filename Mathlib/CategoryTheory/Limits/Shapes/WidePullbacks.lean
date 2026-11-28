@@ -233,7 +233,6 @@ variable [HasWidePullback B objs arrows]
 noncomputable abbrev π (j : J) : widePullback _ _ arrows ⟶ objs j :=
   limit.π (WidePullbackShape.wideCospan _ _ _) (Option.some j)
 
-
 /-- The unique map to the base from the pullback. -/
 @[to_dual head /-- The unique map from the head to the pushout. -/]
 noncomputable abbrev base : widePullback _ _ arrows ⟶ B :=

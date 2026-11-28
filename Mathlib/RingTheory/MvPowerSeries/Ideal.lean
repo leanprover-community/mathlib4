@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 import Mathlib.RingTheory.Ideal.BigOperators
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
@@ -24,7 +23,6 @@ set_option doc.verso.suggestions false
 * `MvPowerSeries.ker_map`
 * `MvPowerSeries.ker_mapAlgHom`
 -/
-
 
 @[expose] public section
 

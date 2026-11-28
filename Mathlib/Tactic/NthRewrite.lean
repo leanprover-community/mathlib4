@@ -129,5 +129,4 @@ Further, `nth_rw` will close the remaining goal with `rfl` if possible.
 macro "nth_rw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
   `(tactic| rw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
-
 end Mathlib.Tactic

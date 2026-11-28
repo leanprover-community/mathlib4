@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 namespace ContinuousLinearMap
 
 /-- The determinant of a continuous linear map, mainly as a convenience device to be able to

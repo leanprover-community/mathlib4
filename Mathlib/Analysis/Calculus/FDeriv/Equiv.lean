@@ -41,7 +41,6 @@ namespace ContinuousLinearEquiv
 
 /-! ### Differentiability of linear equivs, and invariance of differentiability -/
 
-
 variable (iso : E ≃L[𝕜] F)
 
 @[fun_prop]
@@ -235,7 +234,6 @@ end ContinuousLinearEquiv
 namespace LinearIsometryEquiv
 
 /-! ### Differentiability of linear isometry equivs, and invariance of differentiability -/
-
 
 variable (iso : E ≃ₗᵢ[𝕜] F)
 

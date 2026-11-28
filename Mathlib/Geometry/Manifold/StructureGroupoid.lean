@@ -84,7 +84,6 @@ We use primes in the structure names as we will reformulate them below (without 
 `Membership` instance, writing `e ∈ G` instead of `e ∈ G.members`.
 -/
 
-
 /-- A structure groupoid is a set of open partial homeomorphisms of a topological space stable under
 composition and inverse. They appear in the definition of the smoothness class of a manifold. -/
 structure StructureGroupoid (H : Type*) [TopologicalSpace H] where

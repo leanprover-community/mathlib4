@@ -64,7 +64,6 @@ variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
 
 open DirectSum
 
-
 variable (R) in
 /-- A Type synonym for `A ⊗[R] B`, but with multiplication as `TensorProduct.gradedMul`.
 

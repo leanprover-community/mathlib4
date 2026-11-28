@@ -41,7 +41,6 @@ traversable bitraversable iterator functor bifunctor applicative
 
 @[expose] public section
 
-
 universe u
 
 /-- Lawless bitraversable bifunctor. This only holds data for the bimap and bitraverse. -/

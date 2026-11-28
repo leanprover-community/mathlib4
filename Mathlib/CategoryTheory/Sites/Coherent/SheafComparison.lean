@@ -33,7 +33,6 @@ We give the corresponding result for the regular topology as well (see
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory

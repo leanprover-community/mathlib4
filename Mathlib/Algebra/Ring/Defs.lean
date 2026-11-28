@@ -37,7 +37,6 @@ those are about `+` and `*` separately, while the present file is about their in
 
 public section
 
-
 /-!
 Previously an import dependency on `Mathlib/Algebra/Group/Basic.lean` had crept in.
 In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
@@ -47,7 +46,6 @@ These `assert_not_exists` statements guard against this returning.
 -/
 assert_not_exists DivisionMonoid.toDivInvOneMonoid mul_rotate
 
-
 universe u v
 
 variable {α : Type u} {R : Type v}
@@ -55,7 +53,6 @@ variable {α : Type u} {R : Type v}
 /-!
 ### `Distrib` class
 -/
-
 
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/

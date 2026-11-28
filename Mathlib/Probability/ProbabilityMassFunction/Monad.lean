@@ -24,7 +24,6 @@ so that the second argument only needs to be defined on the support of the first
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {α β γ : Type*}

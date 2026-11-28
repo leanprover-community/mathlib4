@@ -68,7 +68,6 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 @[expose] public section
 
-
 noncomputable section
 
 open RCLike Real Filter Bornology

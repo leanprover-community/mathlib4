@@ -22,7 +22,6 @@ inner product space, Hilbert space, norm
 
 public section
 
-
 noncomputable section
 
 open Real

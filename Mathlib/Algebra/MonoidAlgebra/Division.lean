@@ -41,7 +41,6 @@ likely to be very useful.
 
 @[expose] public section
 
-
 variable {k G : Type*} [Semiring k]
 
 namespace AddMonoidAlgebra

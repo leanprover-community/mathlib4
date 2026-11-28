@@ -19,9 +19,7 @@ The integers form a conditionally complete linear order.
 
 public section
 
-
 open Int
-
 
 noncomputable section
 

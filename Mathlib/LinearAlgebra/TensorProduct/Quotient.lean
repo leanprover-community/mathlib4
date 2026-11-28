@@ -294,7 +294,6 @@ lemma tensorQuotientEquiv_symm_apply_mk_tmul (n : Submodule B N) (x : M) (y : N)
       x ⊗ₜ[R] Submodule.Quotient.mk y :=
   rfl
 
-
 variable [Module A N] [IsScalarTower R A N]
 
 /- This lemma characterizes the kernel of `TensorProduct.mapOfCompatibleSMul`. Together with

@@ -39,7 +39,6 @@ universe u
 
 open UniformSpace CategoryTheory NormedAddGroupHom
 
-
 namespace SemiNormedGrp
 
 /-- The completion of a seminormed group, as an endofunctor on `SemiNormedGrp`. -/

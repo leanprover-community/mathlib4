@@ -24,7 +24,6 @@ on the class number.
 
 @[expose] public section
 
-
 namespace FunctionField
 
 open scoped Polynomial

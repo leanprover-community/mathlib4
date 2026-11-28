@@ -54,13 +54,11 @@ proofs. Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i
 
 @[expose] public section
 
-
 variable {ι : Type*} {R : Type*} {M : Type*} {A : Type*}
 
 open DirectSum
 
 /-! ### Basic definitions and lemmas -/
-
 
 section Defs
 
@@ -100,7 +98,6 @@ end
 end Defs
 
 /-! ### Lemmas about arithmetic operations -/
-
 
 section Lemmas
 
@@ -218,7 +215,6 @@ end DirectSum
 end Lemmas
 
 /-! ### Bundled `Equiv`s -/
-
 
 section Equivs
 

@@ -25,7 +25,6 @@ codomain, respectively.
 
 public section
 
-
 universe u v w
 
 variable {I : Type u}

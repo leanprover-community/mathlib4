@@ -79,7 +79,6 @@ variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [St
   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [StarOrderedRing A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-
 /- ## `nnrpow` -/
 
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/

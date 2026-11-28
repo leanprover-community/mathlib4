@@ -129,7 +129,6 @@ def invertibleOfPowEqOne (x : α) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : In
 
 end Monoid
 
-
 /-- Monoid homs preserve invertibility. -/
 @[instance_reducible]
 def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]

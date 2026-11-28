@@ -18,7 +18,6 @@ This file is for elementary lemmas that depend on both Cauchy filters and separa
 
 public section
 
-
 open Filter
 
 open Topology Filter

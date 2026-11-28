@@ -20,7 +20,6 @@ this property and prove basic facts about this predicate.
 
 public section
 
-
 open Set Filter Metric
 
 open scoped Topology

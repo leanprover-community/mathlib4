@@ -390,7 +390,6 @@ def Result.isRat {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by
   else
     .isNegNNRat inst q lit d proof
 
-
 instance {α : Q(Type u)} {x : Q($α)} : ToMessageData (Result x) where
   toMessageData
   | .isBool true proof => m!"isTrue ({proof})"

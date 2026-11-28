@@ -68,7 +68,6 @@ compositional semantics. The first step in transitioning to Turing machines is t
 evaluator for this basis, which we take up in the next section.
 -/
 
-
 namespace ToPartrec
 
 /-- The type of codes for primitive recursive functions. Unlike `Nat.Partrec.Code`, this uses a set
@@ -415,7 +414,6 @@ The type `Cfg` of evaluation states is:
 The main theorem of this section is that for each code `c`, the state `stepNormal c halt v` steps
 to `v'` in finitely many steps if and only if `Code.eval c v = some v'`.
 -/
-
 
 /-- The type of continuations, built up during evaluation of a `Code` expression. -/
 inductive Cont

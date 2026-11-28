@@ -56,7 +56,6 @@ open middle third of each subinterval, starting from the unit interval `[0, 1]`.
 -- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
-
 /-!
 ## Simple Properties
 -/

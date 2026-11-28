@@ -144,7 +144,6 @@ lemma trivialCofibrations_sub_cofibrations : trivialCofibrations C ≤ cofibrati
 lemma trivialCofibrations_sub_weakEquivalences : trivialCofibrations C ≤ weakEquivalences C :=
   fun _ _ _ hf ↦ hf.2
 
-
 variable {C}
 
 lemma mem_trivialCofibrations [Cofibration f] [WeakEquivalence f] :

@@ -97,7 +97,6 @@ instance : CanLift (Set α) (Finset α) (↑) Set.Finite where prf _ hs := hs.ex
 
 /-! ### Basic properties of `Set.Finite.toFinset` -/
 
-
 namespace Finite
 
 variable {s t : Set α} {a : α} (hs : s.Finite) {ht : t.Finite}
@@ -431,7 +430,6 @@ to be able to generally apply.
 Some set instances do not appear here since they are consequences of others, for example
 `Subtype.Finite` for subsets of a finite type.
 -/
-
 
 namespace Finite.Set
 

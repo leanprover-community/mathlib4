@@ -31,7 +31,6 @@ matrix, finite dimensional, findim, finrank
 
 public section
 
-
 universe u v
 
 namespace Matrix

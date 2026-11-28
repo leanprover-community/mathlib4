@@ -32,7 +32,6 @@ The results stating these in the case when the indicators take values in a Fréc
 
 public section
 
-
 open Filter
 
 open scoped Topology

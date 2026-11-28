@@ -121,7 +121,6 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
   classical rw [toFinsupp_append, toFinsupp_singleton, Finsupp.embDomain_single,
     addLeftEmbedding_apply, add_zero]
 
-
 theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
     toFinsupp l = (l.mapIdx fun n r => Finsupp.single n r).sum := by

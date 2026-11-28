@@ -37,7 +37,6 @@ In this file, we show that an `AddMonoidAlgebra` has an internal direct sum stru
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace AddMonoidAlgebra

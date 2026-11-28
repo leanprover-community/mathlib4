@@ -419,7 +419,6 @@ theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j
   equiv_relation _ zigzag_equivalence
     (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 
-
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms
   intro α F hF j j'

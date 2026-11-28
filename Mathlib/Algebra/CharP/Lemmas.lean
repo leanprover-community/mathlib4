@@ -279,7 +279,6 @@ lemma Nat.Prime.dvd_add_pow_sub_pow_of_dvd (hpri : p.Prime) {r : R} (h‚ÇÅ : r ‚à
 
 end CommRing
 
-
 namespace CharP
 
 section

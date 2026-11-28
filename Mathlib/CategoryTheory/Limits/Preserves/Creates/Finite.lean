@@ -22,7 +22,6 @@ This file defines the classes `CreatesFiniteLimits`, `CreatesFiniteColimits`,
 
 namespace CategoryTheory.Limits
 
-
 universe w w' v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]

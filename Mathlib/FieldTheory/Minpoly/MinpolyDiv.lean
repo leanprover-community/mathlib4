@@ -83,7 +83,6 @@ lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
   rw [eval, eval₂_minpolyDiv_of_eval₂_eq_zero, RingHom.id_apply, RingHom.id_apply]
   simpa [aeval_def] using hy
 
-
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
     (minpolyDiv R x).coeff i ∈ R[x] := by
   by_contra H
@@ -188,7 +187,6 @@ lemma natDegree_minpolyDiv :
   by_cases hx : IsIntegral R x
   · rw [← natDegree_minpolyDiv_succ hx]; rfl
   · rw [minpolyDiv_eq_zero hx, minpoly.eq_zero hx]; rfl
-
 
 section PowerBasis
 

@@ -37,7 +37,6 @@ Beyond that, there's a collection of simp lemmas for working with these construc
 
 @[expose] public section
 
-
 open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u w w'
@@ -73,7 +72,6 @@ lemma id_apply (f : U ⟶ U) (x : U) : f x = x := rfl
 /-!
 We now construct as morphisms various inclusions of open sets.
 -/
-
 
 -- This is tedious, but necessary because we decided not to allow Prop as morphisms in a category...
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets.

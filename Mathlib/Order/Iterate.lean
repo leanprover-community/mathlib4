@@ -40,7 +40,6 @@ If some of the inequalities in this lemma are strict, then we have $x_n < y_n$. 
 lemmas in this section formalize this fact for different inequalities made strict.
 -/
 
-
 @[to_dual self (reorder := x y, hx hy)]
 theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k < n, x (k + 1) ≤ f (x k))
     (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n ≤ y n := by
@@ -86,7 +85,6 @@ than `f^[n] (h x)`, and similarly for the reversed inequality.
 Then we specialize these two lemmas to the case `β = α`, `h = id`.
 -/
 
-
 variable {β : Type*} {g : β → β} {h : β → α}
 
 open Function
@@ -110,7 +108,6 @@ end Monotone
 If $f(x) ≤ x$ for all $x$ (we express this as `f ≤ id` in the code), then the same is true for
 any iterate of $f$, and similarly for the reversed inequality.
 -/
-
 
 namespace Function
 
@@ -141,7 +138,6 @@ If `f` and `g` are monotone and commute, then `f x ≤ g x` implies `f^[n] x ≤
 `Function.Commute.iterate_le_of_map_le`. We also prove two strict inequality versions of this lemma,
 as well as `iff` versions.
 -/
-
 
 namespace Commute
 

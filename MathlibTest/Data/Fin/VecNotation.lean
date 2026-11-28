@@ -48,7 +48,6 @@ run_elab do
 section
 variable {a b c d e f g h : α}
 
-
 example : ![a] 0 = a := by dsimp only [Matrix.cons_val]
 example : ![a] 1 = a := by dsimp only [Matrix.cons_val]
 example : ![a] 2 = a := by dsimp only [Matrix.cons_val]

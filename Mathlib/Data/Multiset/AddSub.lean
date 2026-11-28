@@ -363,7 +363,6 @@ end sub
 
 /-! ### Lift a relation to `Multiset`s -/
 
-
 section Rel
 
 variable {r : α → β → Prop}

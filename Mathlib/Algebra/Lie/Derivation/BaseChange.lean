@@ -16,7 +16,6 @@ When, given an `R`-algebra `A` and an `R`-Lie algebra `L` the (Lie algebra) base
 both derivations of `A` and Lie derivations of `L` induce Lie derivations of `A ⊗[R] L`. Moreover,
 both these procedures are Lie algebra homomorphisms themselves.
 
-
 ## Tags
 
 lie algebra, extension of scalars, base change, derivation

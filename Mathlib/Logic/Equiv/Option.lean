@@ -11,7 +11,6 @@ public import Mathlib.Data.Option.Basic
 /-!
 # Equivalences for `Option α`
 
-
 We define
 * `Equiv.optionCongr`: the `Option α ≃ Option β` constructed from `e : α ≃ β` by sending `none` to
   `none`, and applying `e` elsewhere.

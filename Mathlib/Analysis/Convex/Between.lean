@@ -29,7 +29,6 @@ This file defines notions of a point in an affine space being between two given 
 
 @[expose] public section
 
-
 variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap Module

@@ -48,7 +48,6 @@ lemma integral_one_sub_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ)
 
 end MeasureTheory
 
-
 namespace ProbabilityTheory
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ}
 

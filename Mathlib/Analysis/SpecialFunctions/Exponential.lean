@@ -57,7 +57,6 @@ We prove most results for an arbitrary field `ğ•‚`, and then specialize to `ğ•
 
 public section
 
-
 open Filter RCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
 open scoped Nat Topology ENNReal
@@ -234,7 +233,6 @@ but this is harder to prove, and typically is shown by going via these results f
 
 TODO: prove this result too!
 -/
-
 
 section exp_smul
 

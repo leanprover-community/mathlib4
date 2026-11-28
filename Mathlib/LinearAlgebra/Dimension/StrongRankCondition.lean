@@ -45,7 +45,6 @@ For modules over rings with invariant basis number
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v w w'

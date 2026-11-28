@@ -26,7 +26,6 @@ In the case in which `N` is an additive group, `Finsupp.neLocus f g` coincides w
 
 @[expose] public section
 
-
 variable {α M N P : Type*}
 
 namespace Finsupp

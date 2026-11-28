@@ -357,7 +357,6 @@ Left homotopic edges represent the same morphism in the homotopy category.
 lemma HomotopicL.congr_homotopyCategory₂HomMk {f g : Edge x₀ x₁} (h : HomotopicL f g) :
     homMk f = homMk g := Quotient.sound h
 
-
 /--
 Right homotopic edges represent the same morphism in the homotopy category.
 -/

@@ -24,7 +24,6 @@ When the category `C` is idempotent complete, it is shown that
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category

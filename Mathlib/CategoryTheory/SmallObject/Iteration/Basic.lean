@@ -80,7 +80,6 @@ when `i ≤ j`. -/
 def restrictionLT : Set.Iio i ⥤ C :=
   (Set.principalSegIioIicOfLE hi).monotone.functor ⋙ F
 
-
 @[simp]
 lemma restrictionLT_obj (k : J) (hk : k < i) :
     (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl

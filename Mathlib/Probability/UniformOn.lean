@@ -40,7 +40,6 @@ predicates.
 
 @[expose] public section
 
-
 noncomputable section
 
 open ProbabilityTheory

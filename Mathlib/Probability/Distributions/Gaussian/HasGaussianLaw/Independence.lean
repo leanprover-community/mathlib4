@@ -43,7 +43,6 @@ open scoped ENNReal NNReal RealInnerProductSpace
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
-
 section Diagonal
 
 namespace ContinuousLinearMap
@@ -151,7 +150,6 @@ end Prod
 end ContinuousLinearMap
 
 end Diagonal
-
 
 public section
 

@@ -23,7 +23,6 @@ where M is a group, this category is a groupoid -- the *action groupoid*.
 
 @[expose] public section
 
-
 open MulAction SemidirectProduct
 
 namespace CategoryTheory

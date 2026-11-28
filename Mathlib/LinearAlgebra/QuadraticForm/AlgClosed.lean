@@ -22,7 +22,6 @@ TODO: generalize `QuadraticForm.isometryEquivSumSquares` to quadratically closed
 
 public section
 
-
 open QuadraticMap
 namespace QuadraticForm
 

@@ -66,7 +66,6 @@ filter multiplication, filter addition, pointwise addition, pointwise multiplica
 
 @[expose] public section
 
-
 open Function Set Filter Pointwise
 
 variable {F α β γ : Type*}
@@ -74,7 +73,6 @@ variable {F α β γ : Type*}
 namespace Filter
 
 /-! ### `0`/`1` as filters -/
-
 
 section One
 
@@ -166,7 +164,6 @@ protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map
 end One
 
 /-! ### Filter negation/inversion -/
-
 
 section Inv
 
@@ -796,7 +793,6 @@ end GroupWithZero
 
 /-! ### Scalar addition/multiplication of filters -/
 
-
 section SMul
 
 variable [SMul α β] {f f₁ f₂ : Filter α} {g g₁ g₂ h : Filter β} {s : Set α} {t : Set β} {a : α}
@@ -899,7 +895,6 @@ end SMul
 
 /-! ### Scalar division of filters -/
 
-
 section SDiv
 
 variable [SDiv α β] {f f₁ f₂ g g₁ g₂ : Filter β} {h : Filter α} {s t : Set β} {a b : β}
@@ -989,7 +984,6 @@ theorem le_sdiv_iff : h ≤ f /ₛ g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t
 end SDiv
 
 /-! ### Translation/scaling of filters -/
-
 
 section SMul
 

@@ -34,7 +34,6 @@ or `open ProbabilityTheory`.
 
 public section
 
-
 open MeasureTheory
 
 open scoped MeasureTheory

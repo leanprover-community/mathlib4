@@ -35,7 +35,6 @@ open scoped TensorProduct
 
 open TensorProduct
 
-
 namespace Algebra
 
 namespace TensorProduct

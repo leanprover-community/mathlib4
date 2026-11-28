@@ -479,7 +479,6 @@ lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
       exact fun _ _ h => h)
     ext x; simpa using this (f x)⟩
 
-
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `f ⊗ id = 0`, if and only
 if `f = 0`. -/

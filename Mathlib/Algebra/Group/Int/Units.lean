@@ -17,7 +17,6 @@ import Mathlib.Algebra.Group.Basic
 
 public section
 
-
 open Nat
 
 namespace Int

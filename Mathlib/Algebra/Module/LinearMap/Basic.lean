@@ -19,7 +19,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 assert_not_exists Submonoid Finset TrivialStar
 
 open Function
@@ -81,7 +80,6 @@ instance [SMulCommClass S' T' M] : SMulCommClass S'ᵈᵐᵃ T'ᵈᵐᵃ (M →�
   ⟨fun s t f ↦ ext fun m ↦ by simp_rw [DomMulAct.smul_linearMap_apply, smul_comm]⟩
 
 end SMul
-
 
 section Actions
 

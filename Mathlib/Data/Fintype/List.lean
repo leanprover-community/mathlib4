@@ -26,7 +26,6 @@ This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 @[expose] public section
 
-
 variable {α : Type*}
 open List
 

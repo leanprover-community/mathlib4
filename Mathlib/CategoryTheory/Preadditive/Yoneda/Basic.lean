@@ -30,7 +30,6 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 
 @[expose] public section
 
-
 universe v u u₁
 
 open CategoryTheory.Preadditive Opposite CategoryTheory.Limits CategoryTheory.Functor

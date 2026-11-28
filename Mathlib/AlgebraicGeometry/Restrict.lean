@@ -24,7 +24,6 @@ public import Mathlib.AlgebraicGeometry.Over
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
-
 noncomputable section
 
 open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits

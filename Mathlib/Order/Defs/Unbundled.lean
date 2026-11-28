@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Tactic.ExtendDoc
 
-
 /-!
 # Orders
 

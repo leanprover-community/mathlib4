@@ -41,7 +41,6 @@ matrix, diagonal, det, block triangular
 
 @[expose] public section
 
-
 open Finset Function OrderDual
 
 open Matrix
@@ -646,7 +645,6 @@ theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 /-! ### Invertible -/
-
 
 theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) (k : α) :

@@ -48,8 +48,6 @@ that `A` is a possibly infinite tree.
 
 @[expose] public section
 
-
-
 universe u v
 
 open MvFunctor

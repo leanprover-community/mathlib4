@@ -26,7 +26,6 @@ lemmas about preimages and images of all intervals. We also prove a few lemmas a
 
 public section
 
-
 open Pointwise
 
 open scoped Interval
@@ -346,7 +345,6 @@ theorem image_mul_const_Iic : (fun x => x * a) '' Iic b = Iic (b * a) := by simp
 @[to_additive]
 theorem image_mul_const_Iio : (fun x => x * a) '' Iio b = Iio (b * a) := by simp
 
-
 /-!
 ### Images under `x ↦ x⁻¹`
 -/
@@ -374,8 +372,6 @@ theorem image_inv_Ioc : Inv.inv '' Ioc a b = Ico (b⁻¹) (a⁻¹) := by simp
 
 @[to_additive]
 theorem image_inv_Ioo : Inv.inv '' Ioo a b = Ioo (b⁻¹) (a⁻¹) := by simp
-
-
 
 /-!
 ### Images under `x ↦ a / x`

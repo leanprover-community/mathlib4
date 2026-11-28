@@ -40,9 +40,7 @@ Gamma
 
 public section
 
-
 noncomputable section
-
 
 open Filter intervalIntegral Set Real MeasureTheory Asymptotics
 
@@ -136,7 +134,6 @@ theorem GammaIntegral_one : GammaIntegral 1 = 1 := by
 end Complex
 
 /-! Now we establish the recurrence relation `Γ(s + 1) = s * Γ(s)` using integration by parts. -/
-
 
 namespace Complex
 
@@ -240,7 +237,6 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
 end GammaRecurrence
 
 /-! Now we define `Γ(s)` on the whole complex plane, by recursion. -/
-
 
 section GammaDef
 

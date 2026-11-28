@@ -34,7 +34,6 @@ hydras, and prove their well-foundedness.
 
 @[expose] public section
 
-
 namespace Relation
 
 open Multiset Prod

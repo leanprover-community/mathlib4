@@ -324,7 +324,6 @@ end Continuity
 
 /-! ### Lemmas about infinite sums -/
 
-
 section tsum
 
 variable [AddCommMonoid R] [TopologicalSpace R] {L : SummationFilter X}

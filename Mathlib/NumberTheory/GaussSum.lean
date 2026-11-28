@@ -51,7 +51,6 @@ additive character, multiplicative character, Gauss sum
 
 @[expose] public section
 
-
 universe u v
 
 open AddChar MulChar

@@ -37,7 +37,6 @@ Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions
 
 @[expose] public section
 
-
 open Set Filter
 
 open scoped Topology

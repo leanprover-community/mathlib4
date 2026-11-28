@@ -104,5 +104,4 @@ lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
     rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inr <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
-
 end Nat

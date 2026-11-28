@@ -273,7 +273,6 @@ theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     · apply ContinuousMap.continuous_toFun
     · exact H₂.isOpen_range
 
-
 lemma snd_isEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
     IsEmbedding <| ⇑(pullback.snd f g) := by
   convert

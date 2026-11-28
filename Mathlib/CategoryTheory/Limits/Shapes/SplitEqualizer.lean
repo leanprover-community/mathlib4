@@ -29,7 +29,6 @@ Everything about split equalizers is dualized to split coequalizers.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v v₂ u u₂

@@ -765,7 +765,6 @@ end Matrix
 
 namespace QuadraticForm
 
-
 variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}

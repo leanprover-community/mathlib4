@@ -16,7 +16,6 @@ This file defines homomorphisms of monoids with zero.
 We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
 
-
 ## Notation
 
 * `→*₀`: `MonoidWithZeroHom`, the type of bundled `MonoidWithZero` homs. Also use for

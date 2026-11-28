@@ -37,7 +37,6 @@ category of elements, Grothendieck construction, comma category
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe w v u

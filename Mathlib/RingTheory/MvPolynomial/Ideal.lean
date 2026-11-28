@@ -31,7 +31,6 @@ Notably this contains results about monomial ideals.
 
 public section
 
-
 variable {σ R : Type*}
 
 namespace MvPolynomial

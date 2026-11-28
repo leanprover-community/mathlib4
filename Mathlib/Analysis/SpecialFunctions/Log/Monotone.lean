@@ -23,7 +23,6 @@ logarithm, tonality
 
 public section
 
-
 open Set Filter Function
 
 open Topology

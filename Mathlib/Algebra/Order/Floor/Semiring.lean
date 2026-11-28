@@ -309,7 +309,6 @@ theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
 
-
 section
 
 variable [AddLeftReflectLE R] [Sub R] [OrderedSub R] [ExistsAddOfLE R]

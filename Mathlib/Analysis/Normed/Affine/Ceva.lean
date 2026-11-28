@@ -20,7 +20,6 @@ This file proves various versions of Ceva's theorem in a `NormedAddTorsor`.
 
 public section
 
-
 open scoped Affine
 
 variable {𝕜 V P : Type*} [SeminormedAddCommGroup V] [NormedField 𝕜] [NormedSpace 𝕜 V]

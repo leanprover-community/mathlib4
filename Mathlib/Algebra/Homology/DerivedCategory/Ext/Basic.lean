@@ -198,7 +198,6 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T
   rw [← mk₀_comp_mk₀, comp_assoc]
   lia
 
-
 variable (X Y) in
 lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
   let := HasDerivedCategory.standard C

@@ -27,7 +27,6 @@ matrix determinant, polynomial
 
 public section
 
-
 open AddMonoidAlgebra Matrix Polynomial
 
 variable {n α : Type*} [DecidableEq n] [Fintype n] [CommRing α]

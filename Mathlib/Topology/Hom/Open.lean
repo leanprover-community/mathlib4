@@ -26,7 +26,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -59,7 +58,6 @@ def ContinuousOpenMap.ofClass [TopologicalSpace α] [TopologicalSpace β] [FunLi
 end
 
 /-! ### Continuous open maps -/
-
 
 namespace ContinuousOpenMap
 

@@ -20,7 +20,6 @@ such that `r * r ≤ z`. If `z ≤ 0`, then `Int.sqrt z = 0`.
 
 @[expose] public section
 
-
 namespace Int
 
 /-- `sqrt z` is the square root of an integer `z`. If `z` is positive, it returns the largest

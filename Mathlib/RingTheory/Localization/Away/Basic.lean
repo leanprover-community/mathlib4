@@ -36,7 +36,6 @@ commutative ring, field of fractions
 
 @[expose] public section
 
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]

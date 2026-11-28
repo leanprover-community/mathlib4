@@ -24,7 +24,6 @@ import Mathlib.RingTheory.AlgebraTower
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v v' w

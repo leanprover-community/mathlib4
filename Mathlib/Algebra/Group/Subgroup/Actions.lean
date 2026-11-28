@@ -23,7 +23,6 @@ subgroup, subgroups
 
 public section
 
-
 namespace Subgroup
 variable {G α β : Type*} [Group G]
 

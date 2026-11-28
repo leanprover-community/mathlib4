@@ -121,7 +121,6 @@ what is the best way to do this. The exact design may be decided when it is need
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Category Idempotents

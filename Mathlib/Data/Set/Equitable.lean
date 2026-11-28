@@ -29,7 +29,6 @@ open scoped Finset
 
 @[expose] public section
 
-
 variable {α β : Type*}
 
 namespace Set

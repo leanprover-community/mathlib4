@@ -85,7 +85,6 @@ abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶
 
 to_dual_insert_cast_fun IsThin := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 
-
 section
 
 variable {V : Type*} [Quiver V] {X Y X' Y' : V}
@@ -143,7 +142,6 @@ lemma homOfEq_heq_left_iff (f : X ⟶ Y) (g : X' ⟶ Y') (hX : X = X') (hY : Y =
 lemma homOfEq_heq_right_iff (f : X ⟶ Y) (g : X' ⟶ Y') (hX : X' = X) (hY : Y' = Y) :
     f ≍ homOfEq g hX hY ↔ f ≍ g := by
   cases hX; cases hY; rfl
-
 
 end
 

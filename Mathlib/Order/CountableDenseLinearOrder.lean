@@ -33,7 +33,6 @@ back and forth, dense, countable, order
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace Order

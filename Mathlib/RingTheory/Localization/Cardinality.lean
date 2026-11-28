@@ -30,7 +30,6 @@ submonoid, then your localization is trivial (see `IsLocalization.uniqueOfZeroMe
 
 public section
 
-
 open Cardinal nonZeroDivisors
 
 universe u v

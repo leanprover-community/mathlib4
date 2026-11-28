@@ -58,7 +58,6 @@ arbitrary map.
 
 public section
 
-
 variable {n : Type*} [Fintype n] [DecidableEq n]
 variable {R K : Type*} [CommRing R] [Field K]
 variable {A : Matrix n n K} {B : Matrix n n R}

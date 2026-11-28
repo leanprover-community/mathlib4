@@ -75,7 +75,6 @@ writing `g a` raises a "function expected" error. This error can be fixed by wri
 
 @[expose] public section
 
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -198,7 +197,6 @@ precisely all the zero morphisms ending in `P` and use this to define *the* zero
 pseudoelement.
 -/
 
-
 section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
@@ -237,7 +235,6 @@ theorem pseudoZero_iff {P : C} (a : Over P) : a = (0 : P) ↔ a.hom = 0 := by
   exact Quotient.eq'
 
 end Zero
-
 
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]

@@ -55,18 +55,15 @@ set_option linter.unusedVariables false
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
 @[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
-
 -- this is to stress test detection of loops
 @[fun_prop]
 theorem kaboom (f : α → β) (hf : Con f) : Con f := hf
 @[fun_prop]
 theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 
-
 -- transition theorem --
 ------------------------
 @[fun_prop] theorem lin_to_con (f : α → β) (hf : Lin f) : Con f := silentSorry
-
 
 -- theorems about function in the environment --
 ------------------------------------------------
@@ -77,22 +74,17 @@ theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd :
 theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd) :
     Lin fun x => (fst x, snd x) := silentSorry
 
-
-
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
 @[fun_prop] theorem add_Con [Add α] : Con (Function.uncurry (fun x y : α => x + y)) := silentSorry
 @[fun_prop] theorem add_Lin [Add α] : Lin ↿(fun x y : α => x + y) := silentSorry
 
-
 -- "compositional form" of theorems
 @[fun_prop] theorem fst_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).1 := by fun_prop
 @[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).2 := by fun_prop
 @[fun_prop] theorem add_Con' [Add β] (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w + y w) := by fun_prop
 @[fun_prop] theorem add_Lin' [Add β] (x y : α → β) (hx : Lin x) (hy : Lin y) : Lin (fun w => x w + y w) := by fun_prop
-
-
 
 -- set up hom objects/bundled morphisms --
 ------------------------------------------
@@ -130,7 +122,6 @@ instance : HasUncurry (α -o β) α β :=
 instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
   ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
-
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
@@ -143,11 +134,9 @@ instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
 @[fun_prop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
 @[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
 
-
 def LinHom.mk' (f : α → β) (hf : Lin f := by fun_prop) : α -o β := mk f hf
 
 @[fun_prop] theorem linHom_mk' (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) : Lin (fun x => LinHom.mk' (f x)) := silentSorry
-
 
 section Notation
 open Lean Syntax Parser
@@ -155,7 +144,6 @@ open TSyntax.Compat
 macro "fun" xs:explicitBinders " ⊸ " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
 macro "fun" xs:explicitBinders " -o " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
 end Notation
-
 
 example [Add β] (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) :
   Lin (fun x => fun y ⊸ f y (x+x)) := by fun_prop
@@ -165,8 +153,6 @@ example [Add α] (f : α → α → α → α) (hx : ∀ x y, Lin (f x y ·)) (h
 
 -- the only analogue is this theorem but that is already provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
-
-
 
 ----------------------------------------------------------------------------------------------------
 
@@ -247,7 +233,6 @@ example (f : α → β ->> γ) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con ↿f) : Con fun x y => f y x x := by fun_prop
 
-
 example (f : α → β ->> γ) (hf : Con f) : Con ↿f := by fun_prop
 
 section WithAdd
@@ -281,9 +266,7 @@ example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (
 -- remove arguments before applying morphism rules
 example (f : α ->> (β → γ)) (y) : Con (fun x => f x y) := by fun_prop
 
-
 example (g : α → β) (hg : Con g) : Con fun (fx : (β ->> γ)×α) => fx.1 (g fx.2) := by fun_prop
-
 
 -- sometimes unfold constants
 example (f : α → β) (hf : Con f) : Con (fun x => id f x) := by fun_prop
@@ -295,26 +278,22 @@ example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x : α
 -- this used to time out
 example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
 
-
 example : Con fun (a : α ->> α) => a x := by fun_prop
 
 -- this used to crash
 example (f : α → (α ->> α)) (hf : Con f) : Con fun x => ((f x) : α → α) := by fun_prop
 example : Con (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
 
-
 example : Lin (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
 example (y): Lin (fun f : (α ->> α ->> α) => f x y) := by fun_prop
 example : Lin (fun f : (α -o α ->> α) => (f x : α → α)) := by fun_prop
 example (y): Lin (fun f : (α ->> α -o α) => f x y) := by fun_prop
-
 
 example (f : α -o α ->> α) (y) : Lin (fun x  => f x y) := by fun_prop
 example (f : α ->> α -o α ->> α) (y) : Lin (fun x  => f y x y) := by fun_prop
 
 example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
-
 
 example [Zero α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
@@ -343,7 +322,6 @@ example : Lin (fun (f : α -o α) => (f : α → α)) := by fun_prop
 
 example : Con (fun fx : (α ->> β)×α => fx.1 fx.2) := by fun_prop
 
-
 def iterate (n : Nat) (f : α → α) (x : α) : α :=
   match n with
   | 0 => x
@@ -351,7 +329,6 @@ def iterate (n : Nat) (f : α → α) (x : α) : α :=
 
 theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
   induction n <;> (simp [iterate]; fun_prop)
-
 
 example : let f := fun x : α => x; Con f := by fun_prop
 example [Add α] : let f := fun x => x + y; ∀ y : α, ∀ z : α, Con fun x => x + f x + z := by fun_prop
@@ -396,7 +373,6 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 
 end MultipleLambdaTheorems
 
-
 /-- error: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
 #check ((by fun_prop) : ?m)
@@ -420,7 +396,6 @@ example [Add α] : let f := (by exact (fun x : α => x+x)); Con f := by
   let F := fun x : α => x+x
   have : Con F := by fun_prop -- this used to be problematic
   fun_prop
-
 
 def f1 (a : α) := a
 def f2 (a : α) := a
@@ -451,7 +426,6 @@ Issues:
 -/
 #guard_msgs in
 example [Add α] : Con (fun x : α => f2 x + f1 x) := by fun_prop
-
 
 def f3 (a : α) := a
 
@@ -492,7 +466,6 @@ theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
 
 example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
-
 -- Test abbrev transparency
 abbrev my_id {α} (a : α) := a
 example : Con (fun x : α => my_id x) := by fun_prop
@@ -531,7 +504,6 @@ example [Add α] (a a' : α) : Con (fun x0 : α =>
       fun w =>
         w + x + y + z + h) x0 a a') := by fun_prop
 
-
 -- test that local function is being properly unfolded
 example [Add α] (a : α) :
   let f := (fun x : α =>
@@ -541,7 +513,6 @@ example [Add α] (a : α) :
   Con (fun x =>
     f x a) := by
   fun_prop
-
 
 -- Test that local theorem is being used
 /--
@@ -565,11 +536,8 @@ example [Add α] (y : α):
   set_option trace.Meta.Tactic.fun_prop true in
   fun_prop
 
-
-
 --- performance tests - mainly testing fast failure ---
 -------------------------------------------------------
-
 
 section PerformanceTests
 -- set_option trace.Meta.Tactic.fun_prop true
@@ -621,7 +589,6 @@ example (f : R → R) :
 
 end PerformanceTests
 
-
 /--
 info: Con
   add_Con, args: [4, 5], form: simple
@@ -629,7 +596,6 @@ info: Con
 -/
 #guard_msgs in
 #print_fun_prop_theorems HAdd.hAdd Con
-
 
 def fst (x : α×β) := x.1
 def snd (x : α×β) := x.2
@@ -736,7 +702,6 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
   fun_prop
 
 end BundledMorphismWithFunctionValues
-
 
 -- this use to fail when we did not apply other rules when constant lambda rule did not work
 example {β} [Zero β] (f : β → γ) (hf : Lin f) :

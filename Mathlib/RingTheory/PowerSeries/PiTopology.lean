@@ -49,7 +49,6 @@ TODO: add the similar result for the series of homogeneous components.
 
 public section
 
-
 namespace PowerSeries
 
 open Filter Function

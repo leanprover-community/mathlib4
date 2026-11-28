@@ -29,7 +29,6 @@ matrix inverse, matrix powers
 
 public section
 
-
 open Matrix
 
 namespace Matrix
@@ -239,7 +238,6 @@ theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ 
 
 theorem zpow_mul' (A : M) (h : IsUnit A.det) (m n : ℤ) : A ^ (m * n) = (A ^ n) ^ m := by
   rw [mul_comm, zpow_mul _ h]
-
 
 @[simp, norm_cast]
 theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ n

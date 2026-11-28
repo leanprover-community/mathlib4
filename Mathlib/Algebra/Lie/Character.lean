@@ -26,7 +26,6 @@ lie algebra, lie character
 
 @[expose] public section
 
-
 universe u v w w₁
 
 namespace LieAlgebra

@@ -37,7 +37,6 @@ the `en : Miustr` is derived from `st`, then `count I en` modulo 3 is either equ
 `count I st`, modulo 3.
 -/
 
-
 /-- Given `st en : Miustr`, the relation `CountEquivOrEquivTwoMulMod3 st en` holds if `st` and
 `en` either have equal `count I`, modulo 3, or `count I en` is twice `count I st`, modulo 3.
 -/
@@ -101,7 +100,6 @@ That solves the MU puzzle, but we'll proceed by demonstrating the other necessar
 string to be derivable, namely that the string must start with an M and contain no M in its tail.
 -/
 
-
 /-- `Goodm xs` holds if `xs : Miustr` begins with `M` and has no `M` in its tail.
 -/
 def Goodm (xs : Miustr) : Prop :=
@@ -119,7 +117,6 @@ theorem goodmi : Goodm [M, I] := by
 We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st` and if
 `Goodm st` holds, then so does `Goodm en`.
 -/
-
 
 theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
     Goodm (xs ++ [I, U]) := by
@@ -157,7 +154,6 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs
 The proof of the next lemma is identical, on the tactic level, to the previous proof.
 -/
 
-
 theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
     (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
   obtain ⟨mhead, nmtail⟩ := h₂
@@ -186,7 +182,6 @@ theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
 We put together our two conditions to give one necessary condition `Decstr` for an `Miustr` to be
 derivable.
 -/
-
 
 /--
 `Decstr en` is the condition that `count I en` is 1 or 2 modulo 3, that `en` starts with `M`, and

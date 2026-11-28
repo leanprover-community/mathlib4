@@ -78,7 +78,6 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
       _ ≤ ‖f‖ * (N * ‖e x‖) := by gcongr; exact h_e x
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 
-
 end NormedField
 
 end Extend

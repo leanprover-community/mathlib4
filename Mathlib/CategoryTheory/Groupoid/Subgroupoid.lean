@@ -22,7 +22,6 @@ Also defined are:
 * the notion of normality of subgroupoids and its stability under intersection and preimage;
 * compatibility of the above with `CategoryTheory.Groupoid.vertexGroup`.
 
-
 ## Main definitions
 
 Given a type `C` with associated `groupoid C` instance.
@@ -55,7 +54,6 @@ category theory, groupoid, subgroupoid
 -/
 
 @[expose] public section
-
 
 namespace CategoryTheory
 

@@ -139,7 +139,6 @@ so we cannot tolerate this universe bump.
 
 mutual
 
-
 /-- `ExBaseNat e` stores the structure of a normalized expression `e : Q(ℕ)`, which appears
 as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
 `n` is not a constant.
@@ -222,7 +221,6 @@ meta inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- A sum of monomials. -/
   | sum {e} (_ : ExSum BaseType sα e) : ExBase BaseType sα e
 
-
 /-- `ExProd BaseType sα e` stores the structure of a normalized monomial expression `e`.
 A monomial here is a product of powers of `ExBase` expressions, terminated by a (nonzero) constant
 coefficient. The data of the constant coefficient is stored in the `BaseType`. -/
@@ -268,7 +266,6 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type*) (e : Q($α)) where
 instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E e)] :
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
-
 
 /-- Defines how comparisons and binary equality are computed in the base type. These are separated
 from RingCompute because they can often be defined without using instance caches. -/
@@ -401,8 +398,6 @@ def ExBase.toProd
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
   .add v .zero
-
-
 
 -- Partial because the termination checker failed
 mutual

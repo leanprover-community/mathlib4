@@ -305,7 +305,6 @@ open LinearMap
 /-- The type of lifts of  `S ⊗[R] M` to a polynomial ring. -/
 def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin #s) R) ⊗[R] M
 
-
 variable {S}
 
 /-- The lift of `f.toFun` to the type `lifts` -/

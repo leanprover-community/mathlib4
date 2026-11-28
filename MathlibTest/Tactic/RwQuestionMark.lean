@@ -152,7 +152,6 @@ info: Try this:
 example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
   rw?
 
-
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
 /--
 info: Try this:

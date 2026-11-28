@@ -27,7 +27,6 @@ public import Mathlib.ModelTheory.Substructures
 
 @[expose] public section
 
-
 open FirstOrder
 
 namespace FirstOrder

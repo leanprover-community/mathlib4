@@ -19,7 +19,6 @@ embeddings from smaller ones.
 
 @[expose] public section
 
-
 open Function.Embedding
 
 namespace Equiv

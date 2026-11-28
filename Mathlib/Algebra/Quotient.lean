@@ -36,7 +36,6 @@ ideal quotient, quotient ring
 
 public section
 
-
 universe u v
 
 /-- `HasQuotient A B` is a notation typeclass that allows us to write `A ⧸ b` for `b : B`.

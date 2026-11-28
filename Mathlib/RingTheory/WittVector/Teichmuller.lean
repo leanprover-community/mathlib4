@@ -29,7 +29,6 @@ This file defines `WittVector.teichmuller`, a monoid hom `R →* 𝕎 R`, which 
 
 @[expose] public section
 
-
 namespace WittVector
 
 open MvPolynomial
@@ -57,7 +56,6 @@ satisfy the ring axioms.
 2. After that, we derive the result for `MvPolynomial R ℤ`,
 3. and from that we can prove the result for arbitrary `R`.
 -/
-
 
 private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     ghostComponent n (teichmullerFun p r) = r ^ p ^ n := by

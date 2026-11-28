@@ -55,7 +55,6 @@ $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 
 namespace LinearMap
 
-
 -- At first we work with any `[CommRing k]`, and add the assumption that
 -- `IsUnit (Fintype.card G : k)` when it is required.
 variable {k : Type*} [CommRing k] {G : Type*} [Group G]

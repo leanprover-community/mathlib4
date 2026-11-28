@@ -843,7 +843,6 @@ lemma AnalyticOnNhd.restrictScalars (hf : AnalyticOnNhd 𝕜' f s) :
 
 end
 
-
 /-!
 ### Inversion is analytic
 -/

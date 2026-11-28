@@ -35,7 +35,6 @@ useful since it is sometimes better behaved (for example it is stable under `Pol
 
 public section
 
-
 universe u v w z
 
 variable {R : Type u}

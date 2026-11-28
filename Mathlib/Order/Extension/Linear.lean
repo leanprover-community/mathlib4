@@ -19,7 +19,6 @@ lemma.
 
 @[expose] public section
 
-
 universe u
 
 open Set

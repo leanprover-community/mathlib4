@@ -29,7 +29,6 @@ See also `CategoryTheory.Limits.HasLimits` which further builds:
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
@@ -615,9 +614,7 @@ end
 
 end IsLimit
 
-
 namespace IsColimit
-
 
 variable {t : Cocone F}
 

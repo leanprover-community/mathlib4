@@ -40,7 +40,6 @@ See <https://stacks.math.columbia.edu/tag/0FFL>.
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ v₁' u₁ u₂ u₃ u₁'
 
 namespace CategoryTheory
@@ -783,7 +782,6 @@ instance : (prod F G).LaxMonoidal where
 end
 
 section
-
 
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 

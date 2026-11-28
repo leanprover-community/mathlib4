@@ -121,7 +121,6 @@ lemma mem_pullSub_long (hl : x.length ≤ y.length) : y ∈ pullSub T x ↔ ∃ 
 @[simp] lemma mem_pullSub_self : x ∈ pullSub T x ↔ [] ∈ T := by
   simpa using mem_pullSub_append (y := [])
 
-
 variable (T x y)
 
 lemma pullSub_subAt : pullSub (subAt T x) x ≤ T := by

@@ -30,7 +30,6 @@ with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Subobject CategoryTheory.Idempotents
 

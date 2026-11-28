@@ -57,7 +57,6 @@ variable {α : Type*}
 variable {G : Type*} [Group G] [MulAction G α]
 variable {M : Type*} [Monoid M] [MulAction M α]
 
-
 section FixedPoints
 
 variable (α) in

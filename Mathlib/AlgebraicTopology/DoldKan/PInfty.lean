@@ -25,7 +25,6 @@ projection on the normalized Moore subcomplex, with kernel the degenerate subcom
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite
 

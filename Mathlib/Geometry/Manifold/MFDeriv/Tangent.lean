@@ -31,7 +31,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [IsManifold I' 1 M']
 
-
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
 the identification between the tangent bundle of the model space and the product space.
 This abuses the defeq between the tangent bundle to `H` and the bundle with constant fiber `E`. -/

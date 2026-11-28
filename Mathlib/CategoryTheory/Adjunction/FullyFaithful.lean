@@ -31,7 +31,6 @@ See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 
 @[expose] public section
 
-
 open CategoryTheory
 
 namespace CategoryTheory.Adjunction

@@ -20,7 +20,6 @@ added in the future.
 
 public section
 
-
 open CategoryTheory CategoryTheory.Limits
 
 namespace CategoryTheory

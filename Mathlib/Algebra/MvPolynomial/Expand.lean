@@ -24,7 +24,6 @@ This operation is called `MvPolynomial.expand` and it is an algebra homomorphism
 
 @[expose] public section
 
-
 namespace MvPolynomial
 
 section CommSemiring

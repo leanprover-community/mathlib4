@@ -29,7 +29,6 @@ This file mainly concerns the interaction between submonoids and products/sums o
 
 public section
 
-
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v}

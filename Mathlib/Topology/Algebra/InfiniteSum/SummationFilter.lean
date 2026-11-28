@@ -10,7 +10,6 @@ public import Mathlib.Order.LiminfLimsup
 
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 
-
 /-!
 # Summation filters
 

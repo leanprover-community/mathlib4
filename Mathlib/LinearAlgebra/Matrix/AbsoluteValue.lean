@@ -31,7 +31,6 @@ This file proves some bounds on matrices involving absolute values.
 
 public section
 
-
 open Matrix
 open scoped Nat
 

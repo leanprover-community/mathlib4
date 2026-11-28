@@ -29,7 +29,6 @@ Kernels built from other kernels:
 
 @[expose] public section
 
-
 open MeasureTheory
 
 open scoped ENNReal
@@ -43,7 +42,6 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 section MapComap
 
 /-! ### map, comap -/
-
 
 variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 

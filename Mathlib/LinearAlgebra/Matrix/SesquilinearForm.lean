@@ -307,7 +307,6 @@ This section deals with the conversion between matrices and bilinear maps on
 a module with a fixed basis.
 -/
 
-
 variable [CommSemiring R]
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
   [Module R N₂]
@@ -526,7 +525,6 @@ end
 end ToMatrix
 
 /-! ### Adjoint pairs -/
-
 
 section MatrixAdjoints
 
@@ -816,7 +814,6 @@ section Det
 Some shorthands for combining the above with `Matrix.Nondegenerate.of_det_ne_zero` in the
 case of a domain
 -/
-
 
 variable [IsDomain R] {M : Matrix n n R}
 

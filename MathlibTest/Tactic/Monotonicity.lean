@@ -352,7 +352,6 @@ example {x y z w : ℕ} : true := by
 --   exact 1,
 -- end
 
-
 -- example {x y z w : ℕ} : true := by
 --   have : x * y ≤ z * w := by
 --     mono with [0 ≤ z,0 ≤ y]

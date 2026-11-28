@@ -50,7 +50,6 @@ we could keep the collection of instances behind an `open scoped`.
 
 public section
 
-
 variable (𝕜 : Type*) {S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
@@ -315,7 +314,6 @@ instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
   norm_smul_le := _root_.norm_smul_le
 
 end Algebra
-
 
 end Normed
 

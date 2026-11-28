@@ -41,7 +41,6 @@ homogeneous, radical
 
 @[expose] public section
 
-
 open GradedRing DirectSum SetLike Finset
 
 variable {ι σ A : Type*}

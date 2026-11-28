@@ -96,7 +96,6 @@ uniform convergence, limits of derivatives
 
 public section
 
-
 open Filter
 
 open scoped uniformity Filter Topology
@@ -441,7 +440,6 @@ section deriv
 
 In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the previous section.
 -/
-
 
 variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {G : Type*} [NormedAddCommGroup G]

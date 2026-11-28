@@ -79,7 +79,6 @@ variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Su
 ### Conversion to/from `Additive`/`Multiplicative`
 -/
 
-
 section
 
 /-- Submonoids of monoid `M` are isomorphic to additive submonoids of `Additive M`. -/

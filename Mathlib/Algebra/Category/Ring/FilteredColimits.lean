@@ -30,7 +30,6 @@ Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

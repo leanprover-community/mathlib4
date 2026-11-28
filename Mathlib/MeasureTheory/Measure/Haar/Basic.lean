@@ -66,7 +66,6 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Inv Function TopologicalSpace MeasurableSpace
@@ -85,7 +84,6 @@ variable {G : Type*} [Group G]
   so that the chosen names don't clash with other declarations.
   We first define a couple of the functions before proving the properties (that require that `G`
   is a topological group). -/
-
 
 namespace haar
 
@@ -143,7 +141,6 @@ variable [IsTopologicalGroup G]
 /-!
 ### Lemmas about `index`
 -/
-
 
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
   there is a finite set `t` satisfying the desired properties. -/
@@ -262,7 +259,6 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
 /-!
 ### Lemmas about `prehaar`
 -/
-
 
 @[to_additive add_prehaar_le_addIndex]
 theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G)
@@ -471,7 +467,6 @@ noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
     simp only [NNReal.toReal, chaar_sup_le]
 
 /-! We only prove the properties for `haarContent` that we use at least twice below. -/
-
 
 @[to_additive]
 theorem haarContent_apply (K₀ : PositiveCompacts G) (K : Compacts G) :

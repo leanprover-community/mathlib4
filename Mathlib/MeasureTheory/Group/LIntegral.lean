@@ -80,7 +80,6 @@ theorem lintegral_div_left_eq_self [IsMulLeftInvariant μ] [MeasurableInv G] [Is
 
 end MeasurableMul
 
-
 section IsTopologicalGroup
 
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [BorelSpace G] [IsMulLeftInvariant μ]

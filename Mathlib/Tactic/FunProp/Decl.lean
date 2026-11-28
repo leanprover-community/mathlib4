@@ -13,12 +13,10 @@ public import Mathlib.Init
 
 public meta section
 
-
 namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
-
 
 /-- Basic information about function property
 
@@ -87,7 +85,6 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
-
 /-- Is `e` a function property statement? If yes return function property declaration and
 the function it talks about. -/
 def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
@@ -122,13 +119,11 @@ def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
   | some (decl, _) => return decl
   | none => return none
 
-
 /-- Returns function `f` from `e = P f` and `P` is function property. -/
 def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
   match ← getFunProp? e with
   | some (_, f) => return f
   | none => return none
-
 
 open Elab Term in
 /-- Turn tactic syntax into a discharger function. -/

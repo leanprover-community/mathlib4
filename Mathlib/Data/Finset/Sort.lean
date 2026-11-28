@@ -26,7 +26,6 @@ variable {α β : Type*}
 
 /-! ### sort -/
 
-
 section sort
 
 /-- `sort s` constructs a sorted list from the unordered set `s`.

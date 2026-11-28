@@ -178,7 +178,6 @@ theorem image2_sInter_left_subset (S : Set (Set α)) (t : Set β) (f : α → β
 
 /-! ### `restrictPreimage` -/
 
-
 section
 
 open Function
@@ -210,7 +209,6 @@ theorem bijective_iff_bijective_of_iUnion_eq_univ :
 end
 
 /-! ### `InjOn` -/
-
 
 theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
@@ -253,7 +251,6 @@ theorem inj_on_iUnion_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·)
 
 /-! ### `SurjOn` -/
 
-
 theorem surjOn_sUnion {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, SurjOn f s t) :
     SurjOn f s (⋃₀ T) := fun _ ⟨t, ht, hx⟩ => H t ht hx
 
@@ -285,7 +282,6 @@ theorem surjOn_iInter_iInter [Nonempty ι] {s : ι → Set α} {t : ι → Set �
 
 /-! ### `BijOn` -/
 
-
 theorem bijOn_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
     (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
   ⟨mapsTo_iUnion_iUnion fun i => (H i).mapsTo, Hinj, surjOn_iUnion_iUnion fun i => (H i).surjOn⟩
@@ -307,7 +303,6 @@ theorem bijOn_iInter_of_directed [Nonempty ι] {s : ι → Set α} (hs : Directe
 end Function
 
 /-! ### `image`, `preimage` -/
-
 
 section Image
 

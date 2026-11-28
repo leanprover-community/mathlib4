@@ -33,7 +33,6 @@ hadamard product, hadamard
 
 @[expose] public section
 
-
 variable {α m n R : Type*}
 
 namespace Matrix

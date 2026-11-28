@@ -28,7 +28,6 @@ on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 
 @[expose] public section
 
-
 open Equiv Function
 
 /-- A permutation is a derangement if it has no fixed points. -/

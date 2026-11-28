@@ -25,7 +25,6 @@ The duals of all the above are also given.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category Limits CategoryTheory.Functor

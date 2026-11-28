@@ -39,7 +39,6 @@ conjugate root, minimal polynomial
 
 @[expose] public section
 
-
 open Polynomial minpoly Module IntermediateField
 
 variable {R K L S A B : Type*} [CommRing R] [CommRing S] [Ring A] [Ring B] [Field K] [Field L]

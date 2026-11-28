@@ -198,7 +198,6 @@ theorem concat_two (p : Fin 3 → X) (F) :
     Homotopic (concat p F) ((F 0).trans (F 1)) := by
   simpa [concat_succ] using hcomp ⟨Homotopy.reflTrans _⟩ (refl _)
 
-
 /-- Alternative to `Path.Homotopy.concatHcomp` in terms of `Path.Homotopic`. -/
 theorem concat_hcomp (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
     (h : (k : Fin n) → (F k).Homotopic (G k)) : Homotopic (concat p F) (concat p G) :=

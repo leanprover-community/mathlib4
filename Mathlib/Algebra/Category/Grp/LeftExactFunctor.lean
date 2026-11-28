@@ -35,7 +35,6 @@ can be shown that this construction gives a quasi-inverse to the whiskering oper
 
 open CategoryTheory MonoidalCategory Limits
 
-
 universe v v' u u'
 
 namespace AddCommGrpCat

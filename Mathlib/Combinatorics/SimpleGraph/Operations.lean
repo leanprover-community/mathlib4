@@ -27,7 +27,6 @@ we also prove theorems about the number of edges in the modified graphs.
 
 @[expose] public section
 
-
 open Finset
 
 namespace SimpleGraph

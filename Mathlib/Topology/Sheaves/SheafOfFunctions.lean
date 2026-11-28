@@ -31,7 +31,6 @@ Obviously there's more to do:
 
 @[expose] public section
 
-
 open CategoryTheory TopologicalSpace Opens
 
 noncomputable section

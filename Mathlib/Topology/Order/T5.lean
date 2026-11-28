@@ -21,7 +21,6 @@ topological space.
 
 public section
 
-
 open Filter Set OrderDual
 
 open scoped Topology

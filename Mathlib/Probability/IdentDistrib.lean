@@ -52,7 +52,6 @@ so on.
 
 public section
 
-
 open MeasureTheory Filter
 
 open scoped Topology MeasureTheory ENNReal NNReal

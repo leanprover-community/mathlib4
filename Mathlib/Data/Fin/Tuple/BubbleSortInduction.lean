@@ -29,7 +29,6 @@ with respect to the lexicographic ordering on the finite set of all permutations
 
 public section
 
-
 namespace Tuple
 
 /-- *Bubble sort induction*: Prove that the sorted version of `f` has some property `P`

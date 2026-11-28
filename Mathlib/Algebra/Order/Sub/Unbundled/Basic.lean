@@ -64,7 +64,6 @@ theorem tsub_tsub_tsub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := b
 
 /-! #### Lemmas that assume that an element is `AddLECancellable`. -/
 
-
 namespace AddLECancellable
 
 protected theorem eq_tsub_iff_add_eq_of_le (hc : AddLECancellable c) (h : c ≤ b) :
@@ -175,7 +174,6 @@ end AddLECancellable
 section Contra
 
 /-! ### Lemmas where addition is order-reflecting. -/
-
 
 variable [AddLeftReflectLE α]
 

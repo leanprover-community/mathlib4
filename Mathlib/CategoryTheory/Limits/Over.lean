@@ -24,7 +24,6 @@ Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further s
 
 @[expose] public section
 
-
 noncomputable section
 
 -- morphism levels before object levels. See note [category_theory universes].

@@ -41,7 +41,6 @@ abbreviations as well.
 
 @[expose] public section
 
-
 open Function
 
 namespace SimpleGraph
@@ -49,7 +48,6 @@ namespace SimpleGraph
 variable {V W X Y : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 
 /-! ## Map and comap -/
-
 
 /-- Given a function, there is a covariant induced map on graphs by pushing forward
 the adjacency relation.
@@ -303,7 +301,6 @@ theorem equivOfBijective_trans {U V W : Type*} {g : U → V} {f : V → W} (hg :
 
 /-! ## Induced graphs -/
 
-
 /- Given a set `s` of vertices, we can restrict a graph to those vertices by restricting its
 adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`.
 
@@ -389,7 +386,6 @@ theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u 
   exact h hs ht
 
 /-! ## Homomorphisms, embeddings and isomorphisms -/
-
 
 /-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
 

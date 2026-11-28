@@ -247,7 +247,6 @@ theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
 
 end TotallySeparated
 
-
 variable [TopologicalSpace β] [TotallyDisconnectedSpace β] {f : α → β}
 
 theorem Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : α)

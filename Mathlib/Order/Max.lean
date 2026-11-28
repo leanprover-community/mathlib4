@@ -32,7 +32,6 @@ See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)d
 
 @[expose] public section
 
-
 open OrderDual
 
 universe u v

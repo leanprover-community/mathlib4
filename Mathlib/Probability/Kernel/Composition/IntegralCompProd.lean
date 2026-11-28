@@ -48,7 +48,6 @@ composition-product requires s-finiteness while the composition does not.
 
 public section
 
-
 open Set Function Real ENNReal MeasureTheory Filter ProbabilityTheory ProbabilityTheory.Kernel
 open scoped Topology ENNReal MeasureTheory
 
@@ -95,7 +94,6 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.compProd_mk_left {δ : Type*} 
     ⟨fun y => hf.mk f (x, y), hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
 
 /-! ### Integrability -/
-
 
 theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyMeasurable f) :
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
@@ -156,7 +154,6 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
               Eventually.of_forall fun y => (norm_nonneg (f (x, y)) :)).symm
 
 /-! ### Bochner integral -/
-
 
 variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 

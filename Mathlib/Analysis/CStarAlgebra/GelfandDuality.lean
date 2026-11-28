@@ -65,7 +65,6 @@ Gelfand transform, character space, C⋆-algebra
 
 @[expose] public section
 
-
 open WeakDual
 
 open scoped NNReal CStarAlgebra StarRing

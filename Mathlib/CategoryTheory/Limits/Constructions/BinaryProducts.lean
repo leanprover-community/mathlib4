@@ -21,7 +21,6 @@ We also provide the dual.
 
 @[expose] public section
 
-
 universe v v' u u'
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits

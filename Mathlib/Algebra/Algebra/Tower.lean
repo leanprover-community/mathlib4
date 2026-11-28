@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.LinearAlgebra.Span.Basic
 
-
 /-!
 # Towers of algebras
 
@@ -23,7 +22,6 @@ An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorph
 
 @[expose] public section
 
-
 open scoped Pointwise
 
 universe u v w u₁ v₁
@@ -36,7 +34,6 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable {A}
-
 
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
 on the `B`-module `M`.

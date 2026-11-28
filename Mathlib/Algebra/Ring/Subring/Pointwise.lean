@@ -24,7 +24,6 @@ possible, try to keep them in sync.
 
 @[expose] public section
 
-
 open Set
 
 variable {M R : Type*}
@@ -131,7 +130,6 @@ theorem subset_pointwise_smul_iff {a : M} {S T : Subring R} : S ≤ a • T ↔ 
   subset_smul_set_iff
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
-
 
 end Group
 

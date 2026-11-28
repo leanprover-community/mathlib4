@@ -20,7 +20,6 @@ on the opposite group `Gᵒᵖ`.
 
 @[expose] public section
 
-
 variable {M : Type*} [Mul M]
 
 namespace Con

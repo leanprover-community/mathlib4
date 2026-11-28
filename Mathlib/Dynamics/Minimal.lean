@@ -25,7 +25,6 @@ group action, minimal
 
 public section
 
-
 open scoped Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit

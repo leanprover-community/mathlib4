@@ -56,7 +56,6 @@ separately.
 
 @[expose] public section
 
-
 open NNReal ContinuousLinearMap MulOpposite
 
 universe u v
@@ -378,7 +377,6 @@ theorem algebraMap_snd (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).snd = alge
 ### Star structure
 -/
 
-
 section Star
 
 variable [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A]
@@ -486,7 +484,6 @@ by proving that the range of this map is closed.
 In addition, we prove that `𝓜(𝕜, A)` is a normed algebra, and, when `A` is a C⋆-algebra, we show
 that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : 𝓜(𝕜, A)`,
 `‖a‖ = ‖a.fst‖ = ‖a.snd‖`. -/
-
 
 /-- The normed group structure is inherited as the pullback under the ring monomorphism
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/

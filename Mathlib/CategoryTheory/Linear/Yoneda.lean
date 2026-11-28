@@ -21,7 +21,6 @@ with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
 
 @[expose] public section
 
-
 universe w v u
 
 open Opposite CategoryTheory.Functor

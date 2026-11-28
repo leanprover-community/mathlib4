@@ -32,7 +32,6 @@ commutative ring, field of fractions
 
 @[expose] public section
 
-
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S]
 

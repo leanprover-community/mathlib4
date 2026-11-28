@@ -27,7 +27,6 @@ monotone map, bundled morphism
 
 public section
 
-
 namespace OrderHom
 
 variable {α β : Type*}

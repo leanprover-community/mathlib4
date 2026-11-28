@@ -89,7 +89,6 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 /-- `E(H)` denotes the `edgeSet` of a hypergraph `H` -/
 scoped notation "E(" H ")" => Hypergraph.edgeSet H
 
-
 /-! ## Vertex-Hyperedge Incidence -/
 
 @[simp]

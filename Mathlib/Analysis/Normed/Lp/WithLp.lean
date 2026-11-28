@@ -40,7 +40,6 @@ choices of `V`?
 
 @[expose] public section
 
-
 open scoped ENNReal
 
 /-- A type synonym for the given `V`, associated with the L`p` norm. Note that by default this just

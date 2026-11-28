@@ -23,7 +23,6 @@ open scoped Manifold Topology ContDiff
 
 /-! ### The groupoid of `C^n`, fiberwise-linear maps -/
 
-
 variable {𝕜 B F : Type*} [TopologicalSpace B]
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 

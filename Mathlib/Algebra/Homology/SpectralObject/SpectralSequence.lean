@@ -568,7 +568,6 @@ variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (hi₃' : i₃' = data.i₃ r' pq')
   (n₀ n₁ n₂ : ℤ) (hn₁' : n₁ = data.deg pq')
 
-
 unseal spectralSequence in
 /-- The homology data for the short complexes given by the differentials
 of a spectral sequence attached to a spectral object in an abelian category. -/

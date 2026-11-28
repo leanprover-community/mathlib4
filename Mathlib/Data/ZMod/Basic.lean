@@ -17,7 +17,6 @@ public import Mathlib.Tactic.FinCases
 
 Definition of the integers mod n, and the field structure on the integers mod p.
 
-
 ## Definitions
 
 * `ZMod n`, which is for integers modulo a nat `n : ℕ`
@@ -170,7 +169,6 @@ def cast : ∀ {n : ℕ}, ZMod n → R
   | 0 => Int.cast
   | _ + 1 => fun i => i.val
 
-
 @[simp]
 theorem cast_zero : (cast (0 : ZMod n) : R) = 0 := by
   delta ZMod.cast
@@ -285,7 +283,6 @@ section CharDvd
 
 /-! If the characteristic of `R` divides `n`, then `cast` is a homomorphism. -/
 
-
 variable {m : ℕ} [CharP R m]
 
 @[simp]
@@ -366,7 +363,6 @@ end CharDvd
 section CharEq
 
 /-! Some specialised simp lemmas which apply when `R` has characteristic `n`. -/
-
 
 variable [CharP R n]
 

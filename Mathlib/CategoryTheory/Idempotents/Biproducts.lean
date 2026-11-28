@@ -24,7 +24,6 @@ the idempotent endomorphism `𝟙 P.X - P.p`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory.Category

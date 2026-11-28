@@ -40,7 +40,6 @@ it is intended for regular use as a filter on `α`.
 
 @[expose] public section
 
-
 open Set Filter
 
 variable {ι α β : Type*}

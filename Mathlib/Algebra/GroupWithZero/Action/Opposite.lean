@@ -64,7 +64,6 @@ instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M �
 
 end MulOpposite
 
-
 /-! ### Actions _by_ the opposite type (right actions)
 
 In `Mul.toSMul` in another file, we define the left action `a₁ • a₂ = a₁ * a₂`. For the

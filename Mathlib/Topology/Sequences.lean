@@ -64,7 +64,6 @@ sequentially closed, sequentially compact, sequential space
 
 public section
 
-
 open Filter Function Set TopologicalSpace Topology
 open scoped Uniformity
 

@@ -25,7 +25,6 @@ having to supply instances or delay with non-defeq conflicts between instances.
 
 public section
 
-
 universe w v u
 
 noncomputable section

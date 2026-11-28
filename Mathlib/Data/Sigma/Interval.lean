@@ -21,7 +21,6 @@ Do the same for the lexicographical order
 
 public section
 
-
 open Finset Function
 
 namespace Sigma
@@ -29,7 +28,6 @@ namespace Sigma
 variable {ι : Type*} {α : ι → Type*}
 
 /-! ### Disjoint sum of orders -/
-
 
 section Disjoint
 

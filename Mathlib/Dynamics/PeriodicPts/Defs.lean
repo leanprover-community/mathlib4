@@ -47,7 +47,6 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 
 assert_not_exists MonoidWithZero
 
-
 open Set
 
 namespace Function

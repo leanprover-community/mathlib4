@@ -67,7 +67,6 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 
 @[expose] public section
 
-
 universe u₁ u₂ u₃ u₄
 
 variable {R : Type u₁} {L : Type u₂} {L₂ : Type u₃} {M : Type u₄}

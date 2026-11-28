@@ -21,7 +21,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w w' v v₁ v₂ u u₁ u₂

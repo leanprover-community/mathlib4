@@ -29,7 +29,6 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 public section
 
-
 noncomputable section
 
 open Metric QuotientAddGroup Set

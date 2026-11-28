@@ -93,7 +93,6 @@ balls is the desired almost everywhere covering.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u
@@ -105,7 +104,6 @@ open scoped Topology ENNReal MeasureTheory NNReal
 /-!
 ### Satellite configurations
 -/
-
 
 /-- A satellite configuration is a configuration of `N+1` points that shows up in the inductive
 construction for the Besicovitch covering theorem. It depends on some parameter `τ ≥ 1`.
@@ -190,7 +188,6 @@ theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := 
 end SatelliteConfig
 
 /-! ### Extracting disjoint subfamilies from a ball covering -/
-
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
 structure BallPackage (β : Type*) (α : Type*) where
@@ -517,7 +514,6 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
 /-!
 ### The measurable Besicovitch covering theorem
 -/
-
 
 open scoped NNReal
 

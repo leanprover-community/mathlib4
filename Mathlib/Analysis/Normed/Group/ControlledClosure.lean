@@ -19,7 +19,6 @@ lemmas in this file]."
 
 public section
 
-
 open Filter Finset
 
 open scoped Topology

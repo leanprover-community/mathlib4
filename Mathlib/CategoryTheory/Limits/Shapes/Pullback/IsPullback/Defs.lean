@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 
-
 /-!
 # Pullback and pushout squares
 
@@ -152,7 +151,6 @@ theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsPullback (pullback.fst f g) (pullback.snd f g) f g :=
   of_isLimit (limit.isLimit (cospan f g))
 
-
 section
 
 variable (X Y)
@@ -191,7 +189,6 @@ end
 isomorphic to the pullback provided by the `HasLimit` API. -/
 noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P ≅ pullback f g :=
   (limit.isoLimitCone ⟨_, h.isLimit⟩).symm
-
 
 @[reassoc (attr := simp)]
 theorem isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
@@ -357,7 +354,6 @@ theorem flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
 
 theorem flip_iff : IsPullback fst snd f g ↔ IsPullback snd fst g f :=
   ⟨flip, flip⟩
-
 
 theorem op (h : IsPullback fst snd f g) : IsPushout g.op f.op snd.op fst.op :=
   IsPushout.of_isColimit

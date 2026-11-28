@@ -25,7 +25,6 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-
 open Filter Asymptotics ContinuousLinearMap
 
 section
@@ -392,7 +391,6 @@ section Sum
 
 /-! ### Derivative of a finite sum of functions -/
 
-
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
 @[to_fun]
@@ -460,7 +458,6 @@ end Sum
 section Neg
 
 /-! ### Derivative of the negative of a function -/
-
 
 @[to_fun]
 theorem HasFDerivAtFilter.neg (h : HasFDerivAtFilter f f' L) :
@@ -562,7 +559,6 @@ end Neg
 section Sub
 
 /-! ### Derivative of the difference of two functions -/
-
 
 @[to_fun]
 theorem HasFDerivAtFilter.sub (hf : HasFDerivAtFilter f f' L) (hg : HasFDerivAtFilter g g' L) :

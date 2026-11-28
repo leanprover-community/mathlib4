@@ -21,7 +21,6 @@ see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v u v' u'

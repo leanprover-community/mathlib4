@@ -56,7 +56,6 @@ but we could also consider a version of `NormalDomain` that only requires the lo
 
 public section
 
-
 open scoped nonZeroDivisors Polynomial
 
 open Polynomial

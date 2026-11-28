@@ -24,7 +24,6 @@ This file provides infrastructure to compute with filters.
 
 @[expose] public section
 
-
 open Set Filter
 
 -- TODO write doc strings

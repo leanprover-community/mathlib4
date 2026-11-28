@@ -32,7 +32,6 @@ free ring
 
 @[expose] public noncomputable section
 
-
 universe u v
 
 /--

@@ -20,7 +20,6 @@ TODO: Define higher ramification groups in lower numbering
 
 @[expose] public section
 
-
 namespace ValuationSubring
 
 open scoped Pointwise

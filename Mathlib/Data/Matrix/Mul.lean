@@ -183,7 +183,6 @@ theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
     simp [diagonal_apply_ne' _ hij]
   convert! Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 
-
 @[simp]
 theorem dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
   have : ∀ j ≠ i, v j * diagonal w i j = 0 := fun j hij => by
@@ -1076,7 +1075,6 @@ theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v :=
 @[simp]
 theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
   vecMul_diagonal_const _ _
-
 
 @[simp]
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :

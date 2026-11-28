@@ -28,7 +28,6 @@ than the dimension.
 
 public section
 
-
 open scoped NNReal Filter Topology ENNReal
 
 open Filter Set Real MeasureTheory Module

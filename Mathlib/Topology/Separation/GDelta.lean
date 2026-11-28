@@ -57,7 +57,6 @@ theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs 
     IsGδ s :=
   Finite.induction_on _ hs .empty fun _ _ ↦ .union (.singleton _)
 
-
 section PerfectlyNormal
 
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and

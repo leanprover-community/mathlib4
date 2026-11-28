@@ -20,7 +20,6 @@ We define the degree of a rational function, with values in `ℤ`:
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u

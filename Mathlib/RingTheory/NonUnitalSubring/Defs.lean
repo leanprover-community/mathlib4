@@ -325,7 +325,6 @@ instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) 
 
 /-! ## Partial order -/
 
-
 theorem mem_toSubsemigroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 

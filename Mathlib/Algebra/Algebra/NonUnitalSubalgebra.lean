@@ -204,7 +204,6 @@ section
 /-! `NonUnitalSubalgebra`s inherit structure from their `NonUnitalSubsemiring` / `Semiring`
 coercions. -/
 
-
 instance toNonUnitalNonAssocSemiring [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalNonAssocSemiring S :=
   inferInstance
@@ -915,7 +914,6 @@ theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSuba
   SetLike.coe_injective Set.prod_inter_prod
 
 end Prod
-
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 

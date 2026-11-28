@@ -97,7 +97,6 @@ theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s
     (h₁ : f ≫ s.fst = g ≫ s.fst) (h₂ : f ≫ s.snd = g ≫ s.snd) : f = g :=
   h.hom_ext fun j => Discrete.recOn j fun j => WalkingPair.casesOn j h₁ h₂
 
-
 variable {X Y Z P : C}
 
 section

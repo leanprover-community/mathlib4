@@ -33,7 +33,6 @@ algebraic manipulation.
 
 @[expose] public section
 
-
 open scoped Real Topology Nat
 
 open Filter Finset intervalIntegral
@@ -41,7 +40,6 @@ open Filter Finset intervalIntegral
 namespace Real
 
 namespace Wallis
-
 
 /-- The product of the first `k` terms in Wallis' formula for `π`. -/
 noncomputable def W (k : ℕ) : ℝ :=

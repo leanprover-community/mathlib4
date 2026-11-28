@@ -35,7 +35,6 @@ there are some common specializations which may be more familiar.
 
 @[expose] public section
 
-
 open Polynomial
 
 namespace Polynomial
@@ -120,7 +119,6 @@ in the field case is the minimal polynomial. We are going to use a uniqueness
 theorem of the minimal polynomial.
 
 This is the first condition: it must annihilate the original element `a : A`. -/
-
 
 theorem annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator 𝕜 a) = 0 :=
   mem_annIdeal_iff_aeval_eq_zero.mp (annIdealGenerator_mem 𝕜 a)

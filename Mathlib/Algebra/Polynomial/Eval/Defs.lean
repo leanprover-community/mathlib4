@@ -190,7 +190,6 @@ as long as target ring is commutative
 (even if the source ring is not).
 -/
 
-
 section Eval₂
 
 section

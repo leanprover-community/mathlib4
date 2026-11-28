@@ -22,7 +22,6 @@ In categorical language, it is an endofunctor of the "core" of the category `Typ
 
 @[expose] public section
 
-
 universe u₀ u₁ u₂ v₀ v₁ v₂
 
 open Function

@@ -29,7 +29,6 @@ open Set Function
 
 /-! ### Definition and basic arithmetic -/
 
-
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
 @[wikidata Q11567]
 structure Complex : Type where
@@ -235,7 +234,6 @@ theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
 
 /-! ### The imaginary unit, `I` -/
 
-
 /-- The imaginary unit. -/
 def I : ℂ :=
   ⟨0, 1⟩
@@ -285,7 +283,6 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
     equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
 
 /-! ### Commutative ring instance and lemmas -/
-
 
 /-- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
@@ -364,7 +361,6 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
     (OfScientific.ofScientific m s e : ℂ).re = OfScientific.ofScientific m s e := rfl
 @[simp] lemma im_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     (OfScientific.ofScientific m s e : ℂ).im = 0 := rfl
-
 
 /-! ### Ring structure -/
 
@@ -452,7 +448,6 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 
 /-! ### Complex conjugation -/
 
-
 /-- This defines the complex conjugate as the `star` operation of the `StarRing ℂ`. It
 is recommended to use the ring endomorphism version `starRingEnd`, available under the
 notation `conj` in the scope `ComplexConjugate`. -/
@@ -501,7 +496,6 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
 
 /-! ### Norm squared -/
-
 
 /-- The norm squared function. -/
 @[pp_nodot]
@@ -674,7 +668,6 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 
 /-! ### Inversion -/
 
-
 @[no_expose]
 noncomputable instance : Inv ℂ :=
   ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
@@ -784,7 +777,6 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     (z / ofNat(n)).im = z.im / ofNat(n) := div_natCast_im z n
 
 /-! ### Characteristic zero -/
-
 
 instance instCharZero : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h

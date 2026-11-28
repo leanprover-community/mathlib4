@@ -50,7 +50,6 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of a fun
 
 @[expose] public section
 
-
 universe w u v u₁ v₁ u₂ v₂
 
 namespace CategoryTheory
@@ -255,7 +254,6 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
     simp only [comp_fiber, map_comp, ← Cat.Hom.comp_map,
       Functor.congr_hom congr($(α.naturality g.base).toFunctor) f.fiber]
     simp
-
 
 theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :
     (Grothendieck.map α).obj X = ⟨X.base, (α.app X.base).toFunctor.obj X.fiber⟩ := rfl

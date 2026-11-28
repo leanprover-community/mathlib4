@@ -29,7 +29,6 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 noncomputable section

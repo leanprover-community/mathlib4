@@ -385,7 +385,6 @@ isomorphism, the composite of the adjunctions `SSet.coskAdj 2` and `nerve₂Adj`
 noncomputable def nerveAdjunction : hoFunctor ⊣ nerveFunctor :=
   Adjunction.ofNatIsoRight ((SSet.coskAdj 2).comp Truncated.nerve₂Adj) Nerve.cosk₂Iso.symm
 
-
 /-- Repleteness exists for full and faithful functors but not fully faithful functors, which is
 why we do this inefficiently. -/
 instance nerveFunctor.faithful : nerveFunctor.{u, u}.Faithful :=

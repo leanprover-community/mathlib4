@@ -17,7 +17,6 @@ since they are used by some lemmas for `Iso`, which is used everywhere.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -237,7 +236,6 @@ instance [IsSplitMono f] : IsSplitEpi f.op :=
   .mk' IsSplitMono.exists_splitMono.some.op
 
 end Opposite
-
 
 section cubeLemma
 

@@ -19,7 +19,6 @@ the underlying types are just the limits in the category of types.
 
 @[expose] public section
 
-
 open CategoryTheory Limits
 
 universe t v w u

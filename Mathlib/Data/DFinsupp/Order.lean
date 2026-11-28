@@ -32,7 +32,6 @@ namespace DFinsupp
 
 /-! ### Order structures -/
 
-
 section Zero
 variable [∀ i, Zero (α i)]
 

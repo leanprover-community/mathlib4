@@ -25,7 +25,6 @@ properties about separable polynomials here.
 
 @[expose] public section
 
-
 universe u v w
 
 open Polynomial Finset

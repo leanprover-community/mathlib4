@@ -41,7 +41,6 @@ See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r336
 
 public section
 
-
 variable {α β : Type*}
 
 namespace Prod.Lex

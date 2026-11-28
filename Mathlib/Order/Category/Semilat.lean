@@ -21,7 +21,6 @@ element and inf-semilattices with a top element.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

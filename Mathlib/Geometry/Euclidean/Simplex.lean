@@ -23,7 +23,6 @@ This file defines properties of simplices in a Euclidean space.
 
 @[expose] public section
 
-
 namespace Affine
 
 open EuclideanGeometry

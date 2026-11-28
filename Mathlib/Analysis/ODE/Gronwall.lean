@@ -38,7 +38,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-! ### Technical lemmas about `gronwallBound` -/
 
-
 /-- Upper bound used in several Grönwall-like inequalities. -/
 noncomputable def gronwallBound (δ K ε x : ℝ) : ℝ :=
   if K = 0 then δ + ε * x else δ * exp (K * x) + ε / K * (exp (K * x) - 1)

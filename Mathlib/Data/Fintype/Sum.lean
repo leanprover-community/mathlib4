@@ -21,7 +21,6 @@ We provide the `Fintype` instance for the sum of two fintypes.
 
 @[expose] public section
 
-
 universe u v
 
 variable {α β : Type*}

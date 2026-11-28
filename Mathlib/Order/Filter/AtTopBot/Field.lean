@@ -108,7 +108,6 @@ theorem map_div_atTop_eq (k : α) (hk : 0 < k) : map (fun a => a / k) atTop = at
 
 end LinearOrderedSemifield
 
-
 section LinearOrderedField
 
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]

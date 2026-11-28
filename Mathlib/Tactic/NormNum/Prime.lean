@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 This file provides a `norm_num` extension to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
 
-
 ## Implementation notes
 
 For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression
@@ -203,7 +202,6 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
         evalMinFac.core nn nn q(.raw_refl _) n' | failure
       return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
-
 
 end NormNum
 

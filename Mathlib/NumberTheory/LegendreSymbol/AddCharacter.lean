@@ -134,7 +134,6 @@ variable {C : Type v} [CommMonoid C]
 
 section ZModCharDef
 
-
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ) [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) : AddChar (ZMod n) C where
   toFun a := ζ ^ a.val

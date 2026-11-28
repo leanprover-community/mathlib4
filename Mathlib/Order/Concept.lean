@@ -36,7 +36,6 @@ concept, formal concept analysis, intent, extent, object, attribute
 
 @[expose] public section
 
-
 open Function OrderDual Order Set
 
 variable {ι : Sort*} {α β : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s : Set α} {t : Set β}

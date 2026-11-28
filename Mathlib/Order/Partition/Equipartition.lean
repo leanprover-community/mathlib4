@@ -28,7 +28,6 @@ difference of `1`.
 
 @[expose] public section
 
-
 open Finset Fintype
 
 namespace Finpartition
@@ -154,7 +153,6 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : âˆ
     Nat.mod_eq_of_lt (gl a), Nat.mod_eq_of_lt (gl b), Fin.val_eq_val, g.apply_eq_iff_eq]
 
 /-! ### Discrete and indiscrete finpartitions -/
-
 
 variable (s)
 

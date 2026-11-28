@@ -56,7 +56,6 @@ Pell's equation
 
 @[expose] public section
 
-
 namespace Pell
 
 /-!
@@ -75,7 +74,6 @@ the "commutative group with distributive negation" structure from `↥(unitary (
 
 We then set up an API for `Pell.Solution₁ d`.
 -/
-
 
 open CharZero Zsqrtd
 
@@ -314,7 +312,6 @@ section Existence
 ### Existence of nontrivial solutions
 -/
 
-
 variable {d : ℤ}
 
 open Set Real
@@ -422,7 +419,6 @@ We define the notion of a *fundamental solution* of Pell's equation and
 show that it exists and is unique (when `d` is positive and non-square)
 and generates the group of solutions up to sign.
 -/
-
 
 variable {d : ℤ}
 

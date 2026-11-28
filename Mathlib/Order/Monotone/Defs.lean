@@ -47,7 +47,6 @@ decreasing, strictly decreasing
 
 assert_not_exists Nat.instLinearOrder Int.instLinearOrder
 
-
 open Function
 
 universe u v w
@@ -142,7 +141,6 @@ end Decidable
 
 /-! ### Monotonicity in function spaces -/
 
-
 section Preorder
 
 variable [Preorder α]
@@ -173,7 +171,6 @@ theorem Function.monotone_eval {ι : Type u} {α : ι → Type v} [∀ i, Preord
     Monotone (Function.eval i : (∀ i, α i) → α i) := fun _ _ H ↦ H i
 
 /-! ### Monotonicity hierarchy -/
-
 
 section Preorder
 
@@ -289,7 +286,6 @@ end PartialOrder
 
 /-! ### Monotonicity from and to subsingletons -/
 
-
 namespace Subsingleton
 
 variable [Preorder α] [Preorder β]
@@ -321,7 +317,6 @@ protected theorem strictAnti [Subsingleton α] (f : α → β) : StrictAnti f :=
 end Subsingleton
 
 /-! ### Miscellaneous monotonicity results -/
-
 
 theorem monotone_id [Preorder α] : Monotone (id : α → α) := fun _ _ ↦ id
 
@@ -364,7 +359,6 @@ theorem Function.Injective.of_eq_imp_le [PartialOrder α] {f : α → β}
   fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
 
 /-! ### Monotonicity under composition -/
-
 
 section Composition
 
@@ -461,7 +455,6 @@ lemma StrictAntiOn.comp_strictMonoOn (hg : StrictAntiOn g t) (hf : StrictMonoOn 
 end Composition
 
 /-! ### Monotonicity in linear orders  -/
-
 
 section LinearOrder
 

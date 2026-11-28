@@ -284,7 +284,6 @@ theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ 
   · simp
   · simp_rw [coe_iInf, ← inf_iInf, ← inf_assoc, inf_idem]
 
-
 end Set.Iic
 
 attribute [deprecated Subtype.isLUB_of_csSup_image_mem +typeChanged (since := "2026-10-26")]

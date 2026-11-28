@@ -106,7 +106,6 @@ lemma leRecOn_surjective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {
     refine ⟨x, ?_⟩
     rw [leRecOn_succ]
 
-
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
 lemma set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=

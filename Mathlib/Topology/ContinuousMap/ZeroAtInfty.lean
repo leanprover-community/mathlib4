@@ -24,7 +24,6 @@ compact space, this type has nice properties.
 
 @[expose] public section
 
-
 universe u v w
 
 variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w} [TopologicalSpace α]
@@ -161,7 +160,6 @@ Whenever `β` has suitable algebraic structure and a compatible topological stru
 `C₀(α, β)` inherits a corresponding algebraic structure. The primary exception to this is that
 `C₀(α, β)` will not have a multiplicative identity.
 -/
-
 
 section AlgebraicStructure
 
@@ -356,7 +354,6 @@ inherits a metric as the pullback of the metric on `α →ᵇ β`. Moreover, thi
 in `α →ᵇ β` and consequently `C₀(α, β)` is a complete space whenever `β` is complete.
 -/
 
-
 section Metric
 
 open Metric Set
@@ -445,7 +442,6 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
       _ ≤ ε := by grw [mem_ball.1 hg, add_halves ε]
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 
-
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
@@ -462,7 +458,6 @@ The norm structure on `C₀(α, β)` is the one induced by the inclusion `toBCF 
 viewed as an additive monoid homomorphism. Then `C₀(α, β)` is naturally a normed space over a normed
 field `𝕜` whenever `β` is as well.
 -/
-
 
 section NormedSpace
 
@@ -520,7 +515,6 @@ It is possible to equip `C₀(α, β)` with a pointwise `star` operation wheneve
 The `StarAddMonoid` and `NormedStarGroup` classes on `C₀(α, β)` are inherited from their
 counterparts on `α →ᵇ β`. Ultimately, when `β` is a C⋆-ring, then so is `C₀(α, β)`.
 -/
-
 
 variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar β]
 
@@ -586,7 +580,6 @@ end CStarRing
 For each `β` with sufficient structure, there is a contravariant functor `C₀(-, β)` from the
 category of topological spaces with morphisms given by `CocompactMap`s.
 -/
-
 
 variable {δ : Type*} [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 

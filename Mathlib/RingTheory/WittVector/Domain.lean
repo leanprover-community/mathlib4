@@ -33,7 +33,6 @@ the 0th component of which must be nonzero.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace WittVector
@@ -45,7 +44,6 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 /-!
 ## The `shift` operator
 -/
-
 
 /--
 `WittVector.verschiebung` translates the entries of a Witt vector upward, inserting 0s in the gaps.
@@ -98,7 +96,6 @@ If `R` is an integral domain, then so is `𝕎 R`.
 This argument is adapted from
 <https://math.stackexchange.com/questions/4117247/ring-of-witt-vectors-over-an-integral-domain/4118723#4118723>.
 -/
-
 
 instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
   ⟨fun {x y} => by

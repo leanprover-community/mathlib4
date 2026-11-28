@@ -23,7 +23,6 @@ The skeleton of a monoidal category is a monoid.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open MonoidalCategory

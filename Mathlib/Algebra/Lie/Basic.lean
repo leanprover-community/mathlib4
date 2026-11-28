@@ -52,7 +52,6 @@ lie bracket, jacobi identity, lie ring, lie algebra, lie module
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 open Function

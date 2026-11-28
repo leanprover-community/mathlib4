@@ -28,7 +28,6 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped Topology

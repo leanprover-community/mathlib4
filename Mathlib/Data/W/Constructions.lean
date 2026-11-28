@@ -24,7 +24,6 @@ This file contains `Nat` and `List` as examples of W types.
 
 @[expose] public section
 
-
 universe u v
 
 namespace WType

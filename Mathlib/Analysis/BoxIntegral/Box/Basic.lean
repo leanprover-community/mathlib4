@@ -71,7 +71,6 @@ variable {ι : Type*}
 ### Rectangular box: definition and partial order
 -/
 
-
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type*) where
@@ -226,7 +225,6 @@ theorem isBounded [Finite ι] (I : Box ι) : Bornology.IsBounded I.toSet :=
 ### Supremum of two boxes
 -/
 
-
 /-- `I ⊔ J` is the least box that includes both `I` and `J`. Since `↑I ∪ ↑J` is usually not a box,
 `↑(I ⊔ J)` is larger than `↑I ∪ ↑J`. -/
 instance : SemilatticeSup (Box ι) :=
@@ -353,7 +351,6 @@ theorem not_disjoint_coe_iff_nonempty_inter :
 ### Hyperface of a box in `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`
 -/
 
-
 /-- Face of a box in `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`: the box in `ℝⁿ = Fin n → ℝ` with corners at
 `I.lower ∘ Fin.succAbove i` and `I.upper ∘ Fin.succAbove i`. -/
 @[simps +simpRhs]
@@ -394,7 +391,6 @@ theorem continuousOn_face_Icc {X} [TopologicalSpace X] {n} {f : (Fin (n + 1) →
 /-!
 ### Covering of the interior of a box by a monotone sequence of smaller boxes
 -/
-
 
 /-- The interior of a box. -/
 protected def Ioo : Box ι →o Set (ι → ℝ) where

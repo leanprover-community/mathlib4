@@ -58,7 +58,6 @@ we can still establish a form of spectral permanence.
 
 public section
 
-
 local notation "σ" => spectrum
 local postfix:max "⋆" => star
 

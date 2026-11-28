@@ -298,7 +298,6 @@ def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsLimit (coneOfDiagramTerminal hX F) where
   lift S := S.π.app _
 
-
 /-- Any morphism between terminal objects is an isomorphism. -/
 @[to_dual (reorder := hX hY) /-- Any morphism between initial objects is an isomorphism. -/]
 lemma isIso_of_isTerminal {X Y : C} (hX : IsTerminal X) (hY : IsTerminal Y) (f : X ⟶ Y) :

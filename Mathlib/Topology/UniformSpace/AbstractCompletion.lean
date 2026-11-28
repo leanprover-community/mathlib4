@@ -49,7 +49,6 @@ uniform spaces, completion, universal property
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set Function
@@ -291,7 +290,6 @@ theorem uniformContinuous_compareEquiv : UniformContinuous (pkg.compareEquiv pkg
 @[fun_prop]
 theorem uniformContinuous_compareEquiv_symm : UniformContinuous (pkg.compareEquiv pkg').symm :=
   pkg'.uniformContinuous_compare pkg
-
 
 open scoped Topology
 

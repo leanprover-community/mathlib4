@@ -66,16 +66,13 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 * [R. Rado, *A New Proof of a Theorem of v. Staudt*][Rado1934]
 -/
 
-
 @[expose] public section
-
 
 open Nat Finset Finset.Nat PowerSeries
 
 variable (A : Type*) [CommRing A] [Algebra ℚ A]
 
 /-! ### Definitions -/
-
 
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
@@ -106,7 +103,6 @@ theorem bernoulli'_spec' (n : ℕ) :
   simp only [add_tsub_cancel_of_le, mem_range_succ_iff.mp hx, cast_sub]
 
 /-! ### Examples -/
-
 
 section Examples
 

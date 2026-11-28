@@ -34,7 +34,6 @@ quotient of pre-sets by extensional equality.
 
 @[expose] public section
 
-
 universe u v
 
 /-- The type of pre-sets in universe `u`. A pre-set

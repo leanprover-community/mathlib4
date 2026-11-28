@@ -20,7 +20,6 @@ This file defines `Frm`, the category of frames.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory Order

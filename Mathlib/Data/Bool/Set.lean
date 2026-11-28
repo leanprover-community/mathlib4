@@ -18,7 +18,6 @@ This file contains three trivial lemmas about `Bool`, `Set.univ`, and `Set.range
 
 public section
 
-
 open Set
 
 namespace Bool

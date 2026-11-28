@@ -38,7 +38,6 @@ and `q` is notation for the cardinality of `K`.
 
 public section
 
-
 universe u v
 
 section FiniteField
