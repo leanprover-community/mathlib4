@@ -198,7 +198,7 @@ lemma eLpNorm_densityProcess_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) {s : 
 lemma integrable_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ densityProcess κ ν n a x s) (ν a) := by
-  rw [← memLp_one_iff_integrable, memLp_iff]
+  rw [← memLp_one_iff_integrable, memLp_iff_eLpNorm_of_pos zero_lt_one]
   exact (eLpNorm_densityProcess_le hκν n a hs).trans_lt (measure_lt_top _ _)
 
 lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteKernel ν]
@@ -381,7 +381,8 @@ lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel 
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     MemLp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
-  apply Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  refine Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale ?_
+    one_ne_zero
   apply (measure_ne_top (ν a) univ).lt_top.trans_le'
   exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
@@ -486,8 +487,7 @@ lemma eLpNorm_density_le (hκν : fst κ ≤ ν) (a : α) {s : Set β} (hs : Mea
 lemma integrable_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ density κ ν a x s) (ν a) := by
-  rw [← memLp_one_iff_integrable]
-  rw [memLp_iff]
+  rw [← memLp_one_iff_integrable, memLp_iff_eLpNorm_of_pos zero_lt_one]
   exact (eLpNorm_density_le hκν a hs).trans_lt (measure_lt_top _ _)
 
 lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)

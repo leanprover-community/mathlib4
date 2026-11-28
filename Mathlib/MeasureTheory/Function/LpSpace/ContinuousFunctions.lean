@@ -47,7 +47,7 @@ namespace BoundedContinuousFunction
 
 /-- A bounded continuous function is in `L∞`. -/
 theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ := by
-  rw [memLp_iff, eLpNorm_exponent_top (by fun_prop)]
+  rw [memLp_iff_eLpNorm_of_ne_zero (by simp), eLpNorm_exponent_top (by fun_prop)]
   exact eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)
 
 variable [IsFiniteMeasure μ]

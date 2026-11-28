@@ -51,8 +51,13 @@ theorem eLpNorm_const_smul_le :
   · rw [ENNReal.mul_top (by simpa)]
     exact le_top
 
-theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ :=
-  (eLpNorm_const_smul_le).trans_lt (by finiteness)
+theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ := by
+  rcases ne_or_eq p 0 with hp | rfl
+  · simp only [memLp_iff_eLpNorm_of_ne_zero hp] at hf ⊢
+    exact eLpNorm_const_smul_le.trans_lt (by finiteness)
+  · simp only [memLp_zero_iff, hf.aestronglyMeasurable.const_smul, Pi.smul_apply, true_and]
+    apply (measure_mono ?_).trans_lt hf.measure_support_lt_top
+    simp +contextual [not_imp_not]
 
 theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
@@ -97,9 +102,13 @@ theorem eLpNorm_const_smul_le' [ContinuousConstSMul 𝕜 ε] :
     exact le_top
 
 theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c : 𝕜) :
-    MemLp (c • f) p μ :=
-  eLpNorm_const_smul_le'.trans_lt
-      (ENNReal.mul_lt_top ENNReal.coe_lt_top hf)
+    MemLp (c • f) p μ := by
+  rcases ne_or_eq p 0 with hp | rfl
+  · simp only [memLp_iff_eLpNorm_of_ne_zero hp] at hf ⊢
+    exact (eLpNorm_const_smul_le').trans_lt (by finiteness)
+  · simp only [memLp_zero_iff, hf.aestronglyMeasurable.const_smul, Pi.smul_apply, true_and]
+    apply (measure_mono ?_).trans_lt hf.measure_support_lt_top
+    simp +contextual [eNorm_smul]
 
 @[deprecated MemLp.const_mul (since := "2026-11-16")]
 theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=

@@ -149,7 +149,7 @@ theorem eLpNorm_sub_le {f g : α → E} (hp : 1 ≤ p) :
     eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
   simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' p
 
-theorem eLpNorm_add_lt_top (hf : MemLp f p μ) (hg : MemLp g p μ) :
+theorem eLpNorm_add_lt_top (hf : eLpNorm f p μ < ∞) (hg : eLpNorm g p μ < ∞) :
     eLpNorm (f + g) p μ < ∞ :=
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
@@ -172,8 +172,9 @@ theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fin
 
 -- TODO: We can prove `eLpNorm_expect_le` once we have `Module ℚ≥0 ℝ≥0∞`
 
-theorem MemLp.add (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
-  eLpNorm_add_lt_top hf hg
+theorem MemLp.add (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ := by
+  simp only [MemLp] at hf hg ⊢
+  exact inhmgELpNorm_add_le.trans_lt (by finiteness)
 
 theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f - g) p μ := by
   rw [sub_eq_add_neg]

@@ -68,6 +68,9 @@ instance instInfty (p : ℝ≥0∞) : HolderTriple p ∞ p where
 instance instZero (p : ℝ≥0∞) : HolderTriple p 0 0 where
   inv_add_inv_eq_inv := by simp
 
+lemma zero_iff {p q : ℝ≥0∞} : HolderTriple p q 0 ↔ p = 0 ∨ q = 0 := by
+  simp [holderTriple_iff]
+
 variable (p q r : ℝ≥0∞) [HolderTriple p q r]
 
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := (inv_add_inv_eq_inv ..).symm

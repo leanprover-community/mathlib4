@@ -549,6 +549,7 @@ theorem ConvolutionExists.of_memLp_memLp {p q : ENNReal}
     ConvolutionExists f g L μ := by
   intro x
   apply memLp_one_iff_integrable.mp
+  rw [memLp_iff_eLpNorm_of_pos zero_lt_one]
   exact (eLpNorm_convolution_integrand_le L hfp.aestronglyMeasurable
       hgq.aestronglyMeasurable x).trans_lt (by finiteness)
 

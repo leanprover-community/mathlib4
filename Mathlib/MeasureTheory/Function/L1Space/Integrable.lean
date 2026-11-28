@@ -64,9 +64,9 @@ scoped notation "Integrable[" mα "]" => @Integrable _ _ _ _ mα
 theorem memLp_one_iff_integrable {f : α → ε} : MemLp f 1 μ ↔ Integrable f μ := by
   refine ⟨fun hf ↦ ⟨hf.aestronglyMeasurable, ?_⟩, fun ⟨hfm, hfi⟩ ↦ ?_⟩
   · rw [hasFiniteIntegral_iff_eNorm, ← eLpNorm_one_eq_lintegral_eNorm hf.aestronglyMeasurable]
-    exact hf
-  · rw [MemLp, eLpNorm_one_eq_lintegral_eNorm hfm, ← hasFiniteIntegral_iff_eNorm]
-    exact hfi
+    rwa [memLp_iff_eLpNorm_of_pos (by simp)] at hf
+  · rwa [memLp_iff_eLpNorm_of_pos (by simp), eLpNorm_one_eq_lintegral_eNorm hfm,
+      ← hasFiniteIntegral_iff_eNorm]
 
 @[fun_prop]
 theorem Integrable.aestronglyMeasurable {f : α → ε} (hf : Integrable f μ) :
@@ -291,7 +291,7 @@ theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ESeminormedAdd
 theorem Integrable.add_measure [PseudoMetrizableSpace ε]
     {f : α → ε} (hμ : Integrable f μ) (hν : Integrable f ν) :
     Integrable f (μ + ν) := by
-  simp_rw [← memLp_one_iff_integrable, memLp_iff] at hμ hν ⊢
+  simp_rw [← memLp_one_iff_integrable, memLp_iff_eLpNorm_of_pos zero_lt_one] at hμ hν ⊢
   rw [eLpNorm_one_add_measure, ENNReal.add_lt_top]
   simp [hμ, hν]
 
@@ -608,7 +608,7 @@ theorem Integrable.essSup_smul {R : Type*} [NormedRing R] [Module R β] [IsBound
     {f : α → β} (hf : Integrable f μ) {g : α → R}
     (g_aestronglyMeasurable : AEStronglyMeasurable g μ) (ess_sup_g : essSup (‖g ·‖ₑ) μ ≠ ∞) :
     Integrable (fun x : α => g x • f x) μ := by
-  rw [← memLp_one_iff_integrable] at *
+  rw [← memLp_one_iff_integrable, memLp_iff_eLpNorm_of_pos zero_lt_one] at *
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top g_aestronglyMeasurable]
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
@@ -621,7 +621,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
     [IsBoundedSMul 𝕜 β] {f : α → 𝕜} (hf : Integrable f μ) {g : α → β}
     (g_aestronglyMeasurable : AEStronglyMeasurable g μ) (ess_sup_g : essSup (‖g ·‖ₑ) μ ≠ ∞) :
     Integrable (fun x : α => f x • g x) μ := by
-  rw [← memLp_one_iff_integrable] at *
+  rw [← memLp_one_iff_integrable, memLp_iff_eLpNorm_of_pos zero_lt_one] at *
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top g_aestronglyMeasurable]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
@@ -944,7 +944,7 @@ theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasu
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : MemLp (fun x ↦ (f x).toReal) 1 μ := by
   have hfm' : AEStronglyMeasurable (fun x ↦ (f x).toReal) μ :=
     (AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable
-  rw [memLp_iff, eLpNorm_one_eq_lintegral_eNorm hfm']
+  rw [memLp_iff_eLpNorm_of_pos zero_lt_one, eLpNorm_one_eq_lintegral_eNorm hfm']
   exact hasFiniteIntegral_toReal_of_lintegral_ne_top hfi
 
 theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)

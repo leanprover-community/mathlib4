@@ -39,7 +39,11 @@ lemma lpNorm_of_not_aestronglyMeasurable (hf : ¬ AEStronglyMeasurable f μ) : l
   rw [← toReal_eLpNorm, eLpNorm_of_not_aestronglyMeasurable hf, ENNReal.toReal_top]
 
 @[simp]
-lemma lpNorm_of_not_memLp (hf' : ¬ MemLp f p μ) : lpNorm f p μ = 0 := by simp_all [MemLp, lpNorm]
+lemma lpNorm_of_not_memLp (hf' : ¬ MemLp f p μ) : lpNorm f p μ = 0 := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp only [lpNorm, eLpNorm, ↓reduceIte]
+    split_ifs <;> simp
+  · simp_all [lpNorm, memLp_iff_eLpNorm_of_ne_zero hp]
 
 @[simp] lemma lpNorm_nonneg : 0 ≤ lpNorm f p μ := by simp [lpNorm]
 
