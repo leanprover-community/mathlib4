@@ -118,6 +118,14 @@ theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
 
 end EMetric
 
+@[to_additive (attr := simp)]
+theorem infDist_inv_inv (x : E) (s : Set E) : infDist x⁻¹ s⁻¹ = infDist x s := by
+  rw [← image_inv_eq_inv, infDist_image isometry_inv]
+
+@[to_additive]
+theorem infDist_inv (x : E) (s : Set E) : infDist x⁻¹ s = infDist x s⁻¹ := by
+  rw [← infDist_inv_inv, inv_inv]
+
 variable (δ s x y)
 
 @[to_additive (attr := simp)]
