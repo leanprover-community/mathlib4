@@ -454,8 +454,6 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     apply +allowSynthFailures mono_comp
     · erw [D.ι_image_preimage_eq i j U]
       infer_instance
-    · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
-      infer_instance
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `ιInvApp` is the inverse of `D.ι i` on `U`. -/
