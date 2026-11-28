@@ -219,19 +219,15 @@ theorem A_submatrix_revPerm :
 theorem D_submatrix_swap [n.AtLeastTwo] (e : Equiv.Perm (Fin n)) (he₀ : e 0 = 1) (he₁ : e 1 = 0)
     (he : ∀ i, 2 ≤ i.val → e i = i) :
     (D n).submatrix e e = D n := by
-  have h1 : ((1 : Fin n) : ℕ) = 1 := by
-    rw [Fin.val_one', Nat.mod_eq_of_lt Nat.AtLeastTwo.one_lt]
-  have key (i : Fin n) : (i : ℕ) = 0 ∧ (e i : ℕ) = 1 ∨ (i : ℕ) = 1 ∧ (e i : ℕ) = 0 ∨
-      2 ≤ (i : ℕ) ∧ (e i : ℕ) = i := by
-    obtain h | h | h : (i : ℕ) = 0 ∨ (i : ℕ) = 1 ∨ 2 ≤ (i : ℕ) := by lia
-    · obtain rfl : i = 0 := Fin.ext h
-      exact .inl ⟨h, by rw [he₀, h1]⟩
-    · obtain rfl : i = 1 := Fin.ext (h.trans h1.symm)
-      exact .inr (.inl ⟨h, by rw [he₁, Fin.val_zero]⟩)
-    · exact .inr (.inr ⟨h, by rw [he i h]⟩)
+  have h1 : 1 % n = 1 := Nat.mod_eq_of_lt Nat.AtLeastTwo.one_lt
+  have key (i : Fin n) : (i : ℕ) < 2 ∧ (e i : ℕ) = 1 - i ∨ 2 ≤ (i : ℕ) ∧ e i = i := by
+    obtain rfl | rfl | h : i = 0 ∨ i = 1 ∨ 2 ≤ i.val := by grind
+    · simp [he₀, h1]
+    · simp [he₁, h1]
+    · exact .inr ⟨h, he i h⟩
   ext i j
-  have hi := key i
-  have hj := key j
+  have := key i
+  have := key j
   simp only [D, submatrix_apply, of_apply, Fin.ext_iff]
   split_ifs <;> lia
 
