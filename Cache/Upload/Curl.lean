@@ -35,27 +35,25 @@ failures without the argument list (`showArgsOnError := false`).
 def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
-/-- Formats the curl config file that lists the files to upload: each staged
-file goes to `dest.fileURL`. The response body goes to the null device: stdout
+/-- Formats the curl config file that lists the uploads: each pair is a local
+file and the URL it goes to. The response body goes to the null device: stdout
 must carry only the per-transfer JSON reports that `monitorCurl` parses. -/
-def mkPutConfigContent (dest : Location) (files : Array FilePath) : String :=
-  let l := files.toList.map fun file : FilePath =>
-    s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
-      -o {IO.nullDevice}"
+def mkPutConfigContent (uploads : Array (FilePath × String)) : String :=
+  let l := uploads.toList.map fun (file, url) =>
+    s!"-T {file.toString}\nurl = {url}\n-o {IO.nullDevice}"
   "\n".intercalate l
 
-/-- Upload files with curl and exit with code 1 if any transfer fails.
+/-- Upload each local file to its URL with curl, and exit with code 1 if any
+transfer fails. `target` names the destination in the progress message.
 Parallel uploads use the `MATHLIB_CACHE_PARALLEL_MAX` limit. -/
 def putFilesViaCurl
-    (dest : Location) (files : Array FilePath) (tempConfigFilePath : FilePath)
+    (target : String) (uploads : Array (FilePath × String)) (tempConfigFilePath : FilePath)
     (overwrite : Bool) (signArgs : Array String) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
-  let size := files.size
+  let size := uploads.size
   if size > 0 then
-    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
-    IO.println
-      s!"Attempting to upload {size} file(s) under {dest.root}/{dest.filesDir} \
-        (location: {dest.label})"
+    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent uploads)
+    IO.println s!"Attempting to upload {size} file(s) under {target}"
     -- A retry after a PUT that landed is safe: the server answers a
     -- non-overwrite retry with 409/412, which `classifyUpload` excuses, and
     -- an overwrite retry re-sends the same bytes.
@@ -84,8 +82,9 @@ File failures exit with code 1; marker failures only warn. -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
   discard <| IO.validateCurl (upload := true)
-  let files := fileNames.map fun (f : String) => srcDir / f
-  putFilesViaCurl dest files (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
+  let uploads := fileNames.map fun (f : String) => (srcDir / f, dest.fileURL f)
+  putFilesViaCurl s!"{dest.root}/{dest.filesDir} (location: {dest.label})" uploads
+    (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
   uploadMarker dest fun marker file => do
     -- A marker may be overwritten freely, so its PUT carries no
     -- non-overwrite guard.
