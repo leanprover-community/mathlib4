@@ -190,6 +190,25 @@ lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 variable (R) in
 lemma hull_le_span (s : Set E) : hull R s ≤ span R s := span_le_restrictScalars R≥0 R s
 
+variable (R) in
+/-- The pointed cone hull of `s`, as a convex cone, is the convex cone hull of `s` with `0`
+adjoined. -/
+lemma toConvexCone_hull (s : Set E) :
+    (hull R s : ConvexCone R E) = ConvexCone.hull R (insert 0 s) := by
+  refine le_antisymm (fun x hx ↦ ?_) <| ConvexCone.hull_min <|
+    Set.insert_subset (Submodule.zero_mem _) subset_hull
+  have hK : (ConvexCone.hull R (insert 0 s)).Pointed :=
+    ConvexCone.subset_hull (Set.mem_insert 0 s)
+  exact ConvexCone.hull R _ |>.toPointedCone hK |>.span_le.mpr
+    ((Set.subset_insert 0 s).trans ConvexCone.subset_hull) hx
+
+variable (R) in
+/-- If `0 ∈ s`, then the pointed cone hull of `s`, as a convex cone, is the convex cone hull
+of `s`. -/
+lemma toConvexCone_hull_of_zero_mem {s : Set E} (hs : 0 ∈ s) :
+    (hull R s : ConvexCone R E) = ConvexCone.hull R s := by
+  rw [toConvexCone_hull, Set.insert_eq_of_mem hs]
+
 /-- Elements of the cone hull are expressible as conical combination of elements from s. -/
 lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
