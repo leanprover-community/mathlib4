@@ -253,12 +253,6 @@ theorem nested_le_max (a b : β) :
     (if (if a ≤ b then b else a) ≤ b then b else a) =
       (if (if a ≤ b then b else a) ≤ b then b else a) := rfl
 
-#guard_msgs in
-@[to_dual]
-def nested_le_max_witness (a b : β) :
-    {x : β // x = if (if a ≤ b then b else a) ≤ b then b else a} :=
-  ⟨_, rfl⟩
-
 end
 
 -- The arguments to `h` have been introduced, and swapped:

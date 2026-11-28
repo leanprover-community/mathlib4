@@ -717,9 +717,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   -- We rely on unification to determine how the universe parameters need to be reordered.
   let levels ← mkFreshLevelMVars srcDecl.numLevelParams
   srcType := srcType.instantiateLevelParams srcDecl.levelParams levels
-  let mut tgtType := tgtDecl.type
-  if let some b := unfoldBoundaries? then
-    tgtType ← b.unfoldInsertions (← b.insertBoundaries tgtType t.attrName)
+  let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\n\
       but `{.ofConstName tgt}` has type{indentExpr tgtType}"
