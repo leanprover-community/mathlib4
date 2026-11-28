@@ -236,13 +236,13 @@ lemma norm_add (h : a ⋆⟂ b) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   · simpa using h'.mul_star_eq_zero
 
 lemma nnNorm_add (h : a ⋆⟂ b) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  Subtype.ext <| h.norm_add
+  Nonneg.ext <| h.norm_add
 
 lemma norm_sub (h : a ⋆⟂ b) : ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using h.neg_right.norm_add
 
 lemma nnNorm_sub (h : a ⋆⟂ b) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  Subtype.ext <| h.norm_sub
+  Nonneg.ext <| h.norm_sub
 
 open scoped Function in
 lemma nnNorm_sum {ι : Type*} {s : Finset ι} {f : ι → A}

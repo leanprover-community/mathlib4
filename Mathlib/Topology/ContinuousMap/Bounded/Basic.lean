@@ -214,14 +214,14 @@ instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) wher
     exact eq_of_dist_eq_zero (le_antisymm (hfg ▸ dist_coe_le_dist _) dist_nonneg)
 
 theorem nnDist_eq : nnDist f g = sInf { C | ∀ x : α, nnDist (f x) (g x) ≤ C } :=
-  Subtype.ext <| dist_eq.trans <| by
+  Nonneg.ext <| dist_eq.trans <| by
     rw [val_eq_coe, coe_sInf, coe_image]
     simp_rw [mem_ofPred_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nnDist]
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
 theorem nnDist_set_exists : ∃ C, ∀ x : α, nnDist (f x) (g x) ≤ C :=
-  Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
+  Nonneg.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
 
 @[deprecated (since := "2026-11-07")] alias nndist_set_exists := nnDist_set_exists
 
@@ -241,7 +241,7 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
   exact dist_set_exists.imp fun C hC => forall_mem_range.2 hC.2
 
 theorem nnDist_eq_iSup : nnDist f g = ⨆ x : α, nnDist (f x) (g x) :=
-  Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nnDist]
+  Nonneg.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nnDist]
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
 
@@ -399,7 +399,7 @@ theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   LipschitzWith.of_dist_le_mul fun f g =>
-    (dist_le (mul_nonneg C.property dist_nonneg)).2 fun x =>
+    (dist_le (mul_nonneg C.val_nonneg dist_nonneg)).2 fun x =>
       calc
         dist (G (f x)) (G (g x)) ≤ C * dist (f x) (g x) := H.dist_le_mul _ _
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist

@@ -41,7 +41,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   let f := NNReal.orderIsoRpow (1 / p) hp₀'
   have h₁ : StrictConvexOn ℝ≥0 univ f := by
     refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
-    exact (strictConvexOn_rpow hp₁').2 x.property y.property (by simp [hxy]) ha hb
+    exact (strictConvexOn_rpow hp₁').2 x.val_nonneg y.val_nonneg (by simp [hxy]) ha hb
       (by simp; norm_cast)
   have h₂ : ∀ x, f.symm x = x ^ p := by simp [f, NNReal.orderIsoRpow_symm_eq]
   refine ⟨convex_univ, fun x mx y my hxy a b ha hb hab => ?_⟩
@@ -75,7 +75,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   let y' : ℝ≥0 := .mk y hy
   let a' : ℝ≥0 := .mk a ha.le
   let b' : ℝ≥0 := .mk b hb.le
-  have hxy' : x' ≠ y' := Subtype.coe_ne_coe.1 hxy
+  have hxy' : x' ≠ y' := Nonneg.coe_ne_coe.1 hxy
   have hab' : a' + b' = 1 := by ext; simp [a', b', hab]
   exact mod_cast (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
     hxy' (mod_cast ha) (mod_cast hb) hab'

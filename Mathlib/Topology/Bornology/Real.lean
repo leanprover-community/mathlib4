@@ -29,7 +29,8 @@ instance Real.instIsOrderBornology : IsOrderBornology ℝ :=
 namespace NNReal
 
 instance : OrderTopology ℝ≥0 :=
-  orderTopology_of_ordConnected (t := Ici 0)
+  ⟨Nonneg.strictMono_val.induced_topology_eq_preorder <| by
+    rw [Nonneg.range_val]; exact ordConnected_Ici⟩
 
 instance : IsOrderBornology ℝ≥0 := .of_isCompactIcc 0 (by simp) fun r ↦ by
   obtain hr | hr := le_or_gt 0 r <;> simp [closedBall_zero_eq_Icc, *]

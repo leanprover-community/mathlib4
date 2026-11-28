@@ -565,7 +565,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 
 theorem nnNorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
-  Subtype.ext <| norm_fst_eq_snd a
+  Nonneg.ext <| norm_fst_eq_snd a
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_fst_eq_snd := nnNorm_fst_eq_snd
 
@@ -578,13 +578,13 @@ theorem norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_
 
 @[simp]
 theorem nnNorm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a‖₊ :=
-  Subtype.ext (norm_fst a)
+  Nonneg.ext (norm_fst a)
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_fst := nnNorm_fst
 
 @[simp]
 theorem nnNorm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖₊ = ‖a‖₊ :=
-  Subtype.ext (norm_snd a)
+  Nonneg.ext (norm_snd a)
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_snd := nnNorm_snd
 
