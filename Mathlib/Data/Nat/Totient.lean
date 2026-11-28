@@ -451,14 +451,13 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.totient`. -/
 @[positivity Nat.totient _]
-meta def evalNatTotient : PositivityExt where eval {u α} z p e :=
-  match p with | none => pure .none | some p => do
+meta def evalNatTotient : PositivityExt where eval {u α} z _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
-    match ← core z p n with
-    | .positive pa =>
-      assumeInstancesCommute
-      return .positive q(Nat.totient_pos.mpr $pa)
+    let p ← synthInstanceQ q(PartialOrder ℕ)
+    assumeInstancesCommute
+    match (← core z (some p) n).toNonzero z with
+    | some nn => return .nonzero q((Nat.totient_pos.mpr (Nat.pos_of_ne_zero $nn)).ne')
     | _ => failure
   | _, _, _ => throwError "not Nat.totient"
 

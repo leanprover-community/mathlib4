@@ -1,18 +1,29 @@
 module
 
+public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.Basic.ENNReal.Basic
+public import Mathlib.Combinatorics.Enumerative.DyckWord
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+public import Mathlib.Data.Nat.Totient
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Euclidean.Volume.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.Chebyshev
+public import Mathlib.NumberTheory.Height.NumberField
+public import Mathlib.NumberTheory.LucasLehmer
+public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -689,6 +700,47 @@ example (w : Convexity.StdSimplex R M) (i : M) : 0 ≤ w.weights i := by positiv
 example [IsOrderedRing R] (w : Convexity.StdSimplex R M) (i j : M) : 0 ≤ w.weights i * w.weights j := by positivity
 
 end Convexity
+
+/- ## `ℕ`-valued expressions cast to an unordered type
+
+The `Nat.cast` extension proves `(↑a : F) ≠ 0` for an unordered field `F` of characteristic zero by
+running `positivity` on `a : ℕ` *without* an order. Hence every `ℕ`-valued extension must be able
+to prove `a ≠ 0` without an order being available. There is one test per such extension. -/
+
+section UnorderedCast
+
+variable {F : Type*} [Field F] [CharZero F]
+
+example (n : ℕ) : ((n.succ : ℕ) : F) ≠ 0 := by positivity
+example (p : ℕ+) : ((p : ℕ) : F) ≠ 0 := by positivity
+example (n : ℕ) : ((n ! : ℕ) : F) ≠ 0 := by positivity
+example (n k : ℕ) : (((n + 1).ascFactorial k : ℕ) : F) ≠ 0 := by positivity
+example (a b : ℕ) (ha : a ≠ 0) : ((a.gcd b : ℕ) : F) ≠ 0 := by positivity
+example (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) : ((a.lcm b : ℕ) : F) ≠ 0 := by positivity
+example (n : ℕ) (hn : n ≠ 0) : ((n.sqrt : ℕ) : F) ≠ 0 := by positivity
+example (a b : ℤ) (ha : a ≠ 0) : ((a.gcd b : ℕ) : F) ≠ 0 := by positivity
+example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : ((a.lcm b : ℕ) : F) ≠ 0 := by positivity
+example (q : ℚ≥0) (hq : q ≠ 0) : ((q.num : ℕ) : F) ≠ 0 := by positivity
+example (q : ℚ≥0) : ((q.den : ℕ) : F) ≠ 0 := by positivity
+example (q : ℚ) : ((q.den : ℕ) : F) ≠ 0 := by positivity
+example (s : Multiset ℕ) : ((s.multinomial : ℕ) : F) ≠ 0 := by positivity
+example (n : ℕ) (hn : n ≠ 0) : ((n.totient : ℕ) : F) ≠ 0 := by positivity
+example (n : ℕ) : ((n‼ : ℕ) : F) ≠ 0 := by positivity
+example (p : ℕ) (hp : p ≠ 0) : ((mersenne p : ℕ) : F) ≠ 0 := by positivity
+example (p : DyckWord) (hp : p ≠ 0) : ((p.firstReturn : ℕ) : F) ≠ 0 := by positivity
+example (ε : ℝ) (l : ℕ) : ((SzemerediRegularity.initialBound ε l : ℕ) : F) ≠ 0 := by positivity
+example (ε : ℝ) (l : ℕ) : ((SzemerediRegularity.bound ε l : ℕ) : F) ≠ 0 := by positivity
+example (K : Type*) [Field K] [NumberField K] : ((Height.totalWeight K : ℕ) : F) ≠ 0 := by
+  positivity
+example (x : ℝ) (hx : 0 < x) : ((⌈x⌉₊ : ℕ) : F) ≠ 0 := by positivity
+example (s : Finset ℕ) (hs : s.Nonempty) : ((#s : ℕ) : F) ≠ 0 := by positivity
+example (X : Type*) [Fintype X] [Nonempty X] : ((Fintype.card X : ℕ) : F) ≠ 0 := by positivity
+
+/- `ℂ` is not ordered unless `ComplexOrder` is open. -/
+example (x : ℝ) (hx : x ≠ 0) : (x : ℂ) ≠ 0 := by positivity
+example (z : UpperHalfPlane) : (z : ℂ) ≠ 0 := by positivity
+
+end UnorderedCast
 
 /- ## Geometry -/
 

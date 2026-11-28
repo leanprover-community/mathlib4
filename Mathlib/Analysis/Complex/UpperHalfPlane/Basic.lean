@@ -151,8 +151,7 @@ meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e :=
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _ e := do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
     assertInstancesCommute
