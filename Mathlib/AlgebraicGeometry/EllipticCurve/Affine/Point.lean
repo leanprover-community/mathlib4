@@ -484,7 +484,7 @@ satisfying a predicate and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingul
 def nonsingularPointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) : {P : W'.Point // p P} ≃
     WithZero {xy : R × R // ∃ h : W'.Nonsingular xy.fst xy.snd, p <| .some _ _ h} where
   toFun
-    | ⟨.zero, _⟩ => none
+    | ⟨.zero, _⟩ => 0
     | ⟨.some _ _ h, ph⟩ => .some ⟨⟨_, _⟩, h, ph⟩
   invFun P := P.casesOn ⟨.zero, p0⟩ fun xy => ⟨.some _ _ xy.prop.choose, xy.prop.choose_spec⟩
   left_inv := by rintro (_ | _) <;> rfl
@@ -492,7 +492,7 @@ def nonsingularPointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) : {P : W
 
 @[simp]
 lemma nonsingularPointEquivSubtype_zero {p : W'.Point → Prop} (p0 : p .zero) :
-    nonsingularPointEquivSubtype p0 ⟨.zero, p0⟩ = none :=
+    nonsingularPointEquivSubtype p0 ⟨.zero, p0⟩ = 0 :=
   rfl
 
 @[simp]
@@ -503,7 +503,7 @@ lemma nonsingularPointEquivSubtype_some {x y : R} {h : W'.Nonsingular x y} {p : 
 
 @[simp]
 lemma nonsingularPointEquivSubtype_symm_none {p : W'.Point → Prop} (p0 : p .zero) :
-    (nonsingularPointEquivSubtype p0).symm none = ⟨.zero, p0⟩ :=
+    (nonsingularPointEquivSubtype p0).symm 0 = ⟨.zero, p0⟩ :=
   rfl
 
 @[simp]
@@ -517,10 +517,10 @@ variable (W') in
 and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
 def nonsingularPointEquiv : W'.Point ≃ WithZero {xy : R × R // W'.Nonsingular xy.fst xy.snd} :=
   (Equiv.Set.univ W'.Point).symm.trans <| (nonsingularPointEquivSubtype trivial).trans
-    (Equiv.subtypeEquivProp <| by simp).optionCongr
+    (Equiv.subtypeEquivProp <| by simp).withZeroCongr
 
 @[simp]
-lemma nonsingularPointEquiv_zero : nonsingularPointEquiv W' .zero = none :=
+lemma nonsingularPointEquiv_zero : nonsingularPointEquiv W' .zero = 0 :=
   rfl
 
 @[simp]
@@ -529,7 +529,7 @@ lemma nonsingularPointEquiv_some {x y : R} (h : W'.Nonsingular x y) :
   rfl
 
 @[simp]
-lemma nonsingularPointEquiv_symm_none : W'.nonsingularPointEquiv.symm none = .zero :=
+lemma nonsingularPointEquiv_symm_none : W'.nonsingularPointEquiv.symm 0 = .zero :=
   rfl
 
 @[simp]
@@ -550,11 +550,11 @@ predicate and the set of pairs `⟨x, y⟩` satisfying `W.Equation x y` with zer
 def pointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) :
     {P : W'.Point // p P} ≃ WithZero {xy : R × R // ∃ h : W'.Equation xy.fst xy.snd, p <| .mk h} :=
   (nonsingularPointEquivSubtype p0).trans
-    (Equiv.subtypeEquivProp <| by ext; simp [equation_iff_nonsingular, Point.mk]).optionCongr
+    (Equiv.subtypeEquivProp <| by ext; simp [equation_iff_nonsingular, Point.mk]).withZeroCongr
 
 @[simp]
 lemma pointEquivSubtype_zero {p : W'.Point → Prop} (p0 : p .zero) :
-    pointEquivSubtype p0 ⟨.zero, p0⟩ = none :=
+    pointEquivSubtype p0 ⟨.zero, p0⟩ = 0 :=
   rfl
 
 @[simp]
@@ -564,7 +564,7 @@ lemma pointEquivSubtype_some {x y : R} {h : W'.Equation x y} {p : W'.Point → P
 
 @[simp]
 lemma pointEquivSubtype_symm_none {p : W'.Point → Prop} (p0 : p .zero) :
-    (pointEquivSubtype p0).symm none = ⟨.zero, p0⟩ :=
+    (pointEquivSubtype p0).symm 0 = ⟨.zero, p0⟩ :=
   rfl
 
 @[simp]
@@ -578,10 +578,10 @@ variable (W') in
 `⟨x, y⟩` satisfying `E.Equation x y` with zero. -/
 def pointEquiv : W'.Point ≃ WithZero {xy : R × R // W'.Equation xy.fst xy.snd} :=
   (Equiv.Set.univ W'.Point).symm.trans <| (pointEquivSubtype trivial).trans
-    (Equiv.subtypeEquivProp <| by simp).optionCongr
+    (Equiv.subtypeEquivProp <| by simp).withZeroCongr
 
 @[simp]
-lemma pointEquiv_zero : W'.pointEquiv .zero = none :=
+lemma pointEquiv_zero : W'.pointEquiv .zero = 0 :=
   rfl
 
 @[simp]
@@ -590,7 +590,7 @@ lemma pointEquiv_some {x y : R} (h : W'.Equation x y) :
   rfl
 
 @[simp]
-lemma pointEquiv_symm_none : (pointEquiv W').symm none = .zero :=
+lemma pointEquiv_symm_none : (pointEquiv W').symm 0 = .zero :=
   rfl
 
 @[simp]

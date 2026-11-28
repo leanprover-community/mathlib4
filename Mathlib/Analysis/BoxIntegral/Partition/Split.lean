@@ -184,7 +184,7 @@ theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I 
 set_option backward.isDefEq.respectTransparency false in
 theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J ∈ (split I i x).boxes, f J) =
-      (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
+      (I.splitLower i x).rec 0 f + (I.splitUpper i x).rec 0 f := by
   classical
   rw [split, sum_ofWithBot, Finset.sum_pair (I.splitLower_ne_splitUpper i x)]
 

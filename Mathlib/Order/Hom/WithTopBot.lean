@@ -238,7 +238,7 @@ theorem withBot_comp (f : SupHom β γ) (g : SupHom α β) :
 /-- Adjoins a `⊤` to the domain of a `SupHom`. -/
 @[to_dual (attr := simps) /-- Adjoins a `⊥` to the domain of an `InfHom`. -/]
 def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
-  toFun a := a.elim ⊤ f
+  toFun | ⊤ => ⊤ | WithTop.some a => f a
   map_sup' a b :=
     match a, b with
     | ⊤, ⊤ => (top_sup_eq _).symm
@@ -249,7 +249,7 @@ def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
 /-- Adjoins a `⊥` to the domain of a `SupHom`. -/
 @[to_dual (attr := simps) /-- Adjoins a `⊤` to the domain of an `InfHom`. -/]
 def withBot' [OrderBot β] (f : SupHom α β) : SupBotHom (WithBot α) β where
-  toFun a := a.elim ⊥ f
+  toFun | ⊥ => ⊥ | WithBot.some a => f a
   map_sup' a b :=
     match a, b with
     | ⊥, ⊥ => (bot_sup_eq _).symm
@@ -316,16 +316,25 @@ theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   ext; simp
 
 /-- Adjoins a `⊤` to the domain of a `LatticeHom`. -/
+@[simps!]
 def withTop' [OrderTop β] (f : LatticeHom α β) : LatticeHom (WithTop α) β :=
   { f.toSupHom.withTop', f.toInfHom.withTop' with }
 
 /-- Adjoins a `⊥` to the domain of a `LatticeHom`. -/
-@[to_dual existing (attr := simps!)]
+@[to_dual existing, simps!]
 def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :=
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 
+/-- Adjoins a `⊥` and `⊤` to the domain of a `LatticeHom`. -/
+@[simps!]
+def withBotWithTop' [BoundedOrder β] (f : LatticeHom α β) :
+    BoundedLatticeHom (WithBot <| WithTop α) β where
+  toLatticeHom := f.withTop'.withBot'
+  map_top' := rfl
+  map_bot' := rfl
+
 /-- Adjoins a `⊤` and `⊥` to the domain of a `LatticeHom`. -/
-@[to_dual (attr := simps!) /-- Adjoins a `⊥` and `⊤` to the domain of a `LatticeHom`. -/]
+@[to_dual existing, simps!]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) β where
   toLatticeHom := f.withBot'.withTop'

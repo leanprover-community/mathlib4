@@ -426,18 +426,18 @@ def valueGroupOrderIso₀ : (Valued.v (R := WithVal v)).ValueGroup₀ ≃*o v.Va
   left_inv x := by
     match x with
     | 0 => simp
-    | .coe a => simp
+    | .some a => simp
   right_inv y := by
     match y with
     | 0 => simp
-    | .coe b => simp
+    | .some b => simp
   map_mul' := by simp
   map_le_map_iff' {a b} := by
     match a, b with
     | 0, 0 => simp
-    | 0, .coe _ => simp
-    | .coe _, 0 => simp
-    | .coe a, .coe b => simp
+    | 0, .some _ => simp
+    | .some _, 0 => simp
+    | .some a, .some b => simp
 
 lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
     valueGroupOrderIso₀ v ((WithVal.valuation v).restrict b) = v.restrict b.ofVal := by

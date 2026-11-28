@@ -57,25 +57,13 @@ variable [SemilatticeSup α]
 
 variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
+@[to_dual]
 theorem sup'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
     (Ht : ∀ b, (t b).Nonempty) :
     (s.biUnion t).sup' (Hs.biUnion fun b _ => Ht b) f = s.sup' Hs (fun b => (t b).sup' (Ht b) f) :=
   eq_of_forall_ge_iff fun c => by simp [@forall_comm _ β]
 
 end Sup'
-
-section Inf'
-
-variable [SemilatticeInf α]
-
-variable {s : Finset β} (H : s.Nonempty) (f : β → α)
-
-theorem inf'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
-    (Ht : ∀ b, (t b).Nonempty) :
-    (s.biUnion t).inf' (Hs.biUnion fun b _ => Ht b) f = s.inf' Hs (fun b => (t b).inf' (Ht b) f) :=
-  sup'_biUnion (α := αᵒᵈ) _ Hs Ht
-
-end Inf'
 
 variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 

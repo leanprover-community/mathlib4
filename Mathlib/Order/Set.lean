@@ -5,24 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
-public import Mathlib.Order.TypeTags
+public import Mathlib.Order.WithBot
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
-/-! # `Set.range` on `WithBot` and `WithTop` -/
-
-public section
-
-open Set
-
-variable {α β : Type*}
-
-theorem WithBot.range_eq (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
-
-theorem WithTop.range_eq (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
+deprecated_module (since := "2026-11-16")

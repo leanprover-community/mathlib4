@@ -557,7 +557,7 @@ theorem exists_intValuation_mul_sub_lt {a b : R} (hv : v.intValuation b ≤ v.in
     rw [map_zero, nonpos_iff_eq_zero] at hv
     exact ⟨0, by simp [hv]⟩
   · have hvaz := intValuation_ne_zero v a ha
-    have hγz : WithZero.coe γ ≠ 0 := WithZero.coe_ne_zero
+    have hγz : WithZero.some γ ≠ 0 := WithZero.coe_ne_zero
     -- Otherwise, find `n : ℕ` such that `exp (-n) < γ` and `exp(-n) < v a`.
     obtain ⟨n, hna, hnγ⟩ := exists_exp_neg_natCast_lt_and_lt hvaz hγz
     apply Exists.imp (fun _ h ↦ lt_of_le_of_lt h hnγ)

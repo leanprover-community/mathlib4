@@ -184,12 +184,10 @@ end Option
 
 variable [LinearOrder α] [OrderTopology α]
 
-/-- If `α` has a linear order topology, `some : α → WithTop α` is an open embedding with respect to
-the order topologies. -/
-@[to_dual]
-theorem WithTop.isOpenEmbedding_some : IsOpenEmbedding (some (α := α)) :=
-  ⟨WithTop.coe_strictMono.isEmbedding_of_ordConnected (range_coe (α := α) ▸ ordConnected_Iio),
-   range_coe (α := α) ▸ isOpen_Iio' ⊤⟩
+@[deprecated (since := "2026-11-18")] alias WithTop.isOpenEmbedding_some :=
+  WithTop.isOpenEmbedding_coe
+@[to_dual existing, deprecated (since := "2026-11-18")] alias WithBot.isOpenEmbedding_some :=
+  WithBot.isOpenEmbedding_coe
 
 @[to_dual]
 instance [EDist α] : EDist (WithTop α) where
@@ -204,27 +202,36 @@ so is `WithTop α` -/
 @[to_dual]
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
-  letI : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
-  letI : WeakPseudoEMetricSpace (Option α) :=
-    Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding (inst := instEDistWithTop) rfl
-    WithTop.isOpenEmbedding_some
-  inferInstanceAs <| WeakPseudoEMetricSpace (Option α)
+  letI : TopologicalSpace (WithTop α) := TopologicalSpace.instWithTopOfOrderTopology
+  letI : TopologicalSpace (Option α) := .induced (WithTop.toOption α).symm inferInstance
+  haveI h : IsOpenEmbedding (WithTop.toOption α) := {
+    eq_induced := by rw [induced_compose]; simp [induced_id]
+    injective := Equiv.injective _
+    isOpen_range := by simp
+  }
+  Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding rfl (h.comp WithTop.isOpenEmbedding_coe)
+    |>.IsInducing h.isInducing
 
 /-- If `α` has a topology induced by a linear order and is a weak extended metric space,
 so is `WithTop α` -/
 @[to_dual]
 instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
-  let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
-  let : WeakEMetricSpace (Option α) := Option.WeakEMetricSpace.OfIsOpenEmbedding
-    (inst := instEDistWithTop) rfl WithTop.isOpenEmbedding_some
-  inferInstanceAs <| WeakEMetricSpace (Option α)
+  let : TopologicalSpace (WithTop α) := TopologicalSpace.instWithTopOfOrderTopology
+  letI : TopologicalSpace (Option α) := .induced (WithTop.toOption α).symm inferInstance
+  haveI h : IsOpenEmbedding (WithTop.toOption α) := {
+    eq_induced := by rw [induced_compose]; simp [induced_id]
+    injective := Equiv.injective _
+    isOpen_range := by simp
+  }
+  h.isInducing.weakEMetricSpace h.injective <|
+    Option.WeakEMetricSpace.OfIsOpenEmbedding rfl (h.comp WithTop.isOpenEmbedding_coe)
 
 open scoped OnePoint in
 instance [EDist α] : EDist (OnePoint α) where
   edist
-  | ∞, (x : α) => none
+  | ∞, (x : α) => ∞
   | ∞, ∞ => 0
-  | (x : α), ∞ => none
+  | (x : α), ∞ => ∞
   | (x : α), (y : α) => edist x y
 
 /-- The one point compactification of a weak pseudo extended metric space is again a weak pseudo

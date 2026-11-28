@@ -555,7 +555,7 @@ instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
 
 lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
     DenselyOrdered (WithZero M) ↔ DenselyOrdered M :=
-  WithBot.denselyOrdered_iff
+  (denselyOrdered_iff_of_orderIsoClass (toWithBotOrderIso M)).trans WithBot.denselyOrdered_iff
 
 instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
     DenselyOrdered (WithZero X) :=
@@ -569,7 +569,9 @@ lemma not_denselyOrdered_withZero_int : ¬ DenselyOrdered ℤᵐ⁰ :=
 
 lemma WithZero.denselyOrdered_set_iff_subsingleton {X : Type*} [LinearOrder X]
     [LocallyFiniteOrder X] {s : Set (WithZero X)} :
-    DenselyOrdered s ↔ s.Subsingleton :=
-  WithBot.denselyOrdered_set_iff_subsingleton
+    DenselyOrdered s ↔ s.Subsingleton := by
+  let e := (toWithBotOrderIso X).strictMono.strictMonoOn s |>.orderIso
+  rw [denselyOrdered_iff_of_orderIsoClass e, WithBot.denselyOrdered_set_iff_subsingleton]
+  simp
 
 end DenselyOrdered

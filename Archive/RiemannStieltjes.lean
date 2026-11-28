@@ -134,7 +134,7 @@ def incrementAux (g : ℝ → M) : (Fin 1) →ᵇᵃ M :=
     (fun _ _ i x hx ↦ by
       fin_cases i
       rw [splitLower_def hx, splitUpper_def hx]
-      simp [Option.elim', upper₁, lower₁])
+      simp [upper₁, lower₁])
 
 @[simp]
 private lemma incrementAux_apply (g : ℝ → M) (J : Box (Fin 1)) :

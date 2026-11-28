@@ -273,12 +273,12 @@ its absolute value. When `0` lies in the interval, the result must also contain 
 @[expose]
 def log (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   match I.abs with
-  | ⟨some l, some u⟩ =>
+  | ⟨.some l, .some u⟩ =>
     if l = 0 then
       if u = 0 then .singleton 0 else (Interval.singleton 0).hull (.Iic (logPoint u prec).ub)
     else
       .Icc (logPoint l prec).lb (logPoint u prec).ub
-  | ⟨some l, ⊤⟩ => if l = 0 then .univ Dyadic else .Ici (logPoint l prec).lb
+  | ⟨.some l, ⊤⟩ => if l = 0 then .univ Dyadic else .Ici (logPoint l prec).lb
   | ⟨⊥, _⟩ => .univ Dyadic -- impossible since `0 ≤ I.abs.lb`
 
 @[inclusion_op interval_dyadic_real]

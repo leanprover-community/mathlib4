@@ -154,15 +154,15 @@ noncomputable def valueGroupOrderMonoidIso :
       (Valuation.extension (WithVal.valuation (v.valuation K))).ValueGroup₀ where
   toFun := WithZero.map' (valueGroupMulEquiv K v)
   invFun := WithZero.map' (valueGroupMulEquiv K v).symm
-  left_inv x := by match x with | 0 => simp | .coe a => simp
-  right_inv y := by match y with | 0 => simp | .coe b => simp
+  left_inv x := by match x with | 0 => simp | .some a => simp
+  right_inv y := by match y with | 0 => simp | .some b => simp
   map_mul' := by simp
   map_le_map_iff' {a b} := by
     match a, b with
     | 0, 0 => simp
-    | 0, .coe _ => simp
-    | .coe _, 0 => simp
-    | .coe a, .coe b => simp [← Subtype.coe_le_coe]
+    | 0, .some _ => simp
+    | .some _, 0 => simp
+    | .some a, .some b => simp [← Subtype.coe_le_coe]
 
 @[simp] theorem valueGroupOrderMonoidIso_coe (a : (valuation K v).valueGroup) :
     valueGroupOrderMonoidIso K v a = (valueGroupMulEquiv K v a : ValueGroup₀ _) := by
@@ -172,7 +172,7 @@ theorem embedding_valueGroupOrderMonoidIso (g : (valuation K v).ValueGroup₀) :
     embedding (valueGroupOrderMonoidIso K v g) = embedding g := by
   match g with
   | 0 => simp [valueGroupOrderMonoidIso]
-  | .coe a => simp [valueGroupOrderMonoidIso_coe, embedding_apply, coe_valueGroupMulEquiv]
+  | .some a => simp [valueGroupOrderMonoidIso_coe, embedding_apply, coe_valueGroupMulEquiv]
 
 theorem valueGroupOrderMonoidIso_restrict (x : v.adicCompletion K) :
     valueGroupOrderMonoidIso K v ((valuation K v).restrict x) =

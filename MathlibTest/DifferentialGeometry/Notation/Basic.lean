@@ -690,7 +690,7 @@ of sort `Type`
 error: Expected
   n
 of type
-  Option ℕ∞
+  WithTop ℕ∞
 to be a function, or to be coercible to a function
 -/
 #guard_msgs in

@@ -723,7 +723,7 @@ variable [PartialOrder α] [SuccOrder α] [∀ a : α, Decidable (succ a = a)]
 instance : SuccOrder (WithTop α) where
   succ
     | ⊤ => ⊤
-    | Option.some a => ite (succ a = a) ⊤ (some (succ a))
+    | some a => ite (succ a = a) ⊤ (some (succ a))
   le_succ a := by
     obtain - | a := a
     · exact le_top
@@ -777,11 +777,11 @@ variable [Preorder α] [OrderTop α] [PredOrder α]
 instance : PredOrder (WithTop α) where
   pred
     | ⊤ => some ⊤
-    | Option.some a => some (pred a)
+    | some a => some (pred a)
   pred_le a :=
     match a with
     | ⊤ => le_top
-    | Option.some a => coe_le_coe.2 (pred_le a)
+    | some a => coe_le_coe.2 (pred_le a)
   min_of_le_pred {a} ha := by
     cases a
     · exact ((coe_lt_top (⊤ : α)).not_ge ha).elim

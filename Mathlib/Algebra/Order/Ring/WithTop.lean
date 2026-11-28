@@ -68,16 +68,6 @@ lemma mul_def (a b : WithTop α) :
 @[to_dual]
 lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by rw [mul_def]; aesop
 
-@[to_dual]
-lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.bind fun a ↦ ↑(a * b)
-  | ⊤ => by simp [top_mul, hb]; rfl
-  | (a : α) => rfl
-
-@[to_dual]
-lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.bind fun b ↦ ↑(a * b)
-  | ⊤ => by simp [ha]; rfl
-  | (b : α) => rfl
-
 @[to_dual (attr := simp)]
 lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.untopD 0 := by
   by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, untopD_coe, zero_mul]
@@ -99,7 +89,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.byContradiction fun h₂ => ?_⟩
   rw [mul_def, ite_eq_right h₂] at h₁
-  rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
+  rcases WithTop.map₂_eq_some_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
 variable [Preorder α]
@@ -149,7 +139,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
     toFun := WithTop.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
+        (WithTop.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
@@ -217,7 +207,7 @@ end MonoidWithZero
 @[to_dual]
 instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) where
-  mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
+  mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (WithTop.map₂_comm mul_comm)
 
 @[to_dual]
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
@@ -232,8 +222,8 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
         simp [ha, this]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
-      simp only [mul_coe_eq_bind hc]
-      cases a <;> cases b <;> try rfl
+      have hc : (c : WithTop α) ≠ 0 := by simpa
+      cases a <;> cases b <;> try simp [top_mul hc]
       congrm some $(add_mul ..)
   left_distrib c a b := by
     cases c with
@@ -245,8 +235,8 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
         simp [ha, this]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
-      simp only [coe_mul_eq_bind hc]
-      cases a <;> cases b <;> try rfl
+      have hc : (c : WithTop α) ≠ 0 := by simpa
+      cases a <;> cases b <;> try simp [mul_top hc]
       congrm some $(mul_add ..)
 
 @[to_dual]
