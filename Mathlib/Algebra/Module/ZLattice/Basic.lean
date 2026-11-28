@@ -311,7 +311,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
 theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
-    fundamentalDomain b ⊆ parallelepiped b := by
+    fundamentalDomain b ⊆ parallelepiped ℝ b := by
   rw [fundamentalDomain, parallelepiped_basis_eq, Set.ofPred_subset_ofPred]
   exact fun _ h i ↦ Set.Ico_subset_Icc_self (h i)
 
@@ -398,11 +398,11 @@ theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis �
 
 theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
-    fundamentalDomain b =ᵐ[μ] parallelepiped b := by
+    fundamentalDomain b =ᵐ[μ] parallelepiped ℝ b := by
   classical
   have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   rw [← measure_symmDiff_eq_zero_iff, symmDiff_of_le (fundamentalDomain_subset_parallelepiped b)]
-  suffices (parallelepiped b \ fundamentalDomain b) ⊆ ⋃ i,
+  suffices (parallelepiped ℝ b \ fundamentalDomain b) ⊆ ⋃ i,
       AffineSubspace.mk' (b i) (span ℝ (b '' (Set.univ \ {i}))) by
     refine measure_mono_null this
       (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
