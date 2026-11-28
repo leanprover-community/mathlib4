@@ -73,6 +73,7 @@ we define the local polynomial `fₚ(T)` as:
 * `fₚ = 1 - T` if `W` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `W` has nonsplit multiplicative reduction at `p`,
 * `fₚ = 1` if `W` has additive reduction at `p`.
+
 Then the L-function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
 as `p` ranges over all prime ideals of the ring of integers of `K`.
 -/
