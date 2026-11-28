@@ -279,7 +279,9 @@ end PartialOrder
 
 section Prod
 
-variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
+section LE
+
+variable [LE α] [LE β] {a : α} {b : β} {x : α × β}
 
 @[to_dual]
 theorem IsBot.prodMk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
@@ -294,6 +296,16 @@ theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
 theorem IsBot.snd (hx : IsBot x) : IsBot x.2 := fun c => (hx (x.1, c)).2
 
 @[to_dual]
+theorem Prod.isBot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
+  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prodMk h.2⟩
+
+end LE
+
+section Preorder
+
+variable [Preorder α] [Preorder β] {x : α × β}
+
+@[to_dual]
 theorem IsMin.fst (hx : IsMin x) : IsMin x.1 :=
   fun c hc => (hx <| show (c, x.2) ≤ x from (and_iff_left le_rfl).2 hc).1
 
@@ -302,11 +314,9 @@ theorem IsMin.snd (hx : IsMin x) : IsMin x.2 :=
   fun c hc => (hx <| show (x.1, c) ≤ x from (and_iff_right le_rfl).2 hc).2
 
 @[to_dual]
-theorem Prod.isBot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
-  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prodMk h.2⟩
-
-@[to_dual]
 theorem Prod.isMin_iff : IsMin x ↔ IsMin x.1 ∧ IsMin x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prodMk h.2⟩
+
+end Preorder
 
 end Prod
