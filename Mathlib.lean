@@ -2471,6 +2471,7 @@ public import Mathlib.Analysis.SpecialFunctions.Integrability.PosLog
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Log
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
+public import Mathlib.Analysis.SpecialFunctions.Integrals.SinDivExp
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
