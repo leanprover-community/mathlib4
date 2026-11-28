@@ -218,14 +218,14 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   let := Classical.decEq E
   let : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
+  rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv'.symm, Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
   swap
   · intro x; rfl
   · intro σ
-    rw [PowerBasis.liftEquiv'_apply_coe, id_def]
+    rw [PowerBasis.liftEquiv'_symm_apply_coe, id_def]
 
 variable [IsAlgClosed E]
 

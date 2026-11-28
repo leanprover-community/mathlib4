@@ -82,7 +82,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_add, map_mul, map_one, hu, mul_neg,
       IsUnit.mul_val_inv, neg_add_cancel]
   -- And `ε = p(x)/(-p'(x))` works.
-  use pb.liftEquiv.symm ⟨x + u * aeval x (minpoly K pb.gen), ?_⟩
+  use pb.liftEquiv ⟨x + u * aeval x (minpoly K pb.gen), ?_⟩
   · apply pb.algHom_ext
     simp [hx, hx']
   · rw [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero, derivative_map,
