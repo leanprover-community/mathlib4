@@ -195,30 +195,38 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
-section TotalAndTransitive
+section Total
 
-variable [Std.Total r] [IsTrans α r]
+variable [Std.Total r]
 
-theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (orderedInsert r a l)
-  | [], _ => pairwise_singleton _ a
+theorem IsChain.orderedInsert (a : α) : ∀ l, IsChain r l → IsChain r (orderedInsert r a l)
+  | [], _ => IsChain.singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · grind
-    · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
-        simpa [orderedInsert_cons, h', h.of_cons.orderedInsert a l]
-      intro b' bm
-      rcases (mem_orderedInsert r).mp bm with rfl | bm
-      · exact (total_of r _ _).resolve_left h'
-      · exact rel_of_pairwise_cons h bm
+    · simp [orderedInsert_cons, h', h]
+    · cases l with
+      | nil => grind [Std.Total]
+      | cons c l' =>
+        by_cases hac : a ≼ c
+        · simp [hac, Std.Total.rel_of_not_rel_swap h', IsChain.of_cons h, h']
+        · have := IsChain.orderedInsert a (c :: l') h.of_cons; grind
+
+theorem Pairwise.orderedInsert [IsTrans α r] (a : α) :
+    ∀ l, Pairwise r l → Pairwise r (orderedInsert r a l) := by
+  simpa [isChain_iff_pairwise] using IsChain.orderedInsert (r := r) a
 
 variable (r)
 
-/-- The list `List.insertionSort r l` is `List.Pairwise` with respect to `r`. -/
-theorem pairwise_insertionSort : ∀ l, Pairwise r (insertionSort r l)
-  | [] => Pairwise.nil
-  | a :: l => (pairwise_insertionSort l).orderedInsert a _
+/-- The list `List.insertionSort r l` is `List.IsChain` with respect to `r`. -/
+theorem isChain_insertionSort : ∀ l, IsChain r (insertionSort r l)
+  | [] => IsChain.nil
+  | a :: l => (isChain_insertionSort l).orderedInsert a _
 
-end TotalAndTransitive
+/-- The list `List.insertionSort r l` is `List.Pairwise` with respect to `r`. -/
+theorem pairwise_insertionSort [IsTrans α r] : ∀ l, Pairwise r (insertionSort r l) := by
+  simpa [isChain_iff_pairwise] using isChain_insertionSort r
+
+end Total
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
