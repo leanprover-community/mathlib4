@@ -58,10 +58,10 @@ structure WellOrderInductionData where
   /-- When `j` is a limit element, and `x` is a compatible family of elements
   in `F.obj (op i)` for all `i < j`, this is a lifting to `F.obj (op j)`. -/
   lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections) :
+    (x : ((Set.Iio j).subtypeVal_monotone.functor.op ⋙ F).sections) :
       F.obj (op j)
   map_lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections)
+    (x : ((Set.Iio j).subtypeVal_monotone.functor.op ⋙ F).sections)
     (i : J) (hi : i < j) :
         F.map (homOfLE hi.le).op (lift j hj x) = x.val (op ⟨i, hi⟩)
 
@@ -290,7 +290,7 @@ variable (t : J) in
 This is used as a way to construct sections of `F` from non-minimal elements. -/
 private noncomputable def restrictIci (d : F.WellOrderInductionData)
     (t : J) (ht : ¬ Order.IsSuccLimit t) :
-    ((Set.Ici t).mono_coe.functor.op ⋙ F).WellOrderInductionData :=
+    ((Set.Ici t).subtypeVal_monotone.functor.op ⋙ F).WellOrderInductionData :=
   have hj' (j : Set.Ici t) (hj : Order.IsSuccLimit j) :
       Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
   letI φ (j : Set.Ici t) : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
@@ -317,9 +317,9 @@ private noncomputable def restrictIci (d : F.WellOrderInductionData)
       rw [dsimp% d.map_lift j (Set.Ici.isSuccLimit_coe _ hj)
         ((sectionsEquivOfInitial (hφ j).functor.op _).symm s) i hi]
       obtain ⟨t, rfl⟩ := (sectionsEquivOfInitial (hφ j).functor.op
-        ((Set.mono_coe _).functor.op ⋙ F)).surjective s
+        ((Set.subtypeVal_monotone _).functor.op ⋙ F)).surjective s
       simp [dsimp% (sectionsEquivOfInitial (hφ j).functor.op
-        ((Set.mono_coe _).functor.op ⋙ F)).symm_apply_apply t, φ] }
+        ((Set.subtypeVal_monotone _).functor.op ⋙ F)).symm_apply_apply t, φ] }
 
 omit [OrderBot J] in
 include d in
@@ -327,13 +327,13 @@ lemma surjective' (t : J) (ht : ¬ Order.IsSuccLimit t) :
     Function.Surjective ((fun s ↦ s (op t)) ∘ Subtype.val : F.sections → F.obj (op t)) := by
   -- The idea is to apply `surjective` to Set.Ici t
   let _ : OrderBot (Set.Ici t) := Set.Ici.orderBot
-  let F' : (Set.Ici t)ᵒᵖ ⥤ Type v := (Set.Ici t).mono_coe.functor.op ⋙ F
+  let F' : (Set.Ici t)ᵒᵖ ⥤ Type v := (Set.Ici t).subtypeVal_monotone.functor.op ⋙ F
   let d' : F'.WellOrderInductionData := d.restrictIci t ht
   intro u
   obtain ⟨s, hs⟩ := d'.surjective u
-  have : (Set.Ici t).mono_coe.functor.op.Initial := Functor.initial_op_of_final _
+  have : (Set.Ici t).subtypeVal_monotone.functor.op.Initial := Functor.initial_op_of_final _
   let e : F.sections ≃ F'.sections := Equiv.ofBijective _ <|
-    (Set.Ici t).mono_coe.functor.op.bijective_sectionsPrecomp F
+    (Set.Ici t).subtypeVal_monotone.functor.op.bijective_sectionsPrecomp F
   use ⟨e.symm s, by simp⟩
   rw [← hs]
   exact congr($(e.apply_symm_apply s).val (op ⊥))

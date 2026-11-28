@@ -159,7 +159,7 @@ theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α]
   refine ⟨t, ?_, hs.trans ht, ?_⟩
   · simp
   · rw [← ht']
-    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinalType_congr.symm
+    exact ((Subtype.val_strictMono _).strictMonoOn _).orderIso.ordinalType_congr.symm
 
 @[simp]
 theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
@@ -214,7 +214,7 @@ theorem cof_iSup_Iio {a} {f : Iio a → Ordinal} (hf : StrictMono f) (ha : IsSuc
 
 theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
   rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio _ ha.isSuccPrelimit]
-  exact hf.strictMono.comp <| Subtype.strictMono_coe _
+  exact hf.strictMono.comp <| Subtype.val_strictMono _
 
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   cases a using limitRecOn with

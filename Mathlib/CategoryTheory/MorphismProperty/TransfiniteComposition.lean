@@ -118,7 +118,7 @@ noncomputable def iic (j : J) :
       obtain ⟨i', hi'⟩ := hi
       exact ⟨j, lt_of_lt_of_le hi' i'.property⟩)
     rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
-    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+    have eq : Arrow.mk ((Subtype.val_monotone _).functor.map (homOfLE (Order.le_succ i))) =
       Arrow.mk (homOfLE (Order.le_succ i.val)) :=
         Arrow.ext rfl (Set.Iic.coe_succ_of_not_isMax hi) rfl
     replace eq := congr(h.F.mapArrow.obj $eq)
@@ -132,7 +132,7 @@ noncomputable def ici (j : J) :
   map_mem i hi := by
     have := h.map_mem i.val (Set.not_isMax_coe _ hi)
     rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
-    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+    have eq : Arrow.mk ((Subtype.val_monotone _).functor.map (homOfLE (Order.le_succ i))) =
       Arrow.mk (homOfLE (Order.le_succ i.val)) :=
         Arrow.ext rfl (coe_succ_of_mem (i.property.trans (Order.le_succ _))) rfl
     replace eq := congr(h.F.mapArrow.obj $eq)

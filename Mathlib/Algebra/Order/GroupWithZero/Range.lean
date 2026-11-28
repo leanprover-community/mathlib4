@@ -32,11 +32,11 @@ variable (f) in
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as a homomorphism of monoids with zero. -/
 def orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
   __ := WithZero.map' (valueGroup f).subtype
-  monotone' := map'_strictMono (Subtype.strictMono_coe _) |>.monotone
+  monotone' := map'_strictMono (Subtype.val_strictMono _) |>.monotone
 
 lemma monoidWithZeroHom_strictMono :
     StrictMono (orderMonoidWithZeroHom f) :=
-  map'_strictMono (Subtype.strictMono_coe _)
+  map'_strictMono (Subtype.val_strictMono _)
 
 lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
   intro x y hxy

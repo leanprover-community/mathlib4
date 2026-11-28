@@ -233,7 +233,7 @@ theorem _root_.Order.isNormal_iff_isClub_range {f : α → α} (hf : StrictMono 
 
 theorem isNormal_subtypeVal {s : Set α} (hs : IsClub s) :
     IsNormal (Subtype.val (p := (· ∈ s))) := by
-  apply IsNormal.of_dirSupClosed_range s.strictMono_coe
+  apply IsNormal.of_dirSupClosed_range s.subtypeVal_strictMono
   rw [Subtype.range_coe_subtype]
   exact hs.dirSupClosed
 

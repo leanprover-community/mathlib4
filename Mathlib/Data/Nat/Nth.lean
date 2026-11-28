@@ -143,7 +143,7 @@ theorem nth_eq_orderIsoOfNat (hf : (Set.ofPred p).Infinite) :
 
 theorem nth_strictMono (hf : (Set.ofPred p).Infinite) : StrictMono (nth p) := by
   rw [nth_eq_orderIsoOfNat hf]
-  exact (Subtype.strictMono_coe _).comp (OrderIso.strictMono _)
+  exact (Subtype.val_strictMono _).comp (OrderIso.strictMono _)
 
 theorem nth_injective (hf : (Set.ofPred p).Infinite) : Function.Injective (nth p) :=
   (nth_strictMono hf).injective

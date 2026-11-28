@@ -94,7 +94,7 @@ def infLERight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
 /-- The inclusion functor from open neighbourhoods of `x`
 to open sets in the ambient topological space. -/
 def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
-  (Subtype.mono_coe _).functor
+  (Subtype.val_monotone _).functor
 
 @[simp]
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=

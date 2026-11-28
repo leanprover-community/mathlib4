@@ -330,21 +330,21 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
 @[simp]
 theorem image_subtypeVal_uIcc [OrdConnected s] (a b : s) :
     Subtype.val '' [[a, b]] = [[a.val, b.val]] := by
-  simp [uIcc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+  simp [uIcc, (Subtype.val_monotone (· ∈ s)).map_inf, (Subtype.val_monotone (· ∈ s)).map_sup]
 
 @[deprecated (since := "2026-11-10")] alias image_subtype_val_uIcc := image_subtypeVal_uIcc
 
 @[simp]
 theorem image_subtypeVal_uIoc [OrdConnected s] (a b : s) :
     Subtype.val '' uIoc a b = uIoc a.val b.val := by
-  simp [uIoc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+  simp [uIoc, (Subtype.val_monotone (· ∈ s)).map_inf, (Subtype.val_monotone (· ∈ s)).map_sup]
 
 @[deprecated (since := "2026-11-10")] alias image_subtype_val_uIoc := image_subtypeVal_uIoc
 
 @[simp]
 theorem image_subtypeVal_uIoo [OrdConnected s] (a b : s) :
     Subtype.val '' uIoo a b = uIoo a.val b.val := by
-  simp [uIoo, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+  simp [uIoo, (Subtype.val_monotone (· ∈ s)).map_inf, (Subtype.val_monotone (· ∈ s)).map_sup]
 
 @[deprecated (since := "2026-11-10")] alias image_subtype_val_uIoo := image_subtypeVal_uIoo
 

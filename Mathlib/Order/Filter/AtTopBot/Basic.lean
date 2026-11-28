@@ -265,7 +265,7 @@ theorem map_val_atTop_of_Ici_subset [Preorder α] [IsDirectedOrder α] {a : α} 
   have : IsDirectedOrder s := by
     rw [directedOn_iff_directed] at this
     rwa [IsDirectedOrder, ← directed_id_iff]
-  refine map_atTop_eq_of_gc_preorder (Subtype.mono_coe _) a fun c hc ↦ ?_
+  refine map_atTop_eq_of_gc_preorder (Subtype.val_monotone _) a fun c hc ↦ ?_
   exact ⟨⟨c, h hc⟩, rfl, fun _ ↦ .rfl⟩
 
 @[simp]

@@ -133,12 +133,12 @@ of shape `Set.Ici j` for any `j : J`. -/
 @[simps]
 noncomputable def ici (j : J) :
     TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
-  F := (Subtype.mono_coe (· ∈ Set.Ici j)).functor ⋙ c.F
+  F := (Subtype.val_monotone (· ∈ Set.Ici j)).functor ⋙ c.F
   isWellOrderContinuous := Functor.IsWellOrderContinuous.restriction_setIci _
   isoBot := Iso.refl _
   incl := Functor.whiskerLeft _ c.incl
   isColimit := (Functor.Final.isColimitWhiskerEquiv
-    (Subtype.mono_coe (· ∈ Set.Ici j)).functor _).invFun c.isColimit
+    (Subtype.val_monotone (· ∈ Set.Ici j)).functor _).invFun c.isColimit
 
 end TransfiniteCompositionOfShape
 

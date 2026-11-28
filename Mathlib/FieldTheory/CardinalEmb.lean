@@ -248,7 +248,7 @@ section Lim
 variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.val :=
-  (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
+  (filtration.monotone.comp <| Subtype.val_monotone _).directed_le
 
 variable (hi : IsSuccPrelimit i)
 include hi
