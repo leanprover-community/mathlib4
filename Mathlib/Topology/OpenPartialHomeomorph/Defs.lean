@@ -83,7 +83,8 @@ def Simps.apply (e : OpenPartialHomeomorph X Y) : X → Y := e
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : OpenPartialHomeomorph X Y) : Y → X := e.symm
 
-initialize_simps_projections OpenPartialHomeomorph (toFun → apply, invFun → symm_apply)
+initialize_simps_projections OpenPartialHomeomorph
+  (as_prefix toFun, toFun → apply, invFun → symm_apply)
 
 @[fun_prop]
 protected theorem continuousOn : ContinuousOn e e.source :=
