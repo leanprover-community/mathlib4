@@ -2056,6 +2056,7 @@ public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.MetricSpace
 public import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Analysis.Convex.NNReal
+public import Mathlib.Analysis.Convex.Parallelepiped
 public import Mathlib.Analysis.Convex.PartitionOfUnity
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
@@ -4820,6 +4821,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.ToSSet
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
+public import Mathlib.Geometry.Convex.Parallelepiped
 public import Mathlib.Geometry.Convex.Segment
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star
