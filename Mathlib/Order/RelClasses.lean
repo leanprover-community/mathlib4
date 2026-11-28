@@ -25,6 +25,8 @@ universe u v
 
 variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}
 
+attribute [mk_iff] Std.Irrefl
+
 open Function
 
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=

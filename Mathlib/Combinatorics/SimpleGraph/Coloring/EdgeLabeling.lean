@@ -126,7 +126,7 @@ theorem compRight_get (f : K → K') (x y) (h : G.Adj x y) :
 def mk (f : ∀ x y : V, G.Adj x y → K)
     (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabeling G K
   | ⟨e, he⟩ =>
-    e.fromRelNdrec (sym := G.symm) he f (f_symm · · · |>.symm)
+    e.fromRelNdrec (sym := G.symm_adj) he f (f_symm · · · |>.symm)
 
 theorem get_mk (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj x y) :
     (mk f f_symm).get x y h = f x y h :=
