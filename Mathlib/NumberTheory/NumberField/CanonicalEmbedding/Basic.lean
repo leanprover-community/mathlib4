@@ -5,7 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Parallelepiped
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 
@@ -480,7 +482,7 @@ end norm
 
 noncomputable section stdBasis
 
-open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix
+open Complex MeasureTheory MeasureTheory.Measure Matrix
 
 open scoped ComplexConjugate
 
@@ -516,20 +518,27 @@ theorem stdBasis_apply_isComplex_snd (x : mixedSpace K)
 variable (K)
 
 open scoped Classical in
-theorem fundamentalDomain_stdBasis :
-    fundamentalDomain (stdBasis K) =
+theorem halfOpenParallelepiped_stdBasis :
+    halfOpenParallelepiped ℝ (stdBasis K) =
       (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
       (Set.univ.pi fun _ => Complex.measurableEquivPi ⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
   ext
-  simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
+  simp [stdBasis, halfOpenParallelepiped_basis_eq, Complex.measurableEquivPi]
+
+@[deprecated (since := "2026-11-23")]
+alias fundamentalDomain_stdBasis := halfOpenParallelepiped_stdBasis
 
 open scoped Classical in
-theorem volume_fundamentalDomain_stdBasis :
-    volume (fundamentalDomain (stdBasis K)) = 1 := by
-  rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
-    Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
-    sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one, one_mul]
+theorem volume_halfOpenParallelepiped_stdBasis :
+    volume (halfOpenParallelepiped ℝ (stdBasis K)) = 1 := by
+  rw [halfOpenParallelepiped_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi,
+    pi_pi, Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi,
+    Real.volume_Ico, sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one,
+    one_mul]
   exact (MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)).nullMeasurableSet
+
+@[deprecated (since := "2026-11-23")]
+alias volume_fundamentalDomain_stdBasis := volume_halfOpenParallelepiped_stdBasis
 
 open scoped Classical in
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
@@ -678,7 +687,7 @@ theorem span_latticeBasis :
     Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
   Submodule.ext_iff.mpr fun _ ↦ mem_span_latticeBasis K
 
-instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
+instance : (mixedEmbedding.integerLattice K).IsFullLattice ℝ := by
   classical
   rw [← span_latticeBasis]
   infer_instance
@@ -689,11 +698,15 @@ instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   infer_instance
 
 open scoped Classical in
-theorem fundamentalDomain_integerLattice :
+theorem isAddFundamentalDomain_integerLattice_halfOpenParallelepiped :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
-      (ZSpan.fundamentalDomain (latticeBasis K)) := by
+      (halfOpenParallelepiped ℝ (latticeBasis K)) := by
   rw [← span_latticeBasis]
-  exact ZSpan.isAddFundamentalDomain (latticeBasis K) _
+  exact (latticeBasis K).isAddFundamentalDomain_halfOpenParallelepiped _
+
+@[deprecated (since := "2026-11-23")]
+alias fundamentalDomain_integerLattice :=
+  isAddFundamentalDomain_integerLattice_halfOpenParallelepiped
 
 theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
@@ -793,7 +806,7 @@ theorem span_idealLatticeBasis :
   ext x
   simp [mem_span_fractionalIdealLatticeBasis]
 
-instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
+instance : (mixedEmbedding.idealLattice K I).IsFullLattice ℝ := by
   classical
   rw [← span_idealLatticeBasis]
   infer_instance
@@ -804,11 +817,14 @@ instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
   infer_instance
 
 open scoped Classical in
-theorem fundamentalDomain_idealLattice :
+theorem isAddFundamentalDomain_idealLattice_halfOpenParallelepiped :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
-      (ZSpan.fundamentalDomain (fractionalIdealLatticeBasis K I)) := by
+      (halfOpenParallelepiped ℝ (fractionalIdealLatticeBasis K I)) := by
   rw [← span_idealLatticeBasis]
-  exact ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) _
+  exact (fractionalIdealLatticeBasis K I).isAddFundamentalDomain_halfOpenParallelepiped _
+
+@[deprecated (since := "2026-11-23")]
+alias fundamentalDomain_idealLattice := isAddFundamentalDomain_idealLattice_halfOpenParallelepiped
 
 end integerLattice
 
@@ -861,8 +877,8 @@ theorem volumePreserving_toMixed :
   map_eq := by
     rw [← (OrthonormalBasis.addHaar_eq_volume (euclidean.stdOrthonormalBasis K)), Basis.map_addHaar,
       stdOrthonormalBasis_map_eq, Basis.addHaar_eq_iff, Basis.coe_parallelepiped,
-      ← measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped (stdBasis K) volume),
-      volume_fundamentalDomain_stdBasis K]
+      ← measure_congr (halfOpenParallelepiped_ae_eq_parallelepiped volume (stdBasis K)),
+      volume_halfOpenParallelepiped_stdBasis K]
 
 open scoped Classical in
 theorem volumePreserving_toMixed_symm :
@@ -873,16 +889,15 @@ theorem volumePreserving_toMixed_symm :
 open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
-  ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
+  (mixedEmbedding.integerLattice K).comap ((toMixed K).toLinearEquiv.restrictScalars ℤ).toLinearMap
 
-instance : DiscreteTopology (euclidean.integerLattice K) := by
+instance : (euclidean.integerLattice K).IsFullLattice ℝ := by
   rw [euclidean.integerLattice]
   infer_instance
 
 open scoped Classical in
-instance : IsZLattice ℝ (euclidean.integerLattice K) := by
-  simp_rw [euclidean.integerLattice]
-  infer_instance
+instance : IsZLattice ℝ (euclidean.integerLattice K) :=
+  ⟨Submodule.IsFullLattice.span_eq_top⟩
 
 end euclidean
 
