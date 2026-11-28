@@ -381,6 +381,20 @@ lemma jacobiTheta₂_add_right (z τ : ℂ) : jacobiTheta₂ z (τ + 2) = jacobi
   rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)),
     Complex.exp_intCast_mul, exp_two_pi_mul_I, one_zpow]
 
+lemma jacobiTheta₂_term_add_one_right (n : ℤ) (z τ : ℂ) :
+    jacobiTheta₂_term n z (τ + 1) = jacobiTheta₂_term n (z + 1 / 2) τ := by
+  obtain ⟨m, hm⟩ := Int.even_mul_pred_self n
+  rw [jacobiTheta₂_term, jacobiTheta₂_term, Complex.exp_eq_exp_iff_exists_int]
+  refine ⟨m, ?_⟩
+  have : (n * (n - 1) : ℂ) = m + m := mod_cast hm
+  linear_combination π * I * this
+
+/-- Translating `τ` by 1 in the two-variable Jacobi theta function amounts to translating `z`
+by `1 / 2`. -/
+lemma jacobiTheta₂_add_one_right (z τ : ℂ) :
+    jacobiTheta₂ z (τ + 1) = jacobiTheta₂ (z + 1 / 2) τ :=
+  tsum_congr (jacobiTheta₂_term_add_one_right · z τ)
+
 /-- The two-variable Jacobi theta function is periodic in `z` with period 1. -/
 lemma jacobiTheta₂_add_left (z τ : ℂ) : jacobiTheta₂ (z + 1) τ = jacobiTheta₂ z τ := by
   refine tsum_congr (fun n ↦ ?_)
@@ -415,6 +429,10 @@ lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jaco
   suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, mul_one]
   rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)),
     Complex.exp_intCast_mul, exp_two_pi_mul_I, one_zpow]
+
+lemma jacobiTheta₂'_add_one_right (z τ : ℂ) :
+    jacobiTheta₂' z (τ + 1) = jacobiTheta₂' (z + 1 / 2) τ :=
+  tsum_congr fun n ↦ by simp_rw [jacobiTheta₂'_term, jacobiTheta₂_term_add_one_right]
 
 lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacobiTheta₂' z τ := by
   unfold jacobiTheta₂' jacobiTheta₂'_term jacobiTheta₂_term
