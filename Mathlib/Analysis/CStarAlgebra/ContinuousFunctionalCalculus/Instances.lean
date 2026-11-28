@@ -296,8 +296,8 @@ theorem continuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y
     exact cfcₙHom_predicate _ _
 
 lemma toProd_cfcHom [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]
-    (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) (f : C(σ 𝕜 x, 𝕜)) :
-    (cfcHom ((hp₁ x).mpr hx) f).toProd =
+    (hx' : p₁ x) (f : C(σ 𝕜 x, 𝕜)) :
+    (cfcHom hx' f).toProd =
       (f ⟨x.fst, fst_mem_spectrum x⟩,
         cfcₙHom hx
           (f.comp (quasispectrumHomeomorphSpectrum x).toContinuousMap).toContinuousMapZero) := by
