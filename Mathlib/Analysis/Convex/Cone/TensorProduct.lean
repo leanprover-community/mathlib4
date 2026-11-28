@@ -21,8 +21,8 @@ finite-dimensional real topological vector space, this file proves that the mini
 tensor products are equal if and only if the simplicial cone is generating or the closed cone is
 salient (`IsPointed`, i.e., contains no line).
 
-The main theorem is an equivalence to a disjunction. This is to allow
-non-generating simplicial cones. This requires that the closed cone be salient.
+The main theorem is an equivalence to a disjunction. This is to allow non-generating
+simplicial cones. In this case the closed cone must also be salient.
 
 The generating condition concerns the ambient space rather than the cone: the minimal tensor
 product does not depend on the ambient space of the simplicial cone, but the maximal one does. If
