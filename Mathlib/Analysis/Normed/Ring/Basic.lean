@@ -712,6 +712,9 @@ theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq := nnNorm_eq
 @[deprecated (since := "2026-11-06")] alias enorm_eq := eNorm_eq
 
+instance instNormOneClass : NormOneClass ℝ≥0 where
+  norm_one := rfl
+
 end NNReal
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
@@ -774,6 +777,9 @@ class NormMulClass (α : Type*) [Norm α] [Mul α] : Prop where
 @[simp] lemma norm_mul [Norm α] [Mul α] [NormMulClass α] (a b : α) :
     ‖a * b‖ = ‖a‖ * ‖b‖ :=
   NormMulClass.norm_mul a b
+
+instance NNReal.instNormMulClass : NormMulClass ℝ≥0 where
+  norm_mul _ _ := rfl
 
 section SeminormedAddCommGroup
 
