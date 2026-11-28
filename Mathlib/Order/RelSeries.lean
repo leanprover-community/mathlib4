@@ -12,6 +12,7 @@ public import Mathlib.Basic.Rel
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Logic.Function.Const
 
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.OrderIsoNat
@@ -192,33 +193,74 @@ instance membership : Membership α (RelSeries r) :=
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
+@[simp] theorem mem_mk {n f step} : x ∈ RelSeries.mk (r := r) n f step ↔ x ∈ Set.range f := by
+  simp [mem_def]
+
+-- To simplified `x ∈ Set.range s` (which is simplified to `∃ y, s y = x` firstly) into `x ∈ s`.
+@[simp] theorem exists_apply_eq_iff : (∃ y, s y = x) ↔ x ∈ s := by simp [mem_def]
+
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
 
-theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
+/-- Every relation series gives a finite set. -/
+noncomputable def toFinset (s : RelSeries r) : Finset α :=
+  letI := Classical.decEq α; Finset.univ.image s
+
+theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.univ.image s := by
+  grind [toFinset]
+
+@[simp] theorem mem_toFinset_iff_mem : x ∈ s.toFinset ↔ x ∈ s := by classical simp [toFinset_def]
+
+@[simp] theorem ofPred_mem_eq_setRange : {l | l ∈ s} = Set.range s := by ext; simp
+
+@[simp] theorem coe_toFinset_eq_setRange : (s.toFinset : Set α) = Set.range s := by ext; simp
+
+@[simp] theorem apply_mem {i} : s i ∈ s := Set.mem_range_self _
+
+@[simp] theorem toList_toFinset [DecidableEq α] : s.toList.toFinset = s.toFinset := by ext; simp
+
+theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : (Set.range s).Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
   exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
-theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
+theorem length_ne_zero_of_nontrivial (h : (Set.range s).Nontrivial) : s.length ≠ 0 :=
   fun hs ↦ h.not_subsingleton <| subsingleton_of_length_eq_zero hs
 
-theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :=
+theorem length_ne_zero_of_nontrivial_toFinset (h : s.toFinset.Nontrivial) : s.length ≠ 0 :=
+  length_ne_zero_of_nontrivial <| by simpa [← coe_toFinset_eq_setRange] using h
+
+theorem length_pos_of_nontrivial (h : (Set.range s).Nontrivial) : 0 < s.length :=
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
 
-theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
-  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def],
+theorem length_pos_of_nontrivial_toFinset (h : s.toFinset.Nontrivial) : 0 < s.length :=
+  length_pos_of_nontrivial <| by simpa [← coe_toFinset_eq_setRange] using h
+
+theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ (Set.range s).Nontrivial := by
+  refine ⟨fun h ↦ ⟨s 0, by simp, s 1, by simp,
     fun rid ↦ r.irrefl (s 0) ?_⟩, length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
   convert! s.step ⟨0, by lia⟩
   ext
   simpa [Nat.pos_iff_ne_zero]
 
-theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
+theorem length_ne_zero' [r.IsIrrefl] : s.length ≠ 0 ↔ s.toFinset.Nontrivial := by
+  simp [length_ne_zero, ← coe_toFinset_eq_setRange]
+
+@[simp] theorem nontrivial_toFinset_iff [r.IsIrrefl] : s.toFinset.Nontrivial ↔ s.length ≠ 0 :=
+  length_ne_zero'.symm
+
+theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ (Set.range s).Nontrivial :=
   Nat.pos_iff_ne_zero.trans length_ne_zero
 
-lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
+theorem length_pos' [r.IsIrrefl] : 0 < s.length ↔ s.toFinset.Nontrivial := by
+  simp [length_pos, ← coe_toFinset_eq_setRange]
+
+lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ (Set.range s).Subsingleton := by
   rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
+
+@[simp] theorem isConst_iff [r.IsIrrefl] : Function.IsConst s ↔ s.length = 0 := by
+  simp [length_eq_zero]
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
