@@ -84,10 +84,9 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
     Subtype.mk_eq_mk.1 (ha.2 ⟨b, hba.le.trans a.prop⟩ hba)⟩
 
 @[to_dual isCoatom_iff_ge_of_le]
-theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
-  and_congr_right' <|
-    forall_congr' fun b ↦ by
-      simp [@not_imp_comm (b = ⊥), lt_iff_le_not_ge]
+theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b := by
+  refine and_congr_right' <| forall_congr' ?_
+  grind [lt_iff_le_not_ge]
 
 @[to_dual]
 theorem minimal_ne_bot_iff : Minimal (· ≠ ⊥) a ↔ IsAtom a := by
