@@ -14,6 +14,7 @@ import Mathlib.Algebra.Group.Equiv.Opposite
 # Mul-opposite subgroups
 
 ## Tags
+
 subgroup, subgroups
 -/
 

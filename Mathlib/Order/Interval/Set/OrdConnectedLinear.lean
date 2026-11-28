@@ -11,6 +11,9 @@ public import Mathlib.Order.Lattice.Nat
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.SuccPred.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order-connected subsets of linear orders
 
@@ -18,7 +21,8 @@ In this file we provide some results about order-connected subsets of linear ord
 some convenience lemmas for characterising closed intervals in certain concrete types such as `ℤ`,
 `ℕ`, and `Fin n`.
 
-## Main results:
+## Main results
+
 * `Set.ordConnected_iff_disjoint_Ioo_empty`: a characterisation of `Set.OrdConnected` for
   locally-finite linear orders.
 * `Set.Nonempty.ordConnected_iff_of_bdd`: a characterisation of closed intervals for locally-finite

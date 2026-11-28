@@ -128,7 +128,6 @@ protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] 
 
 @[deprecated (since := "2026-09-08")] alias coe_coe := AlgHom.coe_ofClass
 
-@[simp]
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
@@ -150,10 +149,12 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
 theorem coe_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
 
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
+@[simp, norm_cast]
+theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
     ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
   rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
 
 @[simp, norm_cast]
 theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A →+* B) = f :=
@@ -166,15 +167,15 @@ theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
 theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `MonoidHom.ofClass`
 theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `AddMonoidHom.ofClass`
 theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
@@ -218,11 +219,6 @@ protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
-
-@[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
-  rfl
 
 @[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
 

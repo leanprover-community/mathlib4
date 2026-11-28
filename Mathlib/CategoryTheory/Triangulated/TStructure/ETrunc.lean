@@ -73,10 +73,6 @@ lemma eTruncLT_obj_bot : t.eTruncLT.obj ⊥ = 0 := rfl
 @[simp]
 lemma eTruncLT_obj_coe (n : ℤ) : t.eTruncLT.obj n = t.truncLT n := rfl
 
-@[simp]
-lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
-    t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
-
 instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
   induction i using WithBotTop.rec
   all_goals dsimp; infer_instance
@@ -150,6 +146,10 @@ noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
 @[simp] lemma eTruncLT_ι_bot : t.eTruncLTι ⊥ = 0 := rfl
 @[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
 @[simp] lemma eTruncLT_ι_top : t.eTruncLTι ⊤ = 𝟙 _ := rfl
+
+@[deprecated eTruncLT_ι_coe (since := "2026-11-26")]
+lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
+    t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
 @[reassoc]
 lemma eTruncLTι_naturality (i : EInt) {X Y : C} (f : X ⟶ Y) :
@@ -453,12 +453,11 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
     induction a using WithBotTop.rec with
     | bot => simpa using inferInstanceAs (IsIso ((t.truncLT b).map ((t.truncLTι b).app X)))
     | coe a =>
-      simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, eTruncLTGELTSelfToLTGE_app,
-        eTruncLT_map_eq_truncLTι]
+      simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, eTruncLTGELTSelfToLTGE_app, eTruncLT_ι_coe]
       infer_instance
     | top =>
       simp only [eTruncLT_obj_coe, eTruncGE_obj_top, Functor.comp_obj, eTruncLTGELTSelfToLTGE_app,
-        eTruncLT_map_eq_truncLTι, zero_map, Functor.map_zero, isIsoZero_iff_source_target_isZero]
+        eTruncLT_ι_coe, zero_map, Functor.map_zero, isIsoZero_iff_source_target_isZero]
       constructor
       all_goals exact Functor.map_isZero _ (Functor.zero_obj _)
   | top => simpa using inferInstanceAs (IsIso (𝟙 _))
@@ -475,8 +474,7 @@ instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
     | bot => simpa [isIsoZero_iff_source_target_isZero] using
         (t.eTruncGE.obj a).map_isZero (Functor.zero_obj _)
     | coe b =>
-      simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, eTruncLTGELTSelfToGELT_app,
-        eTruncLT_map_eq_truncLTι]
+      simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, eTruncLTGELTSelfToGELT_app, eTruncLT_ι_coe]
       infer_instance
     | top => simpa using inferInstanceAs (IsIso (𝟙 _))
   | top =>

@@ -19,7 +19,7 @@ This is a mirror of the corresponding notion for localizations of rings.
 
 * `IsLocalizedModule.IsInteger` is a predicate stating that `m : M'` is in the image of `M`
 
-## Implementation details
+## Implementation notes
 
 After `IsLocalizedModule` and `IsLocalization` are unified, the two `IsInteger` predicates
 can be unified.

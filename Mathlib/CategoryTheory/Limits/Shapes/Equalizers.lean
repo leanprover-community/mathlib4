@@ -35,6 +35,7 @@ Each of these has a dual.
   equalizer of `f` and `f`.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -569,6 +570,7 @@ def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
 If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
 `X ≅ X'` and `Y ≅ Y'`, the categories of forks are equivalent.
 -/
+@[implicit_reducible]
 def Fork.equivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
@@ -703,7 +705,7 @@ noncomputable abbrev equalizer.fork : Fork f g :=
 theorem equalizer.fork_ι : (equalizer.fork f g).ι = equalizer.ι f g :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem equalizer.fork_π_app_zero : (equalizer.fork f g).π.app zero = equalizer.ι f g :=
   rfl
 

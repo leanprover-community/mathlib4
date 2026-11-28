@@ -57,7 +57,6 @@ instance hasIntScalar : SMul ℤ (C ⟶ D) :=
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
 
-@[simp]
 theorem zero_f_apply (i : ι) : (0 : C ⟶ D).f i = 0 :=
   rfl
 
@@ -73,11 +72,9 @@ theorem neg_f_apply (f : C ⟶ D) (i : ι) : (-f).f i = -f.f i :=
 theorem sub_f_apply (f g : C ⟶ D) (i : ι) : (f - g).f i = f.f i - g.f i :=
   rfl
 
-@[simp]
 theorem nsmul_f_apply (n : ℕ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 
-@[simp]
 theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 

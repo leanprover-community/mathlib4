@@ -38,6 +38,7 @@ Intermediate fields are defined with a structure extending `Subfield` and `Subal
 A `Subalgebra` is closed under all operations except `⁻¹`,
 
 ## Tags
+
 intermediate field, field extension
 -/
 
@@ -98,7 +99,6 @@ theorem ext {S T : IntermediateField K L} (h : ∀ x, x ∈ S ↔ x ∈ T) : S =
 theorem coe_toSubalgebra : (S.toSubalgebra : Set L) = S :=
   rfl
 
-@[simp]
 theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
   rfl
 
@@ -414,14 +414,13 @@ instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R
     IsScalarTower R K S :=
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
 
-@[simp]
 theorem coe_smul {R} [SMul R K] [SMul R L] [IsScalarTower R K L] (r : R) (x : S) :
     ↑(r • x : S) = (r • (x : L)) :=
   rfl
 
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
-@[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
+lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
@@ -586,7 +585,6 @@ noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
 end AlgHom
 
 variable (K L L') in
-@[simp]
 theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
     (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
   ext; simp

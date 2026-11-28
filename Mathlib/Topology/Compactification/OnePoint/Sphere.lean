@@ -44,5 +44,6 @@ def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
   have hv₀ : v ≠ 0 := fun contra ↦ by simp [contra] at hv
   have : Fact (finrank ℝ (EuclideanSpace ℝ ι) = finrank ℝ V + 1) := ⟨by simp [h]⟩
   have hV : finrank ℝ V = finrank ℝ (ℝ ∙ v)ᗮ := (finrank_orthogonal_span_singleton hv₀).symm
-  letI e : V ≃ₜ (ℝ ∙ v)ᗮ := (FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq hV).some
+  letI e : V ≃ₜ (ℝ ∙ v)ᗮ :=
+    (FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq hV).some.toHomeomorph
   exact e.onePointCongr.trans <| onePointHyperplaneHomeoUnitSphere hv

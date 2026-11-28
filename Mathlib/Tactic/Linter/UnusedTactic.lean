@@ -53,6 +53,7 @@ Possible reason for whitelisting are
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
 
 ## TODO
+
 * The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
 ## Implementation notes

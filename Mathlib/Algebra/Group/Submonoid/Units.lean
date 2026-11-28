@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of units
 
@@ -20,7 +23,8 @@ of `M`. `Submonoid.units` and `Subgroup.ofUnits` form a Galois coinsertion.
 
 We also make the equivalent additive definitions.
 
-## Implementation details
+## Implementation notes
+
 There are a number of other constructions which are multiplicatively equivalent to `S.units` but
 which have a different type.
 

@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.Hom.Lattice
 
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
@@ -33,7 +35,7 @@ in the category of types.
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory Limits
 
@@ -69,6 +71,11 @@ lemma le₃₄ : x₃ ≤ x₄ := by grind
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
     (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
 
+lemma map {S : Type v} [Lattice S] (f : LatticeHom T S) :
+    BicartSq (f x₁) (f x₂) (f x₃) (f x₄) where
+  sup_eq := by rw [← map_sup, sq.sup_eq]
+  inf_eq := by rw [← map_inf, sq.inf_eq]
+
 end BicartSq
 
 end Lattice
@@ -94,7 +101,7 @@ variable {x u v} (d : MulticoequalizerDiagram x u v)
 /-- The multispan index in the category associated to the complete lattice `T`
 given by the objects `u i` and the minima `v i j = u i ⊓ u j`,
 when `d : MulticoequalizerDiagram x u v`. -/
-@[simps]
+@[simps, implicit_reducible]
 def multispanIndex : MultispanIndex (.prod ι) T where
   left := fun ⟨i, j⟩ ↦ v i j
   right := u
@@ -105,10 +112,16 @@ def multispanIndex : MultispanIndex (.prod ι) T where
 associated to `d : MulticoequalizerDiagram x u v` with `x : T`.
 (In the case `T := Set X`, this multicofork becomes colimit after the application
 of the obvious functor `Set X ⥤ Type _`.) -/
-@[simps! pt]
+@[simps! pt, implicit_reducible]
 def multicofork : Multicofork d.multispanIndex :=
   Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
+
+include d in
+lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S) :
+    MulticoequalizerDiagram (f x) (fun i ↦ f (u i)) (fun i j ↦ f (v i j)) where
+  iSup_eq := by rw [← d.iSup_eq,map_iSup]
+  eq_inf i j := by rw [d.eq_inf,map_inf]
 
 end MulticoequalizerDiagram
 

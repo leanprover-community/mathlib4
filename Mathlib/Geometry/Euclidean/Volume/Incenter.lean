@@ -19,6 +19,7 @@ that the volumes of faces are weights to characterize excenters, and the volume 
 be calculated using exradius.
 
 ## Main declarations
+
 * `Affine.Simplex.excenterWeightsFace` are volumes of faces attached with a sign. These are
   proportional to `Affine.Simplex.excenterWeights`. (See
   `Affine.Simplex.excenterWeights_eq_excenterWeightsFace_div`)

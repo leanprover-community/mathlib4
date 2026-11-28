@@ -493,8 +493,8 @@ homeomorphism `X ≃ₜ Y`
 -/
 @[simps]
 def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
-  toFun := comap e.symm
-  invFun := comap e
+  toFun := comap e.symm.toContinuousMap
+  invFun := comap e.toContinuousMap
   left_inv := by
     intro
     simp [comap_comap]

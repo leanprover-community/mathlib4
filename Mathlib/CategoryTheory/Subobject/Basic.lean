@@ -51,7 +51,7 @@ See also
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
 and was ported to mathlib by Kim Morrison.
 
-### Implementation note
+### Implementation notes
 
 Currently we describe `pullback`, `map`, etc., as functors.
 It may be better to just say that they are monotone functions,
@@ -119,14 +119,14 @@ attribute [local ext] CategoryTheory.Comma
 
 protected theorem ind {X : C} (p : Subobject X → Prop)
     (h : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], p (Subobject.mk f)) (P : Subobject X) : p P := by
-  induction P using Quotient.inductionOn' with | _ a
+  induction P using Quotient.inductionOn with | _ a
   exact h a.arrow
 
 protected theorem ind₂ {X : C} (p : Subobject X → Subobject X → Prop)
     (h : ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g],
       p (Subobject.mk f) (Subobject.mk g))
     (P Q : Subobject X) : p P Q := by
-  induction P, Q using Quotient.inductionOn₂' with | _ a b
+  induction P, Q using Quotient.inductionOn₂ with | _ a b
   exact h a.arrow b.arrow
 
 end
@@ -239,7 +239,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 
 @[simp]
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
-  Quotient.inductionOn' P fun Q => by
+  Quotient.inductionOn P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 
@@ -572,12 +572,12 @@ def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 
 theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
-  induction x using Quotient.inductionOn' with | _ f
+  induction x using Quotient.inductionOn with | _ f
   exact Quotient.sound ⟨MonoOver.pullbackId.app f⟩
 
 theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
-  induction x using Quotient.inductionOn' with | _ t
+  induction x using Quotient.inductionOn with | _ t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
 theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
@@ -648,12 +648,12 @@ lemma map_mk {A X Y : C} (i : A ⟶ X) [Mono i] (f : X ⟶ Y) [Mono f] :
   rfl
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
-  induction x using Quotient.inductionOn' with | _ f
+  induction x using Quotient.inductionOn with | _ f
   exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
-  induction x using Quotient.inductionOn' with | _ t
+  induction x using Quotient.inductionOn with | _ t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
 
 lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
@@ -703,7 +703,7 @@ theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} 
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))
     (p : Subobject Y) : (map g).obj ((pullback f).obj p) = (pullback k).obj ((map h).obj p) := by
   revert p
-  apply Quotient.ind'
+  apply Quotient.ind
   intro a
   apply Quotient.sound
   apply ThinSkeleton.equiv_of_both_ways
@@ -747,7 +747,7 @@ lemma exists_eq_mk_of_mono (f : X ⟶ Y) [Mono f] (X' : Subobject X) :
 
 theorem exists_le_exists_iff_of_mono (f : X ⟶ Y) [Mono f] (X₁ X₂ : Subobject X) :
     («exists» f).obj X₁ ≤ («exists» f).obj X₂ ↔ X₁ ≤ X₂ :=
-  Quotient.inductionOn₂' X₁ X₂ fun _ _ ↦
+  Quotient.inductionOn₂ X₁ X₂ fun _ _ ↦
     ⟨fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).preimage h⟩, fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).map h⟩⟩
 
 /-- `exists f : Subobject X ⥤ Subobject Y` is
@@ -771,7 +771,7 @@ theorem pullback_exists_eq_self_of_mono (f : X ⟶ Y) [Mono f] [HasPullbacks C]
 
 theorem exists_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject X) [HasPullbacks C] :
     («exists» (f ≫ g)).obj x = («exists» g).obj ((«exists» f).obj x) :=
-  Quotient.inductionOn' x fun _ ↦ Quotient.sound ⟨(MonoOver.existsComp f g).app _⟩
+  Quotient.inductionOn x fun _ ↦ Quotient.sound ⟨(MonoOver.existsComp f g).app _⟩
 
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`

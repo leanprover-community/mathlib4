@@ -49,7 +49,7 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
 
-## Implementation Details
+## Implementation notes
 
 `AddValuation R Γ₀` is implemented as `Valuation R (Multiplicative Γ₀)ᵒᵈ`.
 
@@ -383,8 +383,8 @@ alias OrderMonoidWithZeroHom.ofClass_monotone := ofClass_eq_toMonoidWithZeroHom
 /-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
 `Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
 def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
-  toFun := map f
-  invFun := map f.symm
+  toFun := map f.toOrderMonoidWithZeroHom
+  invFun := map f.symm.toOrderMonoidWithZeroHom
   left_inv _ := by ext; simp [map]
   right_inv _ := by ext; simp [map]
 

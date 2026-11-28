@@ -18,7 +18,8 @@ import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 This file contains an implementation of Geck's construction of a semisimple Lie algebra from a
 reduced crystallographic root system. It follows [Geck][Geck2017] quite closely.
 
-## Main definitions:
+## Main definitions and statements
+
 * `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to
   a root system with distinguished base.
 * `RootPairing.GeckConstruction.cartanSubalgebra`: a distinguished subalgebra corresponding to a
@@ -414,7 +415,7 @@ variable (N : LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R))
 /-- The equivalence `x ↦ ωxω` as an operation on Lie submodules of the Geck construction. -/
 def ωConjLieSubmodule :
     LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R) where
-  __ := N.toSubmodule.comap (ω b).toLin'
+  __ := N.toSubmodule.comap (ω b).mulVecLin
   lie_mem A {x} hx := by
     let A' : lieAlgebra b := ⟨ωConj b _, ωConj_mem_of_mem A.property⟩
     suffices ⁅A', ω b *ᵥ x⁆ ∈ N by simpa [A', mul_assoc] using this
@@ -427,7 +428,7 @@ def ωConjLieSubmodule :
 @[simp] lemma ωConjLieSubmodule_eq_top_iff : ωConjLieSubmodule N = ⊤ ↔ N = ⊤ := by
   rw [← LieSubmodule.toSubmodule_eq_top]
   let e : Submodule R (b.support ⊕ ι → R) ≃o Submodule R (b.support ⊕ ι → R) :=
-    Submodule.orderIsoMapComapOfBijective (ω b).toLin' (Involutive.bijective fun x ↦ by simp)
+    Submodule.orderIsoMapComapOfBijective (ω b).mulVecLin (Involutive.bijective fun x ↦ by simp)
   change e.symm N = ⊤ ↔ _
   simp
 

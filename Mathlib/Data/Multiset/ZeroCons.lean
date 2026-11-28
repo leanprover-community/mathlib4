@@ -181,7 +181,7 @@ theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
 
 theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
     (∀ x ∈ a ::ₘ s, p x) ↔ p a ∧ ∀ x ∈ s, p x :=
-  Quotient.inductionOn' s fun _ => List.forall_mem_cons
+  Quotient.inductionOn s fun _ => List.forall_mem_cons
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
@@ -396,7 +396,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
     e.symm ▸ cons_le_cons _ (zero_le _)⟩
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
-  Quot.induction_on s fun l ↦ by simp only [← coe_singleton, quot_mk_to_coe'', coe_le,
+  Quot.induction_on s fun l ↦ by simp only [← coe_singleton, quot_mk_to_coe', coe_le,
     coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by

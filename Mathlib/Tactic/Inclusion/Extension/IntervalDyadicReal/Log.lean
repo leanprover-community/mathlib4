@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 
 /-!
 # `Real.log` extension for tactic `dyadic_interval`
 
 This file implements `Real.log` extension for the tactic `dyadic_interval`.
 
-## Implementation details
+## Implementation notes
 
 We first define `Inclusion.IntervalDyadicReal.smallArtanh`, which computes `artanh` of a small
 rational number `num / den` using the binary splitting method. Then we use the identity
@@ -45,76 +46,26 @@ returned as `(P, Q)` with `P / Q` equal to this sum.
 Note that the series converges slowly when the input is close to `1`. -/
 @[expose]
 def smallArtanh (num den : ℕ) (n : ℕ) : ℕ × ℕ :=
-  let r := go 0 n
-  (num * r.2.2, den * r.2.1)
-where
-  /-- Binary splitting auxiliary function: `go a b` returns `(P, Q, R)` on segment `[a, b)`.
-
-  `R` is the numerator of `∑ k ∈ Finset.Ico a b, ∏ j ∈ Finset.Ico a k, t (j + 1) / t j` put over
-  the common denominator of the term ratios `((2 * k + 1) * num ^ 2) / ((2 * k + 3) * den ^ 2)`. -/
-  go : ℕ → ℕ → ℕ × ℕ × ℕ := fun a b =>
-    match h : b - a with
-    | 0 => (1, 1, 0)
-    | 1 => ((2 * a + 1) * num ^ 2, (2 * a + 3) * den ^ 2, (2 * a + 3) * den ^ 2)
-    | _ + 2 =>
-      let m : ℕ := (a + b) / 2
-      let (Pl, Ql, Rl) : ℕ × ℕ × ℕ := go a m
-      let (Pr, Qr, Rr) : ℕ × ℕ × ℕ := go m b
-      (Pl * Pr, Ql * Qr, Qr * Rl + Pl * Rr)
-  termination_by a b => b - a
-  decreasing_by all_goals lia
+  let r := hypergeomPartialSum (fun j ↦ (2 * j + 1) * num ^ 2) (fun j ↦ (2 * j + 3) * den ^ 2) 0 n
+  (num * r.sumNum, den * r.den)
 
 namespace smallArtanh
 
-theorem go_spec (num den a b : ℕ) :
-    letI X := go num den a b
-    X.1 = ∏ i ∈ Ico a b, (2 * i + 1) * num ^ 2 ∧
-    X.2.1 = ∏ i ∈ Ico a b, (2 * i + 3) * den ^ 2 ∧
-    X.2.2 = ∑ i ∈ Ico a b,
-      (∏ j ∈ Ico a i, (2 * j + 1) * num ^ 2) * ∏ j ∈ Ico i b, (2 * j + 3) * den ^ 2 := by
-  fun_induction go num den a b with
-  | case1 a b h => simp [Ico_eq_empty_of_le (by lia : b ≤ a)]
-  | case2 a b h => simp [show b = a + 1 by lia]
-  | case3 a b n h m Pl Ql Rl hl Pr Qr Rr hr ihl ihr =>
-    rw [hl] at ihl
-    rw [hr] at ihr
-    obtain ⟨rfl, rfl, rfl⟩ := ihl
-    obtain ⟨rfl, rfl, rfl⟩ := ihr
-    dsimp only
-    split_ands
-    · apply prod_Ico_consecutive <;> lia
-    · apply prod_Ico_consecutive <;> lia
-    · have ham : a ≤ m := by lia
-      have hmb : m ≤ b := by lia
-      rw [mul_sum, mul_sum, ← sum_Ico_consecutive _ ham hmb]
-      congr 1 <;> refine sum_congr rfl fun i hi ↦ ?_
-      · rw [← prod_Ico_consecutive _ (Finset.mem_Ico.mp hi).2.le hmb]
-        ring
-      · rw [← prod_Ico_consecutive _ ham (Finset.mem_Ico.mp hi).1]
-        ring
-
 theorem den_ne_zero (num den n : ℕ) (hden : den ≠ 0) :
-    (smallArtanh num den n).2 ≠ 0 := by
-  simp only [smallArtanh, (go_spec num den 0 n).2.1]
-  simpa [hden] using prod_ne_zero_iff.mpr fun j _ => by positivity
+    (smallArtanh num den n).2 ≠ 0 :=
+  mul_ne_zero hden (hypergeomPartialSum_den_ne_zero _ (fun j ↦ by positivity) 0 n)
 
 theorem spec (num den n : ℕ) :
     letI X := smallArtanh num den n
     (X.1 : ℝ) / X.2 = ∑ k ∈ range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
   rw [smallArtanh]
   rcases eq_or_ne den 0 with rfl | hden; · simp
-  simp only [(go_spec num den 0 n).2.1, (go_spec num den 0 n).2.2]
+  rw [← (hypergeomPartialSum_spec (Nat.castRingHom ℝ) (fun j ↦ (2 * j + 1) * num ^ 2)
+    (fun j ↦ (2 * j + 3) * den ^ 2) (fun j ↦ by positivity) 0
+    (fun k ↦ (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1))
+    (fun j ↦ by push_cast [div_pow]; field) n).2]
   push_cast
-  rw [mul_div_mul_comm, div_eq_mul_inv (∑ _ ∈ _, _), sum_mul, mul_sum, Nat.Ico_zero_eq_range]
-  refine sum_congr rfl fun i hi => ?_
-  rw [← div_eq_mul_inv, Nat.Ico_zero_eq_range, ← prod_range_mul_prod_Ico _ (mem_range.mp hi).le,
-    mul_div_mul_right _ _ (prod_ne_zero_iff.mpr fun j _ => by positivity), ← prod_div_distrib]
-  induction i with
-  | zero => simp
-  | succ i ih =>
-    specialize ih (by grind)
-    simp_rw [prod_range_succ, ← _root_.mul_assoc, ih, div_pow, Nat.cast_add, Nat.cast_one, fieldEq]
-    ring
+  ring
 
 /-- The partial sums computed by `smallArtanh` are lower bounds for `artanh (num / den)`. -/
 theorem div_le_artanh {num den : ℕ} (h : num < den) (n : ℕ) :

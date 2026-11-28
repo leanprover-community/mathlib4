@@ -50,6 +50,7 @@ related basic results.
   and a continuous intertwining map `f : π.restrict φ →ⁱL π'`, given by `F ↦ f ∘ F ∘ φ`.
 
 ## Tags
+
 continuous representation, algebra
 -/
 
@@ -149,6 +150,9 @@ instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
   coe_injective := toFun_injective
 
 lemma id_apply (v : V) : (.id : π₁ →ⁱL π₁) v = v := rfl
+
+@[simp]
+lemma coe_toContinuousLinearMap (f : π₁ →ⁱL π₂) : ⇑f.toContinuousLinearMap = f := rfl
 
 lemma toContinuousLinearMap_apply (f : π₁ →ⁱL π₂) (v : V) :
   f.toContinuousLinearMap v = f v := rfl
@@ -610,7 +614,7 @@ is an intertwining map. -/
 def coind₁ (π : ContRepresentation R G V) :
     ContRepresentation R G C(G, V) where
   toMonoidHom.toFun g := {
-    toFun f := .comp (π g) (f.comp (ContinuousMap.mulLeft g⁻¹))
+    toFun f := .comp (π g).toContinuousMap (f.comp (ContinuousMap.mulLeft g⁻¹))
     map_add' _ _ := by ext; simp
     map_smul' _ _ := by ext; simp
     cont := (continuous_postcomp _).comp (continuous_precomp _)
@@ -626,7 +630,7 @@ lemma coind₁_apply_apply (π : ContRepresentation R G V) (g : G) (f : C(G, V))
 @[simps]
 def coind₁Map {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} (f : π₁ →ⁱL π₂) :
     coind₁ π₁ →ⁱL coind₁ π₂ where
-  toFun := (f : ContinuousMap _ _).comp
+  toFun := f.toContinuousMap.comp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   isIntertwining' g := by ext; simp [f.isIntertwining]

@@ -20,6 +20,7 @@ We gather results about cyclotomic extensions of `ℚ`. In particular, we comput
 integers of a cyclotomic extension of `ℚ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton`: if `K` is a cyclotomic
   extension of `ℚ`, then `adjoin ℤ {ζ}` is the integral closure of `ℤ` in `K`.
 * `IsCyclotomicExtension.Rat.cyclotomicRing_isIntegralClosure`: the integral
@@ -217,6 +218,13 @@ lemma toInteger_isPrimitiveRoot {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k
   IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective
 
 variable [CharZero K]
+
+/-- The minimal polynomial over `ℤ` of a primitive `k`-th root of unity seen in `𝓞 K` is the
+`k`-th cyclotomic polynomial. -/
+@[simp]
+theorem minpoly_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) :
+    minpoly ℤ hζ.toInteger = cyclotomic k ℤ := by
+  rw [← RingOfIntegers.minpoly_coe, hζ.coe_toInteger, cyclotomic_eq_minpoly hζ (NeZero.pos k)]
 
 @[simp]
 theorem integralPowerBasisOfPrimePow_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]

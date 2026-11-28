@@ -275,7 +275,6 @@ section invariantsResMap
 
 variable {G H : Type*} [Group G]
 
-@[simp]
 lemma resFunctor_map_hom [Monoid H] (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
     ((resFunctor φ).map f).hom = f.hom.restrict φ := rfl
 

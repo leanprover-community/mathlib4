@@ -70,6 +70,13 @@ end
 
 export ZeroAtInftyContinuousMapClass (zero_at_infty)
 
+/-- Turn a bundled morphism with a `ZeroAtInftyContinuousMapClass` instance into a
+`ZeroAtInftyContinuousMap`. -/
+def ZeroAtInftyContinuousMap.ofClass [Zero β] [TopologicalSpace β] [FunLike F α β]
+    [ZeroAtInftyContinuousMapClass F α β] (f : F) : α →C₀ β :=
+  { ContinuousMap.ofClass f with
+    zero_at_infty' := zero_at_infty f }
+
 namespace ZeroAtInftyContinuousMap
 
 section Basics
@@ -88,11 +95,8 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass C₀(
   map_continuous f := f.continuous_toFun
   zero_at_infty f := f.zero_at_infty'
 
-instance instCoeTC : CoeTC F C₀(α, β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      zero_at_infty' := zero_at_infty f }⟩
+@[simp]
+protected theorem coe_ofClass (f : F) : ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem coe_toContinuousMap (f : C₀(α, β)) : (f.toContinuousMap : α → β) = f :=
@@ -137,7 +141,10 @@ def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β)
   toFun f :=
     { toFun := f
       zero_at_infty' := by simp }
-  invFun f := f
+  invFun f := f.toContinuousMap
+
+lemma ContinuousMap.liftZeroAtInfty_symm_apply_apply [CompactSpace α] (f : C₀(α, β)) (a : α) :
+    liftZeroAtInfty.symm f a = f a := rfl
 
 /-- A continuous function on a compact space is automatically a continuous function vanishing at
 infinity. This is not an instance to avoid type class loops. -/
@@ -178,7 +185,8 @@ protected theorem zero_apply [Zero β] : (0 : C₀(α, β)) x = 0 :=
 
 instance instMul [MulZeroClass β] [ContinuousMul β] : Mul C₀(α, β) :=
   ⟨fun f g =>
-    ⟨f * g, by simpa only [mul_zero] using! (zero_at_infty f).mul (zero_at_infty g)⟩⟩
+    ⟨f.toContinuousMap * g.toContinuousMap,
+      by simpa only [mul_zero] using! (zero_at_infty f).mul (zero_at_infty g)⟩⟩
 
 instance [MulZeroClass β] [ContinuousMul β] : IsMulApply C₀(α, β) where
 
@@ -198,7 +206,8 @@ instance instSemigroupWithZero [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C₀(α, β) := fast_instance% FunLike.semigroupWithZero
 
 instance instAdd [AddZeroClass β] [ContinuousAdd β] : Add C₀(α, β) :=
-  ⟨fun f g => ⟨f + g, by simpa only [add_zero] using! (zero_at_infty f).add (zero_at_infty g)⟩⟩
+  ⟨fun f g => ⟨f.toContinuousMap + g.toContinuousMap,
+    by simpa only [add_zero] using! (zero_at_infty f).add (zero_at_infty g)⟩⟩
 
 instance [AddZeroClass β] [ContinuousAdd β] : IsAddApply C₀(α, β) where
 
@@ -215,7 +224,7 @@ instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C�
 
 instance instSMul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C₀(α, β) :=
-  ⟨fun r f => ⟨r • f, by simpa [smul_zero] using! (zero_at_infty f).const_smul r⟩⟩
+  ⟨fun r f => ⟨r • f.toContinuousMap, by simpa [smul_zero] using! (zero_at_infty f).const_smul r⟩⟩
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     IsSMulApply R C₀(α, β) where
@@ -246,7 +255,7 @@ section AddGroup
 variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C₀(α, β))
 
 instance instNeg : Neg C₀(α, β) :=
-  ⟨fun f => ⟨-f, by simpa only [neg_zero] using! (zero_at_infty f).neg⟩⟩
+  ⟨fun f => ⟨-f.toContinuousMap, by simpa only [neg_zero] using! (zero_at_infty f).neg⟩⟩
 
 instance : IsNegApply C₀(α, β) where
 
@@ -259,7 +268,8 @@ theorem neg_apply : (-f) x = -f x :=
   rfl
 
 instance instSub : Sub C₀(α, β) :=
-  ⟨fun f g => ⟨f - g, by simpa only [sub_zero] using! (zero_at_infty f).sub (zero_at_infty g)⟩⟩
+  ⟨fun f g => ⟨f.toContinuousMap - g.toContinuousMap,
+    by simpa only [sub_zero] using! (zero_at_infty f).sub (zero_at_infty g)⟩⟩
 
 instance : IsSubApply C₀(α, β) where
 
@@ -377,9 +387,11 @@ instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapC
     map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }
 
 /-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
-@[simps!]
 def toBCF (f : C₀(α, β)) : α →ᵇ β :=
-  ⟨f, map_bounded f⟩
+  ⟨f.toContinuousMap, map_bounded f⟩
+
+@[simp]
+lemma toBCF_apply (f : C₀(α, β)) (a : α) : f.toBCF a = f a := rfl
 
 section
 
@@ -587,7 +599,7 @@ variable [Zero δ]
 /-- Composition of a continuous function vanishing at infinity with a cocompact map yields another
 continuous function vanishing at infinity. -/
 def comp (f : C₀(γ, δ)) (g : β →co γ) : C₀(β, δ) where
-  toContinuousMap := (f : C(γ, δ)).comp g
+  toContinuousMap := f.toContinuousMap.comp g.toContinuousMap
   zero_at_infty' := (zero_at_infty f).comp (cocompact_tendsto g)
 
 @[simp]
