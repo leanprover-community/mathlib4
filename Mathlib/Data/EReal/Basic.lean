@@ -101,6 +101,7 @@ instance : Coe ℝ≥0∞ EReal :=
 @[simp, norm_cast] lemma _root_.ENNReal.toEReal_zero : ((0 : ℝ≥0∞) : EReal) = 0 := rfl
 @[simp, norm_cast] lemma _root_.ENNReal.toEReal_one : ((1 : ℝ≥0∞) : EReal) = 1 := rfl
 
+@[simp, norm_cast]
 lemma _root_.ENNReal.toEReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : ℝ) : EReal) = ofNat(n) := rfl
 
