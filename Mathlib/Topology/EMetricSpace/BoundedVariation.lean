@@ -410,31 +410,56 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
     ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 
+section SuccOrder
+
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [SuccOrder ι]
+
+/-- A version of `eVariationOn.sum` indexed by any locally finite linear successor order, such as
+`ℤ`, `ℕ+` or `Fin n`. -/
+theorem sum_Ico (f : α → E) {s : Set α} {u : ι → α} {m n : ι} (hmn : m ≤ n)
+    (hu : MonotoneOn u (Icc m n)) (hs : ∀ i ∈ Ioo m n, u i ∈ s) :
+    ∑ i ∈ Finset.Ico m n, eVariationOn f (s ∩ Icc (u i) (u (Order.succ i))) =
+      eVariationOn f (s ∩ Icc (u m) (u n)) := by
+  induction hmn using Succ.rec with
+  | rfl => simp [Subsingleton.inter_singleton]
+  | succ n hmn ih =>
+    obtain hmax | hmax := em (IsMax n)
+    · rw [hmax.succ_eq] at hu hs ⊢
+      exact ih hu hs
+    have hn := Order.lt_succ_of_not_isMax hmax
+    obtain rfl | hmn := hmn.eq_or_lt
+    · simp [Finset.Ico_succ_right_eq_Icc_of_not_isMax hmax]
+    have hu' := hu.mono <| Icc_subset_Icc_right hn.le
+    calc
+      _ = eVariationOn f (s ∩ Icc (u m) (u n)) +
+            eVariationOn f (s ∩ Icc (u n) (u (Order.succ n))) := by
+        rw [← Finset.insert_Ico_right_eq_Ico_succ_of_not_isMax hmn.le hmax,
+          Finset.sum_insert (by simp), add_comm, ih hu' fun i hi ↦ hs i ⟨hi.1, hi.2.trans hn⟩]
+      _ = eVariationOn f (s ∩ Icc (u m) (u (Order.succ n))) :=
+        Icc_add_Icc f (hu' ⟨le_rfl, hmn.le⟩ ⟨hmn.le, le_rfl⟩ hmn.le)
+          (hu ⟨hmn.le, hn.le⟩ ⟨hmn.le.trans hn.le, le_rfl⟩ hn.le) (hs n ⟨hmn, hn⟩)
+
+/-- A version of `eVariationOn.sum'` indexed by any locally finite linear successor order, such as
+`ℤ`, `ℕ+` or `Fin n`. -/
+theorem sum_Ico' (f : α → E) {u : ι → α} {m n : ι} (hmn : m ≤ n) (hu : MonotoneOn u (Icc m n)) :
+    ∑ i ∈ Finset.Ico m n, eVariationOn f (Icc (u i) (u (Order.succ i))) =
+      eVariationOn f (Icc (u m) (u n)) := by
+  simpa using sum_Ico f (s := univ) hmn hu (by simp)
+
+end SuccOrder
+
 theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : ℕ}
     (hn : ∀ i, 0 < i → i < n → E i ∈ s) :
     ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =
       eVariationOn f (s ∩ Icc (E 0) (E n)) := by
-  induction n with
-  | zero => simp [Subsingleton.inter_singleton]
-  | succ n ih =>
-    by_cases hn₀ : n = 0
-    · simp [hn₀]
-    rw [← Icc_add_Icc (b := E n)]
-    · rw [← ih (by intros; apply hn <;> omega), Finset.sum_range_succ]
-    · apply hE; lia
-    · apply hE; lia
-    · apply hn <;> omega
+  rw [Finset.range_eq_Ico]
+  exact sum_Ico f (Nat.zero_le n) (hE.monotoneOn _) fun i hi ↦ hn i hi.1 hi.2
 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))
      = eVariationOn f (Icc (I 0) (I n)) := by
-  convert!
-      sum f hI (s := Icc (I 0) (I n)) (n := n)
-        (hn := by intros; rw [mem_Icc]; constructor <;> (apply hI; lia))
-    with i hi
-  · simp only [right_eq_inter]
-    gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
-  · simp
+  rw [Finset.range_eq_Ico]
+  exact sum_Ico' f (Nat.zero_le n) (hI.monotoneOn _)
 
 /-- The variation of `f` on a two-point set `{a, b}` is the distance between its two values. -/
 @[simp]
