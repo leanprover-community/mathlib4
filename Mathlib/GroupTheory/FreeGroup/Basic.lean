@@ -641,6 +641,15 @@ theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
   simp [Red.singleton_iff] at hx hy; simp_all
 
+@[to_additive (attr := simp)]
+theorem of_ne_one (a : α) : of a ≠ 1 := fun h ↦ by
+  obtain ⟨c, h₁, h₂⟩ := Red.exact.mp h
+  rw [Red.singleton_iff.mp h₁] at h₂
+  simp [Red.nil_iff] at h₂
+
+@[to_additive (attr := simp)]
+theorem one_ne_of (a : α) : 1 ≠ of a := (of_ne_one a).symm
+
 @[to_additive]
 theorem mk_eq_of (x : α) : mk [(x, true)] = of x := rfl
 
