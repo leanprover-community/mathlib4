@@ -77,7 +77,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction ℝ) :
     On the left, `μ [y, x] / (x - y)` again tends to the Radon-Nikodym derivative.
     As `μ [y, x] = f x - f (y^-)`, this is not exactly the right result, so one uses a sandwiching
     argument to deduce the convergence for `(f x - f y) / (x - y)`. -/
-  filter_upwards [VitaliFamily.ae_tendsto_rnDeriv (vitaliFamily (volume : Measure ℝ) 1) f.measure,
+  filter_upwards [VitaliFamily.ae_tendsto_rnDeriv (vitaliFamily (volume : Measure ℝ)) f.measure,
     rnDeriv_lt_top f.measure volume, f.countable_leftLim_ne.ae_notMem volume] with x hx h'x h''x
   -- Limit on the right, following from differentiation of measures
   have L1 :
