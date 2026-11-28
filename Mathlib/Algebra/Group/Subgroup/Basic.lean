@@ -157,6 +157,58 @@ theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
 def prodEquiv (H : Subgroup G) (K : Subgroup N) : H.prod K ≃* H × K :=
   { Equiv.Set.prod (H : Set G) (K : Set N) with map_mul' := fun _ _ => rfl }
 
+section FstSnd
+
+variable (G N)
+
+/-- `G` as a subgroup of `G × N`. -/
+@[to_additive
+  /-- `G` as a subgroup of `G × N`. -/]
+protected def fst : Subgroup (G × N) :=
+  (⊥ : Subgroup N).comap (MonoidHom.snd G N)
+
+/-- `G` as a subgroup of `G × N` is isomorphic to `G`. -/
+@[to_additive (attr := simps)
+  /-- `G` as a subgroup of `G × N` is isomorphic to `G`. -/]
+def fstEquiv : Subgroup.fst G N ≃* G where
+  toFun x := x.val.1
+  invFun g := ⟨⟨g, 1⟩, rfl⟩
+  map_mul' := by simp
+  left_inv x := by aesop (add simp Subgroup.fst)
+
+@[to_additive]
+theorem fst_map_fst : (Subgroup.fst G N).map (MonoidHom.fst G N) = ⊤ := by
+  aesop
+
+@[to_additive]
+theorem fst_map_snd : (Subgroup.fst G N).map (MonoidHom.snd G N) = ⊥ := by
+  aesop (add simp Subgroup.fst)
+
+/-- `N` as a subgroup of `G × N`. -/
+@[to_additive
+  /-- `N` as a subgroup of `G × N`. -/]
+protected def snd : Subgroup (G × N) :=
+  (⊥ : Subgroup G).comap (MonoidHom.fst G N)
+
+/-- `N` as a subgroup of `G × N` is isomorphic to `N`. -/
+@[to_additive (attr := simps)
+  /-- `N` as a subgroup of `G × N` is isomorphic to `N`. -/]
+def sndEquiv : Subgroup.snd G N ≃* N where
+  toFun x := x.val.2
+  invFun n := ⟨⟨1, n⟩, rfl⟩
+  map_mul' := by simp
+  left_inv x := by aesop (add simp Subgroup.snd)
+
+@[to_additive]
+theorem snd_map_fst : (Subgroup.snd G N).map (MonoidHom.fst G N) = ⊥ := by
+  aesop (add simp Subgroup.snd)
+
+@[to_additive]
+theorem snd_map_snd : (Subgroup.snd G N).map (MonoidHom.snd G N) = ⊤ := by
+  aesop
+
+end FstSnd
+
 section Pi
 
 variable {η : Type*} {f : η → Type*}
