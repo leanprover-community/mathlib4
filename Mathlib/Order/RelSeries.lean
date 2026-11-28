@@ -64,7 +64,7 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
 instance [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
 
-variable {r} (p : RelSeries r)
+variable {r} {p : RelSeries r}
 
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
@@ -82,10 +82,12 @@ lemma rel_or_eq_of_le [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (
     x i ~[r] x j ∨ x i = x j :=
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
+variable (p) in
 theorem toFun_injective [r.IsIrrefl] [r.IsTrans] : Function.Injective p := by
   refine fun i j heq ↦ le_antisymm ?_ ?_ <;>
     exact Fin.not_lt.mp (r.irrefl _ <| heq ▸ p.rel_of_lt ·)
 
+variable (p) in
 theorem length_lt_fintypeCard [Fintype α] [r.IsIrrefl] [r.IsTrans] : p.length < Fintype.card α := by
   simpa [Nat.add_one_le_iff] using Fintype.card_le_of_injective p p.toFun_injective
 
@@ -120,6 +122,7 @@ lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
+variable (p) in
 theorem nodup_toList [r.IsIrrefl] [r.IsTrans] : p.toList.Nodup :=
   List.nodup_ofFn_ofInjective p.toFun_injective
 
