@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
-public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Topology.Algebra.Module.TopDualPairing
@@ -42,8 +42,9 @@ The proof relies on the following result:
 * **Bipolar theorem** (`ProperCone.dual_dual_flip`): The double dual of a closed cone is itself.
 
 This requires:
-- Local convexity and Hausdorff separation (for Hahn-Banach)
-- A continuous perfect pairing between the module and its dual.
+* Hahn-Banach separation, which is available because a finite-dimensional Hausdorff real topological
+  vector space is locally convex
+* a continuous perfect pairing between the space and its dual
 
 ## Main results
 
@@ -88,7 +89,7 @@ section MainTheorems
 variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
-variable [FiniteDimensional ℝ F] [ContinuousSMul ℝ F] [LocallyConvexSpace ℝ F]
+variable [FiniteDimensional ℝ F] [ContinuousSMul ℝ F]
 
 open TensorProduct Module
 
@@ -99,6 +100,8 @@ lemma lid_rTensor_mem_of_mem_maxTensorProduct {C₁ : PointedCone ℝ E} {C₂ :
     {z : E ⊗[ℝ] F} (hz : z ∈ maxTensorProduct C₁ C₂.toPointedCone) {f : Dual ℝ E}
     (hf : f ∈ dual (Dual.eval ℝ E) (C₁ : Set E)) :
     TensorProduct.lid ℝ F (f.rTensor F z) ∈ C₂ := by
+  -- A finite-dimensional Hausdorff space is normable, hence locally convex.
+  have := isNormableSpace_of_finiteDimensional (𝕜 := ℝ) (E := F)
   rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
   intro g (hg : (g : F →ₗ[ℝ] ℝ) ∈ dual (Dual.eval ℝ F) (C₂ : Set F))
   have h := mem_maxTensorProduct.mp hz f hf g hg
