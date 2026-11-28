@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.FermatPsp
+public import Mathlib.Tactic.NormNum.Prime
 
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Tactic.Simproc.Factors
@@ -25,10 +26,8 @@ This file defines Carmichael numbers and proves Korselt's criterion about them.
 * `Nat.isCarmichael_iff_korselt`: Korselt's criterion for Carmichael numbers
 * `Nat.isCarmichael_561`: `561` is a Carmichael number
 
-## TODO
-
-* Prove (in a computationally efficient manner) that there are no Carmichael numbers
-  less than `561`.
+`decide`, `#eval` and `norm_num` know how to efficiently decide whether a number is Carmichael
+by leveraging Korselt's criterion.
 
 ## References
 
@@ -157,6 +156,10 @@ theorem IsCarmichael.three_le_card_primeFactors (h : IsCarmichael n) :
   exact h q hq (Dvd.intro_left p hn)
 
 /-- **Korselt's criterion** stated in a form suitable for concrete calculations. -/
+@[deprecated isCarmichael_iff_korselt
+  "Use `isCarmichael_iff_korselt` to reason about Korselt's criterion,
+  or `norm_num` or `decide` to decide whether a fixed natural number is Carmichael."
+  +typeChanged (since := "2026-11-06")]
 theorem isCarmichael_iff_korselt_primeFactorsList :
     n.IsCarmichael ↔
       2 < n ∧ ¬n.Prime ∧ n.primeFactorsList.Nodup ∧ ∀ p ∈ n.primeFactorsList, p - 1 ∣ n - 1 := by
@@ -164,14 +167,265 @@ theorem isCarmichael_iff_korselt_primeFactorsList :
   intro hn
   rw [squarefree_iff_nodup_primeFactorsList] <;> grind
 
+/-- Auxiliary function for the decidability of `IsCarmichael`.
+
+`korseltAux n fuel m d c` checks Korselt's criterion for the part `m` of `n` that has not been
+factored yet, by trial division of `m` by the odd numbers `d, d + 2, d + 4, ...`. It is meant
+to be called with `d ≥ 3` odd and with every prime factor of `m` being at least `d`, so that the
+first divisor of `m` found is always prime. The flag `c` records whether a prime factor of `n`
+has already been divided out.
+
+Each step does the following:
+* If `m ≤ 1`, return whether `m = 1`. Then all of `n` has been factored.
+* If `m < d * d`, then `m` is prime since it has no prime factor less than `d`. Return whether
+  `m - 1 ∣ n - 1` and `c` holds. `c` rules out the case where `n` itself is prime.
+* If `d ∣ m`, then `d` is a prime factor of `m`. Return `false` unless `d - 1 ∣ n - 1` and
+  `d * d` does not divide `m`. Otherwise divide `d` out of `m` and keep going with `d + 2` and
+  `c := true`.
+* If `d` does not divide `m`, keep going with `d + 2`.
+
+So `korseltAux n fuel m d c` holds iff `m` is squarefree, `p - 1 ∣ n - 1` for every prime
+factor `p` of `m`, and either `c` holds or `m` is not prime. In particular, `korseltAux n n n 3
+false` decides Korselt's criterion for odd `n`.
+
+The function is defined by structural recursion on `fuel`, rather than well-founded recursion on
+`m - d`, so that it can be evaluated by `decide`. It returns `false` once it runs out of fuel,
+which never happens as long as `m < fuel + d`. See `Nat.korseltAux_iff` for the precise statement.
+-/
+def korseltAux (n fuel m d : ℕ) (c : Bool) : Bool :=
+  if m.ble 1 then m.beq 1
+  else if m.blt (d * d) then c && ((n - 1) % (m - 1)).beq 0
+  else match fuel with
+    | 0 => false
+    | fuel + 1 =>
+      bif (m % d).beq 0 then
+        ((n - 1) % (d - 1)).beq 0 && !(m / d % d).beq 0 && korseltAux n fuel (m / d) (d + 2) true
+      else korseltAux n fuel m (d + 2) c
+
+/-- If all prime factors of `m` are at least `d`, where `d ≥ 3` is odd, and `d` does not divide `m`,
+then all prime factors of `m` are at least `d + 2`. -/
+private lemma add_two_le_of_forall_prime_dvd {m d : ℕ} (hd : 3 ≤ d) (hdo : d % 2 = 1)
+    (hm : ∀ p, p.Prime → p ∣ m → d ≤ p) (hdm : ¬ d ∣ m) (p : ℕ) (hp : p.Prime) (hpm : p ∣ m) :
+    d + 2 ≤ p := by grind [hp.eq_two_or_odd]
+
+theorem korseltAux_iff {n fuel m d : ℕ} {c : Bool} (hd : 3 ≤ d) (hdo : d % 2 = 1)
+    (hm : ∀ p, p.Prime → p ∣ m → d ≤ p) (hfuel : m < fuel + d) :
+    korseltAux n fuel m d c ↔
+      (c ∨ ¬ m.Prime) ∧ Squarefree m ∧ ∀ p, p.Prime → p ∣ m → p - 1 ∣ n - 1 := by
+  induction fuel generalizing m d c with
+  | zero | succ fuel ih =>
+  simp only [korseltAux, Bool.cond_eq_ite, Nat.ble_eq, Nat.blt_eq, Nat.beq_eq]
+  split_ifs with h₁ h₂
+  · obtain rfl | rfl : m = 0 ∨ m = 1 := (by lia) <;>
+      simp +contextual [not_prime_one, Prime.ne_one]
+  · have hmp : m.Prime := by
+      by_contra hmp
+      have h := hm _ (minFac_prime (by lia)) (minFac_dvd m)
+      have : d * d ≤ m := by grw [h, ← sq, minFac_sq_le_self _ hmp]; lia
+      lia
+    simp +contextual [← Nat.dvd_iff_mod_eq_zero, hmp, hmp.prime, prime_dvd_prime_iff_eq,
+     forall_comm]
+  -- when `fuel = 0`, the remaining goal contradicts `hfuel`
+  all_goals try exact absurd hfuel (by lia [d.le_mul_self])
+  all_goals first
+  | exact ih (by lia) (by lia) (add_two_le_of_forall_prime_dvd hd hdo hm
+      fun h ↦ ‹¬ m % d = 0› (Nat.mod_eq_zero_of_dvd h)) (by lia)
+  | have hdm : d ∣ m := Nat.dvd_of_mod_eq_zero ‹_›
+    have hdp : d.Prime := by
+      have := hm _ (minFac_prime (by lia : d ≠ 1)) ((minFac_dvd d).trans hdm)
+      exact prime_def_minFac.2 ⟨by lia, le_antisymm (minFac_le (by lia)) this⟩
+    obtain ⟨k, rfl⟩ := hdm
+    rw [Nat.mul_div_cancel_left _ (by lia)]
+    have hk : d ≤ k := Nat.le_of_mul_le_mul_left (not_lt.1 h₂) (by lia)
+    have hkdk : k < d * k := by nlinarith
+    have hnp : ¬ (d * k).Prime := not_prime_mul (by lia) (by lia)
+    by_cases hdk : d ∣ k
+    · have : ¬ Squarefree (d * k) := by
+        rw [squarefree_mul_iff, hdp.coprime_iff_not_dvd]
+        tauto
+      simp [Nat.dvd_iff_mod_eq_zero.1 hdk, this]
+    suffices (d - 1 ∣ n - 1 ∧ Squarefree k ∧ ∀ p, p.Prime → p ∣ k → p - 1 ∣ n - 1) ↔
+        Squarefree k ∧ ∀ p, p.Prime → p ∣ d * k → p - 1 ∣ n - 1 by
+      simpa [Bool.eq_false_iff, Nat.beq_eq, ← Nat.dvd_iff_mod_eq_zero, hdk, hnp,
+        squarefree_mul_iff, hdp.coprime_iff_not_dvd, hdp.prime.squarefree,
+        ih (by lia) (by lia) (add_two_le_of_forall_prime_dvd hd hdo
+          (fun p hp hpk ↦ hm p hp (dvd_mul_of_dvd_right hpk _)) hdk) (by lia)]
+    constructor
+    · rintro ⟨hn, hsq, h⟩
+      exact ⟨hsq, fun q hq hqd ↦ (hq.dvd_mul.1 hqd).elim
+        (fun h' ↦ (prime_dvd_prime_iff_eq hq hdp).1 h' ▸ hn) (h q hq)⟩
+    · rintro ⟨hsq, h⟩
+      exact ⟨h d hdp (dvd_mul_right _ _), hsq, fun q hq hqd ↦ h q hq (dvd_mul_of_dvd_right hqd _)⟩
+
+/-- Decidability of `IsCarmichael` via Korselt's criterion.
+
+This instance is suitable both for `#eval` and for `decide`. -/
+instance : DecidablePred IsCarmichael := fun n ↦
+  decidable_of_iff (2 < n ∧ Odd n ∧ korseltAux n n n 3 false) <| by
+    have (h : n % 2 = 1) :
+        korseltAux n n n 3 false ↔
+          ¬ n.Prime ∧ Squarefree n ∧ ∀ p, p.Prime → p ∣ n → p - 1 ∣ n - 1 := by
+      rw [korseltAux_iff le_rfl rfl _ (by lia)]
+      · simp
+      intro p hp hpn
+      have : p ≠ 2 := by rintro rfl; lia
+      grind [hp.two_le]
+    constructor <;> grind [isCarmichael_iff_korselt, IsCarmichael.odd]
+
+end Nat
+
+/-! ### `norm_num` extension -/
+
+namespace Mathlib.Meta.NormNum
+open Lean Meta Qq Nat
+variable {n m m' a : ℕ}
+
+/-- The invariant in the algorithm coming from Korselt's criterion.
+
+`KorseltInvt n m a` asserts that, provided `a` is prime, `m` is squarefree and all prime factors
+`q` of `m` satisfy `a < q` and `q - 1 ∣ n - 1`. -/
+def KorseltInvt (n m a : ℕ) : Prop :=
+  a.Prime → Squarefree m ∧ ∀ q, q.Prime → q ∣ m → a < q ∧ q - 1 ∣ n - 1
+
+lemma KorseltInvt.one (n a : ℕ) : KorseltInvt n (nat_lit 1) a :=
+  fun _ ↦ ⟨squarefree_one, fun _ hq h ↦ (hq.not_dvd_one h).elim⟩
+
+/-! The argument explicitness here is chosen to make only the numerals in the factorisation appear
+in the proof term. -/
+
+lemma KorseltInvt.mul (b : ℕ) (h₁ : b * m' = m) (h₂ : a.blt b) (h₃ : IsNat (minFac b) b)
+    (h₄ : ((n - 1) % (b - 1)).beq 0)
+    (H : KorseltInvt n m' b) : KorseltInvt n m a := fun ha ↦ by
+  have hab := Nat.blt_eq.mp h₂
+  have hb : b.Prime := prime_def_minFac.2 ⟨by grind [ha.two_le], by simpa using h₃.out⟩
+  obtain ⟨hsq, hm'⟩ := H hb
+  subst h₁
+  refine ⟨squarefree_mul_iff.2 ⟨hb.coprime_iff_not_dvd.2 fun h ↦ (hm' b hb h).1.false,
+    hb.prime.squarefree, hsq⟩, fun q hq hqd ↦ (hq.dvd_mul.1 hqd).elim (fun h ↦ ?_) fun h ↦ ?_⟩
+  · obtain rfl := (prime_dvd_prime_iff_eq hq hb).1 h
+    exact ⟨hab, Nat.dvd_of_mod_eq_zero (by simpa using h₄)⟩
+  · exact ⟨hab.trans (hm' q hq h).1, (hm' q hq h).2⟩
+
+lemma isCarmichael_of_korseltInvt (h₂ : Nat.blt 2 n) (hp : ¬ n.Prime) (H : KorseltInvt n n 2) :
+    IsCarmichael n := by
+  obtain ⟨hsq, h⟩ := H prime_two
+  exact isCarmichael_iff_korselt.2 ⟨Nat.blt_eq.mp h₂, hp, hsq, fun q hq hd ↦ (h q hq hd).2⟩
+
+lemma not_isCarmichael_of_ble_two (h : n.ble 2) : ¬ IsCarmichael n :=
+  fun hn ↦ by grind [hn.two_lt, Nat.ble_eq]
+
+lemma not_isCarmichael_of_mod_two_eq_zero (h : n % 2 = 0) : ¬ IsCarmichael n :=
+  fun hn ↦ by grind [hn.odd]
+
+lemma not_isCarmichael_of_mul_mul_eq (p k : ℕ) (h : p * p * k = n) (hp : Nat.blt 1 p) :
+    ¬ IsCarmichael n := fun hn ↦ by
+  have := Nat.isUnit_iff.mp <| hn.squarefree p ⟨k, h.symm⟩
+  grind [Nat.blt_eq]
+
+lemma not_isCarmichael_of_mul_eq (p k : ℕ) (h : p * k = n) (hp : p.Prime)
+    (hd : ((n - 1) % (p - 1)).beq 0 = false) : ¬ IsCarmichael n := fun hn ↦ by
+  have := hn.prime_sub_one_dvd hp ⟨k, h.symm⟩
+  simp_all [Nat.dvd_iff_mod_eq_zero]
+
+lemma isNat_isCarmichael : {n n' : ℕ} → IsNat n n' → IsCarmichael n' → IsCarmichael n
+  | _, _, ⟨rfl⟩, h => h
+
+lemma isNat_not_isCarmichael : {n n' : ℕ} → IsNat n n' → ¬ IsCarmichael n' → ¬ IsCarmichael n
+  | _, _, ⟨rfl⟩, h => h
+
+/-- Given a raw natural literal `ep` which is prime, produce a proof of `Nat.Prime ep`. -/
+meta def deriveNatPrime (ep : Q(ℕ)) : MetaM Q($(ep).Prime) := do
+  let p := ep.natLit!
+  let r : Q(Nat.ble 2 $ep) := (q(Eq.refl true) : Expr)
+  let .isNat _ _lit (h : Q(IsNat (minFac $ep) $ep)) ← evalMinFac.core ep ep q(.raw_refl _) p
+    | failure
+  return q(isNat_prime_2 (.raw_refl _) $r $h)
+
+/-- The `norm_num` extension which computes expressions of the form `Nat.IsCarmichael n`
+using Korselt's criterion. -/
+@[norm_num Nat.IsCarmichael _]
+meta def evalNatIsCarmichael : NormNumExt where eval {_ _} e := do
+  let .app (.const ``Nat.IsCarmichael _) (n : Q(ℕ)) ← whnfR e | failure
+  let ⟨nn, pn⟩ ← deriveNat n q(Nat.instAddMonoidWithOne)
+  let n' := nn.natLit!
+  let core : MetaM (Result q(Nat.IsCarmichael $nn)) := do
+    if n'.ble 2 then
+      let r : Q(Nat.ble $nn 2) := (q(Eq.refl true) : Expr)
+      return .isFalse q(not_isCarmichael_of_ble_two $r)
+    if n' % 2 = 0 then
+      let r : Q($nn % 2 = 0) := (q(Eq.refl 0) : Expr)
+      return .isFalse q(not_isCarmichael_of_mod_two_eq_zero $r)
+    -- Trial division of `n`, exiting as soon as we find a prime factor that is repeated or doesn't
+    -- satisfy Korselt's criterion.
+    -- We maintain the invariant that `m` is the part of `n` not yet factored,
+    -- that `m` has no prime factor less than `d` and that `prev` is the last prime factor found.
+    let mut m := n'
+    let mut d := 3
+    let mut prev := 0
+    let mut factors : Array ℕ := #[]
+    while (1).blt m do
+      while (d * d).ble m && !(m % d).beq 0 do
+        d := d + 2
+      let p' := bif (m % d).beq 0 then d else m
+      if p'.beq prev then
+        have ep : Q(ℕ) := mkRawNatLit p'
+        have ek : Q(ℕ) := mkRawNatLit (n' / (p' * p'))
+        let h : Q($ep * $ep * $ek = $nn) := (q(Eq.refl $nn) : Expr)
+        let r : Q((1).blt $ep) := (q(Eq.refl true) : Expr)
+        return .isFalse q(not_isCarmichael_of_mul_mul_eq $ep $ek $h $r)
+      if (n' - 1) % (p' - 1) ≠ 0 then
+        have ep : Q(ℕ) := mkRawNatLit p'
+        have ek : Q(ℕ) := mkRawNatLit (n' / p')
+        let h : Q($ep * $ek = $nn) := (q(Eq.refl $nn) : Expr)
+        let hp : Q($(ep).Prime) ← deriveNatPrime ep
+        let r : Q(Nat.beq (($nn - 1) % ($ep - 1)) 0 = false) := (q(Eq.refl false) : Expr)
+        return .isFalse q(not_isCarmichael_of_mul_eq $ep $ek $h $hp $r)
+      prev := p'
+      m := m / p'
+      factors := factors.push p'
+    if factors.size.beq 1 then
+      -- `n` is prime
+      let hp : Q($(nn).Prime) ← deriveNatPrime nn
+      return .isFalse q(Nat.Prime.not_isCarmichael $hp)
+    -- `n` has at least two distinct prime factors, hence is composite. We build
+    -- the proof of `KorseltInvt n n 2` from the factors found, starting from the largest one.
+    have elast : Q(ℕ) := mkRawNatLit factors.back!
+    let mut em : Q(ℕ) := mkRawNatLit 1
+    let mut pf : Expr := q(KorseltInvt.one $nn $elast)
+    for i in [0:factors.size].toList.reverse do
+      let b := factors[i]!
+      have eb : Q(ℕ) := mkRawNatLit b
+      have ea : Q(ℕ) := mkRawNatLit (if i.beq 0 then 2 else factors[i - 1]!)
+      have em' : Q(ℕ) := em
+      have em'' : Q(ℕ) := mkRawNatLit (b * em'.natLit!)
+      let H : Q(KorseltInvt $nn $em' $eb) := pf
+      let h₁ : Q($eb * $em' = $em'') := (q(Eq.refl $em'') : Expr)
+      let h₂ : Q(($ea).blt $eb) := (q(Eq.refl true) : Expr)
+      let .isNat _ _lit (h₃ : Q(IsNat (minFac $eb) $eb)) ← evalMinFac.core eb eb q(.raw_refl _) b
+        | failure
+      let h₄ : Q((($nn - 1) % ($eb - 1)).beq 0) := (q(Eq.refl true) : Expr)
+      pf := q(KorseltInvt.mul (a := $ea) $eb $h₁ $h₂ $h₃ $h₄ $H)
+      em := em''
+    let H : Q(KorseltInvt $nn $nn 2) := pf
+    let h₂ : Q((2).blt $nn) := (q(Eq.refl true) : Expr)
+    let hp : Q(¬ ($nn).Prime) := deriveNotPrime n' factors[0]! nn
+    return .isTrue q(isCarmichael_of_korseltInvt $h₂ $hp $H)
+  match ← core with
+  | .isTrue pf => return .isTrue q(isNat_isCarmichael $pn $pf)
+  | .isFalse pf => return .isFalse q(isNat_not_isCarmichael $pn $pf)
+  | _ => failure
+
+end Mathlib.Meta.NormNum
+
+namespace Nat
+
 /-- 561 is a Carmichael number. -/
-theorem isCarmichael_561 : IsCarmichael 561 := by
-  simp [isCarmichael_iff_korselt_primeFactorsList]
-  norm_num
+lemma isCarmichael_561 : IsCarmichael 561 := by norm_num
 
 /-- 1105 is a Carmichael number. -/
-theorem isCarmichael_1105 : IsCarmichael 1105 := by
-  simp [isCarmichael_iff_korselt_primeFactorsList]
-  norm_num
+lemma isCarmichael_1105 : IsCarmichael 1105 := by norm_num
+
+/-- 561 is the smallest Carmichael number. -/
+lemma isLeast_isCarmichael_561 : IsLeast {n | IsCarmichael n} 561 := by decide +kernel
 
 end Nat
