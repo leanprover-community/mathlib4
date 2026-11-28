@@ -34,7 +34,7 @@ transformations commute with these, then this natural transformation
 `RF₁₃ ⟶ RF₁₂ ⋙ RF₂₃` also commutes with shifts.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

@@ -35,7 +35,7 @@ TODO: Some lemmas around order topologies can likely be generalised from linear 
 or partial orders.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology WithTop WithBot
 

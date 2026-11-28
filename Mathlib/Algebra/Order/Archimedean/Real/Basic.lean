@@ -17,7 +17,7 @@ import Mathlib.Order.Interval.Set.Disjoint
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

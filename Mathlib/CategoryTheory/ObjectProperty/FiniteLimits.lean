@@ -22,7 +22,7 @@ is closed under finite limits. The dual definition `IsClosedUnderFiniteLimits`
 is also introduced.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

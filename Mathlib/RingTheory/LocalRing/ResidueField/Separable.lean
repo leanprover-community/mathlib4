@@ -46,7 +46,7 @@ algebra over `Localization.AtPrime p` in a compatible way with the action of `A`
 one, see `Localization.AtPrime.algebraMap_eq`.
 -/
 
-@[expose] public section
+public section
 
 open Ideal
 

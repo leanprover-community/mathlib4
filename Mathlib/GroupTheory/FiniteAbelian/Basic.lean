@@ -24,7 +24,7 @@ set_option doc.verso.suggestions false
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
 
-@[expose] public section
+public section
 
 open scoped DirectSum
 

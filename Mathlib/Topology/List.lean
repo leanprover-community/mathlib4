@@ -19,7 +19,7 @@ set_option doc.verso.suggestions false
 # Topology on lists and vectors
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Set Filter

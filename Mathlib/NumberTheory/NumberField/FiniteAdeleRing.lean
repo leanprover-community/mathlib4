@@ -29,7 +29,7 @@ adele ring, number field
 
 open scoped Finset
 
-@[expose] public section
+public section
 
 namespace NumberField
 

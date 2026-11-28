@@ -22,7 +22,7 @@ iff `K₃` is contractible, and `K₂ ⟶ K₃` is a homotopy equivalence
 iff `K₁`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits HomologicalComplex
 

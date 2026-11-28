@@ -14,7 +14,7 @@ set_option doc.verso.suggestions false
 # Functors which preserve `κ`-presentable objects
 -/
 
-@[expose] public section
+public section
 
 universe w
 

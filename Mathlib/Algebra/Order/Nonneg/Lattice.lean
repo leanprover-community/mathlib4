@@ -11,7 +11,7 @@ public import Mathlib.Order.CompleteLatticeIntervals
 # Lattice structures on the type of nonnegative elements
 -/
 
-@[expose] public section
+public section
 assert_not_exists Ring
 assert_not_exists IsOrderedMonoid
 
