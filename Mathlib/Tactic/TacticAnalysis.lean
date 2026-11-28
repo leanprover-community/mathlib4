@@ -90,6 +90,10 @@ structure Config where
   for example by `logWarningAt`; the framework tags the messages with the pass's option name.
   -/
   run : Array TacticNode → CommandElabM Unit
+  /-- An optional file-level pass over all tactic sequences. When this is present, `run` is not
+  called. This is useful for checks that must correlate executions of one source-level tactic
+  across tactic combinator branches. -/
+  runAll : Option (Array TacticNode → CommandElabM Unit) := none
 
 /-- The internal representation of a tactic analysis pass,
 extending `Config` with some declaration meta-information.
@@ -199,6 +203,17 @@ def findTacticSeqs (tree : InfoTree) : Array (Array TacticNode) :=
       return seqs
     return seqs.push tacs
 
+/-- Return every user-written tactic info node in an info tree, including repeated executions of
+one source-level tactic by combinators and generated induction cases. -/
+def findTacticNodes (tree : InfoTree) : Array TacticNode :=
+  tree.foldInfoTree (init := #[]) fun ctx tree nodes => match tree with
+    | .node (.ofTacticInfo i) _ =>
+      if !i.stx.isAtom && i.stx.getHeadInfo? matches some (.original ..) then
+        nodes.push ⟨ctx, i⟩
+      else
+        nodes
+    | _ => nodes
+
 /-- Tag `msg` as a finding of the pass enabled by `opt`, copying the shape of
 `Lean.Linter.logLint` (core has no `MessageData`-level helper for this, so keep the two in sync):
 the kind becomes `opt.name`, `Lean.Linter.linterMessageTag` sits directly inside it, and a note
@@ -235,10 +250,18 @@ def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : Comman
     config.opt.filter (getLinterValue · opts) |>.map ((·, config))
   if enabledConfigs.isEmpty then
     return
+  let mut seqs := #[]
+  let mut nodes := #[]
   for i in trees do
-    for seq in findTacticSeqs i do
-      for (opt, config) in enabledConfigs do
+    seqs := seqs ++ findTacticSeqs i
+    nodes := nodes ++ findTacticNodes i
+  for seq in seqs do
+    for (opt, config) in enabledConfigs do
+      if config.runAll.isNone then
         withLintTagging opt <| config.run seq
+  for (opt, config) in enabledConfigs do
+    if let some runAll := config.runAll then
+      withLintTagging opt <| runAll nodes
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
