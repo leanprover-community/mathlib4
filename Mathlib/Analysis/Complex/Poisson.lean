@@ -49,6 +49,36 @@ lemma herglotzRieszKernel_add_const (c w z : ℂ) :
   simp [herglotzRieszKernel_fun_def]
 
 /--
+The derivative of the Herglotz–Riesz kernel `herglotzRieszKernel c w z` with respect to `w`; see
+`hasDerivAt_herglotzRieszKernel`. Integrating `log ‖f ·‖` against this kernel yields the logarithmic
+derivative of `f`; see `MeromorphicOn.logDeriv_eq_circleAverage`.
+-/
+noncomputable def derivHerglotzRieszKernel (c w z : ℂ) : ℂ := 2 * (z - c) / (z - w) ^ 2
+
+lemma derivHerglotzRieszKernel_def (c w z : ℂ) :
+    derivHerglotzRieszKernel c w z = 2 * (z - c) / (z - w) ^ 2 := by rfl
+
+lemma derivHerglotzRieszKernel_fun_def (c w : ℂ) :
+    derivHerglotzRieszKernel c w = fun z ↦ 2 * (z - c) / (z - w) ^ 2 := by rfl
+
+lemma derivHerglotzRieszKernel_add_const (c w z : ℂ) :
+    derivHerglotzRieszKernel c w (z + c) = derivHerglotzRieszKernel 0 (w - c) z := by
+  simp [derivHerglotzRieszKernel_def, sub_sub_eq_add_sub]
+
+/--
+Away from its pole, the Herglotz–Riesz kernel `herglotzRieszKernel c w z` is differentiable in `w`,
+with derivative `derivHerglotzRieszKernel c w z`.
+-/
+theorem hasDerivAt_herglotzRieszKernel {c w z : ℂ} (hw : w ≠ z) :
+    HasDerivAt (herglotzRieszKernel c · z) (derivHerglotzRieszKernel c w z) w := by
+  have h₁ : z - c - (w - c) ≠ 0 := by simpa [sub_eq_zero] using hw.symm
+  simp only [herglotzRieszKernel_def, derivHerglotzRieszKernel_def]
+  convert (((hasDerivAt_id' w).sub_const c).const_add (z - c)).fun_div
+    (((hasDerivAt_id' w).sub_const c).const_sub (z - c)) h₁ using 1
+  rw [sub_sub_sub_cancel_right]
+  ring
+
+/--
 The Poisson kernel of integration.
 -/
 noncomputable def poissonKernel (c w z : ℂ) : ℝ :=
