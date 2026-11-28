@@ -235,7 +235,7 @@ lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤
   have H : p.support ⊆ Finset.range (n - m + 1) := by
     simp only [Finset.subset_iff, Finset.mem_range]
     exact fun x hx ↦ (le_natDegree_of_mem_supp _ hx).trans_lt (by lia)
-  rw [← p.sum_monomial_eq, Polynomial.sum_eq_of_subset _ (by simp) H]
+  rw [← p.sum_coeff_monomial, Finsupp.sum_of_support_subset _ H _ (by simp)]
   set k := n - m + 1
   replace H := show k ≤ n - m + 1 from le_rfl
   clear_value k

@@ -60,7 +60,7 @@ instance : Module.Free R R[X]_n := .of_basis <| basis ..
   change _ = ((⟨X ^ (i : ℕ), mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <|
       Nat.cast_lt.2 i.is_lt⟩ : R[X]_n) : R[X])
   refine congr_arg _ (Basis.apply_eq_iff.2 <| Finsupp.ext fun j ↦ ?_)
-  simp only [basis_repr, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
+  simp only [basis_repr, coeff_X_pow_apply, eq_comm, Finsupp.single_apply, Fin.ext_iff]
 
 variable (R m n) in
 /-- Basis for `R[X]_m × R[X]_n`. -/

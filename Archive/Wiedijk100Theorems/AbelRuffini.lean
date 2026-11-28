@@ -48,7 +48,7 @@ variable {R}
 theorem map_Phi {S : Type*} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
 
 @[simp]
-theorem coeff_zero_Phi : (Φ R a b).coeff 0 = (b : R) := by simp [Φ, coeff_X_pow]
+theorem coeff_zero_Phi : (Φ R a b).coeff 0 = (b : R) := by simp [Φ]
 
 @[simp]
 theorem coeff_five_Phi : (Φ R a b).coeff 5 = 1 := by
@@ -83,12 +83,8 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
     · intro n hn
       rw [mem_span_singleton]
       rw [degree_Phi] at hn; norm_cast at hn
-      interval_cases n <;>
-      simp +decide only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
-        hpb, ite_true, coeff_C_mul, ite_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
-        coeff_sub, add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
-    · simp only [degree_Phi, ← WithBot.coe_zero]
-      decide
+      interval_cases n <;> simp +decide [Φ, Int.natCast_dvd_natCast, hpa, hpb]
+    · simp +decide [degree_Phi]
     · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
       exact mt Int.natCast_dvd_natCast.mp hp2b
   all_goals exact Monic.isPrimitive (monic_Phi a b)

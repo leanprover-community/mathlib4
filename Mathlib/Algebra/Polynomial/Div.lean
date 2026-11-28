@@ -446,9 +446,9 @@ theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by
 theorem sum_modByMonic_coeff (hq : q.Monic) {n : ℕ} (hn : q.degree ≤ n) :
     (∑ i : Fin n, monomial i ((p %ₘ q).coeff i)) = p %ₘ q := by
   nontriviality R
-  exact
-    (sum_fin (fun i c => monomial i c) (by simp) ((degree_modByMonic_lt _ hq).trans_le hn)).trans
-      (sum_monomial_eq _)
+  rw [Fin.sum_univ_eq_sum_range fun i ↦ monomial i ((p %ₘ q).coeff i),
+    ← sum_coeff_eq_sum_range _ (by simp) _ ((degree_modByMonic_lt _ hq).trans_le hn),
+    sum_coeff_monomial]
 
 theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
     q * p /ₘ q = p := by

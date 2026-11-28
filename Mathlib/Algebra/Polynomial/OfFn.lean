@@ -83,13 +83,8 @@ theorem ofFn_degree_lt {n : ℕ} (v : Fin n → R) : (ofFn n v).degree < n := by
   · exact (natDegree_lt_iff_degree_lt h).mp
       <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr <| ne_zero_of_ofFn_ne_zero h) _
 
-theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
-    ∑ i : Fin n, monomial i (v i) := by
-  by_cases h : n = 0
-  · subst h
-    simp [ofFn]
-  · rw [as_sum_range' (ofFn n v) n <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v]
-    simp [Finset.sum_range]
+lemma ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v = ∑ i : Fin n, monomial i (v i) := by
+  rw [as_sum_range' (ofFn n v) n <| ofFn_degree_lt v]; simp [Finset.sum_range]
 
 theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
   simp [toFn, ofFn, LinearMap.pi]
