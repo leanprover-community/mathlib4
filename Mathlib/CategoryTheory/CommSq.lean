@@ -281,3 +281,108 @@ theorem fac_left [hsq : HasLift sq] : i ≫ sq.lift = f :=
 end CommSq
 
 end CategoryTheory
+
+namespace CategoryTheory
+
+namespace CommSq
+
+variable {C : Type*} [Category* C] {A A' B B' X X' Y Y' : C}
+  {f : A ⟶ B} {i : A ⟶ X} {p : B ⟶ Y} {g : X ⟶ Y}
+
+/-- A `CommSq` is a `CommSq` iff it is so after pulling its northwest corner back along an iso. -/
+lemma iff_of_iso_nw (ι : A' ≅ A) : CommSq f i p g ↔ CommSq (ι.hom ≫ f) (ι.hom ≫ i) p g := by
+  fconstructor <;> (rintro ⟨w⟩; constructor)
+  · simp [w]
+  · exact Epi.left_cancellation (f := ι.hom) _ _ <| by simpa using w
+
+/-- A `CommSq` is a `CommSq` iff it is so after rotating an iso past its northeast corner. -/
+lemma iff_of_iso_ne (ι : B ≅ B') : CommSq f i p g ↔ CommSq (f ≫ ι.hom) i (ι.inv ≫ p) g := by
+  fconstructor <;> (rintro ⟨w⟩; constructor)
+  · simp [w]
+  · simpa using w
+
+/-- A `CommSq` is a `CommSq` iff it is so after rotating an iso past its southwest corner. -/
+lemma iff_of_iso_sw (ι : X ≅ X') : CommSq f i p g ↔ CommSq f (i ≫ ι.hom) p (ι.inv ≫ g) := by
+  fconstructor <;> (rintro ⟨w⟩; constructor)
+  · simp [w]
+  · simpa using w
+
+/-- A `CommSq` is a `CommSq`  iff it is so after pulling its southeast corner back along an iso. -/
+lemma iff_of_iso_se (ι : Y ≅ Y') : CommSq f i p g ↔ CommSq f i (p ≫ ι.hom) (g ≫ ι.hom) := by
+  fconstructor <;> (rintro ⟨w⟩; constructor)
+  · simp [w]
+  · simpa using w
+
+
+@[to_dual (rename := f₁ ↔ g₂, g₁ ↔ f₂, hf₁ → hg₂) (reorder := hf₁ g₂ f₁ g₁, f₂ p₁, sq sq₁)
+  of_right_mono]
+lemma of_left_epi {f₁ : A ⟶ B'} [hf₁ : Epi f₁] {f₂ : B' ⟶ B} {p₁ : B' ⟶ Y'}
+    {g₁ : X ⟶ Y'} {g₂ : Y' ⟶ Y} (sq₁ : CommSq f₁ i p₁ g₁) (sq : CommSq (f₁ ≫ f₂) i p (g₁ ≫ g₂)) :
+    CommSq f₂ p₁ p g₂ where
+  w := by
+    fapply hf₁.left_cancellation
+    rw [← Category.assoc, sq.w, ← sq₁.w_assoc]
+
+namespace HasLift
+
+@[to_dual (rename := f₁ ↔ g₂, g₁ ↔ f₂, f ↔ g, hf₁ → hg₂)
+(reorder := hf₁ g₂ f₁ g₁, f₂ p₁ hf hg, sq hsq sq') of_fac_mono_right]
+lemma of_fac_epi_left
+    {f₁ : A ⟶ B'} [hf₁ : Epi f₁] (f₂ : B' ⟶ B) (hf : f₁ ≫ f₂ = f) (p₁ : B' ⟶ Y')
+    {g₁ : X ⟶ Y'} (g₂ : Y' ⟶ Y) (hg : g₁ ≫ g₂ = g) (sq : CommSq f₁ i p₁ g₁) [hsq : sq.HasLift]
+    (sq' : CommSq f i p g) : sq'.HasLift := .mk'
+  { l := sq.lift ≫ f₂
+    fac_right := by
+      have := sq.of_left_epi (by simpa [← hf, ← hg] using sq')
+      rw [Category.assoc, this.w, sq.fac_right_assoc, hg] }
+
+/-- A `CommSq` has a lift iff it has a lift after pulling its northwest corner back along an iso.
+-/
+lemma iff_of_iso_nw (ι : A' ≅ A) (sq : CommSq f i p g) :
+    sq.HasLift ↔ (CommSq.iff_of_iso_nw ι |>.mp sq).HasLift where
+  mp h := .mk' { l := sq.lift }
+  mpr h := .mk'
+    { l := lift (hsq := h)
+      fac_left := by apply Epi.left_cancellation (f := ι.hom); simp [← Category.assoc] }
+
+/-- A `CommSq` has a lift iff it has a lift after rotating an iso past its northeast corner. -/
+lemma iff_of_iso_ne (ι : B ≅ B') (sq : CommSq f i p g) :
+    sq.HasLift ↔ (CommSq.iff_of_iso_ne ι |>.mp sq).HasLift where
+  mp h := .mk' { l := sq.lift ≫ ι.hom }
+  mpr h := .mk'
+    { l := lift (hsq := h) ≫ ι.inv
+      fac_left := by rw [← Category.assoc, fac_left]; simp }
+
+/-- A `CommSq` has a lift iff it has a lift after rotating an iso past its southwest corner. -/
+lemma iff_of_iso_sw (ι : X ≅ X') (sq : CommSq f i p g) :
+    sq.HasLift ↔ (CommSq.iff_of_iso_sw ι |>.mp sq).HasLift where
+  mp h := .mk' { l := ι.inv ≫ sq.lift }
+  mpr h := .mk'
+    { l := ι.hom ≫ lift (hsq := h)
+      fac_left := by simp [← Category.assoc] }
+
+/-- A `CommSq` has a lift iff it has a lift after pulling its southeast corner back along an iso.
+-/
+lemma iff_of_iso_se (ι : Y ≅ Y') (sq : CommSq f i p g) :
+    sq.HasLift ↔ (CommSq.iff_of_iso_se ι |>.mp sq).HasLift where
+  mp h := .mk' { l := sq.lift }
+  mpr h := .mk'
+    { l := lift (hsq := h)
+      fac_right := by apply Mono.right_cancellation (f := ι.hom); simp }
+
+lemma whiskerRight (sq : CommSq f i p g) [hsq : HasLift sq]
+    {f' : B ⟶ B'} {g' : Y ⟶ Y'} {p' : B' ⟶ Y'} (sq' : CommSq f' p p' g') :
+    (sq.horiz_comp sq').HasLift := .mk'
+  { l := sq.lift ≫ f'
+    fac_right := by simp [sq'.w, sq.fac_right_assoc] }
+
+lemma whiskerLeft (sq : CommSq f i p g) [hsq : HasLift sq]
+    {f' : A' ⟶ A} {g' : X' ⟶ X} {i' : A' ⟶ X'} (sq' : CommSq f' i' i g') :
+    (sq'.horiz_comp sq).HasLift := .mk'
+  { l := g' ≫ sq.lift
+    fac_left := by rw [← sq'.w_assoc, sq.fac_left] }
+
+end HasLift
+end CommSq
+
+end CategoryTheory
