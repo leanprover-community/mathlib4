@@ -14,6 +14,9 @@ set_option doc.verso.suggestions false
 # Product of convex spaces
 
 This file defines the cartesian product of convex spaces.
+
+We also show that products, `Pi` types and `Finsupp` types of cancellative convex spaces are
+cancellative.
 -/
 
 open Convexity Finsupp
@@ -70,6 +73,12 @@ instance [ConvexSpace S X] [ConvexSpace S Y] [IsConvexCombComm R S X]
     · simpa using iConvexComb_comm f g fun e k ↦ (e k).fst
     · simpa using iConvexComb_comm f g fun e k ↦ (e k).snd
 
+instance [IsCancelConvexSpace R X] [IsCancelConvexSpace R Y] : IsCancelConvexSpace R (X × Y) where
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    ext
+    · exact isAffineMap_fst.eq_of_sConvexComb ha hw₁ hw₂ h
+    · exact isAffineMap_snd.eq_of_sConvexComb ha hw₁ hw₂ h
+
 end Prod
 
 namespace Pi
@@ -100,6 +109,10 @@ lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ∀ i, X i) (i : ι) :
 instance [∀ i, ConvexSpace S (X i)] [∀ i, IsConvexCombComm R S (X i)] :
     IsConvexCombComm R S (∀ i, X i) where
   iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
+
+instance [∀ i, IsCancelConvexSpace R (X i)] : IsCancelConvexSpace R (∀ i, X i) where
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    ext i; exact isAffineMap_eval.eq_of_sConvexComb ha hw₁ hw₂ h
 
 end Pi
 
@@ -135,6 +148,10 @@ lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ι →₀ X) (i : ι) :
 
 instance [ConvexSpace S X] [IsConvexCombComm R S X] : IsConvexCombComm R S (ι →₀ X) where
   iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
+
+instance [IsCancelConvexSpace R X] : IsCancelConvexSpace R (ι →₀ X) where
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    ext i; exact isAffineMap_eval.eq_of_sConvexComb ha hw₁ hw₂ h
 
 end Finsupp
 
