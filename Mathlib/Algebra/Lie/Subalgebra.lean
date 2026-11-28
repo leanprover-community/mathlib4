@@ -475,7 +475,7 @@ theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
 
 /-- The set of Lie subalgebras of a Lie algebra form a complete lattice.
 
-We provide explicit values for the fields `bot`, `top`, `inf` to get more convenient definitions
+We provide explicit values for the fields `bot`, `top`, `min` to get more convenient definitions
 than we would otherwise obtain from `completeLatticeOfInf`. -/
 instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
@@ -486,7 +486,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
       exact N.zero_mem'
     top := ⊤
     le_top := fun _ _ _ ↦ trivial
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·) -- Use the existing `min` instead of the one from `completeLatticeOfInf`
     le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }

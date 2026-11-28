@@ -311,7 +311,7 @@ def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
-  inf L M := ⟨L.val ⊓ M.val, fun x ↦ Filter.inter_mem_iff.2 ⟨L.property x, M.property x⟩⟩
+  min L M := ⟨L.val ⊓ M.val, fun x ↦ Filter.inter_mem_iff.2 ⟨L.property x, M.property x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
   inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
   le_inf _ _ _ h k :=

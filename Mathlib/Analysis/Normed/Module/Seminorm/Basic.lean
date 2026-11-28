@@ -446,7 +446,6 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
 
 noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
   { Seminorm.instSemilatticeSup with
-    inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
       ciInf_le_of_le bddBelow_range_add x <| by
         simp only [sub_self, map_zero, add_zero]; rfl
@@ -572,8 +571,8 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
-Note that, while `inf`, `sup` and `sSup` have good definitional properties (corresponding to
-the instances given here for `Inf`, `Sup` and `SupSet` respectively), `sInf s` is just
+Note that, while `min`, `max` and `sSup` have good definitional properties (corresponding to
+the instances given here for `Min`, `Max` and `SupSet` respectively), `sInf s` is just
 defined as the supremum of the lower bounds of `s`, which is not really useful in practice. If you
 need to use `sInf` on seminorms, then you should probably provide a more workable definition first,
 but this is unlikely to happen so we keep the "bad" definition for now. -/

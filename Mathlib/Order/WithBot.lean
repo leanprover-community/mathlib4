@@ -679,7 +679,7 @@ end PartialOrder
 
 @[to_dual]
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
-  sup
+  max
     -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊥, ⊥ => ⊥
     | (a : α), ⊥ => a
@@ -691,7 +691,7 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
 
 @[to_dual]
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) where
-  inf := .map₂ (· ⊓ ·)
+  min := .map₂ (· ⊓ ·)
   inf_le_left x y := by cases x <;> cases y <;> simp
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
