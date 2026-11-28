@@ -156,9 +156,11 @@ theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
 theorem toRingHom_eq_coe (f : α →+*o β) : f.toRingHom = f :=
   RingHom.ext fun _ => rfl
 
-@[simp]
-theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
+theorem toOrderAddMonoidHom_eq_ofClass (f : α →+*o β) : f.toOrderAddMonoidHom = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias toOrderAddMonoidHom_eq_coe :=
+  toOrderAddMonoidHom_eq_ofClass
 
 @[simp]
 theorem coe_toOrderMonoidWithZeroHom (f : α →+*o β) :
@@ -178,7 +180,11 @@ theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
 @[deprecated (since := "2026-05-05")] alias coe_coe_ringHom := coe_toRingHom
 
 @[simp]
-theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
+theorem coe_toOrderAddMonoidHom (f : α →+*o β) : ⇑f.toOrderAddMonoidHom = f :=
+  rfl
+
+@[deprecated OrderAddMonoidHom.coe_ofClass +typeChanged (since := "2026-11-26")]
+theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(.ofClass f : α →+o β) = f :=
   rfl
 
 @[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-26")]
@@ -191,8 +197,8 @@ theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a 
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_apply := toRingHom_apply
 
-@[norm_cast]
-theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
+@[deprecated OrderAddMonoidHom.coe_ofClass +typeChanged (since := "2026-11-26")]
+theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (.ofClass f : α →+o β) a = f a :=
   rfl
 
 @[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
@@ -238,8 +244,10 @@ theorem toRingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_id := toRingHom_id
 
 @[simp]
-theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
+theorem toOrderAddMonoidHom_id : (OrderRingHom.id α).toOrderAddMonoidHom = OrderAddMonoidHom.id α :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias coe_orderAddMonoidHom_id := toOrderAddMonoidHom_id
 
 @[simp]
 theorem toOrderMonoidWithZeroHom_id :
