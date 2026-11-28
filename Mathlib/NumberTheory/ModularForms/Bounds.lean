@@ -27,9 +27,9 @@ bounds for its q-expansion coefficients. The main results are
   the first `M` q-expansion coefficients of a cusp form is `O(M ^ k)` (for any strict period, and
   for the strict width at infinity respectively; see also
   `CuspFormClass.sum_range_norm_sq_qExpansion_coeff_isBigO`).
-* `ModularFormClass.qExpansion_isBigO`: for a a modular form of weight `k` (for an arithmetic
+* `ModularFormClass.qExpansion_isBigO`: for a modular form of weight `k` (for an arithmetic
   subgroup `Γ`), the `n`-th q-expansion coefficient is `O(n ^ k)`.
-* `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
+* `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
 
