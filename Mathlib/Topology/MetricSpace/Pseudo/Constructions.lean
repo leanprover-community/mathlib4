@@ -63,6 +63,7 @@ variable {p : α → Prop}
 instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 
+@[grind =]
 lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
 lemma nnDist_eq (x y : Subtype p) : nnDist x y = nnDist (x : α) y := rfl
