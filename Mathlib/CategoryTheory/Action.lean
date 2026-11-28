@@ -139,6 +139,7 @@ section Group
 
 variable {G : Type*} [Group G] [MulAction G X]
 
+@[nolint instanceDiamonds]
 instance : Groupoid (ActionCategory G X) :=
   Functor.Elements.groupoid _
 
