@@ -11,4 +11,4 @@ public meta import Mathlib.Order.Interval.Lex
   NonemptyInterval.mk (1, 3) (by grind),
   NonemptyInterval.mk (2, 2) (by grind),
   NonemptyInterval.mk (2, 3) (by grind),
-  NonemptyInterval.mk (3, 3) (by grind)].map toLex |>.mergeSort.map (·.toProd)
+  NonemptyInterval.mk (3, 3) (by grind)].map Lex.toLex |>.mergeSort.map (·.ofLex.toProd)

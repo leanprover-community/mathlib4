@@ -128,7 +128,7 @@ namespace UV
 /-- Applying the compression makes the set smaller in colex. This is intuitive since a portion of
 the set is being "shifted down" as `max U < max V`. -/
 lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' U hU < max' V hV)
-    (hA : compress U V s ≠ s) : toColex (compress U V s) < toColex s := by
+    (hA : compress U V s ≠ s) : Colex.toColex (compress U V s) < Colex.toColex s := by
   rw [compress, ite_ne_right_iff] at hA
   rw [compress, ite_eq_left hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
@@ -330,7 +330,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
       rintro A B hA ⟨HB₁, HB₂⟩
       refine ⟨fun t ht ↦ ?_, ‹_›⟩
       rw [mem_attachFin, mem_range]
-      have : toColex (image Fin.val B) < toColex (image Fin.val A) := by
+      have : Colex.toColex (image Fin.val B) < Colex.toColex (image Fin.val A) := by
         rwa [toColex_image_lt_toColex_image Fin.val_strictMono]
       apply Colex.forall_lt_mono this.le _ t (mem_image.2 ⟨t, ht, rfl⟩)
       simp_rw [mem_image]
