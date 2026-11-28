@@ -68,12 +68,12 @@ theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : S
     {s : Set G} {h : G → ℝ} {a b c : ℝ} (ha : 0 ≤ a) (H₀ : a < b) (hs : s.Finite)
     (H₁ : s * f.range = .univ) (H₂ : ∀ g ∈ s, ∀ x, h x ≤ a * h (g * x) + c)
     (H₃ : ∀ x, b * h x - c ≤ h (f x)) [Northcott h] :
-    FG G := by
+    IsMulFG G := by
   set q := QuotientGroup.mk (s := map f ⊤)
   -- Main proof idea: `s` together with elements of sufficiently small "height" `h` generates `G`.
   let S : Set G := s ∪ {x : G | h x ≤ 2 * c / (b - a)}
   let U := closure S
-  suffices U = ⊤ from Group.fg_iff.mpr ⟨S, this, hs.union <| Northcott.finite_le _⟩
+  suffices U = ⊤ from Group.isMulFG_iff_finite.mpr ⟨S, hs.union <| Northcott.finite_le _, this⟩
   by_contra! H -- Assume for contradiction that these elements generate a proper subgroup `U`.
   rw [← SetLike.coe_ne_coe, coe_top, ← Set.nonempty_compl] at H
   -- Then we can find an element `x : G` not in `U` and of minimal height.
@@ -110,7 +110,7 @@ where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is fi
 theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ} {a b c₀ : ℝ}
     {c : G → ℝ} (ha : 0 ≤ a) (H₀ : a < b) (H₁ : (powMonoidHom (α := G) n).range.FiniteIndex)
     (H₂ : ∀ g x, h x ≤ a * h (g * x) + c g) (H₃ : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
-    Group.FG G := by
+    IsMulFG G := by
   let f : G →* G := powMonoidHom n
   let q := QuotientGroup.mk (s := f.range)
   let qi : G ⧸ f.range → G := Function.surjInv mk_surjective
@@ -147,7 +147,7 @@ then `G` is finitely generated. -/]
 theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
     (H₁ : (powMonoidHom (α := G) 2).range.FiniteIndex) (H₂ : ∀ x, 0 ≤ h x)
     (H₃ : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
-    Group.FG G := by
+    IsMulFG G := by
   have H₃' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
   have H₂' g x : h x ≤ 2 * h (g * x) + (2 * h g⁻¹ + C) := by grind [mul_inv_cancel_comm]
   exact fg_of_descent (b := 4) (by simp) (by norm_num) H₁ H₂' H₃'
