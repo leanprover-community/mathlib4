@@ -116,7 +116,7 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
     have hK : 0 ≤ K := by
       rcases (xmem.and (δlim self_mem_nhdsWithin)).exists with ⟨j, hj, h'j⟩
       have : 0 ≤ K * δ j := nonempty_closedBall.1 ⟨x, hj⟩
-      exact (mul_nonneg_iff_left_nonneg_of_pos (mem_Ioi.1 h'j)).1 this
+      exact (mul_nonneg_iff_of_pos_right (mem_Ioi.1 h'j)).1 this
     have δpos := eventually_mem_of_tendsto_nhdsWithin δlim
     replace δlim := tendsto_nhds_of_tendsto_nhdsWithin δlim
     replace hK : 0 < K + 1 := by linarith

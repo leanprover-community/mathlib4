@@ -508,9 +508,10 @@ alias apply_supDegree_add_supDegree := coeff_supDegree_add_supDegree
 
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)
-    (hp : p ≠ 0) (hq : q ≠ 0) :
+    (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
+  have hp : p ≠ 0 := by rintro rfl; simp at hpq
+  have hq : q ≠ 0 := by rintro rfl; simp at hpq
   apply supDegree_eq_of_max
   · rw [← AddSubsemigroup.coe_set_mk (Set.range D), ← AddHom.srange_mk _ hadd, SetLike.mem_coe]
     · exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
@@ -526,7 +527,7 @@ lemma Monic.supDegree_mul_of_ne_zero_left
     (hq : q.Monic D) (hp : p ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
-  apply supDegree_mul hD hadd ?_ hp hq.ne_zero
+  apply supDegree_mul hD hadd ?_
   simp_rw [hq, mul_one, Ne, leadingCoeff_eq_zero hD, hp, not_false_eq_true]
 
 lemma Monic.supDegree_mul_of_ne_zero_right
@@ -534,7 +535,7 @@ lemma Monic.supDegree_mul_of_ne_zero_right
     (hp : p.Monic D) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hq (Subsingleton.elim _ _)).elim
-  apply supDegree_mul hD hadd ?_ hp.ne_zero hq
+  apply supDegree_mul hD hadd ?_
   simp_rw [hp, one_mul, Ne, leadingCoeff_eq_zero hD, hq, not_false_eq_true]
 
 lemma Monic.supDegree_mul
@@ -552,7 +553,7 @@ lemma leadingCoeff_mul [NoZeroDivisors R]
   · simp_rw [leadingCoeff_zero, zero_mul, leadingCoeff_zero]
   obtain rfl | hq := eq_or_ne q 0
   · simp_rw [leadingCoeff_zero, mul_zero, leadingCoeff_zero]
-  rw [← coeff_supDegree_add_supDegree hD hadd, ← supDegree_mul hD hadd ?_ hp hq, leadingCoeff]
+  rw [← coeff_supDegree_add_supDegree hD hadd, ← supDegree_mul hD hadd ?_, leadingCoeff]
   apply mul_ne_zero <;> rwa [Ne, leadingCoeff_eq_zero hD]
 
 lemma Monic.leadingCoeff_mul_eq_left

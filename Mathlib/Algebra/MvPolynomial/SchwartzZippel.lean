@@ -198,7 +198,7 @@ lemma schwartz_zippel_totalDegree {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0
       obtain rfl | hs := S.eq_empty_or_nonempty
       · simp
       simp_rw [totalDegree, Nat.cast_finsetSup]
-      rw [sup_div₀ (by positivity)]
+      rw [sup_div₀]
       simp [← sum_div, Finsupp.sum_fintype]
 
 end MvPolynomial
