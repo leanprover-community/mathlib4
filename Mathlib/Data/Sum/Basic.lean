@@ -171,6 +171,19 @@ theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
 theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
   swap_swap
 
+theorem swap_injective : Function.Injective (@swap α β) :=
+  swap_leftInverse.injective
+
+theorem swap_surjective : Function.Surjective (@swap α β) :=
+  swap_leftInverse.surjective
+
+theorem swap_bijective : Function.Bijective (@swap α β) :=
+  ⟨swap_injective, swap_surjective⟩
+
+@[simp]
+theorem swap_inj {x y : α ⊕ β} : swap x = swap y ↔ x = y :=
+  swap_injective.eq_iff
+
 mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
 
 namespace LiftRel
