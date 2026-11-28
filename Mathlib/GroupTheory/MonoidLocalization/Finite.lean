@@ -31,8 +31,8 @@ namespace Localization
 finitely generated. -/
 @[to_additive /-- The localization of a finitely generated monoid at a finitely generated submonoid
 is finitely generated. -/]
-lemma fg [Monoid.FG M] (hS : S.FG) : Monoid.FG <| Localization S := by
-  rw [← Monoid.fg_iff_submonoid_fg] at hS; exact Monoid.fg_of_surjective mkHom mkHom_surjective
+lemma fg [IsMulFG M] (hS : S.FG) : IsMulFG <| Localization S :=
+  IsMulFG.of_surjective mkHom mkHom_surjective
 
 end Localization
 
@@ -40,6 +40,6 @@ namespace Algebra.GrothendieckGroup
 
 /-- The Grothendieck group of a finitely generated monoid is finitely generated. -/
 @[to_additive /-- The Grothendieck group of a finitely generated monoid is finitely generated. -/]
-instance instFG [Monoid.FG M] : Monoid.FG <| GrothendieckGroup M := fg Monoid.FG.fg_top
+instance instFG [IsMulFG M] : IsMulFG <| GrothendieckGroup M := fg inferInstance
 
 end Algebra.GrothendieckGroup

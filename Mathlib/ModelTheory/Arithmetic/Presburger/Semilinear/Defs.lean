@@ -80,16 +80,16 @@ theorem IsLinearSet.closure_of_finite (hs : s.Finite) :
   ⟨0, s, hs, by simp⟩
 
 theorem isLinearSet_iff_exists_fg_eq_vadd :
-    IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) := by
+    IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), IsAddFG P ∧ s = a +ᵥ (P : Set M) := by
   simp [isLinearSet_iff, AddSubmonoid.isAddFG_iff]
 
-theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) : IsLinearSet (P : Set M) := by
+theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : IsAddFG P) : IsLinearSet (P : Set M) := by
   rw [isLinearSet_iff_exists_fg_eq_vadd]
   exact ⟨0, P, hP, by simp⟩
 
 @[simp]
-protected theorem IsLinearSet.univ [AddMonoid.FG M] : IsLinearSet (univ : Set M) :=
-  of_fg AddMonoid.FG.fg_top
+protected theorem IsLinearSet.univ [IsAddFG M] : IsLinearSet (univ : Set M) :=
+  of_fg (inferInstance : IsAddFG (⊤ : AddSubmonoid M))
 
 theorem IsLinearSet.vadd (a : M) (hs : IsLinearSet s) : IsLinearSet (a +ᵥ s) := by
   rcases hs with ⟨b, t, ht, rfl⟩
@@ -133,12 +133,12 @@ theorem IsSemilinearSet.closure_of_finite (hs : s.Finite) :
     IsSemilinearSet (closure s : Set M) :=
   (IsLinearSet.closure_of_finite hs).isSemilinearSet
 
-theorem IsSemilinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) :
+theorem IsSemilinearSet.of_fg {P : AddSubmonoid M} (hP : IsAddFG P) :
     IsSemilinearSet (P : Set M) :=
   (IsLinearSet.of_fg hP).isSemilinearSet
 
 @[simp]
-protected theorem IsSemilinearSet.univ [AddMonoid.FG M] : IsSemilinearSet (univ : Set M) :=
+protected theorem IsSemilinearSet.univ [IsAddFG M] : IsSemilinearSet (univ : Set M) :=
   IsLinearSet.univ.isSemilinearSet
 
 /-- Semilinear sets are closed under union. -/
