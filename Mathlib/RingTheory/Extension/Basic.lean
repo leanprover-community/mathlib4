@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 

@@ -7,11 +7,13 @@ module
 
 public import Mathlib.RingTheory.Algebraic.StronglyTranscendental
 public import Mathlib.RingTheory.Conductor
-public import Mathlib.RingTheory.Polynomial.IsIntegral
-public import Mathlib.RingTheory.QuasiFinite.Polynomial
+public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 import Mathlib.Algebra.Algebra.Shrink
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.IntegralClosure.GoingDown
+import Mathlib.RingTheory.Polynomial.IsIntegral
+import Mathlib.RingTheory.QuasiFinite.Polynomial
 
 /-!
 # Algebraic Zariski's Main Theorem
