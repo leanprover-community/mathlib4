@@ -10,15 +10,4 @@ public meta import Aesop.Frontend
 meta import Aesop.Frontend.Basic
 import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
-/-!
-# Aesop rule set for finsets
-
-This file defines `finsetNonempty`, an aesop rule set to prove that a given finset is nonempty.
--/
-
--- `finsetNonempty` rules try to prove that a given finset is nonempty,
--- for use in positivity extensions.
-declare_aesop_rule_sets [finsetNonempty] (default := true)
+deprecated_module "use `simp [*]` instead of `finsetNonempty`" (since := "2026-11-05")

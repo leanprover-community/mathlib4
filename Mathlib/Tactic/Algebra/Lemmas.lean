@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Tactic.Ring.Basic
 
-import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
 
 /-! # Lemmas for the `algebra` tactic.

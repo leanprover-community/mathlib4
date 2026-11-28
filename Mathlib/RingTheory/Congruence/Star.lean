@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.RingTheory.Congruence.Defs
 
-import Mathlib.Data.Finset.Attr
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

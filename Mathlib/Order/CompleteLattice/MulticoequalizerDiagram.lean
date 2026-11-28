@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Order.Hom.Lattice
 
-import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
 
 set_option doc.verso true

@@ -242,7 +242,6 @@ theorem empty_eq_map : ∅ = s.map f ↔ s = ∅ := by rw [eq_comm, map_eq_empty
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := s)
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.map⟩ := map_nonempty
 
 @[simp]
@@ -334,7 +333,6 @@ theorem coe_image : ↑(s.image f) = f '' ↑s :=
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
   image_nonempty.2 h
 

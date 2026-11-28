@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
