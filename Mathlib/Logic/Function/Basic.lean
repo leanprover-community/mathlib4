@@ -12,6 +12,7 @@ public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Tactic.FunProp
 
 
 /-!
