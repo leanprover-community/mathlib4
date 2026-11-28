@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Basic.Unique
 public import Mathlib.Logic.Relation
-public import Mathlib.Util.Notation3
+public import Mathlib.Util.NotationDelab
 
 /-!
 # Quotient types
@@ -48,7 +48,7 @@ namespace Quot
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
 @[inherit_doc Quot.mk]
-local notation3:arg "⟦" a "⟧" => Quot.mk _ a
+local notation:arg +delab "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
 protected theorem induction_on {α : Sort*} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
@@ -205,7 +205,7 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 -- reliably found but it can't always be inferred from the expected type either.
 -- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 @[inherit_doc Quotient.mk]
-notation3:arg "⟦" a "⟧" => Quotient.mk _ a
+notation:arg +delab "⟦" a "⟧" => Quotient.mk _ a
 
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩

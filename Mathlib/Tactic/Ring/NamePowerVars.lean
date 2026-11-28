@@ -57,7 +57,7 @@ def elabNamePowerSeriesVariablesOver : CommandElab
     let var := vars[idx]
     let var := quote s!"{var.getId}"
     let idx : TSyntax `term ← `(($(quote idx) : Fin $sizeStx))
-    let cmd ← `(command|local notation3 $var:str =>
+    let cmd ← `(command|local notation +delab $var:str =>
       MvPowerSeries.X (R := $R) (σ := Fin $sizeStx) $idx)
     elabCommand cmd
 | _ => throwUnsupportedSyntax

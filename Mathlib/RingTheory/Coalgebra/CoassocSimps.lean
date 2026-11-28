@@ -56,16 +56,16 @@ variable {R A M N P M' N' P' Q M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R M₁] [Module R M₂] [Module R M₃] [Module R N₁] [Module R N₂] [Module R N₃]
 
-local notation3 "α" => (TensorProduct.assoc R _ _ _).toLinearMap
-local notation3 "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
-local notation3 "λ" => (TensorProduct.lid R _).toLinearMap
-local notation3 "λ⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
-local notation3 "ρ" => (TensorProduct.rid R _).toLinearMap
-local notation3 "ρ⁻¹" => (TensorProduct.rid R _).symm.toLinearMap
-local notation3 "β" => (TensorProduct.comm R _ _).toLinearMap
+local notation +delab "α" => (TensorProduct.assoc R _ _ _).toLinearMap
+local notation +delab "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
+local notation +delab "λ" => (TensorProduct.lid R _).toLinearMap
+local notation +delab "λ⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
+local notation +delab "ρ" => (TensorProduct.rid R _).toLinearMap
+local notation +delab "ρ⁻¹" => (TensorProduct.rid R _).symm.toLinearMap
+local notation +delab "β" => (TensorProduct.comm R _ _).toLinearMap
 local infix:90 " ⊗ₘ " => TensorProduct.map
-local notation3 "δ" => comul (R := R)
-local notation3 "ε" => counit (R := R)
+local notation +delab "δ" => comul (R := R)
+local notation +delab "ε" => counit (R := R)
 
 attribute [coassoc_simps] LinearMap.comp_id LinearMap.id_comp TensorProduct.map_id
   LinearMap.lTensor_def LinearMap.rTensor_def LinearMap.comp_assoc

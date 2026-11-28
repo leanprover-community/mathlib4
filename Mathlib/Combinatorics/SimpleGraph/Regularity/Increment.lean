@@ -45,7 +45,7 @@ open scoped SzemerediRegularity.Positivity
 variable {α : Type*} [Fintype α] [DecidableEq α] {P : Finpartition (univ : Finset α)}
   (hP : P.IsEquipartition) (G : SimpleGraph α) [DecidableRel G.Adj] (ε : ℝ)
 
-local notation3 "m" => (card α / stepBound #P.parts : ℕ)
+local notation +delab "m" => (card α / stepBound #P.parts : ℕ)
 
 namespace SzemerediRegularity
 

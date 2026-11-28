@@ -56,10 +56,10 @@ variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : Measurable
 noncomputable def binomial (n : ℕ) (p : I) : Measure ℕ := setBer(Iio n, p).map ncard
 
 /-- The binomial probability distribution with parameter `p`. -/
-scoped notation3 "Bin(" n ", " p ")" => binomial n p
+scoped notation +delab "Bin(" n ", " p ")" => binomial n p
 
 /-- The binomial probability distribution with parameter `p` valued in the semiring `R`. -/
-scoped notation3 "Bin(" R ", " n ", " p ")" => (binomial n p).map (Nat.cast : ℕ → R)
+scoped notation +delab "Bin(" R ", " n ", " p ")" => (binomial n p).map (Nat.cast : ℕ → R)
 
 @[simp]
 lemma binomial_nat : Bin(ℕ, n, p) = Bin(n, p) := map_id

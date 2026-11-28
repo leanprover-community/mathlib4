@@ -31,7 +31,8 @@ variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
 namespace Filter
 
-local notation3 "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) => r
+local notation +delab "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) =>
+  r
 
 namespace Germ
 
