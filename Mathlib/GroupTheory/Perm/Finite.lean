@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.GroupTheory.Perm.Support.Finset.Card
 
 import Mathlib.Logic.Equiv.Fintype
 
