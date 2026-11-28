@@ -20,7 +20,7 @@ relating `ζ'/ζ (s)` and `ζ'/ζ (1 - s)`, involving the digamma function `ψ` 
 ## Main statements
 
 * `logDeriv_riemannZeta_one_sub`: for `s` not an integer with `ζ s ≠ 0`,
-  `ζ'/ζ (s) = -ζ'/ζ (1 - s) + log (2 π) - ψ s + (π / 2) * tan (π s / 2)`.
+  `ζ'/ζ (s) = -ζ'/ζ (1 - s) + log (2 * π) - ψ s + (π / 2) * tan (π s / 2)`.
 -/
 
 @[expose] public section
@@ -30,7 +30,7 @@ open Complex Filter Topology
 
 /-- **The functional equation for the Riemann zeta function, in logarithmic-derivative form.**
 For `s` not an integer with `riemannZeta s ≠ 0`,
-`ζ'/ζ (s) = -ζ'/ζ (1 - s) + log (2 π) - ψ s + (π / 2) * tan (π s / 2)`, where `ψ` is the digamma
+`ζ'/ζ (s) = -ζ'/ζ (1 - s) + log (2 * π) - ψ s + (π / 2) * tan (π s / 2)`, where `ψ` is the digamma
 function. -/
 theorem logDeriv_riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) (hz : riemannZeta s ≠ 0) :
     logDeriv riemannZeta s =
