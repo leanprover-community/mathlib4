@@ -5,14 +5,18 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.FunLike
-public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Order.Setoid.Basic
+
+import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Ring.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cauchy sequences
@@ -175,9 +179,9 @@ theorem mk_apply {f : ℕ → β} (hf : IsCauSeq abv f) (n : ℕ) : (CauSeq.mk f
 theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := DFunLike.ext f g h
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
-  f.2
+  f.property
 
-theorem cauchy (f : CauSeq β abv) : ∀ {ε}, 0 < ε → ∃ i, ∀ j ≥ i, abv (f j - f i) < ε := @f.2
+theorem cauchy (f : CauSeq β abv) : ∀ {ε}, 0 < ε → ∃ i, ∀ j ≥ i, abv (f j - f i) < ε := @f.property
 
 /-- Given a Cauchy sequence `f`, create a Cauchy sequence from a sequence `g` with
 the same values as `f`. -/
@@ -188,17 +192,17 @@ variable [IsAbsoluteValue abv]
 
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
     0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
-  f.2.cauchy₂
+  f.property.cauchy₂
 
 theorem cauchy₃ (f : CauSeq β abv) {ε} : 0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ j, abv (f k - f j) < ε :=
-  f.2.cauchy₃
+  f.property.cauchy₃
 
-theorem bounded (f : CauSeq β abv) : ∃ r, ∀ i, abv (f i) < r := f.2.bounded
+theorem bounded (f : CauSeq β abv) : ∃ r, ∀ i, abv (f i) < r := f.property.bounded
 
-theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r := f.2.bounded' x
+theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r := f.property.bounded' x
 
 instance : Add (CauSeq β abv) :=
-  ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+  ⟨fun f g => ⟨f + g, f.property.add g.property⟩⟩
 
 instance : IsAddApply (CauSeq β abv) where
 
@@ -268,7 +272,7 @@ theorem const_one : const 1 = 1 :=
 theorem const_add (x y : β) : const (x + y) = const x + const y :=
   rfl
 
-instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
+instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.property.mul g.property⟩⟩
 
 instance : IsMulApply (CauSeq β abv) where
 
@@ -283,7 +287,7 @@ protected theorem mul_apply (f g : CauSeq β abv) (i : ℕ) : (f * g) i = f i * 
 theorem const_mul (x y : β) : const (x * y) = const x * const y :=
   rfl
 
-instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
+instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.property.neg⟩⟩
 
 instance : IsNegApply (CauSeq β abv) where
 

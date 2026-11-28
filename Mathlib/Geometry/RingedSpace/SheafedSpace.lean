@@ -51,9 +51,10 @@ namespace SheafedSpace
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
-  coe X := X.1
+  coe X := X.toPresheafedSpace
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
+@[implicit_reducible]
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
@@ -126,7 +127,6 @@ attribute [local simp] id comp
 theorem id_hom (X : SheafedSpace C) : (𝟙 X : X ⟶ X).hom = 𝟙 X.toPresheafedSpace :=
   rfl
 
-@[simp]
 theorem id_hom_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).hom.base = 𝟙 (X : TopCat) :=
   rfl
 
@@ -214,7 +214,7 @@ noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOf
   ⟨fun {K} =>
     createsColimitOfFullyFaithfulOfIso
       ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
-        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
+        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).IsSheaf⟩
       (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩
 
 noncomputable instance [HasLimits C] :

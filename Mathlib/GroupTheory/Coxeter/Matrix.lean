@@ -23,7 +23,7 @@ We also define the Coxeter matrices `CoxeterMatrix.Aₙ` (`n : ℕ`), `CoxeterMa
 Coxeter group (`CoxeterMatrix.coxeterGroup`) is finite and irreducible, although we do not prove
 that in this file.
 
-## Implementation details
+## Implementation notes
 
 In some texts on Coxeter groups, each entry $M_{i,i'}$ of a Coxeter matrix can be either a
 positive integer or $\infty$. In our treatment of Coxeter matrices, we use the value $0$ instead of
@@ -58,7 +58,6 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
   pages 4--5, 13--15
 
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
-
 -/
 
 @[expose] public section
@@ -108,7 +107,7 @@ protected def A : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
 
@@ -125,10 +124,14 @@ protected def B : CoxeterMatrix (Fin n) where
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
 
+/- Start with the Aₙ chain on vertices 0, …, n - 1. Remove the edge between n - 2 and n - 1,
+then join n - 1 to n - 3 instead. For n ≥ 4, this gives a fork at n - 3 with tips n - 2 and n - 1.
+For n = 2, both n - 2 and n - 3 are 0. The first branch removes the only edge, giving D₂ = A₁ × A₁.
+For n = 3, the resulting path is 1 — 0 — 2, so D₃ is A₃ up to reindexing. -/
 /-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -143,9 +146,10 @@ The corresponding Coxeter-Dynkin diagram is:
 protected def D : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
-      else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
-        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-  isSymm := by unfold Matrix.IsSymm; aesop
+      else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 2
+        else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
+          else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)))
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
 
@@ -159,7 +163,7 @@ The corresponding Coxeter-Dynkin diagram is:
 -/
 protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   M := Matrix.of fun i j => if i = j then 1 else m + 2
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by simp
 

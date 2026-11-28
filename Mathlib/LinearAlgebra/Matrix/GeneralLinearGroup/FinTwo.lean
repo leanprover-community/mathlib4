@@ -91,9 +91,9 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   simp only [scalar_apply, trace_fin_two, discr_fin_two, trace_fin_two,
     det_fin_two, sq, (by norm_num : (4 : K) = 2 * 2)]
   ext i j
-  fin_cases i <;>
-  fin_cases j <;>
-  · simp [Matrix.mul_apply]
+  fin_cases i <;> fin_cases j
+  all_goals
+    simp [Matrix.mul_apply]
     field
 
 variable (m) in
@@ -203,6 +203,22 @@ lemma injective_upperRightHom : Function.Injective (upperRightHom (R := R)) := b
 end Ring
 
 variable {R K : Type*} [CommRing R] [Field K]
+
+lemma a_ne_zero_of_c_eq_zero [Nontrivial R] {g : GL (Fin 2) R} (hg : g 1 0 = 0) :
+    g 0 0 ≠ 0 :=
+  fun h ↦ g.det_ne_zero (by simp [Matrix.det_fin_two, hg, h])
+
+lemma d_ne_zero_of_c_eq_zero [Nontrivial R] {g : GL (Fin 2) R} (hg : g 1 0 = 0) :
+    g 1 1 ≠ 0 :=
+  fun h ↦ g.det_ne_zero (by simp [Matrix.det_fin_two, hg, h])
+
+/-- Conjugating a translation by an upper triangular matrix rescales its parameter. -/
+lemma upperRightHom_conj_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) (x : K) :
+    g * upperRightHom x * g⁻¹ = upperRightHom (g 0 0 / g 1 1 * x) := by
+  have hd : g 1 1 ≠ 0 := g.d_ne_zero_of_c_eq_zero hg
+  simp only [mul_inv_eq_iff_eq_mul, Units.ext_iff, Units.val_mul]
+  rw [Matrix.eta_fin_two g.val]
+  simp [hg, field, add_comm]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Limits.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonical colimits, or functors that are dense at an object
 
@@ -26,8 +29,8 @@ corresponding property `isDenseAt F` of objects of `D`.
   to the Yoneda embedding
 
 ## References
-* https://ncatlab.org/nlab/show/dense+functor
 
+* https://ncatlab.org/nlab/show/dense+functor
 -/
 
 @[expose] public section

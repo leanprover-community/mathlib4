@@ -13,8 +13,10 @@ import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Metrizable.Uniformity
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Basic API for vector measures
 
 This file develops the basic consequences of countable additivity for vector measures, equips
@@ -104,8 +106,8 @@ theorem of_biUnion {ι : Type*} {s : Set ι} {f : ι → Set α} (hs : s.Countab
   have := hs.toEncodable
   rw [biUnion_eq_iUnion]
   apply of_disjoint_iUnion
-  · exact fun x ↦ h x x.2
-  · exact hd.on_injective Subtype.coe_injective fun x => x.2
+  · exact fun x ↦ h x x.property
+  · exact hd.on_injective Subtype.coe_injective fun x => x.property
 
 theorem of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
     (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by

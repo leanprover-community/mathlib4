@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal natural transformations
 
 Natural transformations between (lax) monoidal functors must satisfy
 an additional compatibility relation with the tensorators:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`.
-
 -/
 
 @[expose] public section
@@ -97,13 +99,13 @@ instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     IsMonoidal (NatTrans.prod' α β) where
   unit := by
     ext
-    · rw [prod_comp_fst, prod'_ε_fst, prod'_ε_fst, prod'_app_fst, IsMonoidal.unit]
-    · rw [prod_comp_snd, prod'_ε_snd, prod'_ε_snd, prod'_app_snd, IsMonoidal.unit]
+    · rw [prod_comp, prod'_ε_fst, prod'_ε_fst, prod'_app_fst, IsMonoidal.unit]
+    · rw [prod_comp, prod'_ε_snd, prod'_ε_snd, prod'_app_snd, IsMonoidal.unit]
   tensor X Y := by
     ext
-    · simp only [prod_comp_fst, prod'_μ_fst, prod'_app_fst,
+    · simp only [prod_comp, prod'_μ_fst, prod'_app_fst,
         prodMonoidal_tensorHom, IsMonoidal.tensor]
-    · simp only [prod_comp_snd, prod'_μ_snd, prod'_app_snd,
+    · simp only [prod_comp, prod'_μ_snd, prod'_app_snd,
         prodMonoidal_tensorHom, IsMonoidal.tensor]
 
 end NatTrans
@@ -177,7 +179,7 @@ attribute [instance] Hom.isMonoidal
 
 instance : Category (LaxMonoidalFunctor C D) where
   Hom := Hom
-  comp α β := ⟨α.1 ≫ β.1, by have := α.2; have := β.2; infer_instance⟩
+  comp α β := ⟨α.hom ≫ β.hom, by have := α.isMonoidal; have := β.isMonoidal; infer_instance⟩
   id _ := ⟨𝟙 _, inferInstance⟩
 
 @[simp]

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled exact functors
 
@@ -14,7 +17,6 @@ We say that a functor `F` is left exact if it preserves finite limits, it is rig
 preserves finite colimits, and it is exact if it is both left exact and right exact.
 
 In this file, we define the categories of bundled left exact, right exact and exact functors.
-
 -/
 
 @[expose] public section
@@ -37,7 +39,7 @@ variable (C) (D)
   ObjectProperty.preservesFiniteLimits
 
 variable {C D} in
-@[deprecated ObjectProperty.preservesFiniteLimits_iff +typeChanged (since := "2026-10-28"), simp]
+@[deprecated ObjectProperty.preservesFiniteLimits_iff +typeChanged (since := "2026-10-28")]
 lemma leftExactFunctor_iff (F : C ⥤ D) :
     leftExactFunctor F ↔ PreservesFiniteLimits F := Iff.rfl
 
@@ -61,7 +63,7 @@ abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaith
   ObjectProperty.preservesFiniteColimits
 
 variable {C D} in
-@[deprecated ObjectProperty.preservesFiniteColimits_iff +typeChanged (since := "2026-10-28"), simp]
+@[deprecated ObjectProperty.preservesFiniteColimits_iff +typeChanged (since := "2026-10-28")]
 lemma rightExactFunctor_iff (F : C ⥤ D) :
     rightExactFunctor F ↔ PreservesFiniteColimits F := Iff.rfl
 
@@ -83,15 +85,21 @@ abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFai
 /-- Exactness, as a property of objects in `C ⥤ D`. -/
 def exactFunctor : ObjectProperty (C ⥤ D) :=
   .preservesFiniteLimits ⊓ .preservesFiniteColimits
+deriving ObjectProperty.IsClosedUnderIsomorphisms,
+  ObjectProperty.IsStableUnderRetracts
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteLimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteLimits F := hF.1
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteColimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteColimits F := hF.2
 
 variable {C D} in
 @[simp]
 lemma exactFunctor_iff (F : C ⥤ D) :
     exactFunctor C D F ↔ PreservesFiniteLimits F ∧ PreservesFiniteColimits F := Iff.rfl
-
-instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
-  dsimp [exactFunctor]
-  infer_instance
 
 /-- Bundled exact functors. -/
 abbrev ExactFunctor := (exactFunctor C D).FullSubcategory
@@ -128,47 +136,39 @@ variable {C D}
 
 @[simp]
 theorem LeftExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
-    (LeftExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.1⟩ :=
+    (LeftExactFunctor.ofExact C D).obj F = ⟨F.obj, F.property.1⟩ :=
   rfl
 
 @[simp]
 theorem RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
-    (RightExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.2⟩ :=
+    (RightExactFunctor.ofExact C D).obj F = ⟨F.obj, F.property.2⟩ :=
   rfl
 
-@[simp]
 theorem LeftExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((LeftExactFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem RightExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((RightExactFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
-theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.1 :=
+theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
-@[simp]
-theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.1 :=
+theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
-@[simp]
-theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.1 :=
+theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
-@[simp]
 theorem LeftExactFunctor.forget_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
     (LeftExactFunctor.forget C D).map α = α.hom :=
   rfl
 
-@[simp]
 theorem RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     (RightExactFunctor.forget C D).map α = α.hom :=
   rfl
 
-@[simp]
 theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (ExactFunctor.forget C D).map α = α.hom :=
   rfl

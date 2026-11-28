@@ -26,7 +26,7 @@ statements about them. For a more extensive theory of fields, see the `FieldTheo
   to an element of the field its multiplicative inverse, this predicate only assumes the existence
   and can therefore more easily be used to e.g. transfer along ring isomorphisms.
 
-## Implementation details
+## Implementation notes
 
 By convention `0⁻¹ = 0` in a field or division ring. This is due to the fact that working with total
 functions has the advantage of not constantly having to check that `x ≠ 0` when writing `x⁻¹`. With
@@ -214,7 +214,6 @@ theorem smul_one_eq_cast (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) 
 
 end Rat
 
-/-- `OfScientific.ofScientific` is the simp-normal form. -/
-@[simp]
+@[deprecated ofScientific_ofNat_ofNat (since := "2026-11-23")]
 theorem Rat.ofScientific_eq_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     Rat.ofScientific (OfNat.ofNat m) s (OfNat.ofNat e) = OfScientific.ofScientific m s e := rfl

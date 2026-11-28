@@ -16,12 +16,14 @@ the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCom
 ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
+
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation, completion
 -/
 
@@ -212,7 +214,7 @@ instance : Coe (WithVal (v.valuation K)) (adicCompletion K v) where
 instance (priority := 99) : Coe K (adicCompletion K v) where
   coe k := ofCompletion (k : (v.valuation K).Completion)
 
-@[simp] lemma coe_toCompletion (k : K) :
+lemma coe_toCompletion (k : K) :
     (↑k : adicCompletion K v).toCompletion = (k : (v.valuation K).Completion) := rfl
 
 theorem extension_apply_eq_valued (y : (v.valuation K).Completion) :
@@ -388,7 +390,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
       rw [Algebra.smul_def]
-      refine ValuationSubring.mul_mem _ _ _ ?_ x.2
+      refine ValuationSubring.mul_mem _ _ _ ?_ x.property
       rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
@@ -490,13 +492,13 @@ theorem adicCompletionIntegers.integers :
 variable {K v}
 
 theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionIntegers K} :
-    IsUnit a ↔ Valued.v a.1 = 1 := by
+    IsUnit a ↔ Valued.v a.val = 1 := by
   simp [Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)]
 
 theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
-    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 := by
+    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.val = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦
      ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
-  convert! isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2
+  convert! isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).property
 
 end IsDedekindDomain.HeightOneSpectrum

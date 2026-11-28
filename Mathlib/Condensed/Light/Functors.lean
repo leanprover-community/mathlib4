@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Condensed.Light.TopCatAdjunction
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors from categories of topological spaces to light condensed sets
 
@@ -20,7 +23,6 @@ sets.
 
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
   is the yoneda sheaf functor.
-
 -/
 
 @[expose] public section

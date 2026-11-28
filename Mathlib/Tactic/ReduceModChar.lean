@@ -6,12 +6,10 @@ Authors: Anne Baanen
 module
 
 public meta import Mathlib.Util.AtLocation
+public import Mathlib.Algebra.Polynomial.Coeff  -- shake: keep (Qq dependency)
 public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
-public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.ReduceModChar.Ext
-
-import Mathlib.Tactic.NormNum.DivMod
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -180,7 +178,7 @@ This should be fast, so this pattern-matches on the type, rather than searching 
 Use `typeToCharP (expensive := true)` to do more work in finding the characteristic,
 in particular it will search for a `CharP` instance in the context. -/
 partial def typeToCharP (expensive := false) (t : Q(Type u)) : MetaM (TypeToCharPResult t) :=
-match Expr.getAppFnArgs t with
+match Expr.getAppFnArgs t.cleanupAnnotations with
 | (``ZMod, #[(n : Q(ℕ))]) =>
   return .intLike n
     (q((ZMod.commRing _).toRing) : Q(Ring (ZMod $n)))
@@ -189,7 +187,7 @@ match Expr.getAppFnArgs t with
   | (.intLike n _ _) =>
     return .intLike n
       (q(inferInstance) : Q(Ring (Polynomial $R)))
-      (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))
+      (q(Polynomial.instCharP) : Q(CharP (Polynomial $R) $n))
   | .failure => return .failure
 | _ => if ! expensive then return .failure else do
   -- Fallback: run an expensive procedures to determine a characteristic,

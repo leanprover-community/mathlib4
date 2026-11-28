@@ -243,7 +243,7 @@ instance : SMul G (PlacedTile ps) where
 
 @[simp] lemma smul_mk_mk (g h : G) (i : ιₚ) : g • (⟨i, ⟦h⟧⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
 
-@[simp] lemma smul_mk_coe (g h : G) (i : ιₚ) : g • (⟨i, h⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
+lemma smul_mk_coe (g h : G) (i : ιₚ) : g • (⟨i, h⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
 
 @[simp] lemma smul_index (g : G) (pt : PlacedTile ps) : (g • pt).index = pt.index := by
   induction pt using PlacedTile.induction_on

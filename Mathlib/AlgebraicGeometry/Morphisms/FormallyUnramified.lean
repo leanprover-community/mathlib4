@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.RingHom.Unramified
 public import Mathlib.RingTheory.Unramified.LocalRing
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
 # Formally unramified morphisms
@@ -17,7 +18,6 @@ A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U
 `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified.
 
 We show that these properties are local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -207,12 +207,14 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
   have := f.formallyUnramified_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom,
     ((g₁ ≫ f).appLE U W (by grw [hWV, inf_le_left, hVU]; rfl)).hom]
-  let ψ₁ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := ⟨(g₁.appLE _ _ (hWV.trans inf_le_left)).hom, fun r ↦ by
-    simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
-      Scheme.Hom.appLE_comp_appLE]⟩
-  let ψ₂ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := ⟨(g₂.appLE _ _ (hWV.trans inf_le_right)).hom, fun r ↦ by
-    simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
-      Scheme.Hom.appLE_comp_appLE, hgf, -Scheme.Hom.comp_appLE]⟩
+  let ψ₁ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := { (g₁.appLE _ _ (hWV.trans inf_le_left)).hom with
+    commutes' r := by
+      simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
+        Scheme.Hom.appLE_comp_appLE] }
+  let ψ₂ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := { (g₂.appLE _ _ (hWV.trans inf_le_right)).hom with
+    commutes' r := by
+      simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
+        Scheme.Hom.appLE_comp_appLE, hgf, -Scheme.Hom.comp_appLE] }
   suffices ψ₁ = ψ₂ by
     simpa [ψ₁, ψ₂, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom] using
       congr(hW.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom ($this).toRingHom) ≫ hV.fromSpec)

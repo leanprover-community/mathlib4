@@ -22,7 +22,6 @@ differentiable in a suitable vertical strip.
   (analogous to `HasSum`).
 - `mellin_differentiableAt_of_isBigO_rpow` : if `f` is `O(x ^ (-a))` at infinity, and
   `O(x ^ (-b))` at 0, then `mellin f` is holomorphic on the domain `b < re s < a`.
-
 -/
 
 @[expose] public section
@@ -65,7 +64,7 @@ theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha :
   rw [mul_zero] at this
   have h1 : EqOn (fun t : ℝ => (↑(a * t) : ℂ) ^ (s - 1) • f (a * t))
       ((a : ℂ) ^ (s - 1) • fun t : ℝ => (t : ℂ) ^ (s - 1) • f (a * t)) (Ioi 0) := fun t ht ↦ by
-    simp only [ofReal_mul, mul_cpow_ofReal_nonneg ha.le (le_of_lt ht), mul_smul, Pi.smul_apply]
+    simp only [ofReal_mul, ofReal_mul_cpow ha.le, mul_smul, Pi.smul_apply]
   have h2 : (a : ℂ) ^ (s - 1) ≠ 0 := by
     rw [Ne, cpow_eq_zero_iff, not_and_or, ofReal_eq_zero]
     exact Or.inl ha.ne'
@@ -137,7 +136,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
       (fun t : ℝ => (a : ℂ) ^ (1 - s) • (fun u : ℝ => (u : ℂ) ^ (s - 1) • f u) (a * t))
         (Ioi 0) := fun t ht ↦ by
     dsimp only
-    rw [ofReal_mul, mul_cpow_ofReal_nonneg ha.le (le_of_lt ht), ← mul_smul,
+    rw [ofReal_mul, ofReal_mul_cpow ha.le, ← mul_smul,
       (by ring : 1 - s = -(s - 1)), cpow_neg, inv_mul_cancel_left₀]
     rw [Ne, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
@@ -336,8 +335,8 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt fun t ht => ?_
     exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
-  have h2 : IntegrableOn (F s) (Ioi (0 : ℝ)) := by
-    exact mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
+  have h2 : IntegrableOn (F s) (Ioi (0 : ℝ)) :=
+    mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
   have h3 : AEStronglyMeasurable (F' s) (volume.restrict <| Ioi 0) := by
     apply LocallyIntegrableOn.aestronglyMeasurable
     refine hfc.continuousOn_smul isOpen_Ioi.isLocallyClosed

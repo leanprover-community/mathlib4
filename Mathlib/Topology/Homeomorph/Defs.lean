@@ -30,7 +30,6 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
   is a homeomorphism.
 
 * `IsHomeomorph`: the predicate that a function is a homeomorphism
-
 -/
 
 @[expose] public section
@@ -238,7 +237,8 @@ lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
 lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
   .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
-theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› := h.isInducing.1.symm
+theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
+  h.isInducing.eq_induced.symm
 
 theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
   IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
@@ -502,8 +502,7 @@ namespace Homeomorph
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
-`Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
-@[coe]
+`Homeomorph`. -/
 def ofClass [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
   { (f : α ≃ β) with
     continuous_toFun := h.map_continuous f
@@ -512,15 +511,13 @@ def ofClass [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
 @[deprecated (since := "2026-10-15")] alias _root_.HomeomorphClass.toHomeomorph := ofClass
 
 @[simp]
-protected theorem coe_ofClass [h : HomeomorphClass F α β] (f : F) : ⇑(Homeomorph.ofClass f) = ⇑f :=
+protected theorem coe_ofClass [h : HomeomorphClass F α β] (f : F) : ⇑(ofClass f) = ⇑f :=
   rfl
 
 @[deprecated (since := "2026-10-15")]
 protected alias _root_.HomeomorphClass.coe_coe := Homeomorph.coe_ofClass
 
-instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) := ⟨Homeomorph.ofClass⟩
-
-theorem ofClass_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+theorem ofClass_injective [HomeomorphClass F α β] : Function.Injective (ofClass : F → α ≃ₜ β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
 
 @[deprecated (since := "2026-10-16")]
@@ -532,6 +529,12 @@ instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
 instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun
   inv_continuous e := e.continuous_invFun
+
+/-- Reinterpret a homeomorphism `α ≃ₜ β` as a continuous map `C(α, β)`. -/
+def toContinuousMap (f : α ≃ₜ β) : C(α, β) := .ofClass f
+
+@[simp]
+lemma coe_toContinuousMap (f : α ≃ₜ β) : ⇑f.toContinuousMap = f := rfl
 
 end Homeomorph
 
@@ -562,7 +565,7 @@ namespace IsHomeomorph
 /-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
 @[simps! toEquiv apply symm_apply]
 noncomputable def homeomorph (f : X → Y) (hf : IsHomeomorph f) : X ≃ₜ Y where
-  continuous_toFun := hf.1
+  continuous_toFun := hf.continuous
   continuous_invFun :=
     Equiv.ofBijective f hf.bijective |>.continuous_symm_iff.2 hf.isOpenMap
   toEquiv := Equiv.ofBijective f hf.bijective
@@ -582,7 +585,7 @@ theorem image_frontier (hf : IsHomeomorph f) (s : Set X) :
   f '' frontier s = frontier (f '' s) := hf.homeomorph.image_frontier s
 
 lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomorph (g ∘ f) :=
-  ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
+  ⟨hg.continuous.comp hf.continuous, hg.isOpenMap.comp hf.isOpenMap, hg.bijective.comp hf.bijective⟩
 
 end IsHomeomorph
 

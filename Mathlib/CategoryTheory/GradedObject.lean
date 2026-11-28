@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.CategoryTheory.Shift.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of graded objects
 
@@ -27,7 +30,6 @@ show that it is faithful, and deduce that when `C` is concrete so is `GradedObje
 A covariant functoriality of `GradedObject β C` with respect to the index set `β` is also
 introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p ⁻¹' {j}`, we
 have a functor `map : GradedObject I C ⥤ GradedObject J C`.
-
 -/
 
 @[expose] public section
@@ -427,7 +429,7 @@ section
 
 variable (k : K) (c : ∀ (j : J), q j = k → X.CofanMapObjFun p j)
   (hc : ∀ j hj, IsColimit (c j hj))
-  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.1 j.2).pt)) (hc' : IsColimit c')
+  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.val j.property).pt)) (hc' : IsColimit c')
 
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the datum of cofans `X.CofanMapObjFun p j` for all

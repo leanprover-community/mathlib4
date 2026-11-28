@@ -27,7 +27,6 @@ is essentially small.
 
 By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderLimitsOfShape J`.
-
 -/
 
 @[expose] public section
@@ -168,7 +167,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
     ObjectProperty.Small.{w} (P.strictLimitsOfShape J) := by
   refine small_of_surjective
     (f := fun (F : { F : J ⥤ P.FullSubcategory // HasLimit (F ⋙ P.ι) }) ↦
-      (⟨_, letI := F.2; ⟨F.1 ⋙ P.ι, fun j ↦ (F.1.obj j).2⟩⟩)) ?_
+      (⟨_, letI := F.property; ⟨F.val ⋙ P.ι, fun j ↦ (F.val.obj j).property⟩⟩)) ?_
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 

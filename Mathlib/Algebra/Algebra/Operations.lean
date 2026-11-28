@@ -109,7 +109,8 @@ instance : SMul (Submodule R A) (Submodule R M) where
   { __ := A'.toAddSubmonoid • M'.toAddSubmonoid
     smul_mem' := fun r m hm ↦ AddSubmonoid.smul_induction_on hm
       (fun a ha m hm ↦ by rw [← smul_assoc]; exact AddSubmonoid.smul_mem_smul (A'.smul_mem r ha) hm)
-      fun m₁ m₂ h₁ h₂ ↦ by rw [smul_add]; exact (A'.1 • M'.1).add_mem h₁ h₂ }
+      fun m₁ m₂ h₁ h₂ ↦ by
+        rw [smul_add]; exact (A'.toAddSubmonoid • M'.toAddSubmonoid).add_mem h₁ h₂ }
 
 section
 
@@ -461,11 +462,11 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
-      · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩
+      · use ⟨f y, mem_map.mpr ⟨y.val, y.property, rfl⟩⟩
         refine Eq.trans ?_ hy
         ext
         simp
-      · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
+      · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.property
         use ⟨y', hy'⟩
         refine Eq.trans ?_ hy
         rw [f.toLinearMap_apply] at fy_eq
@@ -726,10 +727,9 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := span R s.toSet
   map_zero' := span_empty
   map_one' := one_eq_span.symm
-  map_add' := span_union
+  map_add' := by simp
   map_mul' s t := by simp_rw [SetSemiring.toSet_mul, span_mul_span]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- `(span R {·})` as a `MonoidWithZeroHom`. -/
 def spanSingleton : A →*₀ Submodule R A where

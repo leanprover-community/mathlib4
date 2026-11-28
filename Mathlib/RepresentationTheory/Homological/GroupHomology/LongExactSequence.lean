@@ -9,6 +9,9 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriali
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Long exact sequence in group homology
 
@@ -24,7 +27,6 @@ to specialize API about long exact sequences to group homology.
 
 * `groupHomology.δ hX i j hij`: the connecting homomorphism `Hᵢ(G, X₃) ⟶ Hⱼ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
-
 -/
 
 public section
@@ -128,48 +130,45 @@ theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
     -- Then `x` is an `j`-cycle and `δ z = x` in `Hⱼ(X₁)`.
     (hx : mapRange.linearMap X.f.hom.toLinearMap x = (inhomogeneousChains X.X₂).d i j y) :
     δ hX i j hij (π X.X₃ i <| cyclesMk i j (by simp [← hij]) z (by simpa using! hz)) =
-      π X.X₁ j (cyclesMkOfCompEqD hX hx) := by
-  exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using! hx) _ rfl
+      π X.X₁ j (cyclesMkOfCompEqD hX hx) :=
+  (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using! hx) _ rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` by a 1-cycle for `X₃` and `y` a 1-chain for `X₂` such that `g ∘ y = z`.
-    (z : cycles₁ X.X₃) (y : G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.toLinearMap y = z.1)
+    (z : cycles₁ X.X₃) (y : G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.toLinearMap y = z.val)
     -- Let `x : X₁` be such that `f(x) = d(y)`.
     (x : X.X₁) (hx : X.f.hom x = d₁₀ X.X₂ y) :
     -- Then `δ z = x` in `H₀(X₁)`.
     δ hX 1 0 rfl (H1π X.X₃ z) = H0π X.X₁ x := by
   simpa only [H1π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H0π,
     ← cyclesMk₀_eq X.X₁, ← cyclesMk₁_eq X.X₃]
-  using! δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by
+  using! δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.val) (by
     rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp)
     ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
     ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by
       conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]
       simp [chainsIso₀, ← hx])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cycles₁_of_comp_eq_d₂₁
     {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.toLinearMap x =
     d₂₁ X.X₂ y) :
-    x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
+    x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.mono_f <| by
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` by a 2-cycle for `X₃` and `y` a 2-chain for `X₂` such that `g ∘ y = z`.
-    (z : cycles₂ X.X₃) (y : G × G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.toLinearMap y = z.1)
+    (z : cycles₂ X.X₃) (y : G × G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.toLinearMap y = z.val)
     -- Let `x` be a 1-chain for `X₁` such that `f ∘ x = d(y)`.
     (x : G →₀ X.X₁) (hx : mapRange.linearMap X.f.hom.toLinearMap x = d₂₁ X.X₂ y) :
     -- Then `x` is a 1-cycle and `δ z = x` in `H₁(X₁)`.
     δ hX 2 1 rfl (H2π X.X₃ z) = H1π X.X₁ ⟨x, mem_cycles₁_of_comp_eq_d₂₁ hX hx⟩ := by
   simpa only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H1π,
     ← cyclesMk₂_eq X.X₃, ← cyclesMk₁_eq X.X₁]
-  using! δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by
+  using! δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.val) (by
     rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]; simp)
     ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₂, ← hy])
     ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by

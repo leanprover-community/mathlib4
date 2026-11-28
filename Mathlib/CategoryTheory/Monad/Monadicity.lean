@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Monad.Coequalizer
 public import Mathlib.CategoryTheory.Monad.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monadicity theorems
 
@@ -34,7 +37,6 @@ Please try to keep them in sync.
 ## Tags
 
 Beck, monadicity, descent
-
 -/
 
 @[expose] public section

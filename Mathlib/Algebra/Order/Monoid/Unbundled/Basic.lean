@@ -11,12 +11,15 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.GRewrite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered monoids
 
 This file develops the basics of ordered monoids.
 
-## Implementation details
+## Implementation notes
 
 Unfortunately, the number of `'` appended to lemmas in this file
 may differ between the multiplicative and the additive version of a lemma.
@@ -26,7 +29,6 @@ The reason is that we did not want to change existing names in the library.
 
 Almost no monoid is actually present in this file: most assumptions have been generalized to
 `Mul` or `MulOneClass`.
-
 -/
 
 @[expose] public section

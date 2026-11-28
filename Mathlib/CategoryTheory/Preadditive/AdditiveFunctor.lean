@@ -22,11 +22,10 @@ biproducts, and if `F` preserves binary biproducts, then `F` is additive.
 
 We also define the category of bundled additive functors.
 
-## Implementation details
+## Implementation notes
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
-
 -/
 
 @[expose] public section
@@ -279,26 +278,21 @@ def AdditiveFunctor.of (F : C ⥤ D) [F.Additive] : C ⥤+ D :=
   ⟨F, by simpa⟩
 
 @[simp]
-theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).1 = F :=
+theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).obj = F :=
   rfl
 
-@[simp]
-theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.1 :=
+theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.obj :=
   rfl
 
 theorem AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
     (AdditiveFunctor.forget C D).obj (AdditiveFunctor.of F) = F :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
     (AdditiveFunctor.forget C D).map α = α.hom :=
   rfl
 
 instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
-
-instance (F : C ⥤+ D) : Functor.Additive F.1 :=
-  F.2
 
 end
 
@@ -353,32 +347,26 @@ end
 
 variable {C D}
 
-@[simp]
 theorem AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
     ((AdditiveFunctor.ofLeftExact C D).obj F).obj = F.obj :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
     ((AdditiveFunctor.ofRightExact C D).obj F).obj = F.obj :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
     ((AdditiveFunctor.ofExact C D).obj F).obj = F.obj :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofLeftExact_map_hom {F G : C ⥤ₗ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofLeftExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofRightExact_map_hom {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofRightExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl

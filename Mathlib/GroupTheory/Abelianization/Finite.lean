@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Coset.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The abelianization of a finite group is finite
 -/
@@ -16,8 +19,8 @@ public section
 
 variable {G : Type*} [Group G]
 
-instance [Fintype G] [DecidablePred (· ∈ commutator G)] : Fintype (Abelianization G) :=
+instance [Fintype G] [DecidablePred (· ∈ commutator G)] : Fintype (Group.Abelianization G) :=
   QuotientGroup.fintype (commutator G)
 
-instance [Finite G] : Finite (Abelianization G) :=
+instance [Finite G] : Finite (Group.Abelianization G) :=
   Quotient.finite _

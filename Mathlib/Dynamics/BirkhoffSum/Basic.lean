@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Dynamics.FixedPoints.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Birkhoff sums
 
@@ -84,8 +87,8 @@ theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedP
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
-theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
-    (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N]
+    [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
 
@@ -95,8 +98,8 @@ theorem map_comp_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N]
   funext <| map_birkhoffSum g' f g n
 
 theorem birkhoffSum_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
-    birkhoffSum f (g ∘ f) n x = birkhoffSum f g n (f x) := by
-  exact Finset.sum_congr rfl fun k _ => congrArg g (Function.Commute.iterate_self f k x).symm
+    birkhoffSum f (g ∘ f) n x = birkhoffSum f g n (f x) :=
+  Finset.sum_congr rfl fun k _ => congrArg g (Function.Commute.iterate_self f k x).symm
 
 theorem birkhoffSum_comp (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffSum f (g ∘ f) n = (birkhoffSum f g n) ∘ f :=
@@ -115,6 +118,11 @@ of `φ` over `f` for `n` iterations is equal to `n • φ`. -/
 theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) :
     birkhoffSum f φ n = n • φ :=
   funext <| birkhoffSum_apply_of_comp_eq h n
+
+@[simp]
+theorem birkhoffSum_const (f : α → α) (a : M) {n : ℕ} :
+    birkhoffSum f (fun _ ↦ a) n = n • fun _ ↦ a :=
+  birkhoffSum_of_comp_eq rfl n
 
 end AddCommMonoid
 

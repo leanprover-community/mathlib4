@@ -453,11 +453,9 @@ abbrev Eigenvalues (f : End R M) : Type _ :=
 @[coe]
 abbrev Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := UnifEigenvalues.val f 1
 
-@[simp]
 lemma Eigenvalues.val_mk {f : End R M} {μ : R} (h : f.HasEigenvalue μ) :
     Eigenvalues.val f ⟨μ, h⟩ = μ := rfl
 
-@[simp]
 lemma Eigenvalues.mk_val {f : End R M} (μ : Eigenvalues f) : ⟨μ.val, μ.property⟩ = μ := rfl
 
 theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
@@ -506,7 +504,7 @@ theorem restrict_eigenspace (f : End R M) (μ : R) :
     f.restrict (f.mem_invtSubmodule_iff_forall_mem_of_mem.mp
       (eigenspace_mem_invtSubmodule f μ)) = μ • LinearMap.id := by
   ext x
-  exact mem_eigenspace_iff.mp x.2
+  exact mem_eigenspace_iff.mp x.property
 
 /-- A nilpotent endomorphism has nilpotent eigenvalues.
 

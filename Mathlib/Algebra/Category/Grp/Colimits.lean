@@ -12,12 +12,14 @@ public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of additive commutative groups has all colimits.
 
 This file constructs colimits in the category of additive commutative groups, as
 quotients of finitely supported functions.
-
 -/
 
 @[expose] public section

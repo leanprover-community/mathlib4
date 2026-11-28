@@ -28,7 +28,6 @@ We define the multiset of roots of a polynomial, and prove basic results about i
 * `Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C`: If a polynomial has as many roots as its
   degree, it can be written as the product of its leading coefficient with `∏ (X - a)` where `a`
   ranges through its roots.
-
 -/
 
 @[expose] public section
@@ -297,7 +296,7 @@ theorem roots_list_prod (L : List R[X]) :
 
 theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
-  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using! roots_list_prod L
+  simpa only [Multiset.prod_coe, quot_mk_to_coe'] using! roots_list_prod L
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
     s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i => roots (f i) := by
@@ -731,9 +730,9 @@ theorem smul_mem_rootSet_iff [CommRing S] [Algebra S R] {G : Type*}
 instance [CommRing S] [Algebra S R] (G : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
-  smul g x := ⟨g • x.1, smul_mem_rootSet g x.2⟩
-  one_smul x := Subtype.ext (one_smul G x.1)
-  mul_smul g h x := Subtype.ext (mul_smul g h x.1)
+  smul g x := ⟨g • x.val, smul_mem_rootSet g x.property⟩
+  one_smul x := Subtype.ext (one_smul G x.val)
+  mul_smul g h x := Subtype.ext (mul_smul g h x.val)
 
 @[simp]
 theorem rootSet.coe_smul [CommRing S] [Algebra S R] {G : Type*}
@@ -1034,5 +1033,19 @@ theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]
   roots_map_of_map_ne_zero_of_card_eq_natDegree f (map_monic_ne_zero hm) hroots
 
 end
+
+section Order
+
+open Filter
+
+variable [CommRing R] [IsDomain R] [Preorder R] {p : R[X]}
+
+theorem eventually_atTop_not_isRoot [NoTopOrder R] (hp : p ≠ 0) : ∀ᶠ x in atTop, ¬p.IsRoot x :=
+  atTop_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+theorem eventually_atBot_not_isRoot [NoBotOrder R] (hp : p ≠ 0) : ∀ᶠ x in atBot, ¬p.IsRoot x :=
+  atBot_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+end Order
 
 end Polynomial

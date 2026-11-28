@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Convex.Extreme
 
 import Mathlib.Combinatorics.Hall.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Birkhoff's theorem
 

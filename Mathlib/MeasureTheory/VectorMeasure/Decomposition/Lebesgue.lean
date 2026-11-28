@@ -73,7 +73,8 @@ theorem not_haveLebesgueDecomposition_iff (s : SignedMeasure α) (μ : Measure �
     ¬s.HaveLebesgueDecomposition μ ↔
       ¬s.toJordanDecomposition.posPart.HaveLebesgueDecomposition μ ∨
         ¬s.toJordanDecomposition.negPart.HaveLebesgueDecomposition μ :=
-  ⟨fun h => not_or_of_imp fun hp hn => h ⟨hp, hn⟩, fun h hl => (not_and_or.2 h) ⟨hl.1, hl.2⟩⟩
+  ⟨fun h => not_or_of_imp fun hp hn => h ⟨hp, hn⟩,
+    fun h hl => (not_and_or.2 h) ⟨hl.posPart, hl.negPart⟩⟩
 
 -- `inferInstance` directly does not work
 -- see Note [lower instance priority]
@@ -171,11 +172,12 @@ theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable
   fun_prop
 
 theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
-  refine Integrable.sub ?_ ?_ <;>
-    · constructor
-      · apply Measurable.aestronglyMeasurable
-        fun_prop
-      exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
+  refine Integrable.sub ?_ ?_
+  all_goals
+    constructor
+    · apply Measurable.aestronglyMeasurable
+      fun_prop
+    exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
 
 variable (s μ)
 
@@ -313,9 +315,9 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
   rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
   conv_lhs =>
     congr
-    · congr
-      · rw [toJordanDecomposition_smul, JordanDecomposition.smul_posPart, singularPart_smul]
-    · congr
+    · enter [1]
+      rw [toJordanDecomposition_smul, JordanDecomposition.smul_posPart, singularPart_smul]
+    · enter [1]
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
@@ -328,12 +330,12 @@ nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : �
     rw [singularPart, singularPart]
     conv_lhs =>
       congr
-      · congr
-        · rw [toJordanDecomposition_smul_real,
-            JordanDecomposition.real_smul_posPart_neg _ _ hr, singularPart_smul]
-      · congr
-        · rw [toJordanDecomposition_smul_real,
-            JordanDecomposition.real_smul_negPart_neg _ _ hr, singularPart_smul]
+      · enter [1]
+        rw [toJordanDecomposition_smul_real,
+          JordanDecomposition.real_smul_posPart_neg _ _ hr, singularPart_smul]
+      · enter [1]
+        rw [toJordanDecomposition_smul_real,
+          JordanDecomposition.real_smul_negPart_neg _ _ hr, singularPart_smul]
     rw [toSignedMeasure_smul, toSignedMeasure_smul, ← neg_sub, ← smul_sub, NNReal.smul_def,
       ← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr hr)), neg_neg]
 

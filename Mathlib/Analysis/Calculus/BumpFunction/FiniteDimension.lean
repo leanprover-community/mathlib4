@@ -26,6 +26,9 @@ in `IsOpen.exists_contDiff_support_eq`.
 
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
+
+Finally, `Real.exists_contDiff_indicator_Icc_le_le_indicator_Ioo` provides smooth cutoffs on `ℝ`
+lying between the indicator functions of two nested intervals.
 -/
 
 @[expose] public section
@@ -96,7 +99,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
   let ι := { f : E → ℝ // f.support ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ∞ f ∧ range f ⊆ Icc 0 1 }
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set ι, T.Countable ∧ ⋃ f ∈ T, support (f : E → ℝ) = s := by
     have : ⋃ f : ι, (f : E → ℝ).support = s := by
-      refine Subset.antisymm (iUnion_subset fun f => f.2.1) ?_
+      refine Subset.antisymm (iUnion_subset fun f => f.property.1) ?_
       intro x hx
       rcases exists_contDiff_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
@@ -113,8 +116,8 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     · simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
         at h's
     · exact hT
-  let g : ℕ → E → ℝ := fun n => (g0 n).1
-  have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).2.1
+  let g : ℕ → E → ℝ := fun n => (g0 n).val
+  have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).property.1
   have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := fun x hx ↦ by
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
@@ -125,9 +128,9 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     abuse in Mathlib or a problem in the new canonicalizer; a minimization would help. -/
     obtain ⟨n, hn⟩ := hg ▸ iT
     grind
-  have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
-  have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
-  have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).2.2.2.2 (mem_range_self x)).1
+  have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).property.2.2.1
+  have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).property.2.1
+  have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).property.2.2.2 (mem_range_self x)).1
   obtain ⟨δ, δpos, c, δc, c_lt⟩ :
       ∃ δ : ℕ → ℝ≥0, (∀ i : ℕ, 0 < δ i) ∧ ∃ c : NNReal, HasSum δ c ∧ c < 1 :=
     NNReal.exists_pos_sum_of_countable one_ne_zero ℕ
@@ -163,8 +166,8 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
       _ = δ n := by simp [field]
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
-    refine .of_nnnorm_bounded δc.summable fun n => ?_
-    rw [← NNReal.coe_le_coe, coe_nnnorm]
+    refine .of_nnNorm_bounded δc.summable fun n => ?_
+    rw [← NNReal.coe_le_coe, coe_nnNorm]
     simpa only [norm_iteratedFDeriv_zero] using! hr n 0 zero_le x
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
@@ -526,3 +529,36 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
 end ExistsContDiffBumpBase
 
 end
+
+/-- A smooth cutoff on `ℝ`: if `a < b ≤ c < d`, there is a smooth function `ψ` with compact
+support contained in `Ioo a d` such that `𝟙_[b, c] ≤ ψ ≤ 𝟙_(a, d)`. In particular,
+`∫ ψ ∈ [c - b, d - a]`. -/
+theorem Real.exists_contDiff_indicator_Icc_le_le_indicator_Ioo {a b c d : ℝ} (hab : a < b)
+    (hbc : b ≤ c) (hcd : c < d) :
+    ∃ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ tsupport ψ ⊆ Ioo a d ∧
+      (Icc b c).indicator 1 ≤ ψ ∧ ψ ≤ (Ioo a d).indicator 1 ∧
+      ∫ x, ψ x ∈ Icc (c - b) (d - a) := by
+  let ψ : ContDiffBump ((b + c) / 2) :=
+    ⟨(c - b) / 2 + min (b - a) (d - c) / 3, (c - b) / 2 + 2 * min (b - a) (d - c) / 3,
+      by grind, by grind⟩
+  have hts : tsupport ψ ⊆ Ioo a d := by
+    grind [ψ.tsupport_eq, Real.closedBall_eq_Icc]
+  have hle : (Icc b c).indicator 1 ≤ ψ := fun x ↦ by
+    by_cases hx : x ∈ Icc b c
+    · rw [indicator_of_mem hx, Pi.one_apply, ψ.one_of_mem_closedBall ?h]
+      case h => grind [Real.closedBall_eq_Icc]
+    · simpa [indicator_of_notMem hx] using ψ.nonneg
+  have hle' : ⇑ψ ≤ (Ioo a d).indicator 1 := fun x ↦ by
+    by_cases hx : x ∈ Ioo a d
+    · rw [indicator_of_mem hx, Pi.one_apply]
+      exact ψ.le_one
+    · rw [indicator_of_notMem hx, image_eq_zero_of_notMem_tsupport fun h ↦ hx (hts h)]
+  have hint : Integrable ψ := ψ.continuous.integrable_of_hasCompactSupport ψ.hasCompactSupport
+  have hind {s : Set ℝ} (hs : MeasurableSet s) (hs' : volume s ≠ ⊤) :
+      Integrable (s.indicator (1 : ℝ → ℝ)) :=
+    (integrable_indicator_iff hs).2 (integrableOn_const hs' (by simp))
+  refine ⟨ψ, ψ.contDiff, ψ.hasCompactSupport, hts, hle, hle', ?_, ?_⟩
+  · rw [← volume_real_Icc_of_le hbc, ← integral_indicator_one measurableSet_Icc]
+    exact integral_mono (hind measurableSet_Icc (by simp)) hint hle
+  · rw [← volume_real_Ioo_of_le (by linarith), ← integral_indicator_one measurableSet_Ioo]
+    exact integral_mono hint (hind measurableSet_Ioo (by simp)) hle'

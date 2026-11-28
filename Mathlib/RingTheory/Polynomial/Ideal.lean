@@ -55,6 +55,21 @@ lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by
 
 end Polynomial
 
+namespace Ideal
+
+open Polynomial
+
+/-- If `n` divides `g(a)`, then `g(θ)` belongs to the ideal spanned by `n` and `θ - a`. -/
+theorem mem_span_pair_sub_of_dvd_eval {R S : Type*} [CommRing R] [CommRing S] [Algebra S R]
+    (θ : R) {n a : S} {g : S[X]} (hg : n ∣ g.eval a) :
+    aeval θ g ∈ span {algebraMap S R n, θ - algebraMap S R a} := by
+  obtain ⟨k, hk⟩ := hg
+  obtain ⟨q, hq⟩ := sub_dvd_eval_sub θ (algebraMap S R a) (g.map (algebraMap S R))
+  rw [eval_map_algebraMap, eval_map, eval₂_at_apply, hk, map_mul, sub_eq_iff_eq_add'] at hq
+  exact mem_span_pair.mpr ⟨algebraMap S R k, q, by grind⟩
+
+end Ideal
+
 namespace Algebra
 
 variable {R S : Type*}
@@ -101,7 +116,7 @@ lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R]
   have ⟨q, hq⟩ := adjoin_eq_exists_aeval R x w
   use (1 - p - X * q).reverse
   have : (1 - p - X * q).coeff 0 - 1 ∈ I := by simpa using hp.1 0
-  apply_fun (·.1) at eq hw
+  apply_fun (·.val) at eq hw
   dsimp at eq
   rw [reverse_leadingCoeff, trailingCoeff_eq_coeff_zero]
   · exact ⟨this, (eval₂_reverse_eq_zero_iff ..).mpr <| by simp [← aeval_def, hp.2, hq, ← eq, hw]⟩
