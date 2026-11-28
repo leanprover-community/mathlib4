@@ -157,18 +157,19 @@ end AlgHom
 namespace AlgEquiv
 
 variable {α β R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
-variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
-variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
+variable [Π i, NonUnitalNonAssocSemiring (A₁ i)] [Π i, NonUnitalNonAssocSemiring (A₂ i)]
+  [Π i, NonUnitalNonAssocSemiring (A₃ i)]
+variable [Π i, SMul R (A₁ i)] [Π i, SMul R (A₂ i)] [Π i, SMul R (A₃ i)]
 
-/-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
+/-- A family of algebra equivalences `Π i, (A₁ i ≃ₐ A₂ i)` generates a
 multiplicative equivalence between `Π i, A₁ i` and `Π i, A₂ i`.
 
 This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent version of
 `AlgEquiv.arrowCongr`.
 -/
 @[simps apply]
-def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
-  { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
+def piCongrRight (e : Π i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
+  { RingEquiv.piCongrRight fun i ↦ (e i).toRingEquiv with
     toFun := fun x j ↦ e j (x j)
     invFun := fun x j ↦ (e j).symm (x j)
     map_smul' _ _ := by
@@ -239,7 +240,8 @@ lemma piCongrLeft_symm_apply {ι' : Type*} (e : ι' ≃ ι) (x : Π i, A₁ i) :
 
 section
 
-variable (S : Type*) [Semiring S] [Algebra R S]
+variable {R ι : Type*} [CommSemiring R]
+  (S : Type*) [Semiring S] [Algebra R S]
 
 variable (ι R) in
 /-- If `ι` has a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
