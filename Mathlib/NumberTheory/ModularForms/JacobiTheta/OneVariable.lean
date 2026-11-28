@@ -17,6 +17,15 @@ $$\theta(\tau) = \sum_{n \in \mathbb{Z}} \exp (i \pi n ^ 2 \tau),$$
 and proves the modular transformation properties `θ (τ + 2) = θ τ` and
 `θ (-1 / τ) = (-I * τ) ^ (1 / 2) * θ τ`, using Poisson's summation formula for the latter. We also
 show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential decay as `im τ → ∞`.
+
+We also define the Jacobi theta functions `θ₂ = jacobiTheta₁₀` and `θ₄ = jacobiTheta₀₁` (with
+`θ₃ = jacobiTheta`), and prove the transformation laws of `θ₂`, `θ₃` and `θ₄` under `τ ↦ 1 + τ`
+and `τ ↦ -1 / τ`.
+
+## Notation
+
+With `open scoped JacobiTheta`, we write `θ₂`, `θ₃` and `θ₄` for `jacobiTheta₁₀`, `jacobiTheta`
+and `jacobiTheta₀₁` respectively.
 -/
 
 @[expose] public section
@@ -51,6 +60,83 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   simp_rw [jacobiTheta₂_functional_equation 0 τ, zero_pow two_ne_zero, mul_zero, zero_div,
     Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div, div_self h1, one_mul,
     inv_neg, neg_div, one_div]
+
+/-!
+## The theta functions `θ₂` and `θ₄`
+
+In the characteristic notation, `θ₂`, `θ₃` and `θ₄` are `θ₁₀`, `θ₀₀` and `θ₀₁` respectively, which
+explains the names `jacobiTheta₁₀` and `jacobiTheta₀₁`.
+-/
+
+/-- The Jacobi theta function `θ₄(τ) = ∑' (n : ℤ), (-1) ^ n * exp (π * I * n ^ 2 * τ)`, also
+denoted `θ₀₁`. -/
+noncomputable def jacobiTheta₀₁ (τ : ℂ) : ℂ :=
+  ∑' n : ℤ, (-1 : ℂ) ^ n * cexp (π * I * (n : ℂ) ^ 2 * τ)
+
+lemma jacobiTheta₀₁_apply (τ : ℂ) :
+    jacobiTheta₀₁ τ = ∑' n : ℤ, (-1 : ℂ) ^ n * cexp (π * I * (n : ℂ) ^ 2 * τ) := rfl
+
+/-- The Jacobi theta function `θ₂(τ) = ∑' (n : ℤ), exp (π * I * (n + 1 / 2) ^ 2 * τ)`, also
+denoted `θ₁₀`. -/
+noncomputable def jacobiTheta₁₀ (τ : ℂ) : ℂ :=
+  ∑' n : ℤ, cexp (π * I * ((n : ℂ) + 1 / 2) ^ 2 * τ)
+
+lemma jacobiTheta₁₀_apply (τ : ℂ) :
+    jacobiTheta₁₀ τ = ∑' n : ℤ, cexp (π * I * ((n : ℂ) + 1 / 2) ^ 2 * τ) := rfl
+
+namespace JacobiTheta
+
+@[inherit_doc] scoped notation "θ₂" => jacobiTheta₁₀
+@[inherit_doc] scoped notation "θ₃" => jacobiTheta
+@[inherit_doc] scoped notation "θ₄" => jacobiTheta₀₁
+
+end JacobiTheta
+
+open scoped JacobiTheta
+
+lemma jacobiTheta₀₁_eq_jacobiTheta₂ (τ : ℂ) : θ₄ τ = jacobiTheta₂ (1 / 2) τ := by
+  refine tsum_congr fun n ↦ ?_
+  rw [jacobiTheta₂_term, ← exp_pi_mul_I, ← Complex.exp_intCast_mul, ← Complex.exp_add]
+  ring_nf
+
+lemma jacobiTheta₁₀_eq_jacobiTheta₂ (τ : ℂ) :
+    θ₂ τ = cexp (π * I * τ / 4) * jacobiTheta₂ (τ / 2) τ := by
+  rw [jacobiTheta₂, ← tsum_mul_left]
+  refine tsum_congr fun n ↦ ?_
+  rw [jacobiTheta₂_term, ← Complex.exp_add]
+  ring_nf
+
+theorem jacobiTheta_one_add (τ : ℂ) : θ₃ (1 + τ) = θ₄ τ := by
+  rw [jacobiTheta_eq_jacobiTheta₂, add_comm, jacobiTheta₂_add_one_right, zero_add,
+    jacobiTheta₀₁_eq_jacobiTheta₂]
+
+theorem jacobiTheta₀₁_one_add (τ : ℂ) : θ₄ (1 + τ) = θ₃ τ := by
+  rw [jacobiTheta₀₁_eq_jacobiTheta₂, add_comm, jacobiTheta₂_add_one_right, add_halves,
+    jacobiTheta_eq_jacobiTheta₂, ← jacobiTheta₂_add_left 0, zero_add]
+
+theorem jacobiTheta₁₀_one_add (τ : ℂ) : θ₂ (1 + τ) = cexp (π * I / 4) * θ₂ τ := by
+  have : (τ + 1) / 2 + 1 / 2 = τ / 2 + 1 := by ring
+  rw [jacobiTheta₁₀_eq_jacobiTheta₂, add_comm, jacobiTheta₂_add_one_right, this,
+    jacobiTheta₂_add_left, jacobiTheta₁₀_eq_jacobiTheta₂, ← mul_assoc, ← Complex.exp_add]
+  ring_nf
+
+theorem jacobiTheta₀₁_S_smul (τ : ℍ) :
+    θ₄ ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * θ₂ τ := by
+  have h : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by simp [cpow_eq_zero_iff, τ.ne_zero]
+  have h0 : (τ : ℂ) ≠ 0 := τ.ne_zero
+  rw [UpperHalfPlane.modular_S_smul, UpperHalfPlane.coe_mk, jacobiTheta₀₁_eq_jacobiTheta₂,
+    jacobiTheta₁₀_eq_jacobiTheta₂, jacobiTheta₂_functional_equation _ τ,
+    (by field : (τ : ℂ) / 2 / τ = 1 / 2), (by field : -1 / (τ : ℂ) = (-(τ : ℂ))⁻¹),
+    (by field : -π * I * ((τ : ℂ) / 2) ^ 2 / τ = -(π * I * τ / 4)), Complex.exp_neg]
+  field
+
+theorem jacobiTheta₁₀_S_smul (τ : ℍ) :
+    θ₂ ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * θ₄ τ := by
+  have h : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by simp [cpow_eq_zero_iff, τ.ne_zero]
+  rw [UpperHalfPlane.modular_S_smul, jacobiTheta₀₁_eq_jacobiTheta₂,jacobiTheta₁₀_eq_jacobiTheta₂,
+    jacobiTheta₂_functional_equation _ τ, ← mul_assoc, ← jacobiTheta₂_neg_left, ← mul_assoc,
+      mul_one_div_cancel h]
+  ring_nf
 
 theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by
