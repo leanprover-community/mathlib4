@@ -94,7 +94,7 @@ bounded below homotopy categories, this natural transformation allows to say
 that it is also the derived functor of the functor
 `F.mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D`,
 postcomposed with `DerivedCategory.Plus.Q`. -/
-@[no_expose, simps! -isSimp app]
+@[irreducible, simps! -isSimp app]
 noncomputable def rightDerivedFunctorPlusUnit :
     F.mapCochainComplexPlus ⋙ DerivedCategory.Plus.Q ⟶
     DerivedCategory.Plus.Q ⋙ F.rightDerivedFunctorPlus :=
@@ -105,7 +105,7 @@ noncomputable def rightDerivedFunctorPlusUnit :
     (associator _ _ _).inv ≫ whiskerRight (DerivedCategory.Plus.quotientCompQhIso C).hom _
 
 instance : NatTrans.CommShift F.rightDerivedFunctorPlusUnit ℤ := by
-  dsimp [rightDerivedFunctorPlusUnit]
+  unfold rightDerivedFunctorPlusUnit
   infer_instance
 
 instance (K : CochainComplex.Plus (InjectiveObject C)) :

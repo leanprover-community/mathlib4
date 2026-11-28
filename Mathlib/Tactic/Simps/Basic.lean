@@ -986,24 +986,37 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let lvl ← getLevel type
   let mut (rhs, prf) := (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs])
   if cfg.simpRhs then
-    let ctx ← mkSimpContext
-    let (rhs2, _) ← dsimp rhs ctx
-    if rhs != rhs2 then
-      trace[simps.debug] "`dsimp` simplified rhs to{indentExpr rhs2}"
-    else
-      trace[simps.debug] "`dsimp` failed to simplify rhs"
-    let (result, _) ← simp rhs2 ctx
-    if rhs2 != result.expr then
-      trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
-    else
-      trace[simps.debug] "`simp` failed to simplify rhs"
-    rhs := result.expr
-    prf := result.proof?.getD prf
+    (rhs, prf) ← withoutExporting do
+      let ctx ← mkSimpContext
+      let (rhs2, _) ← dsimp rhs ctx
+      if rhs != rhs2 then
+        trace[simps.debug] "`dsimp` simplified rhs to{indentExpr rhs2}"
+      else
+        trace[simps.debug] "`dsimp` failed to simplify rhs"
+      let (result, _) ← simp rhs2 ctx
+      if rhs2 != result.expr then
+        trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
+      else
+        trace[simps.debug] "`simp` failed to simplify rhs"
+      return (result.expr, result.proof?.getD prf)
+    if (← getEnv).isExporting then
+      try Meta.check rhs .default
+      catch ex =>
+        throwError
+          ("The result of `simp` on the rhs is ill-typed in the public scope\n\n" ++
+            (← nestedExceptionToMessageData ex))
   -- dsimplify `lhs` if `cfg.dsimpLhs` is true
   let mut lhs := lhs
   if cfg.dsimpLhs then
-    let ctx ← mkSimpContext
-    (lhs, _) ← dsimp lhs ctx
+    lhs ← withoutExporting do
+      let ctx ← mkSimpContext
+      return (← dsimp lhs ctx).1
+    if (← getEnv).isExporting then
+      try Meta.check lhs .default
+      catch ex =>
+        throwError
+          ("The result of `dsimp` on the lhs is ill-typed in the public scope\n\n" ++
+            (← nestedExceptionToMessageData ex))
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
