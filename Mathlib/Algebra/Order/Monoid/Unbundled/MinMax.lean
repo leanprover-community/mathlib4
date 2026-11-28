@@ -24,21 +24,14 @@ variable {α β : Type*}
 section CommSemigroup
 variable [LinearOrder α] [CommSemigroup β]
 
-@[to_additive]
+@[to_additive (attr := to_dual)]
 lemma fn_min_mul_fn_max (f : α → β) (a b : α) : f (min a b) * f (max a b) = f a * f b := by
-  grind
-
-@[to_additive (attr := to_dual existing)]
-lemma fn_max_mul_fn_min (f : α → β) (a b : α) : f (max a b) * f (min a b) = f a * f b := by
   grind
 
 variable [CommSemigroup α]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := to_dual (attr := simp))]
 lemma min_mul_max (a b : α) : min a b * max a b = a * b := fn_min_mul_fn_max id _ _
-
-@[to_additive (attr := simp, to_dual existing)]
-lemma max_mul_min (a b : α) : max a b * min a b = a * b := fn_max_mul_fn_min id _ _
 
 end CommSemigroup
 
@@ -50,33 +43,13 @@ section Mul
 
 variable [Mul α]
 
-section Left
-
-variable [MulLeftMono α]
-
-@[to_additive]
-theorem min_mul_mul_left (a b c : α) : min (a * b) (a * c) = a * min b c :=
+@[to_additive (attr := to_dual)]
+theorem min_mul_mul_left [MulLeftMono α] (a b c : α) : min (a * b) (a * c) = a * min b c :=
   (monotone_id.const_mul' a).map_min.symm
 
-@[to_additive (attr := to_dual existing)]
-theorem max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
-  (monotone_id.const_mul' a).map_max.symm
-
-end Left
-
-section Right
-
-variable [MulRightMono α]
-
-@[to_additive]
-theorem min_mul_mul_right (a b c : α) : min (a * c) (b * c) = min a b * c :=
+@[to_additive (attr := to_dual)]
+theorem min_mul_mul_right [MulRightMono α] (a b c : α) : min (a * c) (b * c) = min a b * c :=
   (monotone_id.mul_const' c).map_min.symm
-
-@[to_additive (attr := to_dual existing)]
-theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
-  (monotone_id.mul_const' c).map_max.symm
-
-end Right
 
 @[to_additive (attr := to_dual self)]
 theorem lt_or_lt_of_mul_lt_mul [MulLeftMono α] [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :

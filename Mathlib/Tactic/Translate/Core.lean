@@ -783,7 +783,7 @@ def translateLemmas (t : TranslateData) (names : Array Name)
   for nm in names, lemmas in auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
+  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas[1...*] do
     let env ← getEnv
       -- Only add a translation if one doesn't already exist.
       -- This occurs for the `_assoc` lemmas from `to_dual (attr := reassoc)`.
@@ -1069,7 +1069,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   -- (the information will be over the attribute if no translated name is given)
   Term.addTermInfo' (← getRef) (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
     |>.run' |>.run'
-  return nestedNames.push tgt
+  return if alreadyExists then #[] else #[tgt] ++ nestedNames
 
 end
 

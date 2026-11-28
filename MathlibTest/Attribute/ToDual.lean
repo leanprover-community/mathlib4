@@ -552,3 +552,27 @@ Note: This linter can be disabled with `set_option linter.translate.existing fal
 -/
 #guard_msgs in
 @[to_dual] alias max' := max
+
+/--
+trace: [translate] Adding `max_one` ↔ `min_one` (relevant_arg := 1)
+---
+trace: [translate] Adding `max_one` ↦ `max_zero` (relevant_arg := 1)
+[translate] Adding `min_one` ↦ `min_zero` (relevant_arg := 1)
+[translate] Adding `max_zero` ↔ `min_zero` (relevant_arg := 1)
+-/
+#guard_msgs in
+@[to_dual? (attr := to_additive)]
+theorem max_one {α : Type*} [One α] [LinearOrder α] (a : α) : a ≤ max a 1 := by
+  simp
+
+/--
+trace: [translate] Adding `max_one'` ↦ `max_zero'` (relevant_arg := 1)
+---
+trace: [translate] Adding `max_one'` ↔ `min_one'` (relevant_arg := 1)
+[translate] Adding `max_zero'` ↔ `min_zero'` (relevant_arg := 1)
+[translate] Adding `min_one'` ↦ `min_zero'` (relevant_arg := 1)
+-/
+#guard_msgs in
+@[to_additive? (attr := to_dual)]
+theorem max_one' {α : Type*} [One α] [LinearOrder α] (a : α) : a ≤ max a 1 := by
+  simp

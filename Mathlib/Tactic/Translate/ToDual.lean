@@ -14,11 +14,6 @@ The `@[to_dual]` attribute is used to translate declarations to their dual equiv
 See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
-- When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
-  For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
-  `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
-  are dual to each other. Currently, this requires writing
-  `attribute [to_dual existing le_add] add_le`.
 - It is currently not possible for a constant to have multiple possible duals.
   This would be useful for constants that have orders on different types, such as `Monotone f`.
   If the domain and codomain of `f` are both dualized, then `Monotone f` is simply dual to itself.
@@ -342,6 +337,11 @@ initialize registerBuiltinAttribute {
         addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
+
+initialize
+  registerGeneratingAttr `to_dual fun src stx kind ↦ do
+    profileitM Exception "to_dual" (← getOptions) do
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
 
 /-- `insert_to_dual_translation name dualName` inserts the translation `name ↔ dualName`
 into the `to_dual` dictionary. This is useful for translating namespaces that don't (yet)
