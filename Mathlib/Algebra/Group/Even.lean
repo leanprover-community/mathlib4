@@ -138,6 +138,10 @@ lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by si
   /-- Alias of the forwards direction of `even_iff_exists_two_nsmul`. -/]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 
+@[to_additive not_even_iff_forall_two_nsmul_ne]
+lemma not_isSquare_iff_forall_sq_ne {a : α} :
+    ¬IsSquare a ↔ ∀ b, b ^ 2 ≠ a := by simp [isSquare_iff_exists_sq, eq_comm]
+
 -- provable by simp in `Algebra.Ring.Parity`
 @[to_additive (attr := aesop safe, grind .) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
