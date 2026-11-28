@@ -61,16 +61,16 @@ def pgf (X : Ω → ℕ) (μ : Measure Ω) (t : ℝ) : ℝ :=
 lemma pgf_def (X : Ω → ℕ) (μ : Measure Ω) (t : ℝ) : pgf X μ t = μ[fun ω ↦ t ^ X ω] := rfl
 
 @[simp]
-lemma pgf_zero_measure : pgf X (0 : Measure Ω) t = 0 := by simp [pgf]
+lemma pgf_zero_measure : pgf X (0 : Measure Ω) t = 0 := by simp [pgf_def]
 
 @[simp]
-lemma pgf_one [IsProbabilityMeasure μ] : pgf X μ 1 = 1 := by simp [pgf]
+lemma pgf_one [IsProbabilityMeasure μ] : pgf X μ 1 = 1 := by simp [pgf_def]
 
 lemma pgf_const [IsProbabilityMeasure μ] (c : ℕ) : pgf (fun _ ↦ c) μ t = t ^ c := by
-  simp [pgf]
+  simp [pgf_def]
 
 @[simp]
-lemma pgf_zero_fun [IsProbabilityMeasure μ] : pgf (0 : Ω → ℕ) μ t = 1 := by simp [pgf]
+lemma pgf_zero_fun [IsProbabilityMeasure μ] : pgf (0 : Ω → ℕ) μ t = 1 := by simp [pgf_def]
 
 lemma pgf_nonneg (ht : 0 ≤ t) : 0 ≤ pgf X μ t :=
   integral_nonneg fun _ ↦ pow_nonneg ht _
@@ -97,7 +97,7 @@ lemma pgf_zero (hX : AEMeasurable X μ) : pgf X μ 0 = μ.real (X ⁻¹' {0}) :=
   have h_eq : (fun n : ℕ ↦ (0 : ℝ) ^ n) = ({0} : Set ℕ).indicator fun _ ↦ (1 : ℝ) := by
     ext n
     by_cases h : n = 0 <;> simp [h]
-  rw [← pgf_id_map hX, pgf]
+  rw [← pgf_id_map hX, pgf_def]
   simp only [id_eq]
   rw [h_eq, integral_indicator_const _ (measurableSet_singleton 0),
     smul_eq_mul, mul_one, Measure.real, Measure.real,
@@ -106,13 +106,13 @@ lemma pgf_zero (hX : AEMeasurable X μ) : pgf X μ 0 = μ.real (X ⁻¹' {0}) :=
 /-- The generating function evaluated at `exp s` is the moment-generating function of `X`
 viewed as a real random variable. -/
 lemma pgf_exp_eq_mgf (s : ℝ) : pgf X μ (exp s) = mgf (fun ω ↦ (X ω : ℝ)) μ s := by
-  simp [pgf, mgf, ← Real.exp_natCast_mul, mul_comm s]
+  simp [pgf_def, mgf, ← Real.exp_natCast_mul, mul_comm s]
 
 /-- For `|t| ≤ 1` the integrand defining `pgf` is integrable with respect to any finite
 measure: the generating function of an `ℕ`-valued variable is well-defined on `[-1, 1]`. -/
 lemma integrable_pow_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) (ht : |t| ≤ 1) :
     Integrable (fun ω ↦ t ^ X ω) μ := by
-  refine Integrable.mono' (integrable_const 1) (by fun_prop) ?_
+  apply Integrable.mono' (integrable_const 1) (by fun_prop)
   filter_upwards with ω
   rw [Real.norm_eq_abs, abs_pow]
   exact pow_le_one₀ (abs_nonneg t) ht
@@ -132,7 +132,7 @@ lemma pgf_mono [IsFiniteMeasure μ] (hX : AEMeasurable X μ)
 
 lemma abs_pgf_le_one [IsProbabilityMeasure μ] (ht : |t| ≤ 1) :
     |pgf X μ t| ≤ 1 := by
-  rw [pgf, ← Real.norm_eq_abs]
+  rw [pgf_def, ← Real.norm_eq_abs]
   refine (norm_integral_le_of_norm_le_const (C := 1) ?_).trans_eq (by simp)
   filter_upwards with ω
   rw [Real.norm_eq_abs, abs_pow]
@@ -148,7 +148,7 @@ lemma hasSum_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) (ht : |t| ≤ 1) 
     HasSum (fun n ↦ μ.real (X ⁻¹' {n}) * t ^ n) (pgf X μ t) := by
   have h_int : Integrable (fun n : ℕ ↦ t ^ n) (μ.map X) :=
     integrable_pow_pgf aemeasurable_id ht
-  rw [pgf, ← integral_map hX Measurable.of_discrete.aestronglyMeasurable]
+  rw [pgf_def, ← integral_map hX Measurable.of_discrete.aestronglyMeasurable]
   rw [← Measure.sum_smul_dirac (μ.map X)] at h_int ⊢
   refine (hasSum_integral_measure h_int).congr_fun fun n ↦ ?_
   rw [integral_smul_measure, integral_dirac, smul_eq_mul,
@@ -159,7 +159,7 @@ lemma hasSum_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) (ht : |t| ≤ 1) 
 converge. -/
 lemma pgf_eq_tsum [IsFiniteMeasure μ] (hX : AEMeasurable X μ) :
     pgf X μ t = ∑' n, μ.real (X ⁻¹' {n}) * t ^ n := by
-  rw [pgf, ← integral_map hX Measurable.of_discrete.aestronglyMeasurable]
+  rw [pgf_def, ← integral_map hX Measurable.of_discrete.aestronglyMeasurable]
   rw [← Measure.sum_smul_dirac (μ.map X), integral_sum_dirac (fun _ ↦ measure_ne_top _ _)]
   simp [Measure.real, Measure.map_apply_of_aemeasurable hX]
 
@@ -207,16 +207,16 @@ theorem map_eq_of_pgf_frequently_eq {Ω' : Type*} {m' : MeasurableSpace Ω'} {ν
     (congrFun h_coeff n)
 
 /-- **The probability generating function determines the law.** If the generating functions
-of two `ℕ`-valued random variables with respect to finite measures agree on `[-c, c]` for some
+of two `ℕ`-valued random variables with respect to finite measures agree on `(0, c)` for some
 `c > 0`, then the two distributions agree. -/
 theorem map_eq_of_pgf_eq {Ω' : Type*} {m' : MeasurableSpace Ω'} {ν : Measure Ω'}
     {Y : Ω' → ℕ} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y ν) {c : ℝ} (hc : 0 < c)
-    (h : ∀ t : ℝ, |t| ≤ c → pgf X μ t = pgf Y ν t) :
+    (h : ∀ t : ℝ, 0 < t → t < c → pgf X μ t = pgf Y ν t) :
     μ.map X = ν.map Y := by
-  refine map_eq_of_pgf_frequently_eq hX hY (Eventually.frequently ?_)
-  filter_upwards [nhdsWithin_le_nhds (Metric.closedBall_mem_nhds (0 : ℝ) hc)] with t ht
-  exact h t (by simpa [Real.dist_eq] using ht)
+  apply map_eq_of_pgf_frequently_eq hX hY
+  refine (Eventually.frequently ?_).filter_mono (nhdsGT_le_nhdsNE 0)
+  filter_upwards [Ioo_mem_nhdsGT hc] with t ⟨ht₀, htc⟩ using h t ht₀ htc
 
 end Uniqueness
 
@@ -233,7 +233,7 @@ generating functions. -/
 theorem IndepFun.pgf_add {Y : Ω → ℕ} (h_indep : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
     pgf (X + Y) μ t = pgf X μ t * pgf Y μ t := by
-  simp_rw [pgf, Pi.add_apply, pow_add]
+  simp_rw [pgf_def, Pi.add_apply, pow_add]
   exact h_indep.integral_fun_comp_mul_comp hX hY (by fun_prop) (by fun_prop)
 
 /-- The generating function of a sum of finitely many independent variables is the product of
@@ -241,27 +241,8 @@ the generating functions. -/
 theorem iIndepFun.pgf_sum {ι : Type*} {X : ι → Ω → ℕ}
     (h_indep : iIndepFun X μ) {s : Finset ι} (h_meas : ∀ i ∈ s, AEMeasurable (X i) μ) :
     pgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, pgf (X i) μ t := by
-  have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
-  classical
-  -- Only the variables indexed by `s` matter, so replace the others by `0`.
-  let Y : ι → Ω → ℕ := fun i ω ↦ if i ∈ s then X i ω else 0
-  have hY_indep : iIndepFun Y μ :=
-    h_indep.comp (fun i n ↦ if i ∈ s then n else 0) fun _ ↦ Measurable.of_discrete
-  have hY_meas (i : ι) : AEMeasurable (Y i) μ := by
-    by_cases hi : i ∈ s
-    · simpa [Y, hi] using h_meas i hi
-    · simp [Y, hi, aemeasurable_const]
-  have hXY : ∀ i ∈ s, Y i = X i := fun i hi ↦ by simp [Y, hi]
-  rw [← sum_congr rfl hXY, ← prod_congr rfl fun i hi ↦ congrArg (pgf · μ t) (hXY i hi)]
-  clear_value Y
-  clear hXY h_meas
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s hi_notin_s h_rec =>
-    rw [sum_insert hi_notin_s,
-      IndepFun.pgf_add (hY_indep.indepFun_finsetSum_of_notMem₀ hY_meas hi_notin_s).symm
-        (hY_meas i) (Finset.aemeasurable_sum s fun j _ ↦ hY_meas j),
-      h_rec, prod_insert hi_notin_s]
+  simp_rw [pgf_def, Finset.sum_apply, ← prod_pow_eq_pow_sum, ← prod_coe_sort s]
+  exact (h_indep.restrict s).integral_fun_prod_comp (fun i ↦ h_meas i i.prop) (by fun_prop)
 
 end IndepFun
 
