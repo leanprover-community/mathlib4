@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Basic.Rel
 public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Sigma
 
@@ -1045,6 +1046,45 @@ lemma head_add_length_le_nat (p : LTSeries ℕ) : p.head + p.length ≤ p.last :
 /-- In ℤ, the head and tail of an `LTSeries` differ at least by the length of the series -/
 lemma head_add_length_le_int (p : LTSeries ℤ) : p.head + p.length ≤ p.last := by
   simpa using! LTSeries.apply_add_index_le_apply_add_index_int _ _ (Fin.last _) (Fin.zero_le _)
+
+section LinearOrder
+
+variable {α : Type*} [Fintype α] [Nonempty α] [LinearOrder α]
+  {β : Type*} [Preorder β] {emb : α ↪o β}
+
+/-- A series of "less than" relation on `β` can be obtained from an order embedding from a
+nonempty and finite type `α` to `β`. -/
+@[simps]
+def ofOrderEmbedding : (α ↪o β) ↪ LTSeries β where
+  toFun emb := {
+    length := Fintype.card α - 1
+    toFun := emb ∘ Fintype.orderIsoFinOfCardEq α (Nat.sub_one_add_one Fintype.card_ne_zero).symm
+    step i := by simp }
+  inj' a b h := by simpa [(OrderIso.surjective _).injective_comp_right.eq_iff] using h
+
+lemma ofOrderEmbedding_apply_length_add_one : (ofOrderEmbedding emb).length + 1 = Fintype.card α :=
+  Nat.sub_one_add_one Fintype.card_ne_zero
+
+lemma ofOrderEmbedding_apply_apply {n} : ofOrderEmbedding emb n =
+    emb (Fintype.orderIsoFinOfCardEq α ofOrderEmbedding_apply_length_add_one.symm n) := rfl
+
+lemma ofOrderEmbedding_apply_head :
+    (ofOrderEmbedding emb).head = emb (Finset.univ.min' Finset.univ_nonempty) := by
+  convert (RelSeries.apply_zero _).symm
+  simp [ofOrderEmbedding_apply_apply, Finset.min'_eq_iff, ← OrderIso.le_symm_apply]
+
+lemma ofOrderEmbedding_apply_last :
+    (ofOrderEmbedding emb).last = emb (Finset.univ.max' Finset.univ_nonempty) := by
+  convert (RelSeries.apply_last _).symm
+  simp [ofOrderEmbedding_apply_apply, Finset.max'_eq_iff, ← OrderIso.symm_apply_le, Fin.le_last]
+
+instance (priority := low) {α} [LinearOrder α] [Infinite α] : InfiniteDimensionalOrder α where
+  exists_relSeries_with_length n := by
+    have ⟨emb⟩ := nonempty_orderEmbedding_of_finite_infinite (Fin (n + 1)) α
+    use LTSeries.ofOrderEmbedding emb
+    simp [LTSeries.ofOrderEmbedding_apply_length]
+
+end LinearOrder
 
 section Fintype
 
