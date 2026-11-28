@@ -53,7 +53,7 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 scoped[CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
-attribute [simp] Functor.map_id Functor.map_comp
+attribute [simp, cat_nf] Functor.map_id Functor.map_comp
 attribute [grind =] Functor.map_id
 attribute [grind _=_] Functor.map_comp
 attribute [to_dual self] Functor.map Functor.map_comp
@@ -91,10 +91,10 @@ instance : Inhabited (C ⥤ C) :=
 
 variable {C}
 
-@[simp, grind =]
+@[simp, cat_nf, grind =]
 theorem id_obj (X : C) : (𝟭 C).obj X = X := rfl
 
-@[simp, grind =, to_dual self]
+@[simp, cat_nf, grind =, to_dual self]
 theorem id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
 
 end
@@ -115,7 +115,7 @@ theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
 
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
-@[simps (attr := grind =) obj, implicit_reducible]
+@[simps (attr := grind =, cat_nf) obj, implicit_reducible]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
@@ -123,7 +123,7 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
 /-- Notation for composition of functors. -/
 scoped[CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
-@[simp, grind =, to_dual self]
+@[simp, grind =, cat_nf, to_dual self]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
 

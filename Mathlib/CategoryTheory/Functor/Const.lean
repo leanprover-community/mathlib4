@@ -32,7 +32,7 @@ variable {C : Type u₂} [Category.{v₂} C]
 
 /-- The functor sending `X : C` to the constant functor `J ⥤ C` sending everything to `X`.
 -/
-@[simps, implicit_reducible]
+@[cat_nfs, implicit_reducible]
 def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X

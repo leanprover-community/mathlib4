@@ -63,7 +63,7 @@ namespace NatTrans
 @[ext, grind ext, to_dual self]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext w
 
-@[simp, to_dual self]
+@[simp, cat_nf, to_dual self]
 theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
 
 @[to_dual self]
@@ -72,10 +72,10 @@ theorem vcomp_app' (α : F ⟶ G) (β : G ⟶ H) (X : C) : (α ≫ β).app X = �
 @[to_dual self]
 theorem congr_app {α β : F ⟶ G} (h : α = β) (X : C) : α.app X = β.app X := by rw [h]
 
-@[simp, grind =]
+@[simp, cat_nf, grind =]
 theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
 
-@[simp, grind _=_, to_dual self, map (attr := reassoc)]
+@[simp, cat_nf, grind _=_, to_dual self, map (attr := reassoc)]
 theorem comp_app {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
