@@ -285,6 +285,17 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
+/-- Elements of a common finite height are pairwise incomparable: the level sets of `height`
+are antichains. This is the combinatorial content of Mirsky's theorem, which partitions a
+finite-dimensional order into `krullDim + 1` antichains. -/
+lemma isAntichain_lt_height_preimage {n : ℕ∞} (hn : n ≠ ⊤) :
+    IsAntichain (· < ·) {x : α | height x = n} := by
+  rintro x (hx : height x = n) y (hy : height y = n) _ hlt
+  have hfin : height x < ⊤ := hx ▸ hn.lt_top
+  have hmono := height_strictMono hlt hfin
+  rw [hx, hy] at hmono
+  exact lt_irrefl n hmono
+
 lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
   cases hfin : height a with
   | top =>
