@@ -14,12 +14,6 @@ open scoped ProbabilityTheory unitInterval
 namespace ProbabilityTheory
 variable {Ω : Type*} {m : MeasurableSpace Ω} {P : Measure Ω} {n : ℕ} {p : I} {X : Ω → ℝ}
 
-/-- **Variance of a binomial random variable**.
-
-The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
-proof_wanted variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
-    Var[X; P] = p * (1 - p) * n
-
 /-- **Conditional variance of a binomial random variable**.
 
 The conditional variance of a binomial random variable is the product of the conditional
