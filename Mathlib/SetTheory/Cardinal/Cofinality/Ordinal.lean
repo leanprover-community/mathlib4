@@ -8,6 +8,8 @@ module
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+import Mathlib.Order.Bounds.Lattice
+
 /-!
 # Cofinality of an ordinal
 
@@ -138,7 +140,7 @@ theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
-  have ht := hs.trans (isCofinal_setOfPred_imp_lt r)
+  have ht := hs.trans (WellFounded.isCofinal_setOfPred_imp_lt r)
   refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
   rw [← hs', hr', type_le_iff']
   refine ⟨.ofMonotone (fun x ↦ ⟨x.val, ?_⟩) fun x y hxy ↦ ?_⟩

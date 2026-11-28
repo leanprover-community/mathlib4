@@ -314,13 +314,13 @@ end AntitoneMonotone
 end Image2
 
 section IsCofinalFor
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β}
+variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β} {g : β → α}
 
 @[to_dual]
 lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) :
     IsCofinalFor (f '' s) (f '' t) := by
   simp only [IsCofinalFor, forall_mem_image, exists_mem_image]
-  rintro a ha
+  intro a ha
   obtain ⟨b, hb, hab⟩ := hst ha
   exact ⟨b, hb, hf hab⟩
 
@@ -328,9 +328,38 @@ lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) 
 lemma IsCofinalFor.image_of_antitone (hst : IsCofinalFor s t) (hf : Antitone f) :
     IsCoinitialFor (f '' s) (f '' t) := by
   simp only [IsCoinitialFor, forall_mem_image, exists_mem_image]
-  rintro a ha
+  intro a ha
   obtain ⟨b, hb, hab⟩ := hst ha
   exact ⟨b, hb, hf hab⟩
+
+@[to_dual]
+theorem IsCofinal.image_of_monotone (hs : IsCofinal s) (hf : Monotone f)
+    (hf' : IsCofinal (.range f)) : IsCofinal (f '' s) :=
+  ((hs.isCofinalFor .univ).image_of_monotone hf).isCofinal (by simpa)
+
+@[to_dual]
+theorem IsCofinal.image_of_antitone (hs : IsCofinal s) (hf : Antitone f)
+    (hf' : IsCoinitial (.range f)) : IsCoinitial (f '' s) :=
+  ((hs.isCofinalFor .univ).image_of_antitone hf).isCoinitial (by simpa)
+
+@[deprecated (since := "2026-11-22")] alias IsCofinal.image := IsCofinal.image_of_monotone
+
+/-- A cofinal subset of a cofinal subset is cofinal. -/
+@[to_dual
+/-- A coinitial subset of a coinitial subset is cofinal. -/]
+theorem IsCofinal.trans {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
+    IsCofinal (Subtype.val '' t) :=
+  ht.image_of_monotone (Subtype.mono_coe _) (by simpa)
+
+@[to_dual]
+theorem GaloisConnection.isCofinal_range (h : GaloisConnection g f) :
+    IsCofinal (range f) :=
+  fun a ↦ ⟨_, mem_range_self _, GaloisConnection.le_u_l h a⟩
+
+@[to_dual]
+theorem GaloisConnection.map_isCofinal (h : GaloisConnection g f) (hs : IsCofinal s) :
+    IsCofinal (f '' s) :=
+  hs.image_of_monotone h.monotone_u h.isCofinal_range
 
 end IsCofinalFor
 
