@@ -37,6 +37,11 @@ since its image is an induced subgraph.
 Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
 To make use of pre-existing simp lemmas, definitions involving morphisms are
 abbreviations as well.
+
+## TODO
+
+- Add `SimpleGraph.EmbeddingClass` analogous to `SimpleGraph.HomClass`.
+
 -/
 
 @[expose] public section
@@ -671,7 +676,56 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
+/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
+the codomain. -/
+def induceEmb {s : Set V} {t : Set W} (f : G ↪g G') (hfst : s.MapsTo f t) :
+    G.induce s ↪g G'.induce t where
+  toFun := Set.MapsTo.restrict f s t hfst
+  inj' := by
+    intro ⟨u, hu⟩ ⟨v, hv⟩
+    simp [Set.MapsTo.restrict, Subtype.map]
+  map_rel_iff' {u v} := by
+    simp [Set.MapsTo.restrict, Subtype.map]
+
+
 end Embedding
+
+section induceIso
+
+variable {G G'}
+
+/-- Two homomorphisms between graphs induce a bijection between their induced subgraphs if they are
+  inverses of each other in the corresponding sets. -/
+noncomputable def Hom.induceIso (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
+    (hf : Set.MapsTo f s t) (hg : Set.MapsTo g t s) (hfg : Set.InvOn g f s t) :
+    G.induce s ≃g G'.induce t where
+  __ : s ≃ t := Set.BijOn.equiv f (Set.InvOn.bijOn hfg hf hg)
+  map_rel_iff' {u v} := by
+    simp only [comap_adj, Embedding.subtype_apply, Set.BijOn.equiv_apply]
+    constructor
+    · intro hadj
+      exact hfg.left u.prop ▸ hfg.left v.prop ▸ g.map_rel hadj
+    · exact f.map_adj
+
+@[simp]
+theorem Hom.induceIso_symm (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
+    (hf : Set.MapsTo f s t) (hg : Set.MapsTo g t s) (hfg : Set.InvOn g f s t) :
+    (induceIso t s g f hg hf hfg.symm).symm = induceIso s t f g hf hg hfg := by
+  ext u
+  apply congrArg
+  simp [induceIso, Equiv.symm_apply_eq, Set.BijOn.equiv_apply, hfg.left u.property]
+
+/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
+the codomain. -/
+noncomputable def Embedding.induceIso (s : Set V) (t : Set W) (f : G ↪g G') (hfst : s.BijOn f t) :
+    G.induce s ≃g G'.induce t where
+  __ := Set.BijOn.equiv f hfst
+  map_rel_iff' := by
+    intro u v
+    simp only [induce_adj, Set.BijOn.equiv_apply]
+    exact f.map_adj_iff
+
+end induceIso
 
 section induceHom
 
