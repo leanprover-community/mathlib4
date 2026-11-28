@@ -801,6 +801,15 @@ theorem sSup_apply {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] {s : 
     (sSup s) a = ⨆ f : s, (f : ∀ a, β a) a :=
   rfl
 
+/-- Unapplied form of `sSup_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand `sSup s`
+into `fun a ↦ ⨆ f : s, f a`. -/
+@[to_dual (attr := push ←)
+/-- Unapplied form of `sInf_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand `sInf s`
+into `fun a ↦ ⨅ f : s, f a`. -/]
+lemma Pi.sSup_def {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] (s : Set (∀ a, β a)) :
+    sSup s = fun a ↦ ⨆ f : s, (f : ∀ a, β a) a :=
+  rfl
+
 @[to_dual]
 theorem sSup_apply_eq_sSup_image {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)]
     {s : Set (∀ a, β a)} {a : α} :
@@ -825,6 +834,15 @@ theorem iSup_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, SupSet 
     {a : α} : (⨆ i, f i) a = ⨆ i, f i a := by
   rw [iSup, sSup_apply, iSup, iSup, ← image_eq_range (fun f : ∀ i, β i => f a) (range f), ←
     range_comp]; rfl
+
+/-- Unapplied form of `iSup_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`⨆ i, f i` into `fun a ↦ ⨆ i, f i a`. -/
+@[to_dual (attr := push ←)
+/-- Unapplied form of `iInf_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`⨅ i, f i` into `fun a ↦ ⨅ i, f i a`. -/]
+lemma Pi.iSup_def {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, SupSet (β i)]
+    (f : ι → ∀ a, β a) : ⨆ i, f i = fun a ↦ ⨆ i, f i a :=
+  funext fun _ ↦ iSup_apply
 
 theorem unary_relation_sSup_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sSup s a ↔ ∃ r ∈ s, r a := by

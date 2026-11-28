@@ -34,10 +34,28 @@ theorem list_prod_apply {α : Type*} {M : α → Type*} [∀ a, Monoid (M a)] (a
     (l : List (∀ a, M a)) : l.prod a = (l.map fun f : ∀ a, M a ↦ f a).prod :=
   map_list_prod (evalMonoidHom M a) _
 
+/-- Unapplied form of `Pi.list_prod_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`l.prod` into `fun a ↦ (l.map fun f ↦ f a).prod`. -/
+@[to_additive (attr := push ←)
+/-- Unapplied form of `Pi.list_sum_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`l.sum` into `fun a ↦ (l.map fun f ↦ f a).sum`. -/]
+lemma listProd_def {α : Type*} {M : α → Type*} [∀ a, Monoid (M a)] (l : List (∀ a, M a)) :
+    l.prod = fun a ↦ (l.map fun f : ∀ a, M a ↦ f a).prod :=
+  funext fun a ↦ list_prod_apply a l
+
 @[to_additive]
 theorem multiset_prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
     (s : Multiset (∀ a, M a)) : s.prod a = (s.map fun f : ∀ a, M a ↦ f a).prod :=
   (evalMonoidHom M a).map_multiset_prod _
+
+/-- Unapplied form of `Pi.multiset_prod_apply`, tagged `push ←` so that `@[to_fun]` can
+eta-expand `s.prod` into `fun a ↦ (s.map fun f ↦ f a).prod`. -/
+@[to_additive (attr := push ←)
+/-- Unapplied form of `Pi.multiset_sum_apply`, tagged `push ←` so that `@[to_fun]` can
+eta-expand `s.sum` into `fun a ↦ (s.map fun f ↦ f a).sum`. -/]
+lemma multisetProd_def {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)]
+    (s : Multiset (∀ a, M a)) : s.prod = fun a ↦ (s.map fun f : ∀ a, M a ↦ f a).prod :=
+  funext fun a ↦ multiset_prod_apply a s
 
 end Pi
 

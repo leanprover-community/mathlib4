@@ -84,6 +84,10 @@ instance : ConvexSpace R (∀ i, X i) := .mk
 lemma sConvexComb_apply (w : StdSimplex R (∀ i, X i)) (i : ι) :
     w.sConvexComb i = w.iConvexComb (· i) := rfl
 
+@[push ←]
+lemma sConvexComb_def (w : StdSimplex R (∀ i, X i)) :
+    w.sConvexComb = fun i ↦ w.iConvexComb (· i) := rfl
+
 @[fun_prop]
 lemma isAffineMap_eval : IsAffineMap R (· i : (∀ i, X i) → X i) where
   map_sConvexComb _ := sConvexComb_apply ..
@@ -92,10 +96,19 @@ lemma isAffineMap_eval : IsAffineMap R (· i : (∀ i, X i) → X i) where
 lemma iConvexComb_apply (w : StdSimplex R I) (f : I → ∀ i, X i) (i : ι) :
     w.iConvexComb f i = w.iConvexComb (fun j ↦ f j i) := isAffineMap_eval.map_iConvexComb ..
 
+@[push ←]
+lemma iConvexComb_def (w : StdSimplex R I) (f : I → ∀ i, X i) :
+    w.iConvexComb f = fun i ↦ w.iConvexComb (fun j ↦ f j i) := funext (iConvexComb_apply w f)
+
 @[simp]
 lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ∀ i, X i) (i : ι) :
     convexCombPair a b ha hb hab f g i = convexCombPair a b ha hb hab (f i) (g i) :=
   isAffineMap_eval.map_convexCombPair ..
+
+@[push ←]
+lemma convexCombPair_def (a b : R) (ha hb hab) (f g : ∀ i, X i) :
+    convexCombPair a b ha hb hab f g = fun i ↦ convexCombPair a b ha hb hab (f i) (g i) :=
+  funext (convexCombPair_apply a b ha hb hab f g)
 
 instance [∀ i, ConvexSpace S (X i)] [∀ i, IsConvexCombComm R S (X i)] :
     IsConvexCombComm R S (∀ i, X i) where

@@ -129,7 +129,7 @@ lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
 lemma finset_sup'_nhds_apply [SemilatticeSup L] [ContinuousSup L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (fun a ↦ s.sup' hne (f · a)) l (𝓝 (s.sup' hne g)) := by
-  simpa only [← Finset.sup'_apply] using finset_sup'_nhds hne hs
+  simpa only [← Pi.finsetSup'_apply] using finset_sup'_nhds hne hs
 
 lemma finset_inf'_nhds [SemilatticeInf L] [ContinuousInf L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
@@ -151,7 +151,7 @@ lemma finset_sup_nhds [SemilatticeSup L] [OrderBot L] [ContinuousSup L]
 lemma finset_sup_nhds_apply [SemilatticeSup L] [OrderBot L] [ContinuousSup L]
     (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (fun a ↦ s.sup (f · a)) l (𝓝 (s.sup g)) := by
-  simpa only [← Finset.sup_apply] using finset_sup_nhds hs
+  simpa only [← Pi.finsetSup_apply] using finset_sup_nhds hs
 
 lemma finset_inf_nhds [SemilatticeInf L] [OrderTop L] [ContinuousInf L]
     (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) : Tendsto (s.inf f) l (𝓝 (s.inf g)) :=
@@ -255,7 +255,7 @@ lemma ContinuousAt.finset_sup'_apply (hne : s.Nonempty) (hs : ∀ i ∈ s, Conti
 @[fun_prop]
 lemma ContinuousAt.finset_sup' (hne : s.Nonempty) (hs : ∀ i ∈ s, ContinuousAt (f i) x) :
     ContinuousAt (s.sup' hne f) x := by
-  simpa only [← Finset.sup'_apply] using finset_sup'_apply hne hs
+  simpa only [← Pi.finsetSup'_apply] using finset_sup'_apply hne hs
 
 @[fun_prop]
 lemma ContinuousWithinAt.finset_sup'_apply (hne : s.Nonempty)
@@ -266,7 +266,7 @@ lemma ContinuousWithinAt.finset_sup'_apply (hne : s.Nonempty)
 @[fun_prop]
 lemma ContinuousWithinAt.finset_sup' (hne : s.Nonempty)
     (hs : ∀ i ∈ s, ContinuousWithinAt (f i) t x) : ContinuousWithinAt (s.sup' hne f) t x := by
-  simpa only [← Finset.sup'_apply] using finset_sup'_apply hne hs
+  simpa only [← Pi.finsetSup'_apply] using finset_sup'_apply hne hs
 
 @[fun_prop]
 lemma ContinuousOn.finset_sup'_apply (hne : s.Nonempty) (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
@@ -304,7 +304,7 @@ lemma ContinuousAt.finset_sup_apply (hs : ∀ i ∈ s, ContinuousAt (f i) x) :
 @[fun_prop]
 lemma ContinuousAt.finset_sup (hs : ∀ i ∈ s, ContinuousAt (f i) x) :
     ContinuousAt (s.sup f) x := by
-  simpa only [← Finset.sup_apply] using finset_sup_apply hs
+  simpa only [← Pi.finsetSup_apply] using finset_sup_apply hs
 
 @[fun_prop]
 lemma ContinuousWithinAt.finset_sup_apply
@@ -315,7 +315,7 @@ lemma ContinuousWithinAt.finset_sup_apply
 @[fun_prop]
 lemma ContinuousWithinAt.finset_sup
     (hs : ∀ i ∈ s, ContinuousWithinAt (f i) t x) : ContinuousWithinAt (s.sup f) t x := by
-  simpa only [← Finset.sup_apply] using finset_sup_apply hs
+  simpa only [← Pi.finsetSup_apply] using finset_sup_apply hs
 
 @[fun_prop]
 lemma ContinuousOn.finset_sup_apply (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
@@ -352,7 +352,7 @@ lemma ContinuousAt.finset_inf'_apply (hne : s.Nonempty) (hs : ∀ i ∈ s, Conti
 @[fun_prop]
 lemma ContinuousAt.finset_inf' (hne : s.Nonempty) (hs : ∀ i ∈ s, ContinuousAt (f i) x) :
     ContinuousAt (s.inf' hne f) x := by
-  simpa only [← Finset.inf'_apply] using finset_inf'_apply hne hs
+  simpa only [← Pi.finsetInf'_apply] using finset_inf'_apply hne hs
 
 @[fun_prop]
 lemma ContinuousWithinAt.finset_inf'_apply (hne : s.Nonempty)
@@ -363,7 +363,7 @@ lemma ContinuousWithinAt.finset_inf'_apply (hne : s.Nonempty)
 @[fun_prop]
 lemma ContinuousWithinAt.finset_inf' (hne : s.Nonempty)
     (hs : ∀ i ∈ s, ContinuousWithinAt (f i) t x) : ContinuousWithinAt (s.inf' hne f) t x := by
-  simpa only [← Finset.inf'_apply] using finset_inf'_apply hne hs
+  simpa only [← Pi.finsetInf'_apply] using finset_inf'_apply hne hs
 
 @[fun_prop]
 lemma ContinuousOn.finset_inf'_apply (hne : s.Nonempty) (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
@@ -401,7 +401,7 @@ lemma ContinuousAt.finset_inf_apply (hs : ∀ i ∈ s, ContinuousAt (f i) x) :
 @[fun_prop]
 lemma ContinuousAt.finset_inf (hs : ∀ i ∈ s, ContinuousAt (f i) x) :
     ContinuousAt (s.inf f) x := by
-  simpa only [← Finset.inf_apply] using finset_inf_apply hs
+  simpa only [← Pi.finsetInf_apply] using finset_inf_apply hs
 
 @[fun_prop]
 lemma ContinuousWithinAt.finset_inf_apply
@@ -412,7 +412,7 @@ lemma ContinuousWithinAt.finset_inf_apply
 @[fun_prop]
 lemma ContinuousWithinAt.finset_inf
     (hs : ∀ i ∈ s, ContinuousWithinAt (f i) t x) : ContinuousWithinAt (s.inf f) t x := by
-  simpa only [← Finset.inf_apply] using finset_inf_apply hs
+  simpa only [← Pi.finsetInf_apply] using finset_inf_apply hs
 
 @[fun_prop]
 lemma ContinuousOn.finset_inf_apply (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
