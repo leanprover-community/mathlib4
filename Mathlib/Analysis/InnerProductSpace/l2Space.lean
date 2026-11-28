@@ -576,6 +576,14 @@ theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
       Set.mem_iUnion_of_mem {i} <| Finset.mem_coe.mpr <| Finset.mem_image_of_mem _ <|
       Finset.mem_singleton_self i))
 
+theorem finrank_eq_natCard (b : HilbertBasis ι 𝕜 E) : Module.finrank 𝕜 E = Nat.card ι := by
+  cases finite_or_infinite ι
+  · have := Fintype.ofFinite ι
+    exact Module.finrank_eq_nat_card_basis b.toOrthonormalBasis.toBasis
+  · rw [Nat.card_eq_zero_of_infinite, Module.finrank_of_not_finite]
+    intro
+    exact Finite.false b.orthonormal.linearIndependent.finite
+
 variable [CompleteSpace E]
 
 section
