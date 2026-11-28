@@ -72,6 +72,8 @@ jobs:
       # The cache-snapshot warming artifact exists to seed master and PR
       # builds, which a release tag's snapshot cannot do.
       publish_cache: false
+      # The release cache serves everyone.
+      gate_cache_verification: true
       # Skip the Post-CI job: it grooms PR labels, and a tag run has no PR.
       run_post_ci: false
       runs_on: pr
