@@ -14,12 +14,12 @@ set_option doc.verso.suggestions false
 /-!
 # Smoothness of `Real.sqrt`
 
-In this file we prove that `Real.sqrt` is infinitely smooth at all points `x ≠ 0` and provide some
-dot-notation lemmas.
+In this file we prove that `Real.sqrt` is infinitely smooth and analytic at all points `x ≠ 0` and
+provide some dot-notation lemmas.
 
 ## Tags
 
-sqrt, differentiable
+sqrt, differentiable, analytic
 -/
 
 @[expose] public section
@@ -70,6 +70,21 @@ theorem contDiffAt_sqrt {x : ℝ} {n : WithTop ℕ∞} (hx : x ≠ 0) : ContDiff
 
 theorem hasDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasDerivAt (√·) (1 / (2 * √x)) x :=
   (hasStrictDerivAt_sqrt hx).hasDerivAt
+
+/-- The square root is real analytic at every `x ≠ 0`. -/
+@[fun_prop]
+theorem analyticAt_sqrt {x : ℝ} (hx : x ≠ 0) : AnalyticAt ℝ (√·) x :=
+  (contDiffAt_sqrt hx).analyticAt
+
+/-- The square root is real analytic at every `x ≠ 0`. -/
+theorem analyticWithinAt_sqrt {s : Set ℝ} {x : ℝ} (hx : x ≠ 0) : AnalyticWithinAt ℝ (√·) s x :=
+  (analyticAt_sqrt hx).analyticWithinAt
+
+/-- The square root is real analytic on `{0}ᶜ`. -/
+theorem analyticOnNhd_sqrt : AnalyticOnNhd ℝ (√·) {0}ᶜ := fun _ hx ↦ analyticAt_sqrt hx
+
+/-- The square root is real analytic on `{0}ᶜ`. -/
+theorem analyticOn_sqrt : AnalyticOn ℝ (√·) {0}ᶜ := analyticOnNhd_sqrt.analyticOn
 
 end Real
 
@@ -168,3 +183,29 @@ theorem ContDiff.sqrt (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) : ContDiff 
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.sqrt (h x)
 
 end fderiv
+
+section Analytic
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {x : E}
+
+/-- `√(f x)` is analytic at `x` if `f` is analytic at `x` and `f x ≠ 0`. -/
+@[fun_prop]
+theorem AnalyticAt.sqrt (hf : AnalyticAt ℝ f x) (hx : f x ≠ 0) :
+    AnalyticAt ℝ (fun y ↦ √(f y)) x :=
+  (analyticAt_sqrt hx).comp hf
+
+/-- `√(f x)` is analytic within `s` at `x` if `f` is, and `f x ≠ 0`. -/
+theorem AnalyticWithinAt.sqrt (hf : AnalyticWithinAt ℝ f s x) (hx : f x ≠ 0) :
+    AnalyticWithinAt ℝ (fun y ↦ √(f y)) s x :=
+  (analyticAt_sqrt hx).comp_analyticWithinAt hf
+
+/-- `√(f x)` is analytic on a neighbourhood of `s` if `f` is and `f` does not vanish on `s`. -/
+@[fun_prop]
+theorem AnalyticOnNhd.sqrt (hf : AnalyticOnNhd ℝ f s) (hs : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOnNhd ℝ (fun y ↦ √(f y)) s := fun x hx ↦ (hf x hx).sqrt (hs x hx)
+
+/-- `√(f x)` is analytic on `s` if `f` is and `f` does not vanish on `s`. -/
+theorem AnalyticOn.sqrt (hf : AnalyticOn ℝ f s) (hs : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOn ℝ (fun y ↦ √(f y)) s := fun x hx ↦ (hf x hx).sqrt (hs x hx)
+
+end Analytic
