@@ -75,7 +75,7 @@ theorem Monotone.iSup_nat_add {f : ℕ → α} (hf : Monotone f) (k : ℕ) : ⨆
   le_antisymm (iSup_le fun i => le_iSup _ (i + k)) <| iSup_mono fun i => hf <| Nat.le_add_right i k
 
 theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅ n, f (n + k) = ⨅ n, f n :=
-  hf.dual_right.iSup_nat_add k
+  le_antisymm (iInf_mono fun i => hf <| Nat.le_add_right i k) <| le_iInf fun i => iInf_le _ (i + k)
 
 -- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
 -- (Although the `simpNF` linter does not complain.)
@@ -90,9 +90,11 @@ theorem iSup_iInf_ge_nat_add (f : ℕ → α) (k : ℕ) :
 -- (Although the `simpNF` linter does not complain.)
 -- See: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 @[to_dual existing]
-theorem iInf_iSup_ge_nat_add :
-    ∀ (f : ℕ → α) (k : ℕ), ⨅ n, ⨆ i ≥ n, f (i + k) = ⨅ n, ⨆ i ≥ n, f i :=
-  @iSup_iInf_ge_nat_add αᵒᵈ _
+theorem iInf_iSup_ge_nat_add (f : ℕ → α) (k : ℕ) :
+    ⨅ n, ⨆ i ≥ n, f (i + k) = ⨅ n, ⨆ i ≥ n, f i := by
+  have hf : Antitone fun n => ⨆ i ≥ n, f i := fun n m h => biSup_mono fun i => h.trans
+  rw [← Antitone.iInf_nat_add hf k]
+  simp_rw [iSup_ge_eq_iSup_nat_add, ← Nat.add_assoc]
 
 @[to_dual inf_iInf_nat_succ]
 theorem sup_iSup_nat_succ (u : ℕ → α) : (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ i, u i :=

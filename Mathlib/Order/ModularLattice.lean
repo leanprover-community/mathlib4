@@ -168,12 +168,8 @@ theorem sup_inf_assoc_of_le {x : α} (y : α) {z : α} (h : x ≤ z) : (x ⊔ y)
 theorem IsModularLattice.inf_sup_inf_assoc {x y z : α} : x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
   (sup_inf_assoc_of_le y inf_le_right).symm
 
-instance : IsModularLattice αᵒᵈ :=
-  ⟨fun y z xz =>
-    le_of_eq
-      (by
-        rw [inf_comm, sup_comm, eq_comm, inf_comm, sup_comm]
-        exact @sup_inf_assoc_of_le α _ _ _ y _ xz)⟩
+instance : IsModularLattice αᵒᵈ where
+  sup_inf_le_assoc_of_le _ _ xz := inf_sup_le_assoc_of_le _ xz
 
 variable {x y z : α}
 
@@ -216,8 +212,9 @@ theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
     WellFoundedGT α :=
-  wellFounded_lt_exact_sequence (α := αᵒᵈ) (β := γᵒᵈ) (γ := βᵒᵈ)
-    K g₁ g₂ f₁ f₂ gi.dual gci.dual hg hf
+  StrictMono.wellFoundedGT (f := fun A ↦ (f₂ A, g₂ A)) fun A B hAB ↦ by
+    simp only [Prod.le_def, lt_iff_le_not_ge, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
+    exact strictMono_inf_prod_sup hAB
 
 /-- The diamond isomorphism between the closed intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
 @[simps, to_dual none]

@@ -71,12 +71,12 @@ open GaloisConnection
 theorem leftDual_mem_rightFixedPoint (J : Set α) : R.leftDual J ∈ R.rightFixedPoints := by
   apply le_antisymm
   · apply R.gc_leftDual_rightDual.monotone_l; exact R.gc_leftDual_rightDual.le_u_l J
-  · exact R.gc_leftDual_rightDual.l_u_le (R.leftDual J)
+  · exact R.gc_leftDual_rightDual.l_u_le (toDual <| R.leftDual J)
 
 /-- `rightDual` maps every element `I` to `leftFixedPoints`. -/
 theorem rightDual_mem_leftFixedPoint (I : Set β) : R.rightDual I ∈ R.leftFixedPoints := by
   apply le_antisymm
-  · apply R.gc_leftDual_rightDual.monotone_u; exact R.gc_leftDual_rightDual.l_u_le I
+  · apply R.gc_leftDual_rightDual.monotone_u; exact R.gc_leftDual_rightDual.l_u_le (toDual I)
   · exact R.gc_leftDual_rightDual.le_u_l (R.rightDual I)
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.

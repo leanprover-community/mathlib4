@@ -70,8 +70,8 @@ variable [LE α]
 lemma minimalFor_id : MinimalFor P id x ↔ Minimal P x := .rfl
 
 @[to_dual (attr := simp)]
-theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
-  Iff.rfl
+theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x := by
+  simp [Minimal, Maximal]
 
 @[to_dual]
 alias ⟨Minimal.of_dual, Minimal.dual⟩ := minimal_toDual
@@ -447,14 +447,15 @@ theorem minimal_mem_image_monotone_iff (ha : a ∈ s)
 
 @[to_dual (reorder := hf (x y, 3 4))]
 theorem minimal_mem_image_antitone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x))
-    (hx : Minimal (· ∈ s) x) : Maximal (· ∈ f '' s) (f x) :=
-  minimal_mem_image_monotone (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
+    (hx : Minimal (· ∈ s) x) : Maximal (· ∈ f '' s) (f x) := by
+  simpa [Minimal, Maximal] using minimal_mem_image_monotone (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
 
 @[to_dual (reorder := hf (x y, 3 4))]
 theorem minimal_mem_image_antitone_iff (ha : a ∈ s)
     (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
-    Minimal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a :=
-  maximal_mem_image_monotone_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
+    Minimal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a := by
+  simpa [Minimal, Maximal] using
+    maximal_mem_image_monotone_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
 
 @[to_dual (reorder := hf (x y, 3 4))]
 theorem image_monotone_setOfPred_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
@@ -473,8 +474,12 @@ alias image_monotone_setOf_maximal := image_monotone_setOfPred_maximal
 
 @[to_dual (reorder := hf (x y, 3 4))]
 theorem image_antitone_setOfPred_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
-    f '' {x | Minimal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
-  image_monotone_setOfPred_minimal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+    f '' {x | Minimal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} := by
+  refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨x, (hx : Minimal _ x), rfl⟩
+    exact (maximal_mem_image_antitone_iff hx.prop hf).2 hx
+  obtain ⟨y, hy, rfl⟩ := (mem_ofPred_eq ▸ h).prop
+  exact mem_image_of_mem _ <| (maximal_mem_image_antitone_iff (s := Set.ofPred P) hy hf).1 h
 
 @[deprecated (since := "2026-07-09")]
 alias image_antitone_setOf_minimal := image_antitone_setOfPred_minimal
@@ -598,8 +603,22 @@ def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Ma
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
 def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
-    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} :=
-  f.mapSetOfPredMinimal
+    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
+  toFun x := ⟨toDual (ofDual (f ⟨x, x.2.1⟩)).1, by
+    refine ⟨by simp, fun y hy hxy ↦ ?_⟩
+    have hz : f.symm (toDual ⟨y, hy⟩) ≤ _ := (f.symm_apply_le).2 hxy
+    have hx := x.2.le_of_le (f.symm (toDual ⟨y, hy⟩)).2 hz
+    have hle := f.monotone (hx : ⟨x.1, x.2.1⟩ ≤ _)
+    rwa [f.apply_symm_apply] at hle⟩
+  invFun y := ⟨f.symm (toDual ⟨ofDual y.1, y.2.1⟩), by
+    refine ⟨by simp, fun x hx hxy ↦ ?_⟩
+    have hle := f.monotone (hxy : ⟨x, hx⟩ ≤ _)
+    rw [f.apply_symm_apply] at hle
+    have hy := y.2.2 (ofDual (f ⟨x, hx⟩)).2 hle
+    exact (f.symm_apply_le).2 (hy : _ ≤ f ⟨x, hx⟩)⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := f.map_rel_iff
 
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal
