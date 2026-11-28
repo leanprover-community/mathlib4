@@ -566,6 +566,65 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [ht]
 
+/-- An infinite type is **Dedekind-infinite**: it admits an injective self-map that is not
+surjective.
+
+On a finite type every injective self-map is instead surjective, by
+`Finite.injective_iff_surjective`. -/
+theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
+    ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
+  classical
+  -- write α as equivalent to ℕ plus other stuff, the equivalence doesn't matter so we use `have`
+  have e : ℕ ↪ α := natEmbedding α
+  have g : α ≃ ℕ ⊕ ↥(Set.range e)ᶜ :=
+    (Equiv.Set.sumCompl (Set.range e)).symm.trans
+      ((Equiv.ofInjective e e.injective).symm.sumCongr (Equiv.refl _))
+  -- now our map will be +1 on the ℕ portion, leaving the rest unchanged
+  refine ⟨g.symm ∘ Sum.map Nat.succ id ∘ g,
+    g.symm.injective.comp ((Nat.succ_injective.sumMap injective_id).comp g.injective),
+    fun hsurj ↦ ?_⟩
+  -- and (the copy of) 0 is never hit, so the map is not surjective
+  obtain ⟨x, hx⟩ := hsurj (g.symm (Sum.inl 0))
+  rcases hgx : g x <;>
+  grind [g.symm.injective]
+
+/-- A type is infinite if and only if it admits an injective self-map that is not surjective. -/
+theorem exists_injective_not_surjective_iff (α : Type*) :
+    Infinite α ↔ ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
+  refine ⟨fun h ↦ ?_, fun ⟨f, hf, hf'⟩ ↦ ?_⟩
+  · exact exists_injective_not_surjective α
+  · rw [← not_finite_iff_infinite]
+    intro h
+    exact hf' (Finite.injective_iff_surjective.mp hf)
+
+/-- An infinite type admits a surjective self-map that is not injective.
+
+On a finite type every surjective self-map is instead injective, by
+`Finite.injective_iff_surjective`. -/
+theorem exists_surjective_not_injective (α : Type*) [Infinite α] :
+    ∃ f : α → α, Surjective f ∧ ¬ Injective f := by
+  obtain ⟨f, hf, hf'⟩ := exists_injective_not_surjective α
+  refine ⟨invFun f, invFun_surjective hf, fun hg ↦ hf' fun y ↦ ?_⟩
+  exact ⟨invFun f y, hg (leftInverse_invFun hf (invFun f y))⟩
+
+/-- A type is infinite if and only if it admits a surjective self-map that is not injective. -/
+theorem exists_surjective_not_injective_iff (α : Type*) :
+    Infinite α ↔ ∃ f : α → α, Surjective f ∧ ¬ Injective f := by
+  refine ⟨fun h ↦ ?_, fun ⟨f, hf, hf'⟩ ↦ ?_⟩
+  · exact exists_surjective_not_injective α
+  · rw [← not_finite_iff_infinite]
+    intro h
+    exact hf' (Finite.injective_iff_surjective.mpr hf)
+
+/-- An infinite type is equivalent to a proper subset of itself.
+
+The reverse implication is `Infinite.of_injective_to_set`: an injection into a proper subset
+forces the type to be infinite. -/
+theorem exists_equiv_set_ne_univ (α : Type*) [Infinite α] :
+    ∃ s : Set α, s ≠ Set.univ ∧ Nonempty (α ≃ s) := by
+  obtain ⟨f, hf, hf'⟩ := exists_injective_not_surjective α
+  exact ⟨Set.range f, mt Set.range_eq_univ.1 hf', ⟨Equiv.ofInjective f hf⟩⟩
+
 end Infinite
 
 /-- If every finset in a type has bounded cardinality, that type is finite. -/
