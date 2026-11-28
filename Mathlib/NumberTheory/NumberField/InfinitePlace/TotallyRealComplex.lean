@@ -26,6 +26,8 @@ This file defines the type of totally real and totally complex number fields.
 * `NumberField.maximalRealSubfield`: the maximal real subfield of `K`. It is totally real,
   see `NumberField.isTotallyReal_maximalRealSubfield`, and contains all the other totally real
   subfields of `K`, see `NumberField.IsTotallyReal.le_maximalRealSubfield`
+* `NumberField.isTotallyReal_or_isTotallyComplex`: a Galois extension of `ℚ` is either totally
+  real or totally complex.
 
 ## Tags
 
@@ -249,5 +251,18 @@ protected theorem IsTotallyComplex.finrank [NumberField K] [h : IsTotallyComplex
   rw [← card_add_two_mul_card_eq_rank, nrRealPlaces_eq_zero_iff.mpr h, zero_add]
 
 end TotallyComplexField
+
+section IsGalois
+
+variable {K : Type*} [Field K] [CharZero K] [IsGalois ℚ K]
+
+/-- A Galois extension of `ℚ` is either totally real or totally complex. -/
+theorem isTotallyReal_or_isTotallyComplex : IsTotallyReal K ∨ IsTotallyComplex K := by
+  obtain ⟨w⟩ : Nonempty (InfinitePlace K) := inferInstance
+  obtain hw | hw := w.isReal_or_isComplex
+  · exact .inl ⟨fun _ ↦ (isReal_iff_of_comap_eq (k := ℚ) (Subsingleton.elim _ _)).mp hw⟩
+  · exact .inr ⟨fun _ ↦ (isComplex_iff_of_comap_eq (k := ℚ) (Subsingleton.elim _ _)).mp hw⟩
+
+end IsGalois
 
 end NumberField

@@ -154,6 +154,20 @@ lemma exists_smul_eq_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
     rw [← mk_embedding w, ← mk_embedding w', smul_mk, mk_eq_iff]
     exact Or.inr hσ
 
+/-- In a Galois extension `K/k`, if two infinite places of `K` lie above the same place of `k`,
+then one is real if and only if the other is. -/
+lemma isReal_iff_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
+    (h : w.comap (algebraMap k K) = w'.comap (algebraMap k K)) : w.IsReal ↔ w'.IsReal := by
+  obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq h
+  exact isReal_smul_iff.symm
+
+/-- In a Galois extension `K/k`, if two infinite places of `K` lie above the same place of `k`,
+then one is complex if and only if the other is. -/
+lemma isComplex_iff_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
+    (h : w.comap (algebraMap k K) = w'.comap (algebraMap k K)) : w.IsComplex ↔ w'.IsComplex := by
+  obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq h
+  exact isComplex_smul_iff.symm
+
 lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
     w' ∈ MulAction.orbit Gal(K/k) w ↔ w.comap (algebraMap k K) = w'.comap (algebraMap k K) := by
   refine ⟨?_, exists_smul_eq_of_comap_eq⟩
