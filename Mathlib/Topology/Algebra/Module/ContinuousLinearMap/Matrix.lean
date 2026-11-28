@@ -8,11 +8,16 @@ module
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Instances.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Continuous linear maps and matrices
 
-In this file we collect definitions and theorems about
+In this file we collect definitions and theorems about various maps for matrices as continuous
+linear maps.
 
-## Main definition
+## Main definitions
+
 * `Matrix.diagContinuousLinearMap`: `Matrix.diag` as a continuous linear map
 * `Matrix.diagonalContinuousLinearMap`: `Matrix.diagonal` as a continuous linear map
 * `Matrix.entryContinuousLinearMap`: evaluation of a matrix as a continuous linear map
