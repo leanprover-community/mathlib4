@@ -237,7 +237,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
     (hg : g.HasTemperateGrowth) : (fun x ↦ B (f x) (g x)).HasTemperateGrowth := by
   rw [Function.hasTemperateGrowth_iff_isBigO]
   constructor
-  · apply (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp (hf.1.prodMk hg.1)
+  · apply (B.bilinearRestrictScalars ℝ ℝ).isBoundedBilinearMap.contDiff.comp (hf.1.prodMk hg.1)
   intro n
   rcases hf.isBigO_uniform n with ⟨k1, h1⟩
   rcases hg.isBigO_uniform n with ⟨k2, h2⟩
@@ -245,7 +245,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   have estimate (x : D) : ‖iteratedFDeriv ℝ n (fun x ↦ B (f x) (g x)) x‖ ≤
       ‖B‖ * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
         ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n - i) g x‖ :=
-    (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x (mod_cast le_top)
+    (B.bilinearRestrictScalars ℝ ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x (mod_cast le_top)
   refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.fun_sum fun i hi ↦ ?_) _)
   simp_rw [mul_assoc, pow_add]
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n - i) ?_).norm_left) _ <;>

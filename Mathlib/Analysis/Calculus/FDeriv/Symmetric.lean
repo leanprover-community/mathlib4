@@ -472,7 +472,7 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
-  let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
+  let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
   have : HasFDerivAt f'R f''R x := by

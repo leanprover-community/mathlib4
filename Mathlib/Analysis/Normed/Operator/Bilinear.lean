@@ -505,30 +505,26 @@ section Restrict
 
 namespace ContinuousLinearMap
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedSpace 𝕜' G] [IsScalarTower 𝕜 𝕜' G]
+variable {𝕜' 𝕝 𝕝' : Type*}
+  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  [NontriviallyNormedField 𝕝] [NontriviallyNormedField 𝕝']
+  [NormedAlgebra 𝕜 𝕜'] [NormedAlgebra 𝕝 𝕝'] [NormedAlgebra 𝕝' 𝕜'] [NormedAlgebra 𝕝 𝕜]
+  [NormedAlgebra 𝕝 𝕜']
+  [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕝 E]
+  [NormedSpace 𝕜' F] [NormedSpace 𝕝' F]
+  [NormedSpace 𝕜 G] [NormedSpace 𝕜' G] [NormedSpace 𝕝 G] [NormedSpace 𝕝' G]
+  [IsScalarTower 𝕝 𝕜 E] [IsScalarTower 𝕝' 𝕜' F] [IsScalarTower 𝕜 𝕜' G] [IsScalarTower 𝕝 𝕝' G]
+  [IsScalarTower 𝕝 𝕜 G] [IsScalarTower 𝕝 𝕜' G] [IsScalarTower 𝕝' 𝕜' G]
+
+variable (B : E →L[𝕜] F →L[𝕜'] G) (x : E) (y : F)
 
 variable (𝕜) in
-/-- Convenience function for restricting the linearity of a bilinear map. -/
-def bilinearRestrictScalars (B : E →L[𝕜'] F →L[𝕜'] G) : E →L[𝕜] F →L[𝕜] G :=
-  (restrictScalarsL 𝕜' F G 𝕜 𝕜).comp (B.restrictScalars 𝕜)
-
-variable (B : E →L[𝕜'] F →L[𝕜'] G) (x : E) (y : F)
-
-theorem bilinearRestrictScalars_eq_restrictScalarsL_comp_restrictScalars :
-    B.bilinearRestrictScalars 𝕜 = (restrictScalarsL 𝕜' F G 𝕜 𝕜).comp (B.restrictScalars 𝕜) := rfl
-
-theorem bilinearRestrictScalars_eq_restrictScalars_restrictScalarsL_comp :
-    B.bilinearRestrictScalars 𝕜 = restrictScalars 𝕜 ((restrictScalarsL 𝕜' F G 𝕜 𝕜').comp B) := rfl
-
-variable (𝕜) in
-@[simp]
-theorem bilinearRestrictScalars_apply_apply : (B.bilinearRestrictScalars 𝕜) x y = B x y := rfl
+@[deprecated bilinearRestrictScalars_apply +typeChanged (since := "2026-11-24")]
+theorem bilinearRestrictScalars_apply_apply : (B.bilinearRestrictScalars 𝕝 𝕝') x y = B x y := rfl
 
 @[simp]
-theorem norm_bilinearRestrictScalars : ‖B.bilinearRestrictScalars 𝕜‖ = ‖B‖ := rfl
+theorem norm_bilinearRestrictScalars : ‖B.bilinearRestrictScalars 𝕝 𝕝'‖ = ‖B‖ := rfl
 
 end ContinuousLinearMap
 

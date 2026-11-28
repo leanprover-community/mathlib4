@@ -434,6 +434,46 @@ theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E F 𝕜' 𝕜'') = r
 
 end RestrictScalars
 
+section BilinearRestrictScalars
+
+variable {𝕜 𝕜' 𝕝 𝕝' : Type*}
+  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  [NontriviallyNormedField 𝕝] [NontriviallyNormedField 𝕝']
+
+variable {E F F' : Type*}
+  [AddCommGroup E] [TopologicalSpace E]
+  [AddCommGroup F] [TopologicalSpace F]
+  [AddCommGroup F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
+  [NormedAlgebra 𝕜 𝕜'] [NormedAlgebra 𝕝 𝕝'] [NormedAlgebra 𝕝' 𝕜'] [NormedAlgebra 𝕝 𝕜]
+  [NormedAlgebra 𝕝 𝕜']
+  [Module 𝕜 E] [Module 𝕝 E]
+  [Module 𝕜' F] [ContinuousSMul 𝕜' F] [Module 𝕝' F]
+  [Module 𝕜 F'] [ContinuousConstSMul 𝕜 F'] [Module 𝕜' F'] [Module 𝕝 F'] [ContinuousConstSMul 𝕝 F']
+  [Module 𝕝' F']
+  [IsScalarTower 𝕝 𝕜 E] [IsScalarTower 𝕝' 𝕜' F]
+  [IsScalarTower 𝕜 𝕜' F'] [IsScalarTower 𝕝 𝕜 F'] [IsScalarTower 𝕝' 𝕜' F'] [IsScalarTower 𝕝 𝕝' F']
+  [IsScalarTower 𝕝 𝕜' F']
+
+variable (𝕝 𝕝') in
+/-- A `𝕜,𝕜'`-bilinear map induces a `𝕝,𝕝`-bilinear map. -/
+def bilinearRestrictScalars (f : E →L[𝕜] F →L[𝕜'] F') : E →L[𝕝] F →L[𝕝'] F' :=
+  (restrictScalarsL 𝕜' F F' 𝕝' 𝕝) ∘L (f.restrictScalars 𝕝)
+
+variable (f : E →L[𝕜] F →L[𝕜'] F')
+
+theorem bilinearRestrictScalars_eq_restrictScalarsL_comp_restrictScalars :
+    f.bilinearRestrictScalars 𝕝 𝕝' = (restrictScalarsL 𝕜' F F' 𝕝' 𝕝) ∘L (f.restrictScalars 𝕝) := rfl
+
+theorem bilinearRestrictScalars_eq_restrictScalars_restrictScalarsL_comp [SMulCommClass 𝕝' 𝕜 F'] :
+    f.bilinearRestrictScalars 𝕝 𝕝' = restrictScalars 𝕝 ((restrictScalarsL 𝕜' F F' 𝕝' 𝕜).comp f) :=
+  rfl
+
+@[simp]
+theorem bilinearRestrictScalars_apply (f : E →L[𝕜] F →L[𝕜'] F') (x : E) :
+    f.bilinearRestrictScalars 𝕝 𝕝' x = (f x).restrictScalars 𝕝' := rfl
+
+end BilinearRestrictScalars
+
 section Prod
 
 variable {𝕜 E F G : Type*} (S : Type*) [NormedField 𝕜] [Semiring S]

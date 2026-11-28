@@ -1065,7 +1065,7 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
 where finally
   case hadd | hsmul => intros; simp
   case hsmooth =>
-    exact (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp (φ.contDiff.prodMk hg)
+    exact (B.bilinearRestrictScalars ℝ ℝ).isBoundedBilinearMap.contDiff.comp (φ.contDiff.prodMk hg)
   case hsupp => simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply]
   case hbound =>
     have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
@@ -1082,7 +1082,7 @@ where finally
       ‖iteratedFDeriv ℝ k (fun y ↦ B (φ y) (g y)) x‖
         ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) * ‖iteratedFDeriv ℝ i φ x‖ *
             ‖iteratedFDeriv ℝ (k - i) g x‖ := by
-          simpa using (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear
+          simpa using (B.bilinearRestrictScalars ℝ ℝ).norm_iteratedFDeriv_le_of_bilinear
             φ.contDiff hg x (mod_cast hk)
       _ ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) *
             ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ * ‖C₀‖ := by

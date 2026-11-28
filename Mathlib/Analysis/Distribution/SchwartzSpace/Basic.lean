@@ -685,19 +685,20 @@ where finally
   · intros; simp
   · intros; simp
   · intro f
-    exact (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
+    exact (B.bilinearRestrictScalars ℝ ℝ).isBoundedBilinearMap.contDiff.comp
       ((f.smooth ⊤).prodMk hg.1)
   · intro ⟨k, n⟩
     rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
     use Finset.Iic (l + k, n), ‖B‖ * ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C * 2 ^ (l + k)),
       by positivity
     intro f x
-    simp_rw [← ContinuousLinearMap.bilinearRestrictScalars_apply_apply ℝ B]
     have hnorm_mul :=
-      ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear (B.bilinearRestrictScalars ℝ)
+      ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear (B.bilinearRestrictScalars ℝ ℝ)
       (f.smooth ⊤) hg.1 x (n := n) (mod_cast le_top)
+    simp only [ContinuousLinearMap.bilinearRestrictScalars_apply,
+      ContinuousLinearMap.coe_restrictScalars',
+      ContinuousLinearMap.norm_bilinearRestrictScalars] at hnorm_mul
     grw [hnorm_mul]
-    rw [ContinuousLinearMap.norm_bilinearRestrictScalars]
     move_mul [‖B‖, ‖B‖]
     gcongr ?_ * _
     rw [Finset.mul_sum]

@@ -772,7 +772,7 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
     𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
   letI T : 𝓓^{n}(Ω, F₁) → 𝓓^{n}(Ω, F₃) :=
     fun φ ↦ ⟨fun x ↦ B (φ x) (g x),
-      ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
+      ((B.bilinearRestrictScalars ℝ ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
       (by exact (φ.hasCompactSupport).mono (by aesop)),
       (by exact le_trans (closure_mono (by aesop)) (tsupport_map_subset φ))⟩
   TestFunction.limitCLM 𝕜 T
