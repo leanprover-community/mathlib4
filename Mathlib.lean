@@ -2008,6 +2008,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Complex.ValueDistribution.Cartan
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.Deficiency.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic

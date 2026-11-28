@@ -109,6 +109,44 @@ theorem characteristic_eventually_nonneg :
     0 ≤ᶠ[Filter.atTop] characteristic f a := by
   filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [characteristic_nonneg hr]
 
+/--
+For finite values `a₀`, the characteristic function `characteristic f a₀` equals the characteristic
+function for the value zero of the shifted function `f - a₀`.
+-/
+lemma characteristic_coe_eq_characteristic_sub_const_zero {a₀ : E} :
+    characteristic f a₀ = characteristic (f - fun _ ↦ a₀) 0 := by
+  rw [characteristic, characteristic, proximity_coe_eq_proximity_sub_const_zero,
+    logCounting_coe_eq_logCounting_sub_const_zero]
+
+/--
+For complex-valued `f`, the characteristic function of `f⁻¹` for the value `⊤` equals the
+characteristic function of `f` for the value zero.
+-/
+theorem characteristic_inv {f : ℂ → ℂ} : characteristic f⁻¹ ⊤ = characteristic f 0 := by
+  rw [characteristic, characteristic, proximity_inv, logCounting_inv]
+
+/--
+The proximity function `proximity f a` is big-O of the characteristic function `characteristic f a`:
+it is one of the two summands of the characteristic function, and the other summand is
+asymptotically non-negative.
+-/
+theorem isBigO_proximity_characteristic : proximity f a =O[atTop] characteristic f a := by
+  refine .of_norm_eventuallyLE ?_
+  filter_upwards [eventually_ge_atTop 1] with r hr
+  rw [norm_of_nonneg (proximity_nonneg r)]
+  exact le_add_of_nonneg_right (logCounting_nonneg hr)
+
+/--
+The logarithmic counting function `logCounting f a` is big-O of the characteristic function
+`characteristic f a`: it is asymptotically non-negative, and the other summand of the characteristic
+function is non-negative.
+-/
+theorem isBigO_logCounting_characteristic : logCounting f a =O[atTop] characteristic f a := by
+  refine .of_norm_eventuallyLE ?_
+  filter_upwards [eventually_ge_atTop 1] with r hr
+  rw [norm_of_nonneg (logCounting_nonneg hr)]
+  exact le_add_of_nonneg_left (proximity_nonneg r)
+
 /-!
 ## Behaviour under Arithmetic Operations
 -/
