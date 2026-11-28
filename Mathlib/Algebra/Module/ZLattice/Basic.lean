@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -327,12 +328,10 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
+@[deprecated AddSubgroupClass.finite_inter_of_isBounded +typeChanged (since := "2026-11-22")]
 theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
-    Set.Finite (s ∩ span ℤ (Set.range b)) := by
-  have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
-  refine Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete hs ?_
-  rw [← coe_toAddSubgroup]
-  exact AddSubgroup.isClosed_of_discreteTopology
+    Set.Finite (s ∩ span ℤ (Set.range b)) :=
+  AddSubgroupClass.finite_inter_of_isBounded (span ℤ (Set.range b)) hs
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :

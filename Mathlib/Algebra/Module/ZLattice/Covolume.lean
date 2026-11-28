@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
