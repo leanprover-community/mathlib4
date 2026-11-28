@@ -600,8 +600,7 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
       simp_rw [sdiff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
         fundamentalFrontier_union_fundamentalInterior]; rfl
     refine eq_bot_mono (μ.mono <| compl_subset_compl.2 this) ?_
-    simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero,
-      @iUnion_smul_eq_ofPred_exists _ _ _ _ s]
+    simp only [iUnion_inv_smul, compl_sdiff, bot_eq_zero, iUnion_smul_eq_ofPred_exists (s := s)]
     exact measure_union_null
       (measure_iUnion_null fun _ => measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers
   aedisjoint := (pairwise_disjoint_fundamentalInterior _ _).mono fun _ _ => Disjoint.aedisjoint

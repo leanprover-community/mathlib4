@@ -399,13 +399,10 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_comm := PiLp.edist_comm p
   edist_triangle f g h := by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [edist_eq_iSup]
-      cases isEmpty_or_nonempty ι
-      · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
-      -- Porting note: `le_iSup` needed some help
+    · -- Porting note: `le_iSup` needed some help
       refine
         iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add
-            (le_iSup (fun k => edist (f k) (g k)) i) (le_iSup (fun k => edist (g k) (h k)) i)
+          (le_iSup (fun k => edist (f k) (g k)) i) (le_iSup (fun k => edist (g k) (h k)) i)
     · simp only [edist_eq_sum (zero_lt_one.trans_le hp)]
       calc
         (∑ i, edist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤

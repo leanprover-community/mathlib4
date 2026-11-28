@@ -543,7 +543,8 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
     fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
 
-theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
+@[deprecated _root_.bot_eq_zero +typeChanged (since := "2026-11-20")]
+protected theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
   mul_max_of_nonneg _ _ zero_le
