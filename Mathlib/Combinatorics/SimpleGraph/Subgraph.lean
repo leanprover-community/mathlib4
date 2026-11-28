@@ -96,6 +96,10 @@ namespace Subgraph
 
 variable {G : SimpleGraph V} {G' G₁ G₂ : G.Subgraph} {a b : V}
 
+-- #43099
+instance (G' : Subgraph G) : Std.Symm G'.Adj :=
+  G'.symm
+
 protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj where
   irrefl _ hadj := G.irrefl <| G'.adj_sub hadj
 
@@ -258,7 +262,7 @@ theorem neighborSet_spanningCoe (v : V) : G'.spanningCoe.neighborSet v = G'.neig
   congr!
 
 /-- The edge set of `G'` consists of a subset of edges of `G`. -/
-def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
+def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.Adj
 
 theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
   Sym2.ind (fun _ _ ↦ G'.adj_sub)
