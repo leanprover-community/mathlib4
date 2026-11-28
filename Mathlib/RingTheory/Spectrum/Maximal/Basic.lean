@@ -54,4 +54,7 @@ theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.as
   Ideal.isCoprime_iff_sup_eq.mpr <|
     I.isMaximal.coprime_of_ne J.isMaximal <| mt MaximalSpectrum.ext h
 
+instance [Finite R] : Finite (MaximalSpectrum R) :=
+  .of_injective (·.asIdeal.carrier) fun _ _ h ↦ by ext; exact congr(_ ∈ $h)
+
 end MaximalSpectrum
