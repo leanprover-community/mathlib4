@@ -170,6 +170,10 @@ instance : CoeFun (M ≃* N) fun _ ↦ M → N where
 instance : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
 
+@[to_additive (attr := simp)]
+theorem coe_toMulEquiv [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    ⇑(f : M ≃* N) = f := rfl
+
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
 @[to_additive (attr := ext)
@@ -205,10 +209,12 @@ theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
 theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 
 /-- `simp`-normal form of `toFun_eq_coe`. -/
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `EquivLike.toEquiv`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while we have `toMulHom_eq_coe`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
@@ -523,7 +529,8 @@ as a multiplication-preserving function.
 def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while we have `toMonoidHom_eq_coe`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 
 @[to_additive (attr := simp)]

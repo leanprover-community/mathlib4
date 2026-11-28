@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Traversing walks
 
@@ -172,7 +175,6 @@ lemma snd_eq_support_getElem_one {p : G.Walk u v} (hnil : ¬p.Nil) :
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 
-@[simp]
 lemma penultimate_nil : (@nil _ G v).penultimate = v := rfl
 
 @[simp]

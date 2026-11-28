@@ -35,9 +35,7 @@ bounds for its q-expansion coefficients. The main results are
 
 public section
 
-open Filter Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
-
-open UpperHalfPlane hiding I
+open Filter Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup UpperHalfPlane
 
 open scoped Matrix Modular MatrixGroups ComplexConjugate ModularForm Manifold Topology Real
 
@@ -230,8 +228,8 @@ lemma UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn {f : ℍ → ℂ
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (n : ℕ) :
     (qExpansion h f).coeff n = Real.exp (2 * π * n * y / h) *
       AddCircle.fourierCoeffOn hh
-        (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩) n := by
-  have hq (u : ℝ) : (1 / 𝕢 h (u + y * UpperHalfPlane.I) ^ n : ℂ) =
+        (fun x : ℝ ↦ f ⟨x + y * .I, by simpa using hy⟩) n := by
+  have hq (u : ℝ) : (1 / 𝕢 h (u + y * .I) ^ n : ℂ) =
       ↑(Real.exp (2 * π * n * y / h)) * AddCircle.fourier (-(n : ℤ)) (u : AddCircle h) := by
     push_cast [AddCircle.fourier_coe_apply, Function.Periodic.qParam, one_div,
       ← Complex.exp_natCast_mul, ← Complex.exp_neg, ← Complex.exp_add]
@@ -247,7 +245,7 @@ up to a constant, the `-(n + 1)`-th coefficient is the constant term of the `q`-
 lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (n : ℕ) :
-    AddCircle.fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩)
+    AddCircle.fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * .I, by simpa using hy⟩)
       (-(n + 1 : ℕ) : ℤ) = 0 := by
   -- Up to a constant, this is the constant term of the `q`-expansion of `g = 𝕢 ^ (n + 1) * f`,
   -- which vanishes since `g` tends to `0` at `I∞`.
@@ -271,13 +269,13 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
   have h0 : (qExpansion h g).coeff 0 = 0 := by
     rw [qExpansion_coeff_zero hh (analyticAt_cuspFunction_zero hh hgper hghol
       hgzero.isBoundedAtImInfty) hgper, hgzero.valueAtInfty_eq_zero]
-  have hint : ∫ u in 0..h, g (⟨u + y * I, by simpa using hy⟩) = 0 := by
+  have hint : ∫ u in 0..h, g (⟨u + y * .I, by simpa using hy⟩) = 0 := by
     have := qExpansion_coeff_eq_intervalIntegral hh hgper hghol hgzero.isBoundedAtImInfty 0 hy
     simp only [h0, pow_zero, div_one, one_mul] at this
     rwa [eq_comm, mul_eq_zero_iff_left (by simpa using hh.ne')] at this
   have key (u : ℝ) : AddCircle.fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) •
-      f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ =
-        Real.exp (2 * π * (n + 1) * y / h) * g ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ := by
+      f ⟨u + y * .I, by simpa using hy⟩ =
+        Real.exp (2 * π * (n + 1) * y / h) * g ⟨u + y * .I, by simpa using hy⟩ := by
     simp only [g, neg_neg, AddCircle.fourier_coe_apply, smul_eq_mul, Function.Periodic.qParam,
       ← Complex.exp_natCast_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
     congr 2
@@ -293,8 +291,8 @@ lemma UpperHalfPlane.hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) :
     HasSum (fun n : ℕ ↦ ‖(qExpansion h f).coeff n‖ ^ 2 * Real.exp (-(4 * π * n * y / h)))
-      (h⁻¹ * ∫ x in 0..h, ‖f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩‖ ^ 2) := by
-  let g : ℝ → ℂ := fun x ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩
+      (h⁻¹ * ∫ x in 0..h, ‖f ⟨x + y * .I, by simpa using hy⟩‖ ^ 2) := by
+  let g : ℝ → ℂ := fun x ↦ f ⟨x + y * .I, by simpa using hy⟩
   have hg : Continuous g := by fun_prop
   -- Parseval over `ℤ`, regrouped as a sum over `ℕ` of the terms `n` and `-(n + 1)`.
   have hP := (AddCircle.hasSum_sq_fourierCoeffOn hh <|
@@ -326,7 +324,7 @@ lemma UpperHalfPlane.sum_range_norm_sq_qExpansion_coeff_mul_exp_le {f : ℍ → 
     ∑ n ∈ Finset.range M,
         ‖(qExpansion h f).coeff n‖ ^ 2 * Real.exp (-(4 * π * n * y / h)) ≤
       h⁻¹ * ∫ x in 0..h,
-        ‖f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩‖ ^ 2 :=
+        ‖f ⟨x + y * .I, by simpa using hy⟩‖ ^ 2 :=
   sum_le_hasSum _ (fun _ _ ↦ by positivity)
     (hasSum_norm_sq_qExpansion_coeff_mul_exp hh hfper hfhol hfbdd hy)
 
@@ -339,7 +337,7 @@ lemma UpperHalfPlane.sum_range_norm_sq_qExpansion_coeff_le {f : ℍ → ℂ} {h 
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (M : ℕ) :
     ∑ n ∈ Finset.range M, ‖(qExpansion h f).coeff n‖ ^ 2 ≤
       Real.exp (4 * π * M * y / h) * (h⁻¹ * ∫ x in 0..h,
-          ‖f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩‖ ^ 2) := by
+          ‖f ⟨x + y * .I, by simpa using hy⟩‖ ^ 2) := by
   rw [← mul_inv_le_iff₀' (Real.exp_pos _), ← Real.exp_neg, Finset.sum_mul]
   grw [← sum_range_norm_sq_qExpansion_coeff_mul_exp_le hh hfper hfhol hfbdd hy M]
   -- reduce to term-wise inequality
@@ -368,7 +366,7 @@ lemma CuspFormClass.exists_sum_range_norm_sq_qExpansion_coeff_le_of_mem_strictPe
   have key (τ : ℍ) (hτ : τ.im = 1 / M) : ‖f τ‖ ^ 2 ≤ B ^ 2 * M ^ k :=
     (div_le_iff₀ (by positivity)).mp (by simpa only [hτ, one_div_pow, mul_one_div] using hC τ)
   -- Integrating this over a period gives a bound for the integral of `‖f‖ ^ 2`
-  have hint₀ : ∫ x in 0..h, ‖f ⟨x + (1 / M : ℝ) * UpperHalfPlane.I, by simpa using hy⟩‖ ^ 2 ≤
+  have hint₀ : ∫ x in 0..h, ‖f ⟨x + (1 / M : ℝ) * .I, by simpa using hy⟩‖ ^ 2 ≤
       ∫ x in 0..h, B ^ 2 * M ^ k :=
     intervalIntegral.integral_mono_on hh.le (Continuous.intervalIntegrable (by fun_prop) 0 h)
       intervalIntegrable_const fun x _ ↦ key _ (by simp)

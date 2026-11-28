@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
 

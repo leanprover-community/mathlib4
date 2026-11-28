@@ -97,40 +97,45 @@ instance instContinuousMapClass : ContinuousMapClass (A →ₜ* B) A B where
 lemma coe_toMonoidHom (f : A →ₜ* B) : f.toMonoidHom = f := rfl
 
 @[to_additive (attr := simp)]
-lemma coe_toContinuousMap (f : A →ₜ* B) : f.toContinuousMap = f := rfl
+lemma coe_toContinuousMap (f : A →ₜ* B) : ⇑f.toContinuousMap = f := rfl
+
+@[to_additive]
+lemma toContinuousMap_eq_ofClass (f : A →ₜ* B) : f.toContinuousMap = .ofClass f := rfl
 
 section
 
 variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
-into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` to
-`(A →ₜ* B)`. -/
-@[to_additive (attr := coe) /-- Turn an element of a type `F` satisfying
-`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
-This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
-def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
+into a `ContinuousMonoidHom`. -/
+@[to_additive /-- Turn an element of a type `F` satisfying
+`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`. -/]
+def ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHom.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
-/-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
-`ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
-@[to_additive /-- Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
-`ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`. -/]
-instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F (A →ₜ* B) :=
-  ⟨ContinuousMonoidHom.toContinuousMonoidHom⟩
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias toContinuousMonoidHom := ofClass
 
 @[to_additive (attr := simp)]
-lemma coe_coe [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    ⇑(f : A →ₜ* B) = f := rfl
+protected lemma coe_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
-@[to_additive (attr := simp, norm_cast)]
-lemma toMonoidHom_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    ((f : A →ₜ* B) : A →* B) = f := rfl
+@[to_additive (attr := deprecated (since := "2026-11-24"))] protected alias coe_coe :=
+  ContinuousMonoidHom.coe_ofClass
 
-@[to_additive (attr := simp, norm_cast)]
-lemma toContinuousMap_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B]
-    (f : F) : ((f : A →ₜ* B) : C(A, B)) = f := rfl
+@[to_additive (attr := simp)]
+lemma toMonoidHom_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    (ofClass f : A →* B) = f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias
+    toMonoidHom_toContinuousMonoidHom := toMonoidHom_ofClass
+
+@[to_additive (attr := simp)]
+lemma toContinuousMap_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B]
+    (f : F) : (ofClass f).toContinuousMap = .ofClass f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias
+    toContinuousMap_toContinuousMonoidHom := toContinuousMap_ofClass
 
 end
 
@@ -275,13 +280,6 @@ instance : CommGroup (ContinuousMonoidHom A E) where
 
 end CommGroup
 
-/-- For `f : F` where `F` is a class of continuous monoid hom, this yields an element
-`ContinuousMonoidHom A B`. -/
-@[to_additive /-- For `f : F` where `F` is a class of continuous additive monoid hom, this yields
-an element `ContinuousAddMonoidHom A B`. -/]
-def ofClass (F : Type*) [FunLike F A B] [ContinuousMapClass F A B]
-    [MonoidHomClass F A B] (f : F) : (ContinuousMonoidHom A B) := toContinuousMonoidHom f
-
 end ContinuousMonoidHom
 
 end
@@ -367,8 +365,14 @@ theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
   rfl
 
 @[to_additive]
-theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
+theorem toHomeomorph_eq_ofClass (f : M ≃ₜ* N) : f.toHomeomorph = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-24")] alias _root_.ContinuousAddEquiv.toHomeomorph_eq_coe :=
+  ContinuousAddEquiv.toHomeomorph_eq_ofClass
+
+@[to_additive existing, deprecated (since := "2026-11-24")] alias toHomeomorph_eq_coe :=
+  toHomeomorph_eq_ofClass
 
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
@@ -380,6 +384,30 @@ def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
 set_option linter.docPrime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]
 lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : ⇑(mk' f h) = f := rfl
+
+section toContinuousMonoidHom
+
+variable {M N : Type*} [Monoid M] [Monoid N] [TopologicalSpace M] [TopologicalSpace N]
+
+/-- Reinterpret a `ContinuousMulEquiv` as a `ContinuousMonoidHom`. -/
+@[to_additive /-- Reinterpret a `ContinuousAddEquiv` as a `ContinuousAddMonoidHom`. -/]
+def toContinuousMonoidHom (e : M ≃ₜ* N) : M →ₜ* N :=
+  { ContinuousMap.ofClass e, MonoidHom.ofClass e with }
+
+@[to_additive (attr := simp)]
+lemma coe_toContinuousMonoidHom (e : M ≃ₜ* N) : ⇑e.toContinuousMonoidHom = e := rfl
+
+@[to_additive]
+lemma toContinuousMonoidHom_injective :
+    Function.Injective (toContinuousMonoidHom : (M ≃ₜ* N) → M →ₜ* N) :=
+  fun _ _ h ↦ by ext; simp [h, ← coe_toContinuousMonoidHom]
+
+@[to_additive (attr := simp)]
+lemma toContinuousMonoidHom_inj {e f : M ≃ₜ* N} :
+    e.toContinuousMonoidHom = f.toContinuousMonoidHom ↔ e = f :=
+  toContinuousMonoidHom_injective.eq_iff
+
+end toContinuousMonoidHom
 
 end coe
 
@@ -447,7 +475,13 @@ initialize_simps_projections ContinuousAddEquiv (toFun → apply, invFun → sym
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : (f : M ≃ₜ N).symm = (f.symm : N ≃ₜ M) := rfl
+theorem symm_toHomeomorph (f : M ≃ₜ* N) : f.toHomeomorph.symm = f.symm.toHomeomorph := rfl
+
+@[deprecated (since := "2026-11-24")] alias _root_.ContinuousAddEquiv.coe_toHomeomorph_symm :=
+  ContinuousAddEquiv.symm_toHomeomorph
+
+@[to_additive existing, deprecated (since := "2026-11-24")] alias coe_toHomeomorph_symm :=
+  symm_toHomeomorph
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl
@@ -585,7 +619,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
   rfl
 
 @[to_additive, simp] lemma toHomeomorph_toContinuousMulEquiv :
-    (e.toContinuousMulEquiv he : G ≃ₜ H) = e.toHomeomorph he :=
+    (e.toContinuousMulEquiv he).toHomeomorph = e.toHomeomorph he :=
   rfl
 
 @[to_additive]

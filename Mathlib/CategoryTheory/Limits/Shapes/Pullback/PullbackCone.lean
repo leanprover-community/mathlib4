@@ -41,7 +41,8 @@ This file provides API for interacting with cones (resp. cocones) in the case of
   Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
   `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
-## API
+## Main statements
+
 We summarize the most important parts of the API for pullback cones here. The dual notions for
 pushout cones are also available in this file.
 
@@ -130,23 +131,23 @@ def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by
   π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
          naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem mk_π_app_left {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).π.app WalkingCospan.left = fst := rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem mk_π_app_right {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).π.app WalkingCospan.right = snd := rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem mk_π_app_one {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).π.app WalkingCospan.one = fst ≫ f := rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem mk_fst {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).fst = fst := rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).snd = snd := rfl
 

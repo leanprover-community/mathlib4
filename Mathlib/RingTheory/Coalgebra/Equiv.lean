@@ -35,7 +35,7 @@ structure CoalgEquiv (R : Type*) [CommSemiring R] (A B : Type*)
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A ≃ₗ[R] B where
 
-attribute [nolint docBlame] CoalgEquiv.toCoalgHom
+attribute [nolint docBlame, coe] CoalgEquiv.toCoalgHom
 attribute [nolint docBlame] CoalgEquiv.toLinearEquiv
 
 @[inherit_doc CoalgEquiv]
@@ -54,16 +54,10 @@ variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
-@[coe]
 def _root_.CoalgEquiv.ofClass [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
-  { (f : A →ₗc[R] B), (.ofClass f : A ≃ₗ[R] B) with }
+  { (.ofClass f : A →ₗc[R] B), (.ofClass f : A ≃ₗ[R] B) with }
 
 @[deprecated (since := "2026-09-08")] alias toCoalgEquiv := CoalgEquiv.ofClass
-
-/-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
-instance instCoeToCoalgEquiv
-    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeHead F (A ≃ₗc[R] B) where
-  coe f := .ofClass f
 
 end CoalgEquivClass
 
@@ -113,7 +107,7 @@ instance : CoalgEquivClass (A ≃ₗc[R] B) R A B where
 instance : CoeOut (A ≃ₗc[R] B) (A ≃ₗ[R] B) where coe := toLinearEquiv
 
 @[simp, norm_cast]
-theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : (↑e₁ : A →ₗc[R] B) = e₂ ↔ e₁ = e₂ :=
+theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : e₁.toCoalgHom = e₂.toCoalgHom ↔ e₁ = e₂ :=
   toCoalgHom_injective.eq_iff
 
 @[simp]
@@ -129,28 +123,27 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 
 variable (e e' : A ≃ₗc[R] B)
 
-@[simp, norm_cast]
-theorem coe_ofClass : ⇑(ofClass e) = e := rfl
-
-@[simp, norm_cast]
-theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
-  rfl
-
-@[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
-
 @[simp]
-theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
+protected theorem coe_ofClass {F : Type*} [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
+@[deprecated CoalgHom.coe_ofClass +typeChanged (since := "2026-11-22")]
+theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e := rfl
+
+@[deprecated (since := "2026-09-09")] alias coe_coe := CoalgHom.coe_ofClass
+
+theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = .ofClass f :=
   rfl
 
 @[deprecated (since := "2026-09-09")] alias toCoalgHom_eq_coe := toCoalgHom_eq_ofClass
 
 @[simp]
+theorem coe_toCoalgHom : ⇑e.toCoalgHom = e := rfl
+
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
-
-theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
+theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = e.toCoalgHom :=
   rfl
 
 section
@@ -178,7 +171,7 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp only [TensorProduct.congr, toCoalgHom_eq_ofClass, CoalgHom.toLinearMap_eq_ofClass,
+      simp only [TensorProduct.congr, CoalgHom.toLinearMap_eq_ofClass,
         LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
       rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
@@ -207,7 +200,7 @@ def refl : A ≃ₗc[R] A :=
 theorem refl_toLinearEquiv : refl R A = LinearEquiv.refl R A := rfl
 
 @[simp]
-theorem refl_toCoalgHom : refl R A = CoalgHom.id R A :=
+theorem refl_toCoalgHom : (refl R A).toCoalgHom = CoalgHom.id R A :=
   rfl
 
 @[simp]
@@ -219,7 +212,7 @@ theorem coe_symm_toLinearEquiv (e : A ≃ₗc[R] B) :
 
 @[simp]
 theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
-    ((e.symm : B →ₗc[R] A) : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
+    (e.symm.toCoalgHom : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
 
 @[simp]
 theorem symm_apply_apply (e : A ≃ₗc[R] B) (x) :
@@ -257,14 +250,14 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Coalgebra equivalences are transitive. -/
 @[trans, simps!]
 def trans (e₁₂ : A ≃ₗc[R] B) (e₂₃ : B ≃ₗc[R] C) : A ≃ₗc[R] C :=
-  { (e₂₃ : B →ₗc[R] C).comp (e₁₂ : A →ₗc[R] B), e₁₂.toLinearEquiv ≪≫ₗ e₂₃.toLinearEquiv with }
+  { e₂₃.toCoalgHom.comp e₁₂.toCoalgHom, e₁₂.toLinearEquiv ≪≫ₗ e₂₃.toLinearEquiv with }
 
 theorem trans_toLinearEquiv :
     (e₁₂.trans e₂₃ : A ≃ₗ[R] C) = (e₁₂ : A ≃ₗ[R] B) ≪≫ₗ e₂₃ := rfl
 
 @[simp]
 theorem trans_toCoalgHom :
-    (e₁₂.trans e₂₃ : A →ₗc[R] C) = e₂₃.comp e₁₂ := rfl
+    (e₁₂.trans e₂₃).toCoalgHom = e₂₃.toCoalgHom.comp e₁₂.toCoalgHom := rfl
 
 @[simp]
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
@@ -280,9 +273,11 @@ def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = Coal
   right_inv := CoalgHom.ext_iff.1 h₁
 
 @[simp]
-theorem coe_ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
-    ofCoalgHom f g h₁ h₂ = f :=
+theorem toCoalgHom_ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
+    (ofCoalgHom f g h₁ h₂).toCoalgHom = f :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_ofCoalgHom := toCoalgHom_ofCoalgHom
 
 theorem ofCoalgHom_symm (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
     (ofCoalgHom f g h₁ h₂).symm = ofCoalgHom g f h₂ h₁ :=

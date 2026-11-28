@@ -61,6 +61,15 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : CMDiff n f := f.prop
 
+/-- Reinterpret a continuously differentiable map `C^n⟮I, M; I', M'⟯`
+as a continuous map `C(M, M')`. -/
+def toContinuousMap (f : C^n⟮I, M; I', M'⟯) : C(M, M') where
+  toFun := f
+  continuous_toFun := f.contMDiff.continuous
+
+@[simp]
+lemma coe_toContinuousMap (f : C^n⟮I, M; I', M'⟯) : ⇑f.toContinuousMap = f := rfl
+
 variable {f g : C^n⟮I, M; I', M'⟯}
 
 @[simp]

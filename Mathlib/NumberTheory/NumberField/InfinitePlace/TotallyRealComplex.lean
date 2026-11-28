@@ -41,7 +41,6 @@ open InfinitePlace Module
 section TotallyRealField
 
 /-
-
 ## Totally real number fields
 -/
 
