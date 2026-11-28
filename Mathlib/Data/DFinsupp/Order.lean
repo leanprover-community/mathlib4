@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Order.Bounds.Defs
 
 import Mathlib.Algebra.Order.Pi
 
@@ -44,7 +45,7 @@ instance : LE (Π₀ i, α i) :=
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
+@[simp, norm_cast, to_dual self] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
@@ -75,6 +76,10 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 lemma coe_mono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
 lemma coe_strictMono : StrictMono ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
+
+@[to_dual]
+lemma bddAbove_image_apply {s : Set (Π₀ i, α i)} (hs : BddAbove s) : BddAbove ((· i) '' s) :=
+  ⟨hs.some i, by rintro _ ⟨f, hf, rfl⟩; exact hs.some_mem hf i⟩
 
 variable [DecidableEq ι]
 

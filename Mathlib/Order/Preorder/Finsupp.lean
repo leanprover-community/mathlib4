@@ -6,6 +6,7 @@ Authors: Johan Commelin, Aaron Anderson
 module
 
 public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Order.Bounds.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -34,7 +35,7 @@ instance instLE : LE (ι →₀ M) where le f g := ∀ i, f i ≤ g i
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := .rfl
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast, to_dual self] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 
 /-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
 @[simps]
@@ -63,6 +64,10 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
 lemma coe_strictMono : StrictMono (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
+
+@[to_dual]
+lemma bddAbove_image_apply {s : Set (ι →₀ M)} (hs : BddAbove s) : BddAbove ((· i) '' s) :=
+  ⟨hs.some i, by rintro _ ⟨f, hf, rfl⟩; exact hs.some_mem hf i⟩
 
 end Preorder
 
