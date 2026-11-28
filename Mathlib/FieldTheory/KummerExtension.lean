@@ -133,8 +133,8 @@ theorem irreducible_X_pow_two_pow_sub_C_of_isSquare_neg_one
     intro b hb
     apply ha (i ^ (2 ^ k + 1) * Algebra.norm K b)
     rw [mul_pow, ← map_pow, hb, norm_root_X_pow_sub_C (Nat.two_pow_pos k).ne',
-      pow_right_comm, pow_two, ← hi, pow_succ, mul_neg_one, neg_mul,
-      ← mul_assoc, mul_neg, neg_neg, ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
+      pow_right_comm, pow_two, ← hi, pow_succ, mul_mul_mul_comm, ← pow_two, pow_right_comm]
+    ring
 
 theorem irreducible_X_pow_two_pow_sub_C
     (n : ℕ) {a : K} (ha : ¬IsSquare a) (h4 : ∀ b : K, -4 * b ^ 4 ≠ a) :
@@ -187,11 +187,10 @@ theorem irreducible_X_pow_two_pow_sub_C
       have hu0 := congrFun (congrArg DFunLike.coe hc) 0
       have hu1 := congrArg (· ^ 2) <| congrFun (congrArg DFunLike.coe hc) 1
       simp only [Finsupp.equivFunOnFinite_symm_apply_apply,
-        Matrix.cons_val_zero, Matrix.cons_val_one,  Matrix.cons_val_fin_one,
+        Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
         Finsupp.single_eq_same, Finsupp.single_eq_of_ne Fin.zero_ne_one'] at hu0 hu1
       rw [← eq_neg_iff_add_eq_zero] at hu0
-      rw [one_pow, mul_pow, mul_pow, hu0, neg_mul, mul_neg, ← neg_mul, mul_right_comm,
-        ← pow_add, two_add_two_eq_four, pow_two, mul_two, two_add_two_eq_four, ← mul_assoc] at hu1
+      rw [mul_pow, mul_pow, hu0] at hu1
       apply h4 (2 * bas.repr c 1 ^ 3 * a)
       calc
         _ = _ := by ring
@@ -232,9 +231,9 @@ theorem irreducible_X_pow_sub_C
     apply ha p hp (dvd_mul_right _ _) ((-1) ^ (2 ^ k * m + 1) * Algebra.norm K b)
     have h0 : 2 ^ k * m ≠ 0 := Nat.mul_ne_zero (Nat.two_pow_pos k).ne'
       fun h => Nat.not_odd_zero (h ▸ (Nat.odd_mul.1 hm).2)
-    rw [mul_pow, pow_right_comm, (Nat.odd_mul.mp hm).1.neg_pow, one_pow, pow_succ, mul_neg_one,
-      ← map_pow, hb, norm_root_X_pow_sub_C h0, neg_mul, ← mul_assoc, mul_neg, neg_neg, ← pow_two,
-      pow_right_comm, neg_one_sq, one_pow, one_mul]
+    rw [mul_pow, pow_right_comm, (Nat.odd_mul.mp hm).1.neg_pow, one_pow, pow_succ,
+      ← map_pow, hb, norm_root_X_pow_sub_C h0, mul_mul_mul_comm, ← pow_two, pow_right_comm]
+    ring
 
 theorem irreducible_X_pow_sub_C_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
