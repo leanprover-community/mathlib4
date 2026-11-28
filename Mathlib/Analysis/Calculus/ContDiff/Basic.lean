@@ -346,7 +346,6 @@ theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
     ContDiff 𝕜 n (e ∘ f) ↔ ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, e.comp_contDiffOn_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is affine, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term at `x` is given
 by `p (g x) k (g.contLinear v₁, ..., g.contLinear vₖ)` . -/
@@ -573,8 +572,9 @@ theorem iteratedFDerivWithin_prodMk {f : E → F} {g : E → G} (hf : ContDiffWi
     (hg : ContDiffWithinAt 𝕜 n g s x) (hs : UniqueDiffOn 𝕜 s) (ha : x ∈ s) {i : ℕ} (hi : i ≤ n) :
     iteratedFDerivWithin 𝕜 i (fun x ↦ (f x, g x)) s x =
       (iteratedFDerivWithin 𝕜 i f s x).prod (iteratedFDerivWithin 𝕜 i g s x) := by
-  ext <;>
-  · rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
+  ext
+  all_goals
+    rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
     simp [Function.comp_def]
 
 theorem iteratedFDeriv_prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)

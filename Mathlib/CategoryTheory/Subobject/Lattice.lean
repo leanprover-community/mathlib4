@@ -127,7 +127,6 @@ section Inf
 
 variable [HasPullbacks C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
@@ -182,7 +181,6 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
@@ -204,7 +202,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 
 instance {X : C} : Inhabited (Subobject X) :=
@@ -275,7 +273,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -348,13 +346,13 @@ def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.inf
 
 theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
+  Quotient.inductionOn₂ f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
 
 theorem inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
+  Quotient.inductionOn₂ f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
 
 theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
-  Quotient.inductionOn₃' h f g
+  Quotient.inductionOn₃ h f g
     (by
       rintro f g h ⟨k⟩ ⟨l⟩
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
@@ -388,7 +386,7 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
   ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
-    apply Quotient.ind₂'
+    apply Quotient.ind₂
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
 
@@ -438,7 +436,7 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
 theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
-  induction f₂ using Quotient.inductionOn'
+  induction f₂ using Quotient.inductionOn
   rfl
 
 theorem exists_pullback_eq_inf_of_mono [HasImages C] (f : X ⟶ Y) [Mono f] (Y' : Subobject Y) :
@@ -469,7 +467,7 @@ theorem inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
 theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
     (pullback g).obj (f₁ ⊓ f₂) = (pullback g).obj f₁ ⊓ (pullback g).obj f₂ := by
   revert f₁
-  apply Quotient.ind'
+  apply Quotient.ind
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← pullback_comp, ←
     map_pullback pullback.condition (pullbackIsPullback f₁.arrow g), ← pullback_comp,
@@ -480,7 +478,7 @@ theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
 theorem inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
     (map g).obj (f₁ ⊓ f₂) = (map g).obj f₁ ⊓ (map g).obj f₂ := by
   revert f₁
-  apply Quotient.ind'
+  apply Quotient.ind
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← map_comp]
   dsimp
@@ -498,10 +496,10 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
 
 instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
   sup := fun m n => (sup.obj m).obj n
-  le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
-  le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
+  le_sup_left := fun m n => Quotient.inductionOn₂ m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
+  le_sup_right := fun m n => Quotient.inductionOn₂ m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
   sup_le := fun m n k =>
-    Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
+    Quotient.inductionOn₃ m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
 
 theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :
     (X ⊔ Y).Factors f :=
@@ -753,13 +751,12 @@ end ZeroObject
 
 section SubobjectSubobject
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The subobject lattice of a subobject `Y` is order isomorphic to the interval `Set.Iic Y`. -/
 def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic Y where
   toFun Z :=
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
-  invFun Z := Subobject.mk (ofLE _ _ Z.2)
+  invFun Z := Subobject.mk (ofLE _ _ Z.property)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by cat_disch)
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by

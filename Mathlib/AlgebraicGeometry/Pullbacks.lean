@@ -21,7 +21,6 @@ exist fibred products `Uᵢ ×[Z] Y` for each `i`, then there exists a fibred pr
 Then, for constructing the fibred product for arbitrary schemes `X, Y, Z`, we can use the
 construction to reduce to the case where `X, Y, Z` are all affine, where fibred products are
 constructed via tensor products.
-
 -/
 
 @[expose] public section
@@ -594,8 +593,9 @@ def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
       ((Equiv.prodPUnit 𝒰.I₀).symm.trans (Equiv.sigmaEquivProd 𝒰.I₀ PUnit).symm) fun _ => Iso.refl _
   intro i
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_f]
-  ext : 1 <;>
-  · simp only [limit.lift_π, PullbackCone.mk_π_app, Equiv.trans_apply, Category.assoc,
+  ext : 1
+  all_goals
+    simp only [limit.lift_π, PullbackCone.mk_π_app, Equiv.trans_apply, Category.assoc,
     limit.lift_π_assoc, cospan_left, Category.comp_id,
       limit.isoLimitCone_inv_π_assoc, PullbackCone.π_app_left, IsPullback.cone_fst,
       pullbackSymmetry_hom_comp_snd_assoc, limit.isoLimitCone_inv_π,
@@ -654,7 +654,6 @@ lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).f I =
   cases I
   ext1 <;> simp [diagonalCover, Cover.pullbackHom]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of the diagonal `X ⟶ X ×ₛ X` to `𝒱 i j ×[𝒰 i] 𝒱 i j` is the diagonal
 `𝒱 i j ⟶ 𝒱 i j ×[𝒰 i] 𝒱 i j`. -/

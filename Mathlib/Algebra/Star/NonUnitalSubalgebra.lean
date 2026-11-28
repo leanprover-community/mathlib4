@@ -224,7 +224,6 @@ theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnital
     [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : (↑S.toNonUnitalSubring : Set A) = S :=
   rfl
@@ -318,7 +317,6 @@ protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAs
     [Module R A] [Star A] {S : NonUnitalStarSubalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_smul [SMul R' R] [SMul R' A] [IsScalarTower R' R A] (r : R') (x : S) :
     ↑(r • x) = r • (x : A) :=
   rfl
@@ -680,7 +678,7 @@ theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans <| NonUnitalAlgebra.subset_adjoin R
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
 @[simp]
@@ -770,11 +768,11 @@ theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
   NonUnitalStarSubalgebra.toNonUnitalSubalgebra_injective.eq_iff' top_toNonUnitalSubalgebra
 
 theorem mem_sup_left {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← IsConcreteLE.le_iff]
+  rw [← le_iff_mem_imp_mem]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← IsConcreteLE.le_iff]
+  rw [← le_iff_mem_imp_mem]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
@@ -1084,7 +1082,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
           (fun _ _ => rfl)
-        all_goals simp
+        simp
       map_star' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalStarAlgHom.comp_apply, inclusion_mk, Eq.ndrec,
           id_eq, eq_mpr_eq_cast, ZeroMemClass.coe_zero, AddSubmonoid.mk_add_mk, Set.inclusion_mk,
@@ -1093,7 +1091,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           NonUnitalAlgHom.coe_mk]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => star x)
           (fun _ _ => rfl)
-        all_goals simp [map_star] }
+        simp [map_star] }
 
 end StarSubalgebraB
 
@@ -1188,6 +1186,8 @@ end Center
 
 section Centralizer
 
+open scoped Pointwise
+
 variable (R)
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
@@ -1227,14 +1227,13 @@ end Centralizer
 end NonUnitalStarSubalgebra
 
 -- TODO: this could potentially be moved earlier, but currently no file has enough imports.
+open scoped Pointwise in
 /-- `s ∪ star s` commutes pairwise if and only if all elements of `s` are normal, elements of `s`
 commute pairwise, and distinct elements of `s` commute with the `star` of the other. -/
 lemma Set.Pairwise.commute_union_star_self_iff {R : Type*} [Mul R] [StarMul R] {s : Set R} :
     (s ∪ star s).Pairwise Commute ↔
       s.Pairwise Commute ∧ s.Pairwise (Commute · <| star ·) ∧ ∀ x ∈ s, IsStarNormal x := by
-  simp only [Set.pairwise_union_of_symm_of_refl, Set.Pairwise.commute_star_iff, Set.mem_star,
-    and_self_left, and_congr_right_iff]
-  conv in ∀ b, star b ∈ s → _ => rw [star_involutive.surjective.forall]
+  simp_rw [Set.pairwise_union_of_symm_of_refl, Set.Pairwise.commute_star_iff, Set.mem_star]
   grind [isStarNormal_iff, Set.Pairwise, star_star]
 
 namespace NonUnitalStarAlgebra

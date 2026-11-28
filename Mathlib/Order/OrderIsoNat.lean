@@ -30,7 +30,7 @@ defines the limit value of an eventually-constant sequence.
 @[expose] public section
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace RelEmbedding
 
@@ -79,13 +79,18 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
 
 end RelEmbedding
 
-theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
-    ¬ StrictAnti f := fun hf ↦
-  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded wellFounded_lt
+@[to_dual]
+theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α]
+    [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictAnti f := by
+  inhabit β
+  choose m hm using exists_gt (α := β)
+  let g : ℕ → β := Nat.rec default fun _ ↦ m
+  exact fun hf ↦ (RelEmbedding.natGT (f ∘ g) fun n ↦ hf (hm _)).not_wellFounded wellFounded_lt
 
-theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
-    ¬ StrictMono f :=
-  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
+@[to_dual]
+theorem not_strictMono_of_wellFoundedLT [Preorder α] [WellFoundedLT α]
+    [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictMono f := by
+  simpa using not_strictAnti_of_wellFoundedLT (f ∘ OrderDual.ofDual)
 
 namespace Nat
 
@@ -139,8 +144,10 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
       simp only [Set.infinite_coe_iff, ← Set.infinite_union, ← Set.preimage_union,
         Set.eq_univ_of_forall fun n => Set.mem_preimage.2 (he n), Set.infinite_univ]
     cases this
-    exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n => (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
-      ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n => (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
+    exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n =>
+        (Nat.Subtype.ofNat (e ⁻¹' s) _).property⟩,
+      ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n =>
+        (Nat.Subtype.ofNat (e ⁻¹' t) _).property⟩]
 
 end Nat
 
@@ -314,8 +321,9 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [Part
     ∃ a : ℕ → α, a 0 = x ∧ ∃ n, a n = y ∧ ∀ i < n, a i ⋖ a (i + 1) := by
   let S := Set.Icc x y
   let hS : BoundedOrder S :=
-    { top := ⟨y, h, le_rfl⟩, le_top x := x.2.2, bot := ⟨x, le_rfl, h⟩, bot_le x := x.2.1 }
+    { top := ⟨y, h, le_rfl⟩, le_top x := x.property.2, bot := ⟨x, le_rfl, h⟩,
+      bot_le x := x.property.1 }
   obtain ⟨a, h₁, n, h₂, e⟩ := exists_covBy_seq_of_wellFoundedLT_wellFoundedGT S
   simp only [isMin_iff_eq_bot, Subtype.ext_iff, isMax_iff_eq_top] at h₁ h₂
   exact ⟨Subtype.val ∘ a, h₁, n, h₂, fun i hi ↦ ⟨(e i hi).1, fun c hc h ↦ (e i hi).2
-    (c := ⟨c, (a i).2.1.trans hc.le, h.le.trans (a _).2.2⟩) hc h⟩⟩
+    (c := ⟨c, (a i).property.1.trans hc.le, h.le.trans (a _).property.2⟩) hc h⟩⟩

@@ -5,8 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Yoneda embedding for `R`-linear categories
@@ -14,7 +17,6 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 The Yoneda embedding for `R`-linear categories `C`,
 sends an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
-
 -/
 
 @[expose] public section
@@ -34,7 +36,7 @@ variable (C)
 /-- The Yoneda embedding for `R`-linear categories `C`
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
   obj X :=
     { obj := fun Y => ↧(unop Y ⟶ X)
@@ -46,7 +48,7 @@ def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
 /-- The Yoneda embedding for `R`-linear categories `C`,
 sending an object `Y : Cᵒᵖ` to the `ModuleCat R`-valued copresheaf on `C`,
 with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
   obj Y :=
     { obj := fun X => ↧(unop Y ⟶ X)

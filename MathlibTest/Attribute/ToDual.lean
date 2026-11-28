@@ -420,7 +420,9 @@ def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β
 -- so we get this warning.
 /--
 warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to any of `[universeTest1''._to_dual_1.eq_1]`.
-Please silence this warning and add a translation manually. Errors:
+If this translation is not needed, feel free to silence this warning.
+Otherwise, please silence this warning and add a translation manually.
+Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
@@ -540,3 +542,13 @@ Exists.intro 37 (of_decide_eq_true (id (Eq.refl true)))
 -/
 #guard_msgs in
 #print toDualForTestProof._to_dual_1
+
+-- This used to panic
+alias min' := min
+/--
+warning: The translated declaration `min'` already exists. Please specify this explicitly using `@[to_dual existing]`.
+
+Note: This linter can be disabled with `set_option linter.translate.existing false`
+-/
+#guard_msgs in
+@[to_dual] alias max' := max

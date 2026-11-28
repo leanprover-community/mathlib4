@@ -37,7 +37,7 @@ A graph is complete multipartite iff non-adjacency is transitive.
   `r` subsets of vertices each of size `t` such that the vertices in distinct subsets are
   adjacent.
 
-## Implementation Notes
+## Implementation notes
 
 The definition of `completeEquipartiteGraph` is similar to `completeMultipartiteGraph`
 except that `Sigma.fst` is replaced by `Prod.fst` in the definition. The difference is that the
@@ -92,8 +92,9 @@ lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → 
 def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     G ≃g completeMultipartiteGraph (fun (c : Quotient h.setoid) ↦ {x // h.setoid.r c.out x}) where
   toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
-  invFun := fun ⟨_, x⟩ ↦ x.1
-  right_inv := fun ⟨_, x⟩ ↦ Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.2) rfl
+  invFun := fun ⟨_, x⟩ ↦ x.val
+  right_inv := fun ⟨_, x⟩ ↦
+    Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.property) rfl
   map_rel_iff' := by
     simp_rw [Equiv.coe_fn_mk, comap_adj, top_adj, ne_eq, Quotient.eq]
     intros
@@ -474,7 +475,7 @@ theorem completeEquipartiteGraph_isContained_iff :
 vertices in `s` are adjacent to the vertices in `K`. -/
 theorem completeEquipartiteGraph_succ_isContained_iff :
   completeEquipartiteGraph (r + 1) t ⊑ G
-    ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph r t) (s : Finset V),
+    ↔ ∃ K : G.CompleteEquipartiteSubgraph r t, ∃ s : Finset V,
         #s = t ∧ ∀ p ∈ K.parts, G.IsCompleteBetween p s := by
   classical
   by_cases ht : t = 0

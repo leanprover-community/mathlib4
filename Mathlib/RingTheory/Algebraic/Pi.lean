@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic functions
 
@@ -74,7 +77,6 @@ theorem Polynomial.algebraMap_pi_eq_aeval :
     (algebraMap R[X] (S → T) : R[X] → S → T) = fun p z => algebraMap _ _ (aeval z p) :=
   rfl
 
-@[simp]
 theorem Polynomial.algebraMap_pi_self_eq_eval :
     (algebraMap R[X] (R → R) : R[X] → R → R) = fun p z => eval z p :=
   rfl

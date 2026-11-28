@@ -217,8 +217,9 @@ lemma posRootForm_posForm_anisotropic :
 
 lemma posRootForm_posForm_nondegenerate :
     (P.posRootForm S).posForm.Nondegenerate := by
-  constructor <;>
-  · intro x
+  constructor
+  all_goals
+    intro x
     contrapose!
     exact fun hx ↦ ⟨x, (posRootForm_posForm_pos_of_ne_zero P S hx).ne'⟩
 
@@ -341,7 +342,7 @@ lemma orthogonal_rootSpan_eq :
   refine le_antisymm ?_ (by intro; simp_all)
   rintro x hx y -
   simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx ⊢
-  obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by
+  obtain ⟨u, hu, v, hv, rfl⟩ : ∃ u ∈ P.rootSpan R, ∃ v ∈ LinearMap.ker P.RootForm, u + v = y := by
     rw [← Submodule.mem_sup, P.isCompl_rootSpan_ker_rootForm.sup_eq_top]; exact Submodule.mem_top
   simp only [LinearMap.mem_ker] at hv
   simp [hx _ hu, hv]

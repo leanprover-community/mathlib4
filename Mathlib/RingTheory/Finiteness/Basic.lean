@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Finiteness.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on finitely generated (sub)modules
 
@@ -319,9 +322,6 @@ universe u in
 instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
-
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
 
@@ -381,10 +381,8 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
   let := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   have : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
-  let e : B₁ ≃ₐ[A₂] B₂ :=
-    { e₂ with
-      commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r)) }
+  let e : B₁ ≃ₐ[A₂] B₂ := .ofCommutes e₂ fun r ↦ by
+    simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r))
   have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv
 

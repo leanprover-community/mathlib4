@@ -195,7 +195,7 @@ variables obtained by concatenating the variables, given by `m ↦ f (init m) (m
 def ContinuousMultilinearMap.uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     ContinuousMultilinearMap 𝕜 Ei G :=
-  let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →ₗ[𝕜] G) :=
+  let f' : (Π i : Fin n, Ei <| castSucc i) →ₘₗ[𝕜] Ei (last n) →ₗ[𝕜] G :=
     (ContinuousLinearMap.coeLM 𝕜).compMultilinearMap f.toMultilinearMap
   f'.uncurryRight.mkContinuous ‖f‖ fun m => f.norm_map_init_le m
 
@@ -211,7 +211,7 @@ a continuous multilinear map in `n` variables into continuous linear maps, given
 `m ↦ (x ↦ f (snoc m x))`. -/
 def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G) :
     ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
-  let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
+  let f' : (Π i : Fin n, Ei <| castSucc i) →ₘₗ[𝕜] Ei (last n) →L[𝕜] G :=
     { toFun := fun m =>
         (f.toMultilinearMap.curryRight m).mkContinuous (‖f‖ * ∏ i, ‖m i‖) fun x =>
           f.norm_map_snoc_le m x
@@ -424,9 +424,12 @@ theorem ContinuousMultilinearMap.fin0_apply_norm (f : G [×0]→L[𝕜] G') {x :
   simpa [-Matrix.zero_empty] using this
 
 @[simp]
-theorem ContinuousMultilinearMap.fin0_apply_enorm (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
+theorem ContinuousMultilinearMap.fin0_apply_eNorm (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
     ‖f x‖ₑ = ‖f‖ₑ := by
   simp_rw [← ofReal_norm, fin0_apply_norm]
+
+@[deprecated (since := "2026-11-06")]
+alias ContinuousMultilinearMap.fin0_apply_enorm := ContinuousMultilinearMap.fin0_apply_eNorm
 
 theorem ContinuousMultilinearMap.curry0_norm (f : G [×0]→L[𝕜] G') : ‖f.curry0‖ = ‖f‖ := by simp
 
@@ -604,7 +607,6 @@ theorem curryFinFinset_symm_apply_piecewise_const (hk : #s = k) (hl : #sᶜ = l)
       f (fun _ => x) fun _ => y :=
   MultilinearMap.curryFinFinset_symm_apply_piecewise_const hk hl _ x y
 
-@[simp]
 theorem curryFinFinset_symm_apply_const (hk : #s = k) (hl : #sᶜ = l)
     (f : G [×k]→L[𝕜] G [×l]→L[𝕜] G') (x : G) :
     ((curryFinFinset 𝕜 G G' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=

@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 
+import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
@@ -68,7 +68,7 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
         (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped, A]
-  simp only [volume, Module.Basis.addHaar, one_smul]
+  simp only [volume, Module.Basis.addHaar_def, one_smul]
 
 theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
   simp [volume_eq_stieltjes_id]
@@ -308,11 +308,11 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
   refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
   rcases lt_or_gt_of_ne h with h | h
-  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
+  · simp only [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
       preimage_const_mul_Ioo_of_neg _ _ h, abs_of_neg h, mul_sub, smul_eq_mul,
       mul_div_cancel₀ _ (ne_of_lt h)]
-  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
+  · simp only [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo₀ _ _ h,
       abs_of_pos h, mul_sub, mul_div_cancel₀ _ (ne_of_gt h), smul_eq_mul]
 
@@ -357,18 +357,17 @@ open Matrix
 `Real.map_matrix_volume_pi_eq_smul_volume_pi`, that one should use instead (and whose proof
 uses this particular case). -/
 theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (diagonal D) ≠ 0) :
-    ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
+    ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (diagonal D).mulVecLin volume =
       volume := by
   refine (Measure.pi_eq fun s hs => ?_).symm
-  simp only [det_diagonal, Measure.coe_smul, smul_eq_mul, Pi.smul_apply]
+  simp only [det_diagonal, _root_.smul_apply, smul_eq_mul]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
-  have :
-    (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
+  have : ((diagonal D).mulVecLin ⁻¹' Set.pi Set.univ fun i : ι => s i) =
       Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
     simp only [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
-      mem_preimage, LinearMap.pi_apply, diagonal_toLin']
+      mem_preimage, LinearMap.pi_apply, mulVecLin_diagonal]
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i
     have A : D i ≠ 0 := by
@@ -382,12 +381,11 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
 
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
-    MeasurePreserving (toLin' t.toMatrix) := by
+    MeasurePreserving t.toMatrix.mulVecLin := by
   /- We use `lmarginal` to conveniently use Fubini's theorem.
     Along the coordinate where there is a shearing, it acts like a
     translation, and therefore preserves Lebesgue. -/
-  have ht : Measurable (toLin' t.toMatrix) :=
-    (toLin' t.toMatrix).continuous_of_finiteDimensional.measurable
+  have ht : Measurable t.toMatrix.mulVecLin := by fun_prop
   refine ⟨ht, ?_⟩
   refine (pi_eq fun s hs ↦ ?_).symm
   have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
@@ -404,7 +402,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
 /-- Any invertible matrix rescales Lebesgue measure through the absolute value of its
 determinant. -/
 theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι ι ℝ} (hM : det M ≠ 0) :
-    Measure.map (toLin' M) volume = ENNReal.ofReal (abs (det M)⁻¹) • volume := by
+    Measure.map M.mulVecLin volume = ENNReal.ofReal (abs (det M)⁻¹) • volume := by
   -- This follows from the cases we have already proved, of diagonal matrices and transvections,
   -- as these matrices generate all invertible matrices.
   apply diagonal_transvection_induction_of_det_ne_zero _ M hM
@@ -416,7 +414,7 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
     simp_rw [Matrix.TransvectionStruct.det, _root_.inv_one, abs_one, ENNReal.ofReal_one, one_smul,
       (volume_preserving_transvectionStruct _).map_eq]
   · intro A B _ _ IHA IHB
-    rw [toLin'_mul, det_mul, LinearMap.coe_comp, ← Measure.map_map, IHB, Measure.map_smul, IHA,
+    rw [mulVecLin_mul, det_mul, LinearMap.coe_comp, ← Measure.map_map, IHB, Measure.map_smul, IHA,
       smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, mul_comm, mul_inv]
     · apply Continuous.aemeasurable
       apply LinearMap.continuous_on_pi
@@ -434,7 +432,7 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
     -- this is deduced from the matrix case
     let M := LinearMap.toMatrix' f
     have A : LinearMap.det f = det M := by simp only [M, LinearMap.det_toMatrix']
-    have B : f = toLin' M := by simp only [M, toLin'_toMatrix']
+    have B : f = M.mulVecLin := by simp only [M, f.mulVecLin_toMatrix']
     rw [A, B]
     apply map_matrix_volume_pi_eq_smul_volume_pi
     rwa [A] at hf

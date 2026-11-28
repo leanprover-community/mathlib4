@@ -316,7 +316,7 @@ def of (p : Set α) : ManyOneDegree :=
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
     (h : ∀ p : Set ℕ, C (of p)) : C d :=
-  Quotient.inductionOn' d fun p => by rw [← toNat_nat p]; exact h p
+  Quotient.inductionOn d fun p => by rw [← toNat_nat p]; exact h p
 
 /-- Lifts a function on sets of natural numbers to many-one degrees. -/
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
@@ -368,11 +368,9 @@ instance instLE : LE ManyOneDegree :=
 theorem of_le_of {p : Set α} {q : Set β} : of p ≤ of q ↔ (· ∈ p) ≤₀ (· ∈ q) :=
   manyOneReducible_toNat_toNat
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
@@ -413,7 +411,6 @@ theorem add_of (p : Set α) (q : Set β) : of {x | ((· ∈ p) ⊕' (· ∈ q)) 
         (toNat_manyOneReducible.trans OneOneReducible.disjoin_left.to_many_one)
         (toNat_manyOneReducible.trans OneOneReducible.disjoin_right.to_many_one)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ ↔ d₁ ≤ d₃ ∧ d₂ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on

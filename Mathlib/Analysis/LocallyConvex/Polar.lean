@@ -68,7 +68,8 @@ theorem polar_eq_biInter_preimage (s : Set E) :
 theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact isClosed_biInter
-    fun _ _ ↦ Metric.isClosed_closedBall.preimage (WeakBilin.eval_continuous B.flip _)
+    fun _ _ ↦ Metric.isClosed_closedBall.preimage <|
+      IsWeak.continuous_eval (WeakBilin.pairing B.flip) _
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
@@ -113,7 +114,8 @@ theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ 
   simp only [polar_singleton, Set.mem_ofPred_eq]
 
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.ofPred_true]
+  simp only [polar_singleton, map_zero, LinearMap.zero_apply, norm_zero, zero_le_one,
+    Set.ofPred_true]
 
 theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]

@@ -103,10 +103,10 @@ theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫
 /-- Two arrows `f : X ⟶ P` and `g : Y ⟶ P` are called pseudo-equal if there is some object
 `R` and epimorphisms `p : R ⟶ X` and `q : R ⟶ Y` such that `p ≫ f = q ≫ g`. -/
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
-  ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
+  ∃ (R : C) (p : R ⟶ f.left) (q : R ⟶ g.left) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
 instance pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
-  refl f := ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
+  refl f := ⟨f.left, 𝟙 f.left, 𝟙 f.left, inferInstance, inferInstance, by simp⟩
 
 instance pseudoEqual_symm {P : C} : Std.Symm (PseudoEqual P) where
   symm _ _ := fun ⟨R, p, q, ep, Eq, comm⟩ ↦ ⟨R, q, p, Eq, ep, comm.symm⟩
@@ -206,7 +206,7 @@ attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
-    ⟨biprod f.1 Q, biprod.fst, biprod.snd, inferInstance, inferInstance, by
+    ⟨biprod f.left Q, biprod.fst, biprod.snd, inferInstance, inferInstance, by
       rw [hf, Over.coe_hom, HasZeroMorphisms.comp_zero, HasZeroMorphisms.comp_zero]⟩⟩
 
 end
@@ -239,7 +239,6 @@ theorem pseudoZero_iff {P : C} (a : Over P) : a = (0 : P) ↔ a.hom = 0 := by
 end Zero
 
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
@@ -349,7 +348,6 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
   fun h => by simp [over_coe_def, pseudoApply_mk', h]
 
@@ -412,8 +410,6 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
           -- Can we prevent quotient.sound from giving us this weird `coe_b` thingy?
           change app g (a'' : Over P) ≈ app g a
           exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [a'', sub_eq_add_neg, this]⟩⟩⟩
-
-variable [Limits.HasPullbacks C]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such

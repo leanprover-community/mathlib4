@@ -44,6 +44,7 @@ private theorem nthRoot.pow_go_le (hle : guess ≤ fuel) (n a : ℕ) :
     simp [go]
   | succ fuel ih =>
     rw [go]
+    dsimp only
     split_ifs with h
     case pos =>
       grind
@@ -109,6 +110,7 @@ private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
   | zero => simpa [go]
   | succ fuel ih =>
     rw [go]
+    dsimp only
     split_ifs with h
     case pos =>
       rcases eq_or_ne guess 0 with rfl | hguess
@@ -156,7 +158,9 @@ theorem nthRoot_eq_of_le_of_lt (h₁ : a ^ n ≤ b) (h₂ : b < (a + 1) ^ n) :
   simp only [← le_nthRoot_iff hn, ← nthRoot_lt_iff hn] at h₁ h₂
   grind
 
-theorem exists_pow_eq_iff' (hn : n ≠ 0) : (∃ x, x ^ n = a) ↔ (nthRoot n a) ^ n = a := by
+theorem exists_pow_eq_iff' : (∃ x, x ^ n = a) ↔ (nthRoot n a) ^ n = a := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
   constructor
   · rintro ⟨x, rfl⟩
     rw [nthRoot_pow hn]

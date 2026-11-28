@@ -68,7 +68,7 @@ we have an incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 
-The `RefinedDiscrTree` then stores these `LazyEntries` at its leafs, and evaluates them
+The `RefinedDiscrTree` then stores these `LazyEntries` at its leaves, and evaluates them
 only if the lookup algorithm reaches this leaf.
 
 
@@ -83,7 +83,8 @@ data-structure linearly, since copies of the data structure must regularly be st
 environment. For `fun_prop` this is not a serious problem since it doesn't have that many
 different lemmas anyways.
 
-#### Future work:
+### Future work
+
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
 `fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
 
@@ -96,9 +97,9 @@ Most applications use matching, and the only common use case where unification i
 type class search. Since the intended applications of the `RefinedDiscrTree` currently use
 matching, the lookup algorithm is most optimized for matching.
 
-#### Future work:
-Improve the unification lookup.
+### Future work
 
+Improve the unification lookup.
 -/
 
 public section

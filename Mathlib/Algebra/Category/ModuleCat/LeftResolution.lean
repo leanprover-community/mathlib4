@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functorial projective resolutions of modules
 
@@ -18,7 +21,6 @@ projective `R`-module is expressed as the definition `ModuleCat.projectiveResolu
 Using the construction in the file `Mathlib/Algebra/Homology/LeftResolution/Basic.lean`,
 we may obtain a functor `(projectiveResolution R).chainComplexFunctor` which
 sends `M : ModuleCat R` to a projective resolution.
-
 -/
 
 @[expose] public section
@@ -37,7 +39,6 @@ instance (X : Type u) : Projective ((free R).obj X) where
     obtain ⟨s, hs⟩ := hp.hasRightInverse
     exact ⟨freeDesc (↾fun x ↦ s (f (freeMk x))), by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An `R`-module `M` can be functorially written as a quotient of a
 projective `R`-module. -/
 noncomputable def projectiveResolution :

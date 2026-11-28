@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.CategoryTheory.Shift.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of graded objects
 
@@ -27,7 +30,6 @@ show that it is faithful, and deduce that when `C` is concrete so is `GradedObje
 A covariant functoriality of `GradedObject β C` with respect to the index set `β` is also
 introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p ⁻¹' {j}`, we
 have a functor `map : GradedObject I C ⥤ GradedObject J C`.
-
 -/
 
 @[expose] public section
@@ -195,7 +197,6 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
@@ -428,7 +429,7 @@ section
 
 variable (k : K) (c : ∀ (j : J), q j = k → X.CofanMapObjFun p j)
   (hc : ∀ j hj, IsColimit (c j hj))
-  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.1 j.2).pt)) (hc' : IsColimit c')
+  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.val j.property).pt)) (hc' : IsColimit c')
 
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the datum of cofans `X.CofanMapObjFun p j` for all
@@ -442,7 +443,6 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
 In other words, if we have, for all `j : J` such that `hj : q j = k`,

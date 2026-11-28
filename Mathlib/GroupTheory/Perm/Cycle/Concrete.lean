@@ -8,7 +8,6 @@ module
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-!
-
 # Properties of cyclic permutations constructed from lists/cycles
 
 In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
@@ -33,13 +32,12 @@ In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 * `Equiv.Perm.IsCycle.existsUnique_cycle`: there is only one nontrivial `Cycle α`
   corresponding to each cyclic `f : Perm α`
 
-## Implementation details
+## Implementation notes
 
 The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uniqueness
 result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-
 -/
 
 @[expose] public section
@@ -180,7 +178,7 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
-  induction s, s' using Quotient.inductionOn₂'
+  induction s, s' using Quotient.inductionOn₂
   simpa using formPerm_eq_formPerm_iff hs hs'
 
 end Cycle
@@ -327,7 +325,7 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
   have hr : l ~r l.rotate k := ⟨k, rfl⟩
   rw [formPerm_eq_of_isRotated hn hr]
   rw [get_eq_get_rotate l k k]
-  simp only [Nat.mod_eq_of_lt k.2, tsub_add_cancel_of_le (le_of_lt k.2), Nat.mod_self]
+  simp only [Nat.mod_eq_of_lt k.isLt, tsub_add_cancel_of_le (le_of_lt k.isLt), Nat.mod_self]
   rw [toList_formPerm_nontrivial]
   · simp
   · simpa using hl

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Petersson scalar product
 
@@ -57,9 +60,7 @@ lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (τ : 
 
 lemma petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
-  -- need to disable a simp lemma as it works against `Matrix.SpecialLinearGroup.det_coe`
-  simp [σ, ModularForm.SL_slash, petersson_slash,
-    -Matrix.SpecialLinearGroup.map_apply_coe]
+  simp [σ, ModularForm.SL_slash, petersson_slash]
 
 lemma petersson_symm (k : ℤ) (f f' : ℍ → ℂ) (τ : ℍ) :
     petersson k f' f τ = conj (petersson k f f' τ) := by

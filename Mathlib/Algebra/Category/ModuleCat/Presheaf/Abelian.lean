@@ -11,9 +11,11 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of presheaves of modules is abelian
-
 -/
 
 public section

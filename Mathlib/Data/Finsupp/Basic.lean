@@ -31,7 +31,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 ## TODO
 
 * Expand the list of definitions and important lemmas to the module docstring.
-
 -/
 
 @[expose] public section
@@ -313,9 +312,10 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 
-@[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
-    v.mapDomain f = v.mapDomain g :=
-  Finset.sum_congr rfl fun _ H => by simp only [h _ H]
+@[congr] theorem mapDomain_congr {f g : α → β} (hv : v₁ = v₂) (h : ∀ x ∈ v₁.support, f x = g x) :
+    v₁.mapDomain f = v₂.mapDomain g := by
+  subst hv
+  exact Finset.sum_congr rfl fun _ H ↦ by simp only [h _ H]
 
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
@@ -483,9 +483,10 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
   ext a
   classical
     by_cases h : a ∈ v₁.support ∪ v₂.support
-    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
-        · apply Set.union_subset hv₁ hv₂
-          exact mod_cast h
+    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq]
+      all_goals
+        apply Set.union_subset hv₁ hv₂
+        exact mod_cast h
     · simp_all
 
 theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : α →₀ M) :
@@ -661,9 +662,10 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    split_ifs with h <;>
-      · simp only [h, mem_filter, mem_support_iff]
-        tauto
+    split_ifs with h
+    all_goals
+      simp only [h, mem_filter, mem_support_iff]
+      tauto
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 
@@ -974,7 +976,7 @@ finitely supported functions from `β` to `γ`. -/
 protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
   toFun a :=
     { toFun b := f (a, b)
-      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp
       mem_support_toFun := by simp }
   support := f.support.image Prod.fst
   mem_support_toFun := by simp [DFunLike.ext_iff]
@@ -1261,10 +1263,10 @@ the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
 @[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
-  toFun f := subtypeDomain (· ∈ s) f.1
+  toFun f := subtypeDomain (· ∈ s) f.val
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
   left_inv f :=
-    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
+    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.val f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 
 @[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
@@ -1341,11 +1343,14 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   l.support.image Sigma.fst
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
+theorem mem_splitSupport_iff_ne_zero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
-    ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
+    Finset.ne_empty_iff_nonempty, split, comapDomain, Finset.Nonempty]
   simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
+
+@[deprecated (since := "2026-10-13")]
+alias mem_splitSupport_iff_nonzero := mem_splitSupport_iff_ne_zero
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and
 an `ι`-indexed family `g` of functions from `(αs i →₀ β)` to `γ`, `split_comp` defines a
@@ -1356,7 +1361,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
   toFun i := g i (split l i)
   mem_support_toFun := by
     intro i
-    rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
+    rw [mem_splitSupport_iff_ne_zero, not_iff_not, hg]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by

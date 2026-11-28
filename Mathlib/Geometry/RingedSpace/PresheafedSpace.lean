@@ -9,6 +9,9 @@ public import Mathlib.Topology.Sheaves.Presheaf
 
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presheafed spaces
 
@@ -177,7 +180,6 @@ theorem comp_c_app {X Y Z : PresheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U)
     (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
@@ -199,13 +201,12 @@ section Iso
 
 variable {X Y : PresheafedSpace C}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An isomorphism of `PresheafedSpace`s is a homeomorphism of the underlying space, and a
 natural transformation between the sheaves.
 -/
 @[simps hom inv]
-def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y where
+def isoOfComponents (H : X.carrier ≅ Y.carrier) (α : H.hom _* X.presheaf ≅ Y.presheaf) : X ≅ Y where
   hom :=
     { base := H.hom
       c := α.inv }
@@ -222,11 +223,10 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic `PresheafedSpace`s have naturally isomorphic presheaves. -/
 @[simps]
-def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
+def sheafIsoOfIso (H : X ≅ Y) : Y.presheaf ≅ H.hom.base _* X.presheaf where
   hom := H.hom.c
   inv := Presheaf.pushforwardToOfIso ((forget _).mapIso H).symm H.inv.c
   hom_inv_id := by
@@ -237,8 +237,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
     ext U
     dsimp
     rw [NatTrans.id_app]
-    simp only [Presheaf.pushforwardToOfIso_app, Iso.symm_inv, mapIso_hom, forget_map,
-      Iso.symm_hom, mapIso_inv, eqToHom_map, assoc]
+    simp only [Presheaf.pushforwardToOfIso_app, eqToHom_map, assoc]
     have eq₁ := congr_app H.hom_inv_id (op ((Opens.map H.hom.base).obj U))
     have eq₂ := H.hom.c.naturality (eqToHom (congr_obj (congr_arg Opens.map
       ((forget C).congr_map H.inv_hom_id.symm)) U)).op
@@ -284,7 +283,7 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
           rfl }
 
 set_option backward.isDefEq.respectTransparency false in
-instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
+instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.carrier)
     (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
   have : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
   constructor
@@ -391,7 +390,6 @@ variable {D : Type*} [Category* D]
 
 namespace Functor
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
 giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
@@ -430,7 +428,6 @@ end Functor
 
 namespace NatTrans
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation induces a natural transformation between the `map_presheaf` functors.
 -/

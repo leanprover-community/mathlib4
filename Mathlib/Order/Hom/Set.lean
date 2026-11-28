@@ -10,6 +10,9 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.WellFounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order homomorphisms and sets
 -/
@@ -49,7 +52,7 @@ theorem MapsTo.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β} {t
   rintro (a | b) <;> aesop
 
 theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
-    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ᵉ (a ∈ s.1) (b ∈ s.2), f a ≠ g b) :
+    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ a ∈ s.1, ∀ b ∈ s.2, f a ≠ g b) :
     Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
   rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
 
@@ -237,7 +240,6 @@ instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Pre
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -248,7 +250,6 @@ protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :

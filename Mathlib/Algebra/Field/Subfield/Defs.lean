@@ -42,6 +42,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
 
@@ -72,11 +73,11 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
 
 variable {S} {x : K}
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 lemma nnratCast_mem (s : S) (q : ℚ≥0) : (q : K) ∈ s := by
   simpa only [NNRat.cast_def] using div_mem (natCast_mem s q.num) (natCast_mem s q.den)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 lemma ratCast_mem (s : S) (q : ℚ) : (q : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (intCast_mem s q.num) (natCast_mem s q.den)
 
@@ -86,21 +87,21 @@ instance instRatCast (s : S) : RatCast s where ratCast q := ⟨q, ratCast_mem s 
 @[simp, norm_cast] lemma coe_nnratCast (s : S) (q : ℚ≥0) : ((q : s) : K) = q := rfl
 @[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 lemma nnqsmul_mem (s : S) (q : ℚ≥0) (hx : x ∈ s) : q • x ∈ s := by
   simpa only [NNRat.smul_def] using mul_mem (nnratCast_mem _ _) hx
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (ratCast_mem _ _) hx
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
   SubfieldClass.nnratCast_mem s (OfScientific.ofScientific n b m)
 
-instance instSMulNNRat (s : S) : SMul ℚ≥0 s where smul q x := ⟨q • x, nnqsmul_mem s q x.2⟩
-instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_mem s q x.2⟩
+instance instSMulNNRat (s : S) : SMul ℚ≥0 s where smul q x := ⟨q • x, nnqsmul_mem s q x.property⟩
+instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_mem s q x.property⟩
 
 @[simp, norm_cast] lemma coe_nnqsmul (s : S) (q : ℚ≥0) (x : s) : ↑(q • x) = q • (x : K) := rfl
 @[simp, norm_cast] lemma coe_qsmul (s : S) (q : ℚ) (x : s) : ↑(q • x) = q • (x : K) := rfl
@@ -258,13 +259,13 @@ instance : Ring s :=
   s.toSubring.toRing
 
 instance : Div s :=
-  ⟨fun x y => ⟨x / y, s.div_mem x.2 y.2⟩⟩
+  ⟨fun x y => ⟨x / y, s.div_mem x.property y.property⟩⟩
 
 instance : Inv s :=
-  ⟨fun x => ⟨x⁻¹, s.inv_mem x.2⟩⟩
+  ⟨fun x => ⟨x⁻¹, s.inv_mem x.property⟩⟩
 
 instance : Pow s ℤ :=
-  ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
+  ⟨fun x z => ⟨x ^ z, s.zpow_mem x.property z⟩⟩
 
 instance toDivisionRing (s : Subfield K) : DivisionRing s := SubfieldClass.toDivisionRing s
 
@@ -274,11 +275,9 @@ instance toField {K} [Field K] (s : Subfield K) : Field s := SubfieldClass.toFie
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_sub (x y : s) : (↑(x - y) : K) = ↑x - ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_neg (x : s) : (↑(-x) : K) = -↑x :=
   rfl
 
@@ -294,11 +293,9 @@ theorem coe_div (x y : s) : (↑(x / y) : K) = ↑x / ↑y :=
 theorem coe_inv (x : s) : (↑x⁻¹ : K) = (↑x)⁻¹ :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : K) = 0 :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_one : ((1 : s) : K) = 1 :=
   rfl
 
@@ -331,14 +328,12 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubmonoid : (s.toSubmonoid : Set K) = s :=
   rfl
 
 theorem mem_toAddSubgroup {s : Subfield K} {x : K} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toAddSubgroup : (s.toAddSubgroup : Set K) = s :=
   rfl
 

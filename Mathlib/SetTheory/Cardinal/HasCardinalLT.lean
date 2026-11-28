@@ -7,13 +7,15 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The property of being of cardinality less than a cardinal
 
 Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `HasCardinalLT X κ` expressing that
 `Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
-
 -/
 
 @[expose] public section
@@ -124,8 +126,8 @@ lemma hasCardinalLT_subtype_max
   have : HasCardinalLT (Subtype P₁ ⊕ Subtype P₂) κ := by
     rw [hasCardinalLT_sum_iff _ _ _ hκ]
     exact ⟨h₁, h₂⟩
-  refine this.of_surjective (Sum.elim (fun x ↦ ⟨x.1, Or.inl x.2⟩)
-    (fun x ↦ ⟨x.1, Or.inr x.2⟩)) ?_
+  refine this.of_surjective (Sum.elim (fun x ↦ ⟨x.val, Or.inl x.property⟩)
+    (fun x ↦ ⟨x.val, Or.inr x.property⟩)) ?_
   rintro ⟨x, hx | hx⟩
   · exact ⟨Sum.inl ⟨x, hx⟩, rfl⟩
   · exact ⟨Sum.inr ⟨x, hx⟩, rfl⟩
@@ -138,8 +140,8 @@ lemma hasCardinalLT_union
 
 /-- The particular case of `hasCardinalLT_sigma` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/
-lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
+private lemma hasCardinalLT_sigma_aux {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w})
+    [Fact κ.IsRegular] (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
     HasCardinalLT (Σ i, α i) κ := by
   simp only [hasCardinalLT_iff_cardinal_mk_lt] at hι hα ⊢
   rw [Cardinal.mk_sigma]
@@ -149,13 +151,16 @@ lemma hasCardinalLT_sigma {ι : Type u} (α : ι → Type v) (κ : Cardinal.{w})
     (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
     HasCardinalLT (Σ i, α i) κ := by
   have : Fact (Cardinal.lift.{max u v} κ).IsRegular := ⟨Cardinal.IsRegular.lift Fact.out⟩
-  have := hasCardinalLT_sigma'
+  have := hasCardinalLT_sigma_aux
     (fun (i : ULift.{max v w} ι) ↦ ULift.{max u w} (α (ULift.down i)))
     (Cardinal.lift.{max u v} κ) (by simpa)
     (fun i ↦ by simpa using hα (ULift.down i))
   rw [hasCardinalLT_lift_iff] at this
   exact this.of_surjective (fun ⟨i, a⟩ ↦ ⟨ULift.down i, ULift.down a⟩)
     (fun ⟨i, a⟩ ↦ ⟨⟨ULift.up i, ULift.up a⟩, rfl⟩)
+
+@[deprecated hasCardinalLT_sigma +typeChanged (since := "2026-11-16")]
+alias hasCardinalLT_sigma' := hasCardinalLT_sigma_aux
 
 lemma hasCardinalLT_subtype_iSup
     {ι : Type*} {X : Type*} (P : ι → X → Prop) {κ : Cardinal} [Fact κ.IsRegular]
@@ -168,7 +173,6 @@ lemma hasCardinalLT_subtype_iSup
     obtain ⟨i, hi⟩ := h
     exact ⟨⟨i, _, hi⟩, rfl⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasCardinalLT_iUnion
     {ι : Type*} {X : Type*} (S : ι → Set X) {κ : Cardinal} [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hS : ∀ i, HasCardinalLT (S i) κ) :
@@ -179,7 +183,7 @@ lemma hasCardinalLT_iUnion
 
 /-- The particular case of `hasCardinalLT_prod` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/
-lemma hasCardinalLT_prod' {T₁ T₂ : Type w} {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
+private lemma hasCardinalLT_prod_aux {T₁ T₂ : Type w} {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
     (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :
     HasCardinalLT (T₁ × T₂) κ := by
   rw [hasCardinalLT_iff_cardinal_mk_lt] at h₁ h₂ ⊢
@@ -189,11 +193,14 @@ lemma hasCardinalLT_prod {T₁ : Type u} {T₂ : Type u'}
     {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
     (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :
     HasCardinalLT (T₁ × T₂) κ := by
-  have := hasCardinalLT_prod' (T₁ := ULift.{max u' w} T₁) (T₂ := ULift.{max u w} T₂)
+  have := hasCardinalLT_prod_aux (T₁ := ULift.{max u' w} T₁) (T₂ := ULift.{max u w} T₂)
     (κ := Cardinal.lift.{max u u'} κ) (by simpa) (by simpa) (by simpa)
   simp only [hasCardinalLT_lift_iff] at this
   exact this.of_surjective (fun ⟨x₁, x₂⟩ ↦ ⟨ULift.down x₁, ULift.down x₂⟩) (fun ⟨x₁, x₂⟩ ↦
     ⟨⟨ULift.up x₁, ULift.up x₂⟩, rfl⟩)
+
+@[deprecated hasCardinalLT_prod +typeChanged (since := "2026-11-16")]
+alias hasCardinalLT_prod' := hasCardinalLT_prod_aux
 
 namespace HasCardinalLT
 

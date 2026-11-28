@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Multiset.NatAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
 
@@ -16,7 +19,7 @@ This file defines the antidiagonals of ℕ × ℕ as finsets: the `n`-th antidia
 pairs `(i, j)` such that `i + j = n`. This is useful for polynomial multiplication and more
 generally for sums going from `0` to `n`.
 
-## Notes
+## Implementation notes
 
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
 instance enabling `Finset.antidiagonal` on `Nat`.

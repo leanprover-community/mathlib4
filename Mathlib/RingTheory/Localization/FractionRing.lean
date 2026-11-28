@@ -31,6 +31,7 @@ public import Mathlib.RingTheory.Localization.Basic
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -103,7 +104,7 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
   have := inj.noZeroDivisors _ (map_zero _) (map_mul _)
   have := Module.nontrivial R K
 { map_units x :=
-    .mk0 _ <| (map_ne_zero_iff _ inj).mpr <| mem_nonZeroDivisors_iff_ne_zero.mp x.2
+    .mk0 _ <| (map_ne_zero_iff _ inj).mpr <| mem_nonZeroDivisors_iff_ne_zero.mp x.property
   surj z := by
     have ⟨x, y, eq⟩ := surj z
     obtain rfl | hy := eq_or_ne y 0
@@ -112,6 +113,14 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
     exact ⟨⟨x, y, mem_nonZeroDivisors_iff_ne_zero.mpr hy⟩,
       (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
+
+theorem of_semifield_isLocalization
+    {R : Type*} [CommSemiring R] [NoZeroDivisors R] (S : Submonoid R)
+    (K : Type*) [Semifield K] [Algebra R K] [IsLocalization S K] :
+    IsFractionRing R K :=
+  of_le S R⁰
+    (fun s hs ↦ mem_nonZeroDivisors_of_ne_zero <| ne_zero_of_map <| (map_units K ⟨s, hs⟩).ne_zero)
+    (fun _ hr ↦ isUnit_of_mem_nonZeroDivisors <| nonZeroDivisors_le_comap S K hr)
 
 variable {R K}
 
@@ -199,7 +208,8 @@ protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
+@[no_expose]
+protected noncomputable def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -261,7 +271,7 @@ theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
 
 @[simp]
 theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / algebraMap A K s :=
-  mk'_mk_eq_div s.2
+  mk'_mk_eq_div s.property
 
 variable (A) in
 theorem div_surjective (z : K) :
@@ -273,7 +283,7 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
     IsUnit (g y) :=
   haveI := g.domain_nontrivial
   IsUnit.mk0 (g y) <|
-    show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
+    show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.property
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
@@ -310,8 +320,8 @@ theorem algHom_commutes (e : K₁ →ₐ[A] K₂) (f : L₁ →ₐ[B] L₂) (x :
     IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
 
 theorem algEquiv_commutes (e : K₁ ≃ₐ[A] K₂) (f : L₁ ≃ₐ[B] L₂) (x : K₁) :
-    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
-  exact algHom_commutes e.toAlgHom f.toAlgHom _
+    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) :=
+  algHom_commutes e.toAlgHom f.toAlgHom _
 
 end commutes
 
@@ -565,9 +575,8 @@ variable {A B C D : Type*}
   [Algebra FA FD] [IsScalarTower A FA FD]
 
 /-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
-noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
-  __ := IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv
-  commutes' x := by
+noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC :=
+  .ofCommutes (IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv) fun x ↦ by
     obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective A x
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
     simp [← IsScalarTower.algebraMap_apply A C FC]

@@ -18,16 +18,18 @@ Define the Frobenius morphism, and show it is an isomorphism iff the exponential
 isomorphism.
 
 ## TODO
+
 Some of the results here are true more generally for closed objects and for closed monoidal
 categories, and these could be generalised.
 
 ## References
+
 https://ncatlab.org/nlab/show/cartesian+closed+functor
 https://ncatlab.org/nlab/show/Frobenius+reciprocity
 
 ## Tags
-Frobenius reciprocity, Cartesian closed functor
 
+Frobenius reciprocity, Cartesian closed functor
 -/
 
 @[expose] public section
@@ -99,7 +101,6 @@ theorem uncurry_expComparison (A B : C) :
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
   rw [uncurry_eq, expComparison_ev]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The exponential comparison map is natural in `A`. -/
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     (expComparison F A).whiskerBottom (MonoidalClosed.pre (F.map f)) =
@@ -129,7 +130,6 @@ class MonoidalClosedFunctor : Prop where
 
 attribute [instance] MonoidalClosedFunctor.comparison_iso
 
-set_option backward.defeqAttrib.useBackward true in
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (ihom.adjunction A)) ((ihom.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) = (expComparison F A) := by

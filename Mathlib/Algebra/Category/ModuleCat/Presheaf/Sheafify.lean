@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The associated sheaf of a presheaf of modules
 
@@ -20,7 +23,6 @@ sheaf of modules over `R`: this is `PresheafOfModules.sheafify α φ`.
 In many applications, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
-
 -/
 
 @[expose] public section
@@ -196,7 +198,7 @@ instance : Nonempty (SMulCandidate α φ r m) := ⟨by
     apply Presieve.isAmalgamation_restrict
     apply Presieve.FamilyOfElements.isAmalgamation_map_localPreimage
   exact SMulCandidate.mk' α φ r m S hS r₀ m₀ hr₀ hm₀ _ (Presieve.IsSheafFor.isAmalgamation
-    (((sheafCompose J (forget _)).obj A).2.isSheafFor S hS)
+    (((sheafCompose J (forget _)).obj A).property.isSheafFor S hS)
     (Presieve.FamilyOfElements.isCompatible_map_smul α φ A.isSeparated r m r₀ m₀ hr₀ hm₀))⟩
 
 instance : Subsingleton (SMulCandidate α φ r m) where

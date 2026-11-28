@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The digamma function
 

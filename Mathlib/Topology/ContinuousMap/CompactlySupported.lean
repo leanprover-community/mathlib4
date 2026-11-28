@@ -24,7 +24,6 @@ When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCom
 
 When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapEquiv`
 gives the identification `C(α, β) ≃ C_c(α, β)`.
-
 -/
 
 @[expose] public section
@@ -64,6 +63,17 @@ class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
   /-- Each member of the class has compact support. -/
   hasCompactSupport (f : F) : HasCompactSupport f
 
+export CompactlySupportedContinuousMapClass (hasCompactSupport)
+
+/-- Turn a bundled morphism with a `CompactlySupportedContinuousMapClass` instance
+into a `CompactlySupportedContinuousMap`. -/
+def CompactlySupportedContinuousMap.ofClass [Zero β] [TopologicalSpace β] [FunLike F α β]
+    [CompactlySupportedContinuousMapClass F α β] (f : F) :
+    C_c(α, β) where
+  toFun := f
+  continuous_toFun := map_continuous f
+  hasCompactSupport' := hasCompactSupport f
+
 end
 
 namespace CompactlySupportedContinuousMap
@@ -79,6 +89,10 @@ instance : FunLike C_c(α, β) α β where
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+@[simp]
+protected lemma coe_ofClass [FunLike F α β] [CompactlySupportedContinuousMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 protected lemma hasCompactSupport (f : C_c(α, β)) : HasCompactSupport f := f.hasCompactSupport'
 
@@ -125,7 +139,10 @@ def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
   toFun f :=
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
-  invFun f := f
+  invFun f := f.toContinuousMap
+
+lemma continuousMapEquiv_symm_apply_apply [CompactSpace α] (f : C_c(α, β)) (a : α) :
+    continuousMapEquiv.symm f a = f a := rfl
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
@@ -135,14 +152,14 @@ support.
 
 If `g` doesn't send `0` to `0`, `f.compLeft g` defaults to `0`. -/
 noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
-  toContinuousMap := by classical exact if g 0 = 0 then g.comp f else 0
+  toContinuousMap := by classical exact if g 0 = 0 then g.comp f.toContinuousMap else 0
   hasCompactSupport' := by
     split_ifs with hg
     · exact f.hasCompactSupport'.comp_left hg
     · exact .zero
 
 lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
-    (f.compLeft g).toContinuousMap = g.comp f := ite_eq_left hg
+    (f.compLeft g).toContinuousMap = g.comp f.toContinuousMap := ite_eq_left hg
 
 lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft g = g ∘ f := by
   simp [compLeft, ite_eq_left hg]
@@ -174,7 +191,7 @@ variable [TopologicalSpace β] (x : α)
 
 instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
-            continuous_toFun := (0 : C(α, β)).2
+            continuous_toFun := by fun_prop
             hasCompactSupport' := by simp [HasCompactSupport, tsupport] }
 
 instance [Zero β] : Inhabited C_c(α, β) :=
@@ -188,7 +205,8 @@ theorem zero_apply [Zero β] : (0 : C_c(α, β)) x = 0 :=
   rfl
 
 instance [MulZeroClass β] [ContinuousMul β] : Mul C_c(α, β) :=
-  ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
+  ⟨fun f g => ⟨f.toContinuousMap * g.toContinuousMap,
+    HasCompactSupport.mul_left g.hasCompactSupport'⟩⟩
 
 @[simp]
 theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f * g) = f * g :=
@@ -223,7 +241,8 @@ instance [SemigroupWithZero β] [ContinuousMul β] :
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [AddZeroClass β] [ContinuousAdd β] : Add C_c(α, β) :=
-  ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
+  ⟨fun f g => ⟨f.toContinuousMap + g.toContinuousMap,
+    HasCompactSupport.add f.hasCompactSupport' g.hasCompactSupport'⟩⟩
 
 @[simp]
 theorem coe_add [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : ⇑(f + g) = f + g :=
@@ -243,7 +262,8 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) := fast_instance%
-  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
+  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩,
+    HasCompactSupport.smul_left f.hasCompactSupport'⟩⟩
 
 @[simp, norm_cast]
 theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
@@ -277,9 +297,10 @@ section AddGroup
 variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C_c(α, β))
 
 instance : Neg C_c(α, β) where
-  neg f := { toFun := -f.1
-             continuous_toFun := map_continuous (-f.1)
-             hasCompactSupport' := by simpa [HasCompactSupport, tsupport] using f.2 }
+  neg f := { toFun := -f.toContinuousMap
+             continuous_toFun := map_continuous (-f.toContinuousMap)
+             hasCompactSupport' := by
+               simpa [HasCompactSupport, tsupport] using f.hasCompactSupport' }
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f :=
@@ -289,10 +310,11 @@ theorem neg_apply : (-f) x = -f x :=
   rfl
 
 instance : Sub C_c(α, β) where
-  sub f g := { toFun := f.1 - g.1
-               continuous_toFun := map_continuous (f.1 - g.1)
+  sub f g := { toFun := f.toContinuousMap - g.toContinuousMap
+               continuous_toFun := map_continuous (f.toContinuousMap - g.toContinuousMap)
                hasCompactSupport' := by
-                 simpa [sub_eq_add_neg] using HasCompactSupport.add f.2 (-g).2 }
+                 simpa [sub_eq_add_neg] using
+                   HasCompactSupport.add f.hasCompactSupport' (-g).hasCompactSupport' }
 
 @[simp]
 theorem coe_sub : ⇑(f - g) = f - g :=
@@ -394,7 +416,7 @@ instance : Star C_c(α, β) where
           ext x
           simp only [Function.mem_support, ne_eq, star_eq_zero]
         rw [support_star]
-        exact f.2 }
+        exact f.hasCompactSupport' }
 
 @[simp]
 theorem coe_star (f : C_c(α, β)) : ⇑(star f) = star (⇑f) :=
@@ -556,15 +578,16 @@ variable [Zero δ]
 /-- Composition of a continuous function with compact support with a cocompact map
 yields another continuous function with compact support. -/
 def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
-  toContinuousMap := (f : C(γ, δ)).comp g
+  toContinuousMap := f.toContinuousMap.comp g.toContinuousMap
   hasCompactSupport' := by
-    apply IsCompact.of_isClosed_subset (g.isCompact_preimage_of_isClosed f.2 (isClosed_tsupport _))
+    apply IsCompact.of_isClosed_subset
+      (g.isCompact_preimage_of_isClosed f.hasCompactSupport' (isClosed_tsupport _))
       (isClosed_tsupport (f ∘ g))
     intro x hx
     rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]
     intro o ho hgxo
     rw [tsupport, _root_.mem_closure_iff] at hx
-    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.1.2 ho) hgxo
+    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage (by fun_prop) ho) hgxo
     exact ⟨g y, hy⟩
 
 @[simp]
@@ -622,12 +645,6 @@ section Basic
 
 variable [Zero β] [TopologicalSpace β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β]
 
-instance : CoeTC F (CompactlySupportedContinuousMap α β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      hasCompactSupport' := hasCompactSupport f }⟩
-
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
 lemma of_compactSpace (G : Type*) [FunLike G α β]
@@ -671,7 +688,7 @@ namespace CompactlySupportedContinuousMap
 set_option backward.isDefEq.respectTransparency.types false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
-  refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
+  refine ⟨⟨f₂.toContinuousMap - f₁.toContinuousMap, ?_⟩, ?_⟩
   · apply (f₁.hasCompactSupport'.union f₂.hasCompactSupport').of_isClosed_subset isClosed_closure
     rw [tsupport, tsupport, ← closure_union]
     apply closure_mono

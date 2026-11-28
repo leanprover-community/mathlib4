@@ -39,6 +39,16 @@ instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
 instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
   of_retract _ _ := by trivial
 
+instance {P₁ P₂ : ObjectProperty C} [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
+    (P₁ ⊓ P₂).IsStableUnderRetracts where
+  of_retract r h := ⟨P₁.prop_of_retract r h.1, P₂.prop_of_retract r h.2⟩
+
+instance {ι : Sort*} (P : ι → ObjectProperty C) [∀ i, (P i).IsStableUnderRetracts] :
+    (⨅ i, P i).IsStableUnderRetracts where
+  of_retract r h := by
+    simp only [iInf_apply, iInf_Prop_eq] at h ⊢
+    exact fun i ↦ (P i).prop_of_retract r (h i)
+
 namespace IsStableUnderRetracts
 
 open scoped ZeroObject
@@ -47,6 +57,9 @@ variable [P.IsStableUnderRetracts]
 
 instance : P.IsClosedUnderIsomorphisms where
   of_iso i h := IsStableUnderRetracts.of_retract i.symm.retract h
+
+instance {D : Type*} [Category* D] (F : D ⥤ C) : (P.inverseImage F).IsStableUnderRetracts where
+  of_retract r h := P.prop_of_retract (r.map _) h
 
 -- see Note [lower instance priority]
 instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
@@ -138,10 +151,10 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     ObjectProperty.EssentiallySmall.{w} P.retractClosure where
   exists_small_le' := by
     obtain ⟨Q, _, h₁, h₂⟩ := ObjectProperty.EssentiallySmall.exists_small_le.{w} P
-    let α := Σ (X : Subtype Q), { p : X.1 ⟶ X.1 // p ≫ p = p }
+    let α := Σ (X : Subtype Q), { p : X.val ⟶ X.val // p ≫ p = p }
     let g {X Y : C} (h : Retract Y X) (hX : Q X) : α := ⟨⟨X, hX⟩, h.r ≫ h.i, by simp⟩
     let R (a : α) : Prop := ∃ (X Y : C) (h : Retract Y X) (hX : Q X), g h hX = a
-    choose X Y h hX using fun (a : Subtype R) ↦ a.2
+    choose X Y h hX using fun (a : Subtype R) ↦ a.property
     refine ⟨.ofObj Y, inferInstance, (monotone_retractClosure h₂).trans ?_⟩
     rw [retractClosure_isoClosure]
     rintro y ⟨x, hx, ⟨r⟩⟩
@@ -152,7 +165,7 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     have hri : (h a).r ≫ (h a).i = r.r ≫ r.i := by
       rw [Sigma.ext_iff, heq_eq_eq] at h₂
       exact Subtype.ext_iff.1 h₂.2
-    exact ⟨_, ⟨a.1, a.2⟩, ⟨{
+    exact ⟨_, ⟨a.val, a.property⟩, ⟨{
       hom := r.i ≫ (h a).r
       inv := (h a).i ≫ r.r
       hom_inv_id := by simp [reassoc_of% hri]

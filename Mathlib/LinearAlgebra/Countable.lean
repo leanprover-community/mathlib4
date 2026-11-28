@@ -5,11 +5,14 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Finsupp.Encodable
 public import Mathlib.RingTheory.Finiteness.Defs
 
+import Mathlib.Data.Finsupp.Encodable
 import Mathlib.Data.Set.Countable
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Countable modules
@@ -18,8 +21,6 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public section
 
 noncomputable section
-
-namespace Finsupp
 
 variable {M : Type*} {R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
@@ -41,4 +42,8 @@ theorem Uncountable.of_moduleFinite [hM : Uncountable M] [Module.Finite R M] : U
   by_contra!
   exact (uncountable_iff_not_countable _).mp hM <| Countable.of_moduleFinite (R := R)
 
-end Finsupp
+@[deprecated (since := "2026-10-24")]
+alias Finsupp.Countable.of_moduleFinite := Countable.of_moduleFinite
+
+@[deprecated (since := "2026-10-24")]
+alias Finsupp.Uncountable.of_moduleFinite := Uncountable.of_moduleFinite

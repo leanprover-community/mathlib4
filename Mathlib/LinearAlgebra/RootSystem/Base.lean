@@ -12,7 +12,16 @@ public import Mathlib.LinearAlgebra.RootSystem.Chain
 
 This file contains a theory of bases for root pairings / systems.
 
-## Implementation details
+## Main definitions and statements
+
+* `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
+* `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which
+  respect addition of a simple root.
+* `RootSystem.Base.induction_reflect`: an induction principle for predicates on (co)roots which
+  respect reflection in a simple root.
+
+## Implementation notes
 
 For reduced root pairings `RootSystem.Base` is equivalent to the usual definition appearing in the
 informal literature (e.g., it follows from [serre1965](Ch. V, §8, Proposition 7) that
@@ -30,19 +39,10 @@ roots.
 For infinite root systems, `RootSystem.Base` is usually not the right notion: linear independence
 is too strong.
 
-## Main definitions / results:
-* `RootSystem.Base`: a base of a root pairing.
-* `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
-* `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which
-  respect addition of a simple root.
-* `RootSystem.Base.induction_reflect`: an induction principle for predicates on (co)roots which
-  respect reflection in a simple root.
-
 ## TODO
 
 * Develop a theory of base / separation / positive roots for infinite systems which specialises to
   the concept here for finite systems.
-
 -/
 
 @[expose] public section
@@ -117,7 +117,7 @@ lemma nonneg_or_nonpos_of_sum_smul_mem_range_root
   obtain ⟨l, hl, hl'⟩ :=
     key (-c) (by simpa using P.neg_mem_range_root_iff.mpr hc) (by aesop) (by simp)
   obtain rfl : c = Pi.single k 1 - Pi.single l 1 := by
-    ext; grind [Pi.neg_apply, Pi.sub_apply, Pi.le_def]
+    grind [Pi.neg_apply, Pi.sub_apply, Pi.le_def]
   replace h₀ := (P.linearIndepOn_coroot_iff.mpr h₀).linearIndependent.restrict_scalars' ℤ
   specialize h₁ l.property k.property (by grind [Pi.neg_apply])
   exact P.root_sub_root_notMem_range h₀ h₂ h₁ (by simpa [sub_smul, Pi.single_apply] using hc)

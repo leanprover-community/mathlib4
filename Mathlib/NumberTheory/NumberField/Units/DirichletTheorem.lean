@@ -36,6 +36,7 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
   fundamental system `fundSystem`.
 
 ## Tags
+
 number field, units, Dirichlet unit theorem
 -/
 
@@ -310,7 +311,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
         exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem (t := {I : Ideal (𝓞 K) | Ideal.absNorm I ≤ B})
-    (fun n ↦ ?_) (Ideal.finite_setOfPred_absNorm_le B)
+    (fun n ↦ ?_) (Ring.HasFiniteQuotients.finite_absNorm_le B)
   rw [Set.mem_ofPred_eq, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 

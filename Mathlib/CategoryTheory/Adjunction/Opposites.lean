@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposite adjunctions
 
@@ -14,6 +17,7 @@ This file contains constructions to relate adjunctions of functors to adjunction
 opposites.
 
 ## Tags
+
 adjunction, opposite, uniqueness
 -/
 
@@ -71,12 +75,10 @@ def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.ri
   left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
   right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma leftOp_eq {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) :
     a.leftOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
   ext X; simp [Equivalence.unit]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
     a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
   ext X; simp [Equivalence.unit]

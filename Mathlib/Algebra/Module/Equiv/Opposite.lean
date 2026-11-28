@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module operations on `Mᵐᵒᵖ`
 
@@ -48,11 +51,9 @@ theorem coe_opLinearEquiv : (opLinearEquiv R : M → Mᵐᵒᵖ) = op :=
 theorem coe_opLinearEquiv_symm : ((opLinearEquiv R).symm : Mᵐᵒᵖ → M) = unop :=
   rfl
 
-@[simp]
 theorem coe_opLinearEquiv_toLinearMap : ((opLinearEquiv R).toLinearMap : M → Mᵐᵒᵖ) = op :=
   rfl
 
-@[simp]
 theorem coe_opLinearEquiv_symm_toLinearMap :
     ((opLinearEquiv R).symm.toLinearMap : Mᵐᵒᵖ → M) = unop :=
   rfl

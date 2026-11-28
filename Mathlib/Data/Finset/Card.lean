@@ -45,14 +45,14 @@ variable {s t : Finset α} {a b c : α}
 
 The notation `#s` can be accessed in the `Finset` locale. -/
 def card (s : Finset α) : ℕ :=
-  Multiset.card s.1
+  Multiset.card s.val
 
 @[inherit_doc] scoped prefix:arg "#" => Finset.card
 
-theorem card_def (s : Finset α) : #s = Multiset.card s.1 :=
+theorem card_def (s : Finset α) : #s = Multiset.card s.val :=
   rfl
 
-@[simp] lemma card_val (s : Finset α) : Multiset.card s.1 = #s := rfl
+@[simp] lemma card_val (s : Finset α) : Multiset.card s.val = #s := rfl
 
 @[simp]
 theorem card_mk {m nodup} : #(⟨m, nodup⟩ : Finset α) = Multiset.card m :=
@@ -74,7 +74,7 @@ local grind_pattern card_le_card => #s, #t
 theorem card_mono : Monotone (@card α) := by apply card_le_card
 
 @[simp] lemma card_eq_zero : #s = 0 ↔ s = ∅ := Multiset.card_eq_zero.trans val_eq_zero
-lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans nonempty_iff_ne_empty.symm
+lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := by simp
 @[simp, grind =] lemma card_pos : 0 < #s ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
 @[simp] lemma one_le_card : 1 ≤ #s ↔ s.Nonempty := card_pos
 
@@ -231,7 +231,7 @@ theorem length_toList (s : Finset α) : s.toList.length = #s := by
   rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
 
 theorem card_image_le [DecidableEq β] : #(s.image f) ≤ #s := by
-  simpa only [card_map] using! (s.1.map f).toFinset_card_le
+  simpa only [card_map] using! (s.val.map f).toFinset_card_le
 
 grind_pattern card_image_le => #(s.image f)
 grind_pattern card_image_le => s.image f, #s
@@ -242,7 +242,7 @@ theorem card_image_of_injOn [DecidableEq β] (H : Set.InjOn f s) : #(s.image f) 
 theorem injOn_of_card_image_eq [DecidableEq β] (H : #(s.image f) = #s) : Set.InjOn f s := by
   rw [card_def, card_def, image, toFinset] at H
   dsimp only at H
-  have : (s.1.map f).dedup = s.1.map f := by
+  have : (s.val.map f).dedup = s.val.map f := by
     refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) ?_
     simp only [H, Multiset.card_map, le_rfl]
   rw [Multiset.dedup_eq_self] at this
@@ -264,8 +264,8 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 
 lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     #(s.filter P) ≤ n ↔ ∀ s' ⊆ s, n < #s' → ∃ a ∈ s', ¬ P a :=
-  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by simp_all) h,
-    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
+  (s.val.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.val (by simp_all) h,
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.nodup⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
 
 @[simp, grind =]
 theorem card_map (f : α ↪ β) : #(s.map f) = #s :=
@@ -327,7 +327,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     (hf' : ∀ i (h : i < n), f i h ∈ s)
     (f_inj : ∀ i j (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : #s = n := by
   classical
-  have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
+  have : s = (range n).attach.image fun i => f i.val (mem_range.1 i.property) := by
     ext a
     suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
       simpa only [mem_image, mem_attach, true_and, Subtype.exists]
@@ -335,7 +335,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
     · rintro ⟨i, hi, rfl⟩; apply hf'
   calc
-    #s = #((range n).attach.image fun i => f i.1 (mem_range.1 i.2)) := by rw [this]
+    #s = #((range n).attach.image fun i => f i.val (mem_range.1 i.property)) := by rw [this]
     _ = #(range n).attach := ?_
     _ = #(range n) := card_attach
     _ = n := card_range n
@@ -359,7 +359,7 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
   classical
   calc
     #s = #s.attach := card_attach.symm
-    _ = #(s.attach.image fun a ↦ i a.1 a.2) := Eq.symm ?_
+    _ = #(s.attach.image fun a ↦ i a.val a.property) := Eq.symm ?_
     _ = #t := ?_
   · apply card_image_of_injective
     intro ⟨_, _⟩ ⟨_, _⟩ h
@@ -515,12 +515,13 @@ See `Finset.surjOn_of_injOn_of_card_le` for the version where `f` is a non-depen
 lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : #t ≤ #s) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
-  let f' : s → β := fun a ↦ f a a.2
-  have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦ Subtype.ext (hinj _ _ x.2 y.2 hxy)
+  let f' : s → β := fun a ↦ f a a.property
+  have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦
+    Subtype.ext (hinj _ _ x.property y.property hxy)
   have hmapsto' : Set.MapsTo f' s.attach t := fun x hx ↦ hf _ _
   intro b hb
   obtain ⟨a, ha, rfl⟩ := surjOn_of_injOn_of_card_le _ hmapsto' hinj' (by rwa [card_attach]) hb
-  exact ⟨a, a.2, rfl⟩
+  exact ⟨a, a.property, rfl⟩
 
 /--
 Given a surjective map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
@@ -544,7 +545,7 @@ See `Finset.injOn_of_surjOn_of_card_le` for the version where `f` is a non-depen
 theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : #s ≤ #t) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ := by
-  let f' : s → β := fun a ↦ f a a.2
+  let f' : s → β := fun a ↦ f a a.property
   have hsurj' : Set.SurjOn f' s.attach t := fun x hx ↦ by simpa [f'] using hsurj x hx
   have hinj' := injOn_of_surjOn_of_card_le f' (fun x hx ↦ hf _ _) hsurj' (by simpa)
   exact congrArg Subtype.val (@hinj' ⟨a₁, ha₁⟩ (by simp) ⟨a₂, ha₂⟩ (by simp) ha₁a₂)
@@ -940,7 +941,7 @@ theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).2
+  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).wf
 
 /--
 To prove a proposition for an arbitrary `Finset α`,

@@ -105,8 +105,8 @@ theorem _root_.Bornology.IsBounded.subset_closedBall (h : IsBounded s) (c : α) 
 theorem _root_.Bornology.IsBounded.subset_ball_lt (h : IsBounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ ball c r :=
   let ⟨r, hr⟩ := h.subset_closedBall c
-  ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), hr.trans <| closedBall_subset_ball <|
-    (le_max_left _ _).trans_lt (lt_add_one _)⟩
+  ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), by
+    grw [← lt_add_one, ← le_max_left, ← hr]⟩
 
 theorem _root_.Bornology.IsBounded.subset_ball (h : IsBounded s) (c : α) : ∃ r, s ⊆ ball c r :=
   (h.subset_ball_lt 0 c).imp fun _ ↦ And.right
@@ -163,6 +163,11 @@ theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α
 @[simp]
 theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := by
   simpa only [dist_comm _ c] using comap_dist_right_atTop c
+
+instance : (cobounded α).IsCountablyGenerated := by
+  rcases isEmpty_or_nonempty α with h | h
+  · rw [Subsingleton.elim (cobounded α) ⊥]; infer_instance
+  · rw [← comap_dist_right_atTop (Classical.arbitrary α)]; infer_instance
 
 @[simp]
 theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :
@@ -340,6 +345,11 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
     CompactSpace α ↔ IsBounded (univ : Set α) :=
   ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
 
+@[compactness .]
+lemma isCompact_closure_ball [ProperSpace α] {x : α} {ε : ℝ} :
+    IsCompact (closure (Metric.ball x ε)) :=
+  Metric.isBounded_ball.isCompact_closure
+
 section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
@@ -442,6 +452,14 @@ theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist
     ediam s ≤ ENNReal.ofReal C :=
   ediam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
 
+/-- The emetric diameter of a closed ball of radius `r` is at most `2 * ENNReal.ofReal r`. -/
+theorem ediam_closedBall_le {r : ℝ} : ediam (closedBall x r) ≤ 2 * ENNReal.ofReal r := by
+  grw [closedBall_subset_closedEBall, ediam_closedEBall_le]
+
+/-- The emetric diameter of an open ball of radius `r` is at most `2 * ENNReal.ofReal r`. -/
+theorem ediam_ball_le {r : ℝ} : ediam (ball x r) ≤ 2 * ENNReal.ofReal r := by
+  grw [ball_subset_closedBall, ediam_closedBall_le]
+
 /-- If the distance between any two points in a set is bounded by some non-negative constant,
 this constant bounds the diameter. -/
 theorem diam_le_of_forall_dist_le {C : ℝ} (h₀ : 0 ≤ C) (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
@@ -509,7 +527,7 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  grw [ENNReal.toReal_le_add' (ediam_union_le_add_edist xs yt), ENNReal.toReal_add_le]
+  grw [ENNReal.toReal_le_add_of_top_imp_top (ediam_union_le_add_edist xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_right

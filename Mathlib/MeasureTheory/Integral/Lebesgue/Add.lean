@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotone convergence theorem and addition of Lebesgue integrals
 
@@ -184,13 +187,14 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
   have h_ae_seq_directed : Directed LE.le (aeSeq hf p) := by
     intro b₁ b₂
     obtain ⟨z, hz₁, hz₂⟩ := h_directed b₁ b₂
-    refine ⟨z, ?_, ?_⟩ <;>
-      · intro x
-        by_cases hx : x ∈ aeSeqSet hf p
-        · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
-          apply_rules [hz₁, hz₂]
-        · simp only [aeSeq, hx, ite_false]
-          exact le_rfl
+    refine ⟨z, ?_, ?_⟩
+    all_goals
+      intro x
+      by_cases hx : x ∈ aeSeqSet hf p
+      · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
+        apply_rules [hz₁, hz₂]
+      · simp only [aeSeq, hx, ite_false]
+        exact le_rfl
   convert lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
   · simp_rw [← iSup_apply]
     rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
@@ -273,7 +277,7 @@ lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurab
 of their sum. The other inequality needs one of these functions to be (a.e.-)measurable. -/
 theorem le_lintegral_add (f g : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ ≤ ∫⁻ a, f a + g a ∂μ := by
-  simp only [lintegral]
+  simp only [lintegral_def]
   refine ENNReal.biSup_add_biSup_le' (p := fun h : α →ₛ ℝ≥0∞ => h ≤ f)
     (q := fun h : α →ₛ ℝ≥0∞ => h ≤ g) ⟨0, zero_le⟩ ⟨0, zero_le⟩ fun f' hf' g' hg' => ?_
   exact le_iSup₂_of_le (f' + g') (add_le_add hf' hg') (add_lintegral _ _).ge
@@ -298,15 +302,16 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
       · congr
         funext n
         rw [← SimpleFunc.add_lintegral, ← SimpleFunc.lintegral_eq_lintegral]
-        simp only [Pi.add_apply, SimpleFunc.coe_add]
+        simp only [Pi.add_apply, FunLike.coe_add]
       · fun_prop
       · intro i j h a
         dsimp
         gcongr <;> exact monotone_eapprox _ h _
     _ = (⨆ n, (eapprox f n).lintegral μ) + ⨆ n, (eapprox g n).lintegral μ := by
-      refine (ENNReal.iSup_add_iSup_of_monotone ?_ ?_).symm <;>
-        · intro i j h
-          exact SimpleFunc.lintegral_mono (monotone_eapprox _ h) le_rfl
+      refine (ENNReal.iSup_add_iSup_of_monotone ?_ ?_).symm
+      all_goals
+        intro i j h
+        exact SimpleFunc.lintegral_mono (monotone_eapprox _ h) le_rfl
     _ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by
       rw [lintegral_eq_iSup_eapprox_lintegral hf, lintegral_eq_iSup_eapprox_lintegral hg]
 
@@ -359,7 +364,7 @@ theorem lintegral_finsetSum (s : Finset β) {f : β → α → ℝ≥0∞} (hf :
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
   classical
-  simp only [ENNReal.tsum_eq_iSup_sum]
+  simp only [tsum_eq_iSup_sum]
   rw [lintegral_iSup_directed]
   · simp [lintegral_finsetSum' _ fun i _ => hf i]
   · intro b
@@ -391,7 +396,7 @@ theorem lintegral_const_mul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measu
       · intro n
         exact SimpleFunc.measurable _
       · intro i j h a
-        dsimp
+        simp only [mul_apply, coe_const, Function.const_apply]
         gcongr
         exact monotone_eapprox _ h _
     _ = r * ∫⁻ a, f a ∂μ := by rw [← ENNReal.mul_iSup, lintegral_eq_iSup_eapprox_lintegral hf]
@@ -405,13 +410,13 @@ theorem lintegral_const_mul'' (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : AEM
 
 theorem lintegral_const_mul_le (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     r * ∫⁻ a, f a ∂μ ≤ ∫⁻ a, r * f a ∂μ := by
-  rw [lintegral, ENNReal.mul_iSup]
+  rw [lintegral_def, ENNReal.mul_iSup]
   refine iSup_le fun s => ?_
   rw [ENNReal.mul_iSup, iSup_le_iff]
   intro hs
-  rw [← SimpleFunc.const_mul_lintegral, lintegral]
+  rw [← SimpleFunc.const_mul_lintegral, lintegral_def]
   refine le_iSup_of_le (const α r * s) (le_iSup_of_le (fun x => ?_) le_rfl)
-  dsimp
+  simp only [mul_apply, coe_const, Function.const_apply]
   grw [hs x]
 
 theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :

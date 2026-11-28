@@ -21,7 +21,6 @@ positive linear maps.
 We do not define `PositiveContinuousLinearMapClass` to avoid adding a class that mixes order and
 algebra. One can achieve the same effect by using a combination of `ContinuousLinearMapClass` and
 `OrderHomClass`.
-
 -/
 
 @[expose] public section
@@ -102,7 +101,6 @@ lemma coe_toPositiveLinearMap (f : E₁ →P[R] E₂) :
     (f.toPositiveLinearMap : E₁ → E₂) = f :=
   rfl
 
-@[simp]
 lemma coe_toContinuousLinearMap (f : E₁ →P[R] E₂) :
     (f.toContinuousLinearMap : E₁ → E₂) = f :=
   rfl
@@ -125,6 +123,7 @@ lemma toContinuousLinearMap_inj (f g : E₁ →P[R] E₂) :
     f.toContinuousLinearMap = g.toContinuousLinearMap ↔ f = g :=
   toContinuousLinearMap_injective.eq_iff
 
+set_option fun_prop.projDefaultTransparency true in
 instance : Zero (E₁ →P[R] E₂) where
   zero := .mk (0 : E₁ →ₚ[R] E₂) <| by fun_prop
 

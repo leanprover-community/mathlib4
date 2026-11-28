@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Perm.Support
 
 import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permutations from a list
 
@@ -172,8 +175,9 @@ theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : 
       · simpa [Nat.succ_lt_succ_iff] using hn
       simp only [swap_apply_eq_iff, coe_mul, formPerm_cons_cons, Function.comp]
       simp only [getElem_cons_succ] at *
-      rw [← IH, swap_apply_of_ne_of_ne] <;>
-      · intro hx
+      rw [← IH, swap_apply_of_ne_of_ne]
+      all_goals
+        intro hx
         rw [← hx, IH] at h
         simp [getElem_mem] at h
 

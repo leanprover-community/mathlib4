@@ -21,9 +21,9 @@ the functor from the Verdier quotient `A/(A ⊓ B)` to `C/B` is fully
 faithful.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*,
   Proposition 2.3.5, Chapitre II][verdier1996]
-
 -/
 
 @[expose] public section
@@ -98,7 +98,6 @@ lemma isVerdierRightLocalizing_op_iff :
 variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isVerdierRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
     [B.IsClosedUnderIsomorphisms] :
     A.IsVerdierRightLocalizing B ↔
@@ -175,7 +174,6 @@ instance [A.IsTriangulated] :
     (triangulatedLocalizerMorphism A B).functor.IsTriangulated :=
   inferInstanceAs A.ι.IsTriangulated
 
-set_option backward.defeqAttrib.useBackward true in
 lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : X ⟶ Y) :
     (B.inverseImage A.ι).trW f ↔ (A ⊓ B).trW f.hom := by
   simp only [trW_iff]
@@ -189,10 +187,8 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_)
     · cat_disch
     · cat_disch
-    · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
+    · simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
     [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
     (B.op.inverseImage A.op.ι).trW.inverseImage A.opEquivalence.inverse =
@@ -208,7 +204,6 @@ variable [A.IsVerdierRightLocalizing B]
   (L₁ : A.FullSubcategory ⥤ D₁) (L₂ : C ⥤ D₂)
   [L₁.IsLocalization (B.inverseImage A.ι).trW] [L₂.IsLocalization B.trW]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Full := by
   let F := (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
   have : L₁.EssSurj := Localization.essSurj L₁ (B.inverseImage A.ι).trW
@@ -241,7 +236,6 @@ instance [Preadditive D₁] [Preadditive D₂] [L₁.Additive] [L₂.Additive] :
     (A.triangulatedLocalizerMorphism B).functor L₁ L₂ F
   exact Functor.additive_of_iso e
 
-set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Faithful := by
   let := Localization.preadditive L₁ (B.inverseImage A.ι).trW
   let := Localization.preadditive L₂ B.trW

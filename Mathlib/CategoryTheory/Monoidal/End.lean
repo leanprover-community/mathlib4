@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Endofunctors as a monoidal category.
 
@@ -30,7 +33,6 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 variable (C : Type u) [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
@@ -100,7 +102,6 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 instance : (tensoringRight C).Monoidal :=
@@ -149,7 +150,7 @@ theorem ε_naturality {X Y : C} (f : X ⟶ Y) [F.LaxMonoidal] :
     (ε F).app X ≫ (F.obj (𝟙_ M)).map f = f ≫ (ε F).app Y :=
   ((ε F).naturality f).symm
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem η_naturality {X Y : C} (f : X ⟶ Y) [F.OplaxMonoidal] :
     (η F).app X ≫ (𝟙_ (C ⥤ C)).map f = (η F).app X ≫ f := by
   simp

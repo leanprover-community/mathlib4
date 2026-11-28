@@ -29,7 +29,7 @@ then they are independent if their marginals are uncorrelated.
   that are jointly Gaussian are independent if for all $s \in S$ and $t \in T$,
   $\mathrm{Cov}(X_s, Y_t) = 0$.
 
-## Implementation note
+## Implementation notes
 
 To talk about the joint process of two processes `X : S → Ω → E` and `Y : T → Ω → E`,
 we consider the process `Sum.elim X Y : S ⊕ T → Ω → E`, where `S ⊕ T` is
@@ -126,8 +126,8 @@ lemma indepFun_of_covariance_strongDual [NormedSpace ℝ E]
   refine IndepFun.process_indepFun_process₀ mX mY fun I J ↦
     HasGaussianLaw.indepFun_of_covariance_strongDual ?_ fun L₁ L₂ ↦ ?_
   · let L : (I.disjSum J → E) →L[ℝ] (I → E) × (J → E) :=
-      { toFun x := (fun s ↦ x ⟨Sum.inl s, inl_mem_disjSum.2 s.2⟩,
-          fun t ↦ x ⟨Sum.inr t, inr_mem_disjSum.2 t.2⟩)
+      { toFun x := (fun s ↦ x ⟨Sum.inl s, inl_mem_disjSum.2 s.property⟩,
+          fun t ↦ x ⟨Sum.inr t, inr_mem_disjSum.2 t.property⟩)
         map_add' x y := by ext <;> simp
         map_smul' c x := by ext <;> simp }
     exact (hXY.hasGaussianLaw _).map L

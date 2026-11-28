@@ -212,7 +212,6 @@ def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.to
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
-@[simp]
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 
 @[ext]
@@ -625,7 +624,7 @@ instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
-@[simp]
+@[simp, nolint simpNF] -- `nolint` needed while this uses `LinearMap.ofClass`
 theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : ((f : M →ₛₗ[σ] M₂) : M → M₂) = f :=
   rfl
 
@@ -647,8 +646,8 @@ variable [Module R M] [Module R M₂]
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
 def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
   toFun := f
-  map_add' := lin.1
-  map_smul' := lin.2
+  map_add' := lin.map_add
+  map_smul' := lin.map_smul
 
 @[simp]
 theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=
@@ -740,7 +739,7 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
       map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
 
 @[simp]
-theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
+protected theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
   rfl
 
 @[simp]
@@ -782,12 +781,12 @@ instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
   aesop
 
 @[simp]
-theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
+protected theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
   rfl
 
 @[simp]
 theorem comp_zero (g : M₂ →ₛₗ[σ₂₃] M₃) : (g.comp (0 : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = 0 :=
-  ext fun c ↦ by rw [comp_apply, zero_apply, zero_apply, g.map_zero]
+  ext fun c ↦ by rw [comp_apply, LinearMap.zero_apply, LinearMap.zero_apply, g.map_zero]
 
 @[simp]
 theorem zero_comp (f : M →ₛₗ[σ₁₂] M₂) : ((0 : M₂ →ₛₗ[σ₂₃] M₃).comp f : M →ₛₗ[σ₁₃] M₃) = 0 :=
@@ -826,7 +825,7 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
 @[simp] protected theorem coe_add (f g : M →ₛₗ[σ₁₂] M₂) : ⇑(f + g) = ⇑f + ⇑g := rfl
 
 @[simp]
-theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
+protected theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
   rfl
 
 theorem add_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] M₃) :
@@ -855,7 +854,7 @@ instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
 @[simp] protected theorem coe_neg (f : M →ₛₗ[σ₁₂] N₂) : ⇑(-f) = -⇑f := rfl
 
 @[simp]
-theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
+protected theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
   rfl
 
 @[simp]
@@ -874,7 +873,7 @@ instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
       map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
 
 @[simp]
-theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
+protected theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
   rfl
 
 theorem sub_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] N₃) :

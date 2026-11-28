@@ -39,10 +39,12 @@ definition of the topological entropy of a subset, so as to avoid working with s
 `coverEntropy_restrict` shows that this choice is coherent with the literature.
 
 ## Implementation notes
+
 We use only the definition of the topological entropy using covers; the simplest version of
 `IsDynCoverOf.image` for nets fails.
 
 ## Main results
+
 - `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
   the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
 - `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
@@ -51,6 +53,7 @@ We use only the definition of the topological entropy using covers; the simplest
   `coverEntropy S F`.
 
 ## Tags
+
 entropy, semiconjugacy
 -/
 
@@ -89,7 +92,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
   obtain ⟨y, hy, hxy⟩ := s_cover (Set.mem_image_of_mem _ hx)
   refine ⟨y, hy, dynEntourage_comp_subset _ _ _ _ ⟨_, hxy, ?_⟩⟩
   rw [φ_f _ (g_mem _ hy)]
-  exact g_rel _ hy
+  exact (dynEntourage T V n).symm (g_rel _ hy)
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by

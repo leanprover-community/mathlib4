@@ -5,7 +5,10 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Valuations associated to discrete valuation rings
@@ -88,9 +91,8 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
       zify
       rw [← WithZero.coe_one, div_eq_mul_inv, ← zpow_natCast, ← zpow_natCast, ← ofAdd_zero,
         ← zpow_neg, ← zpow_add₀ v_π_ne_zero, ← sub_eq_add_neg] at H
-      rwa [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ (zero_lt_iff.mpr v_π_ne_zero)
-        v_π_lt_one]
-    use u * π ^ (n - m) * w.2
+      rwa [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ v_π_ne_zero.pos v_π_lt_one]
+    use u * π ^ (n - m) * w.inv
     simp only [← h_frac, Units.inv_eq_val_inv, _root_.map_mul, _root_.map_pow, map_units_inv,
       mul_assoc, mul_div_assoc ((algebraMap A _) ↑u) _ _]
     congr 1
@@ -161,5 +163,27 @@ lemma intValuation_maximalIdeal (x : A) :
     hϖ.maximalIdeal_eq, hϖ, this, ← WithZero.exp_eq_coe_ofAdd]
 
 end IsDiscreteValuationRing
+
+section ValuationSubring
+
+variable {F : Type*} [Field F] (A : ValuationSubring F) [IsDiscreteValuationRing A]
+
+section IsRankOneDiscrete
+
+theorem IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv :
+    ((IsDiscreteValuationRing.maximalIdeal A).valuation F).IsEquiv A.valuation := by
+  rw [Valuation.isEquiv_iff_valuationSubring]
+  apply ValuationSubring.toSubring_injective
+  ext
+  simp [← IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring]
+
+/-- The valuation of a DVR valuation subring is rank-one discrete. -/
+instance ValuationSubring.isRankOneDiscrete_valuation :
+    A.valuation.IsRankOneDiscrete :=
+  .of_isEquiv (IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv A)
+
+end IsRankOneDiscrete
+
+end ValuationSubring
 
 end

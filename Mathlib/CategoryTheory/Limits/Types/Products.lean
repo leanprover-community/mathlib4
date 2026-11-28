@@ -9,12 +9,14 @@ public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products in `Type`
 
 We describe arbitrary products in the category of types, as well as binary products,
 and the terminal object.
-
 -/
 
 @[expose] public section
@@ -27,10 +29,6 @@ namespace CategoryTheory.Limits.Types
 
 example : HasProducts.{v} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
-
--- This shortcut instance is required in `Mathlib/CategoryTheory/Closed/Types.lean`,
--- although I don't understand why, and wish it wasn't.
-instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 -- The increased `@[simp]` priority here results in a minor speed up in
@@ -214,7 +212,6 @@ namespace Small
 
 variable {J : Type v} (F : J → Type u) [Small.{u} J]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `Type`.
 -/

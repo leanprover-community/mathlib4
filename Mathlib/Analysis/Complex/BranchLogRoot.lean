@@ -12,6 +12,9 @@ public import Mathlib.Topology.Connected.LocallyPathConnected
 import Mathlib.Analysis.Complex.CoveringMap
 import Mathlib.Topology.Homotopy.Lifting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Branches of logarithm and `n`th root on simply connected domains
 
@@ -44,7 +47,7 @@ theorem exists_continuousOn_eqOn_exp_comp (hUc : IsSimplyConnected U) (hUo : IsO
   lift x₀ to U using hx₀U
   rcases isCoveringMapOn_exp.existsUnique_continuousMap_lifts
     ⟨U.domRestrict g, continuousOn_iff_continuous_domRestrict.mp hgc⟩ (exp_log hx₀)
-    (fun x ↦ ne_of_mem_of_not_mem (mem_image_of_mem g x.2) hU₀) with ⟨f, ⟨-, hf⟩, -⟩
+    (fun x ↦ ne_of_mem_of_not_mem (mem_image_of_mem g x.property) hU₀) with ⟨f, ⟨-, hf⟩, -⟩
   obtain ⟨g, hg⟩ : ∃ g : X → ℂ, ∀ z : U, g z = f z :=
     ⟨fun z ↦ if hz : z ∈ U then f ⟨z, hz⟩ else 0, by simp⟩
   refine ⟨g, ?hg_cont, ?hg_inv⟩
@@ -73,7 +76,7 @@ theorem exists_continuousOn_pow_eq (hUc : IsSimplyConnected U) (hUo : IsOpen U)
       ← continuousOn_iff_continuous_domRestrict]
     fun_prop
   · by_cases hz : z ∈ U
-    · simp [hz, ← exp_nat_mul, mul_div_cancel₀ (b := ↑n) (f z) (mod_cast hn), ← hf hz,
+    · simp [hz, ← exp_natCast_mul, mul_div_cancel₀ (b := ↑n) (f z) (mod_cast hn), ← hf hz,
         Function.comp_apply]
     · simp [hz, ← cpow_mul_nat, hn]
 
