@@ -20,7 +20,7 @@ an abbreviation for `Concept α α (· ≤ ·)`. This means we don't need to rep
 complete lattice; instead, the file simply proves that any order embedding into another complete
 lattice factors through it.
 
-## Todo
+## TODO
 
 - Make the `to_dual` tactic work so that some lemmas are created automatically, eg
   `DedekindCut.le_principal_iff` from `DedekindCut.principal_le_iff`.
