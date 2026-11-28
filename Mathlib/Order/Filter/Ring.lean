@@ -44,20 +44,24 @@ theorem eventually_sub_nonneg [AddGroup β] [LE β] [AddRightMono β]
     0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
   eventually_congr <| Eventually.of_forall fun _ => sub_nonneg
 
-namespace Germ
+namespace Product
 
-variable {l : Filter α}
+variable {l : Filter α} {ε : α → Type*}
 
-instance instIsOrderedRing [Semiring β] [PartialOrder β] [IsOrderedRing β] :
-    IsOrderedRing (Germ l β) where
-  zero_le_one := const_le zero_le_one
-  mul_le_mul_of_nonneg_left x :=
-    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
-      fun _a ↦ mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right x :=
-    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
-      fun _a ↦ mul_le_mul_of_nonneg_right
+instance instIsOrderedRing [∀ i, Semiring (ε i)] [∀ i, PartialOrder (ε i)]
+    [∀ i, IsOrderedRing (ε i)] : IsOrderedRing (Product l ε) where
+  zero_le_one := by simp [← coe_zero, ← coe_one]
+  mul_le_mul_of_nonneg_left a ha b c hbc := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp only [← coe_zero, ← coe_mul, coe_le, Pi.zero_apply, Pi.mul_apply] at ha hbc ⊢
+    filter_upwards [ha, hbc] with x hax hbcx
+    exact mul_le_mul_of_nonneg_left hbcx hax
+  mul_le_mul_of_nonneg_right a ha b c hbc := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp only [← coe_zero, ← coe_mul, coe_le, Pi.zero_apply, Pi.mul_apply] at ha hbc ⊢
+    filter_upwards [ha, hbc] with x hax hbcx
+    exact mul_le_mul_of_nonneg_right hbcx hax
 
-end Germ
+end Product
 
 end Filter

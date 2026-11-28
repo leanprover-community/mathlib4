@@ -184,10 +184,10 @@ def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
-  Germ.coe_lt
+  Product.coe_lt
 
 theorem ofSeq_le_ofSeq {f g : ℕ → ℝ} : ofSeq f ≤ ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n ≤ g n :=
-  Germ.coe_le
+  Product.coe_le
 
 /-! #### ω -/
 

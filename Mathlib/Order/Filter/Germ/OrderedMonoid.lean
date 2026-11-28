@@ -26,26 +26,32 @@ filter, germ
 
 public section
 
-namespace Filter.Germ
+namespace Filter.Product
 
-variable {α : Type*} {β : Type*} {l : Filter α}
-
-@[to_additive]
-instance instIsOrderedMonoid [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
-    IsOrderedMonoid (Germ l β) where
-  mul_le_mul_left f g := inductionOn₂ f g fun _ _ H h ↦ inductionOn h fun _ ↦ H.mono
-    fun _ H ↦ by dsimp; gcongr
+variable {α : Type*} {ε : α → Type*} {l : Filter α}
 
 @[to_additive]
-instance instIsOrderedCancelMonoid [CommMonoid β] [Preorder β] [IsOrderedCancelMonoid β] :
-    IsOrderedCancelMonoid (Germ l β) where
-  le_of_mul_le_mul_left f g h := inductionOn₃ f g h fun _ _ _ H ↦ H.mono
-    fun _ ↦ le_of_mul_le_mul_left'
+instance instIsOrderedMonoid [∀ i, CommMonoid (ε i)] [∀ i, Preorder (ε i)]
+    [∀ i, IsOrderedMonoid (ε i)] : IsOrderedMonoid (Product l ε) where
+  mul_le_mul_left a b hab c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp only [← coe_mul, coe_le, Pi.mul_apply] at hab ⊢
+    filter_upwards [hab] with x habx
+    exact mul_le_mul_left habx (c x)
 
 @[to_additive]
-instance instCanonicallyOrderedMul [Mul β] [LE β] [CanonicallyOrderedMul β] :
-    CanonicallyOrderedMul (Germ l β) where
-  le_mul_self x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_mul_self
-  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_self_mul
+instance instIsOrderedCancelMonoid [∀ i, CommMonoid (ε i)] [∀ i, Preorder (ε i)]
+    [∀ i, IsOrderedCancelMonoid (ε i)] : IsOrderedCancelMonoid (Product l ε) where
+  le_of_mul_le_mul_left a b c habc := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp only [← coe_mul, coe_le, Pi.mul_apply] at habc ⊢
+    filter_upwards [habc] with x habcx
+    exact le_of_mul_le_mul_left' habcx
 
-end Filter.Germ
+@[to_additive]
+instance instCanonicallyOrderedMul [∀ i, Mul (ε i)] [∀ i, LE (ε i)]
+    [∀ i, CanonicallyOrderedMul (ε i)] : CanonicallyOrderedMul (Product l ε) where
+  le_mul_self a b := by induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_mul]
+  le_self_mul a b := by induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_mul]
+
+end Filter.Product
