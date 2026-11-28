@@ -111,7 +111,7 @@ elliptic net, elliptic divisibility sequence
 open scoped nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S] (W : ℤ → R) {F : Type*} [FunLike F R S]
-  [RingHomClass F R S] (f : F)
+  [RingHomClass F] (f : F)
 
 namespace IsEllipticNet
 

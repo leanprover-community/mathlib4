@@ -31,7 +31,7 @@ theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
 -- see note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
-    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
+    [RingHomClass F] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
 @[instance]

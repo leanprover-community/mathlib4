@@ -90,7 +90,7 @@ instance (priority := 100) toNonUnitalRingHomClass
     {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
     {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
     {_ : NonUnitalNonAssocSemiring B} [DistribMulAction S B] [FunLike F A B]
-    [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
+    [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with }
 
 variable [Semiring R] [Semiring S] {φ : R →+* S}

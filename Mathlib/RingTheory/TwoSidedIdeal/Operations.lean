@@ -114,7 +114,7 @@ lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
     map f I ≤ map f J :=
   span_mono <| Set.image_mono h
 
-variable [NonUnitalRingHomClass F R S]
+variable [NonUnitalRingHomClass F]
 
 set_option backward.isDefEq.respectTransparency false in
 /--

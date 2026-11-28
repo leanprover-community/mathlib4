@@ -133,11 +133,11 @@ section RingHomClass
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 @[simp]
-theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n = n :=
+theorem eq_natCast [FunLike F ℕ R] [RingHomClass F] (f : F) : ∀ n, f n = n :=
   eq_natCast' f <| map_one f
 
 @[simp]
-theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
+theorem map_natCast [FunLike F R S] [RingHomClass F] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 
 /-- This lemma is not marked `@[simp]` lemma because its `#discr_tree_key` (for the LHS) would just
@@ -145,15 +145,15 @@ be `DFunLike.coe _ _`, due to the `ofNat` that https://github.com/leanprover/lea
 forces us to include, and therefore it would negatively impact performance.
 
 If that issue is resolved, this can be marked `@[simp]`. -/
-theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
+theorem map_ofNat [FunLike F R S] [RingHomClass F] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f ofNat(n) : S) = OfNat.ofNat n :=
   map_natCast f n
 
-theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
+theorem ext_nat [FunLike F ℕ R] [RingHomClass F] (f g : F) : f = g :=
   ext_nat' f g <| by simp
 
 theorem NeZero.nat_of_neZero {R S} [NonAssocSemiring R] [NonAssocSemiring S]
-    {F} [FunLike F R S] [RingHomClass F R S] (f : F)
+    {F} [FunLike F R S] [RingHomClass F] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])
 

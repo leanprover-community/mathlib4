@@ -84,11 +84,11 @@ theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
   rw [mul_assoc, Units.mul_inv, mul_one]
 
 @[simp]
-protected theorem map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
+protected theorem map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F]
     (f : F) (u : αˣ) : map (f : α →* β) (-u) = -map (f : α →* β) u :=
   ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_ofClass, map_neg])
 
-protected theorem map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
+protected theorem map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F]
     (f : F) : map (f : α →* β) (-1) = -1 := by
   simp only [Units.map_neg, map_one]
 

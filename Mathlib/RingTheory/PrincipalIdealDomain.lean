@@ -378,7 +378,7 @@ section Surjective
 open Submodule
 
 variable {S N F : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring S]
-variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
+variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F]
 
 theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
     (hI : IsPrincipal S) : IsPrincipal (map f S) :=

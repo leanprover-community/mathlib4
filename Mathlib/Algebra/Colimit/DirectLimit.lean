@@ -432,7 +432,7 @@ instance [∀ i, AddCommGroupWithOne (G i)] [∀ i j h, AddMonoidHomClass (T h) 
   __ : AddGroupWithOne _ := inferInstance
   add_comm := add_comm
 
-instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalNonAssocSemiring (DirectLimit G f) where
   left_distrib := DirectLimit.induction₃ _ fun i _ _ _ ↦ by
     simp_rw [add_def, mul_def, left_distrib, add_def]
@@ -441,69 +441,69 @@ instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomCl
   zero_mul := zero_mul
   mul_zero := mul_zero
 
-instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)]
     [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)] :
     StarRing (DirectLimit G f) where
   star_add := star_add
 
-instance [∀ i, NonUnitalSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonUnitalSemiring (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalSemiring (DirectLimit G f) where
   mul_assoc := mul_assoc
 
-instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonAssocSemiring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     NonAssocSemiring (DirectLimit G f) where
   one_mul := one_mul
   mul_one := mul_one
   natCast_zero := Nat.cast_zero
   natCast_succ := Nat.cast_succ
 
-instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, Semiring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     Semiring (DirectLimit G f) where
 
 variable (f) in
 /-- `map₀` as a `RingHom`. -/
 @[simps]
-def map₀RingHom [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+def map₀RingHom [∀ i, NonAssocSemiring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     (∀ i, G i) →+* DirectLimit G f where
   toFun r := map₀ _ r
   __ := map₀AddMonoidHom f
   __ := map₀MonoidHom f
 
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
-    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalNonAssocCommSemiring (DirectLimit G f) where
 
-instance [∀ i, NonUnitalCommSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonUnitalCommSemiring (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalCommSemiring (DirectLimit G f) where
 
-instance [∀ i, NonAssocCommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonAssocCommSemiring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     NonAssocCommSemiring (DirectLimit G f) where
 
-instance [∀ i, CommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, CommSemiring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     CommSemiring (DirectLimit G f) where
 
-instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalNonAssocRing (DirectLimit G f) where
 
-instance [∀ i, NonUnitalRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonUnitalRing (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalRing (DirectLimit G f) where
 
-instance [∀ i, NonAssocRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonAssocRing (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     NonAssocRing (DirectLimit G f) where
 
-instance [∀ i, Ring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] : Ring (DirectLimit G f) where
+instance [∀ i, Ring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] : Ring (DirectLimit G f) where
 
 instance [∀ i, NonUnitalNonAssocCommRing (G i)]
-    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalNonAssocCommRing (DirectLimit G f) where
 
-instance [∀ i, NonUnitalCommRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonUnitalCommRing (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)] :
     NonUnitalCommRing (DirectLimit G f) where
 
-instance [∀ i, NonAssocCommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, NonAssocCommRing (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     NonAssocCommRing (DirectLimit G f) where
 
-instance [∀ i, CommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, CommRing (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     CommRing (DirectLimit G f) where
 
 section Action
@@ -569,7 +569,7 @@ end Action
 
 section DivisionSemiring
 variable [∀ i, DivisionSemiring (G i)] [DivisionSemiring C]
-variable [∀ i j h, RingHomClass (T h) (G i) (G j)] [∀ i, RingHomClass (H i) (G i) C]
+variable [∀ i j (h : i ≤ j), RingHomClass (T h)] [∀ i, RingHomClass (H i)]
 
 instance : DivisionSemiring (DirectLimit G f) where
   __ : GroupWithZero _ := inferInstance
@@ -592,14 +592,14 @@ theorem lift_nnratCast (g : ∀ i, H i) (h) (q : ℚ≥0) :
 
 end DivisionSemiring
 
-instance [∀ i, Semifield (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, Semifield (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     Semifield (DirectLimit G f) where
   __ : DivisionSemiring _ := inferInstance
   mul_comm := mul_comm
 
 section DivisionRing
 variable [∀ i, DivisionRing (G i)] [DivisionRing C]
-variable [∀ i j h, RingHomClass (T h) (G i) (G j)] [∀ i, RingHomClass (H i) (G i) C]
+variable [∀ i j (h : i ≤ j), RingHomClass (T h)] [∀ i, RingHomClass (H i)]
 
 instance : DivisionRing (DirectLimit G f) where
   __ : DivisionSemiring _ := inferInstance
@@ -622,7 +622,7 @@ theorem lift_ratCast (g : ∀ i, H i) (h) (q : ℚ) :
 
 end DivisionRing
 
-instance [∀ i, Field (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+instance [∀ i, Field (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] :
     Field (DirectLimit G f) where
   __ : DivisionRing _ := inferInstance
   mul_comm := mul_comm
@@ -704,7 +704,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
 end Module
 
 namespace NonUnitalRing
-variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)]
 variable [Nonempty ι]
 
 variable (G f) in
@@ -752,7 +752,7 @@ end NonUnitalRing
 
 namespace Ring
 
-variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] [Nonempty ι]
+variable [∀ i, NonAssocSemiring (G i)] [∀ i j (h : i ≤ j), RingHomClass (T h)] [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
@@ -796,7 +796,7 @@ end Ring
 
 namespace NonUnitalStarRing
 
-variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j (h : i ≤ j), NonUnitalRingHomClass (T h)]
 variable [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
 variable [Nonempty ι]
 

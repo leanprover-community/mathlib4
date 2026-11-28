@@ -15,7 +15,7 @@ This file defines bundled homomorphisms of graded (semi)rings. We use the same s
 `GradedRingHom 𝒜 ℬ`, a.k.a. `𝒜 →+*ᵍ ℬ`, for both types of homomorphisms.
 
 We do **not** define a separate class of graded ring homomorphisms; instead, we use
-`[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]`.
+`[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F]`.
 
 ## Main definitions
 
@@ -54,10 +54,10 @@ notation:25 𝒜 " →+*ᵍ " ℬ => GradedRingHom 𝒜 ℬ
 namespace GradedRingHom
 
 section ofClass
-variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
+variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F]
 
 /-- Turn an element of a type `F` satisfying
-`[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]` into an actual `GradedRingHom`.
+`[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F]` into an actual `GradedRingHom`.
 
 This should not be used directly. In the future, Mathlib will prefer structural projections over
 these general constructions from hom classes. -/
@@ -83,7 +83,7 @@ instance : FunLike (𝒜 →+*ᵍ ℬ) A B where
 instance : GradedFunLike (𝒜 →+*ᵍ ℬ) 𝒜 ℬ where
   map_mem f := f.map_mem
 
-instance : RingHomClass (𝒜 →+*ᵍ ℬ) A B where
+instance : RingHomClass (𝒜 →+*ᵍ ℬ) where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -103,7 +103,7 @@ theorem coe_toRingHom (f : 𝒜 →+*ᵍ ℬ) : ⇑f.toRingHom = f := rfl
 theorem coe_mk (f : A →+* B) (h) : ((⟨f, h⟩ : 𝒜 →+*ᵍ ℬ) : A → B) = f := rfl
 
 @[simp]
-theorem coe_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
+theorem coe_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F]
     (f : F) : ((.ofClass f : 𝒜 →+*ᵍ ℬ) : A → B) = f := rfl
 
 instance coeToRingHom : CoeOut (𝒜 →+*ᵍ ℬ) (A →+* B) :=
@@ -279,7 +279,7 @@ end SetLike
 section GradedRing
 variable [DecidableEq ι] [AddMonoid ι] [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
 variable (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ]
-variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
+variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F]
 
 -- not simp because `𝒜` cannot be inferred
 lemma DirectSum.decompose_map (f : F) {x : A} :

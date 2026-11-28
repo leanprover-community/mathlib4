@@ -380,7 +380,7 @@ theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   let := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
-theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
+theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F]
     (f : F) (hf : Continuous f) (x : 𝔸) (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     f (exp x) = exp (f x) := by
   rw [exp_eq_tsum 𝕂, exp_eq_tsum 𝕂]
@@ -577,7 +577,7 @@ theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp [Algebra ℚ 𝔹]
-    {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
+    {F} [FunLike F 𝔸 𝔹] [RingHomClass F] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp x) = exp (f x) :=
   map_exp_of_mem_ball f hf x <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 

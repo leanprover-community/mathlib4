@@ -460,7 +460,7 @@ instance Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
 
 @[simp]
 protected theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α}
-    [NonUnitalNonAssocSemiring β] {F} [FunLike F α β] [NonUnitalRingHomClass F α β] {f : F} :
+    [NonUnitalNonAssocSemiring β] {F} [FunLike F α β] [NonUnitalRingHomClass F] {f : F} :
     (L * M).map f = L.map f * M.map f := by
   ext
   simp [Matrix.mul_apply, map_sum]
@@ -616,7 +616,7 @@ instance (priority := low) (R) [NonAssocSemiring R] [IsStablyFiniteRing R] :
 
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem IsStablyFiniteRing.of_injective [FunLike F R S] [RingHomClass F R S] (f : F)
+theorem IsStablyFiniteRing.of_injective [FunLike F R S] [RingHomClass F] (f : F)
     (hf : Function.Injective f) [IsStablyFiniteRing S] : IsStablyFiniteRing R where
   isDedekindFiniteMonoid n :=
   let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) R ↦ M.map f,

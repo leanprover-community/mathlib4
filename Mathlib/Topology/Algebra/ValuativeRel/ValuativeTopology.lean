@@ -234,7 +234,7 @@ variable {S : Type*} [Ring S] [ValuativeRel S] [TopologicalSpace S] [IsValuative
 open ValuativeRel Topology in
 /-- Transfer an `IsValuativeTopology` instance along a surjective and inducing ring homomorphism,
 which preserves the valuative ordering. -/
-theorem of_isInducing {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F}
+theorem of_isInducing {F : Type*} [FunLike F R S] [RingHomClass F] {f : F}
     (hsurj : Function.Surjective f) (hf : IsInducing f) (hv : ∀ a b, f a ≤ᵥ f b ↔ a ≤ᵥ b) :
     IsValuativeTopology R where
   mem_nhds_iff {s x} := by

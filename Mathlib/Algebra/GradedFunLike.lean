@@ -23,7 +23,7 @@ grading-preserving functions from `A` to `B`, where `𝒜` is a grading on `A` a
 `B`. This typeclass has `[FunLike F A B]` as one of the assumptions. This typeclass is used in the
 characterisation of certain types of graded homomorphisms, such as `GradedRingHom` and
 `GradedAlgHom`. For example, what would be called `"GradedRingHomClass F 𝒜 ℬ`" would be expressed
-as `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]`.
+as `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F]`.
 -/
 class GradedFunLike (F : Type*) {A B σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)

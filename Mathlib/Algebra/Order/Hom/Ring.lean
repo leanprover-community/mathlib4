@@ -27,7 +27,7 @@ Homomorphisms between ordered (semi)rings that respect the ordering.
 
 This file used to define typeclasses for order-preserving ring homomorphisms and isomorphisms.
 In https://github.com/leanprover-community/mathlib4/pull/10544, we migrated from assumptions like `[FunLike F R S] [OrderRingHomClass F R S]`
-to assumptions like `[FunLike F R S] [OrderHomClass F R S] [RingHomClass F R S]`,
+to assumptions like `[FunLike F R S] [OrderHomClass F R S] [RingHomClass F]`,
 making some typeclasses and instances irrelevant.
 
 ## Tags
@@ -82,10 +82,10 @@ section Hom
 
 variable [FunLike F α β]
 
-/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `RingHomClass F α β`
+/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `RingHomClass F`
 into an actual `OrderRingHom`. -/
 def OrderRingHom.ofClass [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
-    [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
+    [Preorder β] [OrderHomClass F α β] [RingHomClass F] (f : F) : α →+*o β :=
   { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
 @[deprecated (since := "2026-11-22")] alias OrderRingHomClass.toOrderRingHom := OrderRingHom.ofClass
@@ -135,14 +135,14 @@ instance : FunLike (α →+*o β) α β where
 instance : OrderHomClass (α →+*o β) α β where
   map_rel f _ _ h := f.monotone' h
 
-instance : RingHomClass (α →+*o β) α β where
+instance : RingHomClass (α →+*o β) where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
 
 @[simp]
-protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) :
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [RingHomClass F] (f : F) :
     ⇑(ofClass f) = f := rfl
 
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=

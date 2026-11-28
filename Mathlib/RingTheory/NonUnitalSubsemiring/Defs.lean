@@ -324,7 +324,7 @@ namespace NonUnitalRingHom
 variable {F : Type*} [FunLike F R S]
 
 variable [NonUnitalNonAssocSemiring S]
-  [NonUnitalRingHomClass F R S]
+  [NonUnitalRingHomClass F]
   {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 

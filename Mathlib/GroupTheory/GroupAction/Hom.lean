@@ -902,7 +902,7 @@ class MulSemiringActionSemiHomClass (F : Type*)
     (φ : outParam (M → N))
     (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S] : Prop
-    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
+    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction` of `M` on `R` and `S`.

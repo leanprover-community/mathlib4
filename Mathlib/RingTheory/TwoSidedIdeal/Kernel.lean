@@ -26,7 +26,7 @@ namespace TwoSidedIdeal
 section ker
 
 variable {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F]
 variable (f : F)
 
 /--

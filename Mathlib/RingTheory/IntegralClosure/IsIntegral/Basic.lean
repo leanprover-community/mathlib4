@@ -187,7 +187,7 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
     exact IsIntegral.tower_top ha
 
 theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
-    [FunLike F B C] [RingHomClass F B C] (f : F)
+    [FunLike F B C] [RingHomClass F] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
   hb.map (f : B →+* C).toIntAlgHom
 

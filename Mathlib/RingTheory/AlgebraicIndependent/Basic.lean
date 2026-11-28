@@ -192,7 +192,7 @@ variable {S B FRS FAB : Type*} [CommRing S] [CommRing B] [Algebra S B]
 
 section
 
-variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+variable [FunLike FRS R S] [RingHomClass FRS] [FunLike FAB A B] [RingHomClass FAB]
   (f : FRS) (g : FAB)
 
 theorem AlgebraicIndependent.of_ringHom_of_comp_eq (H : AlgebraicIndependent S (g ∘ x))
@@ -220,7 +220,7 @@ end
 
 section
 
-variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB]
   (f : FRS) (g : FAB)
 
 theorem algebraicIndependent_ringHom_iff_of_comp_eq

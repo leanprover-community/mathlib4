@@ -335,11 +335,11 @@ section NonAssocRing
 variable [NonAssocRing α] [NonAssocRing β]
 
 @[simp]
-theorem eq_intCast [FunLike F ℤ α] [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
+theorem eq_intCast [FunLike F ℤ α] [RingHomClass F] (f : F) (n : ℤ) : f n = n :=
   eq_intCast' f (map_one _) n
 
 @[simp]
-theorem map_intCast [FunLike F α β] [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
+theorem map_intCast [FunLike F α β] [RingHomClass F] (f : F) (n : ℤ) : f n = n :=
   eq_intCast ((f : α →+* β).comp (Int.castRingHom α)) n
 
 namespace RingHom

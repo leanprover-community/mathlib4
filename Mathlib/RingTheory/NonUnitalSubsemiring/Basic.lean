@@ -704,13 +704,13 @@ theorem srange_eq_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective
 
 /-- If two non-unital ring homomorphisms are equal on a set, then they are equal on its
 non-unital subsemiring closure. -/
-theorem eqOn_sclosure {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+theorem eqOn_sclosure {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F]
     {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R → S) s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ eqSlocus f g from closure_le.2 h
 
 theorem eq_of_eqOn_sdense
-    {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+    {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F]
     {s : Set R} (hs : closure s = ⊤) {f g : F}
     (h : s.EqOn (f : R → S) (g : R → S)) : f = g :=
   eq_of_eqOn_stop <| hs ▸ eqOn_sclosure h
