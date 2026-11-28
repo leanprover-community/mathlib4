@@ -1362,5 +1362,3 @@ instance StrictOrderedSemiring.toSMulPosStrictMonoNat
   smul_lt_smul_of_pos_right _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
 
 end Nat
-
--- TODO: Instances for `Int` and `Rat`
