@@ -632,8 +632,14 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
       (monic_normalize fun hp0 ↦ absurd hp1 (by simp [hp0]))
   exact (normalize_associated _).prime this
 
+theorem prime_of_natDegree_eq_one (hp1 : natDegree p = 1) : Prime p :=
+  prime_of_degree_eq_one ((degree_eq_iff_natDegree_eq_of_pos one_pos).mpr hp1)
+
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
   (prime_of_degree_eq_one hp1).irreducible
+
+theorem irreducible_of_natDegree_eq_one (hp1 : natDegree p = 1) : Irreducible p :=
+  (prime_of_natDegree_eq_one hp1).irreducible
 
 theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
@@ -741,14 +747,20 @@ theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
   rcases exists_mem_normalizedFactors hp hu with ⟨q, hq⟩
   grind [Polynomial.mem_normalizedFactors_iff]
 
+/-- If every monic irreducible factor of a polynomial `f` has `natDegree` divisible by `n`,
+  then so does `f` itself. -/
+lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) (n : ℕ)
+    (h : ∀ d, Monic d → Irreducible d → d ∣ f → n ∣ d.natDegree) : n ∣ f.natDegree := by
+  classical
+  by_cases h0 : f = 0
+  · simp [h0]
+  · rw [← sum_natDegree_normalizedFactors]
+    grind [Multiset.dvd_sum, Multiset.mem_map, Polynomial.mem_normalizedFactors_iff]
+
 theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.natDegree) :
     ∃ q : R[X], Odd q.natDegree ∧ q.Monic ∧ Irreducible q ∧ q ∣ p := by
-  classical
-  suffices ∃ q ∈ normalizedFactors p, Odd q.natDegree by
-    grind [Polynomial.mem_normalizedFactors_iff, show p ≠ 0 by grind]
-  contrapose! hp
-  rw [← p.sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
-  exact Finset.even_sum _ fun _ hq ↦ hp _ (Multiset.mem_of_mem_toEnumFinset hq)
+  have := dvd_natDegree_of_monic_of_irreducible p 2
+  grind
 
 end normalizedFactors
 
