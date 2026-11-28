@@ -566,6 +566,13 @@ def toAlgHom (m : M) : A →ₐ[R] A :=
     toFun := fun a => m • a
     commutes' := smul_algebraMap _ }
 
+/-- Postcomposing a linear map with the algebra homomorphism associated to an action is
+the pointwise action on that linear map. -/
+theorem toAlgHom_toLinearMap_comp {N : Type*} [AddCommMonoid N] [Module R N]
+    [SMulCommClass R M A] (m : M) (f : N →ₗ[R] A) :
+    (toAlgHom R A m).toLinearMap.comp f = m • f :=
+  rfl
+
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
