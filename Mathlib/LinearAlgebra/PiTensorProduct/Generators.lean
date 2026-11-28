@@ -120,6 +120,31 @@ lemma equivPiTensorComplSingletonTensor_symm_tmul (i₀ : ι)
   rw [Function.subtypeNeLift_of_neq _ _ _ _ hi]
   rfl
 
+variable {M} {N : ι → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+
+@[simp]
+theorem equivPiTensorComplSingletonTensor_comp_map (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
+    (equivPiTensorComplSingletonTensor R N i₀) ∘ₗ map f = TensorProduct.map
+    (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) ∘ₗ (equivPiTensorComplSingletonTensor R M i₀) := by
+  ext
+  simp
+  rfl
+
+@[simp]
+theorem map_comp_equivPiTensorComplSingletonTensor_symm (i₀ : ι) (f : ∀ i, M i →ₗ[R] N i) :
+    map f ∘ₗ (equivPiTensorComplSingletonTensor R M i₀).symm = (equivPiTensorComplSingletonTensor
+    R N i₀).symm ∘ₗ TensorProduct.map (map fun (i : ({i₀}ᶜ : Set ι)) ↦ f i) (f i₀) := by
+  apply Function.Injective.injective_linearMapComp_left
+    (equivPiTensorComplSingletonTensor R N i₀).injective
+  simp_rw [← LinearMap.comp_assoc, equivPiTensorComplSingletonTensor_comp_map,
+    LinearEquiv.comp_symm_cancel_right, LinearEquiv.comp_symm, LinearMap.id_comp]
+
+@[simp]
+theorem equivPiTensorComplSingletonTensor_conj_map (i₀ : ι) (f : ∀ i, M i →ₗ[R] M i) :
+    (equivPiTensorComplSingletonTensor R M i₀).conj (map f) =
+    TensorProduct.map (map fun i : ({i₀}ᶜ : Set ι) ↦ f i) (f i₀) := by
+  simp [LinearEquiv.conj_apply, LinearMap.comp_assoc]
+
 end equivPiTensorComplSingletonTensor
 
 variable {R} {ι : Type*} [Finite ι] {M : ι → Type*} {N : Type*} {γ : ι → Type*}
