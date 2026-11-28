@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
+public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.Topology.ContinuousMap.Basic
 
 set_option doc.verso true
@@ -256,5 +257,25 @@ def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
 @[simp]
 lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :
     const y x = y := rfl
+
+end TopCat
+
+namespace TopCat
+
+lemma Hom.continuous {X Y : TopCat} (f : X ⟶ Y) : Continuous f := f.hom.continuous
+
+/-- We choose `of PUnit` as the canonical corepresenting object of the forgetful functor in
+`TopCat`. -/
+@[simps -isSimp]
+instance : (forget TopCat).ChosenCorepresentation where
+  obj := ↧PUnit
+  coreprBy.homEquiv := { toFun f := f ⟨⟩, invFun y := TopCat.ofHom <| .const _ y }
+
+instance : Unique ((forget TopCat.{u}).coreprObj) where
+  default := PUnit.unit
+  uniq := by rintro ⟨⟩; rfl
+
+lemma couniv_eq :
+  (ConcreteCategory.couniv : (forget TopCat).coreprObj) = PUnit.unit := rfl
 
 end TopCat
