@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
+public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Sets.Opens
 
@@ -537,3 +538,37 @@ def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
 end IrreducibleCloseds
 
 end TopologicalSpace
+
+namespace TopologicalSpace.Closeds
+
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+
+
+@[simp] lemma mem_preimage {s : Closeds β} {f : α → β} (hf : Continuous f) {x : α} :
+    x ∈ s.preimage hf ↔ f x ∈ s := .rfl
+
+@[simp] lemma mem_sup {s t : Closeds α} {x : α} : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t := .rfl
+
+@[simp] lemma mem_inf {s t : Closeds α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
+
+/-- A version of `Set.inclusion` not requiring definitional abuse -/
+abbrev inclusion {s t : Closeds α} (h : s ≤ t) : s → t := Set.inclusion h
+
+/-- The preimage of closed sets under a continuous map, as a coframe homomorphism. -/
+def comap (f : C(α, β)) : CoframeHom (Closeds β) (Closeds α) where
+  toFun s := s.preimage f.continuous
+  map_sup' _ _ := rfl
+  map_bot' := rfl
+  map_sInf' S := Closeds.ext <| by simp [preimage_iInter]
+
+@[simp] lemma coe_comap (f : C(α, β)) (C : Closeds β) : ↑(comap f C) = f ⁻¹' C := rfl
+
+@[simp] lemma mem_comap {f : C(α, β)} {C : Closeds β} {x : α} : x ∈ comap f C ↔ f x ∈ C := .rfl
+
+
+
+
+lemma compl_sup (s t : Closeds α) : (s ⊔ t).compl = s.compl ⊓ t.compl := by
+  simp [Closeds.compl]
+
+end TopologicalSpace.Closeds

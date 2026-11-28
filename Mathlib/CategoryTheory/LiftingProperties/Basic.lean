@@ -160,3 +160,58 @@ def HasLiftingPropertyFixedTop (t : A ⟶ X) : Prop :=
   ∀ (b : B ⟶ Y) (sq : CommSq t i p b), sq.HasLift
 
 end CategoryTheory
+
+namespace CategoryTheory
+
+scoped infix:25 " ⧄ " => HasLiftingProperty
+
+namespace Arrow
+
+variable {C} [Category* C] {f g h : Arrow C} {φ : f ⟶ g} {ψ : g ⟶ h}
+
+@[simps]
+def LiftStruct.whiskerRight (hφ : LiftStruct φ) : LiftStruct (φ ≫ ψ) where
+  l := hφ.l ≫ ψ.left
+  fac_left := by simp [reassoc_of% hφ.fac_left]
+  fac_right := by simp [reassoc_of% hφ.fac_right]
+
+@[simps]
+noncomputable def LiftStruct.ofWhiskerRightIso
+    [IsIso ψ] (hc : LiftStruct (φ ≫ ψ)) : LiftStruct φ where
+  l := hc.l ≫ (inv ψ).left
+  fac_left := by simp [reassoc_of% hc.fac_left]
+  fac_right := by simp [← asIso_inv, reassoc_of% hc.fac_right]; simp
+
+
+@[simps]
+noncomputable def LiftStruct.whiskerRightIsoEquiv [IsIso ψ] :
+    LiftStruct (φ ≫ ψ) ≃ LiftStruct φ where
+  toFun := .ofWhiskerRightIso
+  invFun := .whiskerRight
+  left_inv hφ := by ext; simp
+  right_inv hφ := by ext; simp
+
+@[simps]
+def LiftStruct.whiskerLeft (hψ : LiftStruct ψ) : LiftStruct (φ ≫ ψ) where
+  l := φ.right ≫ hψ.l
+  fac_left := by simp [← w_assoc, hψ.fac_left]
+  fac_right := by simp [hψ.fac_right]
+
+@[simps]
+noncomputable def LiftStruct.ofWhiskerLeftIso [IsIso φ]
+    (h : LiftStruct (φ ≫ ψ)) : LiftStruct ψ where
+  l := (inv φ).right ≫ h.l
+  fac_left := by simp [← asIso_inv, ← w_assoc, h.fac_left]; simp
+  fac_right := by simp [h.fac_right]
+
+@[simps]
+noncomputable def LiftStruct.whiskerLeftIsoEquiv [IsIso φ] :
+    LiftStruct (φ ≫ ψ) ≃ LiftStruct ψ where
+  toFun := .ofWhiskerLeftIso
+  invFun := .whiskerLeft
+  left_inv hψ := by ext; simp
+  right_inv hψ := by ext; simp
+
+end Arrow
+
+end CategoryTheory

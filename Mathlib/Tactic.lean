@@ -156,6 +156,13 @@ public import Mathlib.Tactic.GCongr.ForwardAttr
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GRewrite.Core
 public import Mathlib.Tactic.GRewrite.Elab
+public import Mathlib.Tactic.Gavrilovich
+public import Mathlib.Tactic.Gavrilovich.Elab.Basic
+public import Mathlib.Tactic.Gavrilovich.Elab.Full
+public import Mathlib.Tactic.Gavrilovich.Grid
+public import Mathlib.Tactic.Gavrilovich.Parser
+public import Mathlib.Tactic.Gavrilovich.Relabel
+public import Mathlib.Tactic.Gavrilovich.Tactics
 public import Mathlib.Tactic.Generalize
 public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Group
@@ -314,6 +321,7 @@ public import Mathlib.Tactic.NormRank
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.OrbitCases
 public import Mathlib.Tactic.Order
 public import Mathlib.Tactic.Order.CollectFacts
 public import Mathlib.Tactic.Order.Graph.Basic

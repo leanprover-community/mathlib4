@@ -2758,6 +2758,7 @@ public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.ChosenRepresentation
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.CommSq
@@ -2818,6 +2819,7 @@ public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Endofunctor.Algebra
 public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Endomorphism.FinEnum
 public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.EnrichedCat
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
@@ -7729,6 +7731,13 @@ public import Mathlib.Tactic.GCongr.ForwardAttr
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GRewrite.Core
 public import Mathlib.Tactic.GRewrite.Elab
+public import Mathlib.Tactic.Gavrilovich
+public import Mathlib.Tactic.Gavrilovich.Elab.Basic
+public import Mathlib.Tactic.Gavrilovich.Elab.Full
+public import Mathlib.Tactic.Gavrilovich.Grid
+public import Mathlib.Tactic.Gavrilovich.Parser
+public import Mathlib.Tactic.Gavrilovich.Relabel
+public import Mathlib.Tactic.Gavrilovich.Tactics
 public import Mathlib.Tactic.Generalize
 public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Group
@@ -7887,6 +7896,7 @@ public import Mathlib.Tactic.NormRank
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.OrbitCases
 public import Mathlib.Tactic.Order
 public import Mathlib.Tactic.Order.CollectFacts
 public import Mathlib.Tactic.Order.Graph.Basic
@@ -8260,6 +8270,7 @@ public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
+public import Mathlib.Topology.Category.TopCat.Limits.AlexandrovDiscrete
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
@@ -8268,6 +8279,8 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Topology.Category.TopCat.Separation.Basic
+public import Mathlib.Topology.Category.TopCat.Separation.Hausdorff
 public import Mathlib.Topology.Category.TopCat.Sphere
 public import Mathlib.Topology.Category.TopCat.ULift
 public import Mathlib.Topology.Category.TopCat.Yoneda
@@ -8386,6 +8399,10 @@ public import Mathlib.Topology.FiberPartition
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Topology.Gavrilovich.Model
+public import Mathlib.Topology.Gavrilovich.Relabel
+public import Mathlib.Topology.Gavrilovich.Sierpinski
+public import Mathlib.Topology.Gavrilovich.Space
 public import Mathlib.Topology.Germ
 public import Mathlib.Topology.Gluing
 public import Mathlib.Topology.Hom.ContinuousEval

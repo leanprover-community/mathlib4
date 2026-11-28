@@ -1164,3 +1164,10 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
   rfl
 
 end Equiv
+
+namespace Set
+
+lemma ne_univ_of_notMem {X : Type*} {U : Set X} {x : X} (hx : x ∉ U) : U ≠ univ := by
+  rintro rfl; exact hx (Set.mem_univ x)
+
+end Set

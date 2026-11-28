@@ -185,3 +185,39 @@ lemma ι₁_snd (X : TopCat.{u}) : ι₁ ≫ snd X _ = const 1 := rfl
 lemma ι₁_apply {X : TopCat.{u}} (x : X) : ι₁ x = ⟨x, 1⟩ := rfl
 
 end TopCat
+
+namespace TopCat
+
+open CategoryTheory MonoidalCategory SemiCartesianMonoidalCategory Limits Topology
+
+@[ext]
+lemma tensorObj_ext {X Y : TopCat} (x y : ↥(X ⊗ Y)) (h : x.fst = y.fst) (h' : x.snd = y.snd) :
+    x = y := by
+  fapply Prod.ext
+  exacts [h, h']
+
+@[simp]
+lemma specializes_tensorObj {X Y : TopCat} (x₁ x₂ : ↥X) (y₁ y₂ : ↥Y) :
+    @Specializes ↥(X ⊗ Y) _ (x₁, y₁) (x₂, y₂) ↔ (x₁ ⤳ x₂ ∧ y₁ ⤳ y₂) := by
+  erw [specializes_prod]
+
+instance {X Y : TopCat} [Finite X] [Finite Y] : Finite ↥(X ⊗ Y) :=
+  inferInstanceAs <| Finite (↥X × ↥Y)
+
+
+
+noncomputable instance instUniqueTensorUnit : Unique (𝟙_ TopCat.{u}) :=
+  Equiv.unique
+    (homeoOfIso (IsTerminal.uniqueUpToIso isTerminalTensorUnit TopCat.isTerminalPUnit)).toEquiv
+
+@[reassoc (attr := simp)]
+lemma comp_homOfElement {X Y : TopCat.{u}} (f : X ⟶ 𝟙_ TopCat.{u}) (y : Y) :
+    f ≫ ConcreteCategory.homOfElement y = ConcreteCategory.ofHom (.const X y) := by
+  ext; simp
+
+/-- The carrier of `X ⊗ Y` unifies with the product of the carriers. -/
+unif_hint tensorObj_carrier (X₁ X₂ Y₁ Y₂ : TopCat.{u}) where
+X₁ ≟ X₂
+Y₁ ≟ Y₂ ⊢ ↥(X₁ ⊗ Y₁) ≟ (↥X₂ × ↥Y₂)
+
+end TopCat

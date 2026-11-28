@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Category.GaloisConnection
 public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 public import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.Opens
 
 import Mathlib.CategoryTheory.Limits.Preorder
@@ -118,6 +119,7 @@ theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
 /-- The functor from open sets in `X` to `TopCat`,
 realising each open set as a topological space itself.
 -/
+@[implicit_reducible]
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
   obj U := ↧U
   map i := TopCat.ofHom ⟨fun x ↦ ⟨x.val, i.le x.property⟩,
@@ -130,7 +132,7 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps! -fullyApplied]
+@[simps! -fullyApplied, implicit_reducible]
 def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
   TopCat.ofHom
   { toFun := _
@@ -517,3 +519,58 @@ instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι 
   apply isGLB_iInf
 
 end TopologicalSpace.Opens
+
+namespace TopologicalSpace.Opens
+
+open CategoryTheory Opposite
+
+/-- `Opens` defines a functor from `TopCat.{u}ᵒᵖ` to `Type u`. -/
+@[simps! obj map_hom_apply, reducible]
+def functor : TopCat.{u}ᵒᵖ ⥤ Type u where
+  obj x := Opens (unop x).carrier
+  map f := ↾(Opens.comap (unop f).hom)
+
+end TopologicalSpace.Opens
+
+namespace TopologicalSpace.Closeds
+
+open CategoryTheory Opposite
+
+/-- `Closeds` defines a functor from `TopCat.{u}ᵒᵖ` to `Type u`. -/
+@[simps! obj map_hom_apply, reducible]
+def functor : TopCat.{u}ᵒᵖ ⥤ Type u where
+  obj x := Closeds (unop x).carrier
+  map f := ↾(Closeds.comap (unop f).hom)
+
+/-- The functor from closed sets in `X` to `TopCat`, realising each closed set as a topological
+space in itself. -/
+@[implicit_reducible]
+def toTopCat (X : TopCat) : Closeds X ⥤ TopCat where
+  obj s := ↧s
+  map h := TopCat.ofHom ⟨Set.inclusion (leOfHom h), by fun_prop⟩
+
+@[simp]
+lemma coe_toTopCat_map {X : TopCat} {s t : Closeds X} (h : s ⟶ t) :
+    ⇑(toTopCat X |>.map h) = Set.inclusion (leOfHom h) := rfl
+
+/-- The inclusion map from a closed subset to the whole space, as a morphism in TopCat. -/
+@[simps! -fullyApplied]
+def inclusion' {X : TopCat} (s : Closeds X) : (toTopCat X).obj s ⟶ X :=
+  TopCat.ofHom ⟨_, continuous_subtypeVal⟩
+
+@[simp] lemma coe_inclusion' {X : TopCat} (s : Closeds X) : ⇑s.inclusion' = Subtype.val := rfl
+
+@[simp] lemma range_inclusion' {X : TopCat} (s : Closeds X) :
+    Set.range s.inclusion' = s := by
+  rw [coe_inclusion', Subtype.range_val]
+
+lemma isClosedEmbedding {X : TopCat} (s : Closeds X) : IsClosedEmbedding s.inclusion' :=
+  s.isClosed.isClosedEmbedding_subtypeVal
+
+instance {X : TopCat} (s : Closeds X) : Mono s.inclusion' :=
+  (TopCat.mono_iff_injective _).mpr Subtype.val_injective
+
+end TopologicalSpace.Closeds
+
+instance TopologicalSpace.Opens.mono_inclusion' {X : TopCat} (U : Opens X) : Mono U.inclusion' :=
+  (TopCat.mono_iff_injective _).mpr Subtype.val_injective

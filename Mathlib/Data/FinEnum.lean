@@ -340,3 +340,12 @@ instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum
   else ofList [fun hp' => (hp hp').elim] (by simp [funext_iff, hp])
 
 end List
+
+namespace FinEnum
+
+variable (α : Type*) [FinEnum α]
+
+@[simp] lemma length_toList : (FinEnum.toList α).length = FinEnum.card α := by
+  rw [FinEnum.toList, List.length_map, List.length_finRange]
+
+end FinEnum

@@ -66,6 +66,14 @@ structure FrameHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] ext
   /-- The proposition that frame homomorphisms commute with arbitrary suprema/joins. -/
   map_sSup' (s : Set α) : toFun (sSup s) = sSup (toFun '' s)
 
+/-- The type of coframe homomorphisms from `α` to `β`. They preserve finite joins and arbitrary
+meets. -/
+@[to_dual]
+structure CoframeHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
+  SupBotHom α β where
+  /-- The proposition that coframe homomorphisms commute with arbitrary infima/meets. -/
+  map_sInf' (s : Set α) : toFun (sInf s) = sInf (toFun '' s)
+
 
 /-- The type of complete lattice homomorphisms from `α` to `β`. -/
 structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
@@ -99,6 +107,16 @@ class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] 
   extends InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
+
+/-- `CoframeHomClass F α β` states that `F` is a type of coframe morphisms. They preserve `⊔` and
+`⨅`.
+
+You should extend this class when you extend `CoframeHom`. -/
+@[to_dual]
+class CoframeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β] : Prop
+  extends SupBotHomClass F α β where
+  /-- The proposition that members of `CoframeHomClass` commute with arbitrary infima/meets. -/
+  map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
 
 /-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
@@ -141,16 +159,19 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
       rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) FrameHomClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [FrameHomClass F α β] : sSupHomClass F α β :=
   { ‹FrameHomClass F α β› with }
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) FrameHomClass.toBoundedLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [FrameHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹FrameHomClass F α β›, sSupHomClass.toSupBotHomClass with }
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass [CompleteLattice α]
     [CompleteLattice β] [CompleteLatticeHomClass F α β] : FrameHomClass F α β :=
   { ‹CompleteLatticeHomClass F α β›, sInfHomClass.toInfTopHomClass with }
@@ -187,9 +208,11 @@ variable [FunLike F α β]
 instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
+@[to_dual]
 instance [CompleteLattice α] [CompleteLattice β] [FrameHomClass F α β] : CoeTC F (FrameHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
+@[to_dual_do_translate]
 instance [CompleteLattice α] [CompleteLattice β] [CompleteLatticeHomClass F α β] :
     CoeTC F (CompleteLatticeHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
@@ -335,7 +358,7 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-@[macro_inline]
+@[to_dual (attr := macro_inline)]
 instance : FunLike (FrameHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -343,92 +366,103 @@ instance : FunLike (FrameHom α β) α β where
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
 
+@[to_dual]
 instance : FrameHomClass (FrameHom α β) α β where
   map_sSup f := f.map_sSup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
 
 /-- Reinterpret a `FrameHom` as a `LatticeHom`. -/
-def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
-  f
+@[to_dual]
+def toLatticeHom (f : FrameHom α β) : LatticeHom α β where
+  toFun := f
+  map_sup' := map_sup f
+  map_inf' := map_inf f
 
+@[to_dual]
 lemma toFun_eq_coe (f : FrameHom α β) : f.toFun = f := rfl
 
-@[simp] lemma coe_toInfTopHom (f : FrameHom α β) : ⇑f.toInfTopHom = f := rfl
-@[simp] lemma coe_toLatticeHom (f : FrameHom α β) : ⇑f.toLatticeHom = f := rfl
-@[simp] lemma coe_mk (f : InfTopHom α β) (hf) : ⇑(mk f hf) = f := rfl
+@[to_dual (attr := simp)] lemma coe_toInfTopHom (f : FrameHom α β) : ⇑f.toInfTopHom = f := rfl
+@[to_dual (attr := simp)] lemma coe_toLatticeHom (f : FrameHom α β) : ⇑f.toLatticeHom = f := rfl
+@[to_dual (attr := simp)] lemma coe_mk (f : InfTopHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
-@[ext]
+@[to_dual (attr := ext)]
 theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
 /-- Copy of a `FrameHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
+@[to_dual]
 protected def copy (f : FrameHom α β) (f' : α → β) (h : f' = f) : FrameHom α β :=
   { (f : sSupHom α β).copy f' h with toInfTopHom := f.toInfTopHom.copy f' h }
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_copy (f : FrameHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 
+@[to_dual]
 theorem copy_eq (f : FrameHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
 variable (α)
 
 /-- `id` as a `FrameHom`. -/
+@[to_dual /-- `id` as a `CoframeHom`. -/]
 protected def id : FrameHom α α :=
   { sSupHom.id α with toInfTopHom := InfTopHom.id α }
 
+@[to_dual]
 instance : Inhabited (FrameHom α α) :=
   ⟨FrameHom.id α⟩
 
-@[simp, norm_cast]
+@[to_dual (attr := simp, norm_cast)]
 theorem coe_id : ⇑(FrameHom.id α) = id :=
   rfl
 
 variable {α}
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem id_apply (a : α) : FrameHom.id α a = a :=
   rfl
 
 /-- Composition of `FrameHom`s as a `FrameHom`. -/
+@[to_dual]
 def comp (f : FrameHom β γ) (g : FrameHom α β) : FrameHom α γ :=
   { (f : sSupHom β γ).comp (g : sSupHom α β) with
     toInfTopHom := f.toInfTopHom.comp g.toInfTopHom }
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_comp (f : FrameHom β γ) (g : FrameHom α β) : ⇑(f.comp g) = f ∘ g :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem comp_apply (f : FrameHom β γ) (g : FrameHom α β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem comp_assoc (f : FrameHom γ δ) (g : FrameHom β γ) (h : FrameHom α β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem comp_id (f : FrameHom α β) : f.comp (FrameHom.id α) = f :=
   ext fun _ => rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
   ext fun _ => rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
+@[to_dual]
 instance : PartialOrder (FrameHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
