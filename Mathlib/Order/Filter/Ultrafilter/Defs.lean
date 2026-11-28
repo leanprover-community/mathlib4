@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.ZornAtoms
 
+import Mathlib.Order.Filter.Curry
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
@@ -274,6 +276,19 @@ instance instBind : Bind Ultrafilter :=
 instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 
 instance monad : Monad Ultrafilter where map := @Ultrafilter.map
+
+/-- The `Filter.curry` of two ultrafilters is an ultrafilter. -/
+def curry (U : Ultrafilter α) (V : Ultrafilter β) : Ultrafilter (α × β) :=
+  ofComplNotMemIff (Filter.curry U V) <| by simp [mem_curry_iff]
+
+@[simp]
+theorem toFilter_curry (U : Ultrafilter α) (V : Ultrafilter β) :
+    (U.curry V : Filter (α × β)) = (U : Filter α).curry V :=
+  rfl
+
+theorem mem_curry {U : Ultrafilter α} {V : Ultrafilter β} {s : Set (α × β)} :
+    s ∈ U.curry V ↔ ∀ᶠ a in (U : Filter α), ∀ᶠ b in (V : Filter β), (a, b) ∈ s :=
+  .rfl
 
 section
 
