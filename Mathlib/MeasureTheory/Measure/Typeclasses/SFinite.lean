@@ -76,6 +76,14 @@ instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sfiniteSeq μ n).restrict s, fun n ↦ inferInstance,
     by rw [← restrict_sum_of_countable, sum_sfiniteSeq]⟩
 
+instance [SFinite μ] (f : β → α) : SFinite (μ.comap f) := by
+  by_cases hf : ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ
+  · rw [← sum_sfiniteSeq μ, comap_sum]
+    · exact sfinite_sum_of_countable _
+    · exact fun n t ht ↦ (hf t ht).mono (sfiniteSeq_le _ _)
+  · rw [comap_undef (mt And.right hf)]
+    infer_instance
+
 variable (μ) in
 /-- For an s-finite measure `μ`, there exists a finite measure `ν`
 such that each of `μ` and `ν` is absolutely continuous with respect to the other.
@@ -532,6 +540,17 @@ protected def mono (h : μ.FiniteSpanningSetsIn C) (hC : C ⊆ D) : μ.FiniteSpa
 protected theorem sigmaFinite (h : μ.FiniteSpanningSetsIn C) : SigmaFinite μ :=
   ⟨⟨h.mono <| subset_univ C⟩⟩
 
+/-- If `μ` has finite spanning sets in `C`, the preimages of these sets under `f` are measurable,
+and `(f ⁻¹' ·)` maps `C` to `S`, then `μ.comap f` has finite spanning sets in `S`. -/
+protected def comap (h : μ.FiniteSpanningSetsIn C) {S : Set (Set β)} {f : β → α}
+    (hf : MapsTo (f ⁻¹' ·) C S) (hmeas : ∀ n, NullMeasurableSet (f ⁻¹' h.set n) (μ.comap f)) :
+    (μ.comap f).FiniteSpanningSetsIn S where
+  set n := f ⁻¹' h.set n
+  set_mem n := hf <| h.set_mem n
+  finite n := (comap_apply_le _ _ (hmeas n)).trans_lt <|
+    (measure_mono (image_preimage_subset _ _)).trans_lt <| h.finite n
+  spanning := by simp [← preimage_iUnion, h.spanning]
+
 /-- An extensionality for measures. It is `ext_of_generateFrom_of_iUnion` formulated in terms of
 `FiniteSpanningSetsIn`. -/
 protected theorem ext {ν : Measure α} {C : Set (Set α)} (hA : ‹_› = generateFrom C)
@@ -663,6 +682,22 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
         simp only [← map_apply_of_aemeasurable hf, measurableSet_spanningSets,
           measure_spanningSets_lt_top],
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
+
+/-- The pullback of a σ-finite measure along a null measurable function is a σ-finite measure.
+
+This theorem is not true without the measurability assumption.
+For example, let `β` be `ℕ` with σ-algebra `⊥`, i.e., only `∅` and `Set.univ` are measurable.
+Let `α` be `ℕ` with the discrete σ-algebra `⊤`, let `f = id`, let `μ` be the counting measure.
+Then `μ.comap f = ⊤` since the only nonempty measurable set has measure infinity,
+and this is not a σ-finite measure.
+-/
+protected theorem SigmaFinite.comap (μ : Measure α) [SigmaFinite μ] {f : β → α}
+    (hf : NullMeasurable f (μ.comap f)) : SigmaFinite (μ.comap f) :=
+  ⟨⟨μ.toFiniteSpanningSetsIn.comap (mapsTo_univ _ _) fun n ↦
+    hf <| μ.toFiniteSpanningSetsIn.set_mem n⟩⟩
+
+instance {p : α → Prop} [SigmaFinite μ] : SigmaFinite (μ.comap ((↑) : Subtype p → α)) :=
+  .comap μ measurable_subtypeVal.nullMeasurable
 
 lemma _root_.MeasurableEmbedding.sigmaFinite_map {f : α → β} (hf : MeasurableEmbedding f)
     [SigmaFinite μ] :

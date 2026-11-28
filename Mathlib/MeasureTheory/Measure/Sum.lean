@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.CompleteLattice
 
+import Mathlib.MeasureTheory.Measure.Filter
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
@@ -103,6 +105,20 @@ theorem sum_comm (μ : ι → ι' → Measure α) :
 theorem ae_sum_iff [Countable ι] {p : α → Prop} :
     (∀ᵐ x ∂sum μ, p x) ↔ ∀ i, ∀ᵐ x ∂μ i, p x :=
   sum_apply_eq_zero
+
+theorem _root_.MeasureTheory.NullMeasurableSet.of_measureSum (h : NullMeasurableSet s (sum μ))
+    (i : ι) : NullMeasurableSet s (μ i) :=
+  h.mono <| le_sum μ i
+
+@[simp]
+theorem _root_.MeasureTheory.nullMeasurableSet_sum [Countable ι] :
+    NullMeasurableSet s (sum μ) ↔ ∀ i, NullMeasurableSet s (μ i) := by
+  refine ⟨NullMeasurableSet.of_measureSum, fun h ↦ ?_⟩
+  refine ⟨⋂ i, toMeasurable (μ i) s, by measurability, ?_⟩
+  simp_rw [eventuallyEqSet_iff, ae_sum_iff, ← eventuallyEqSet_iff]
+  refine fun i ↦ EventuallySubset.antisymm ?_ ?_
+  · exact (Set.subset_iInter fun i ↦ subset_toMeasurable (μ i) s).eventuallySubset
+  · exact (Set.iInter_subset _ i).eventuallySubset.trans (h i).toMeasurable_ae_eq.subset
 
 theorem ae_sum_iff' {p : α → Prop} (h : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂sum μ, p x) ↔ ∀ i, ∀ᵐ x ∂μ i, p x :=
