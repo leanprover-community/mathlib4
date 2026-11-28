@@ -32,6 +32,7 @@ namespace Cardinal
 
 universe u v
 
+attribute [local instance] Fintype.ofFinite in
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`.
 Superseded by `mk_le_of_countable_eventually_mem` which does not assume
@@ -49,7 +50,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
     have A : ∀ x ∈ s, ∀ᶠ i in l, x ∈ f i := fun x hx ↦ ht x (hs hx)
     have B : ∀ᶠ i in l, ∀ x ∈ s, x ∈ f i := (s.eventually_all).2 A
     rcases B.exists with ⟨i, hi⟩
-    have : ∀ i, Fintype (f i) := fun i ↦ (lt_aleph0_iff_fintype.1 ((h'f i).trans_lt ha)).some
+    have : ∀ i, Finite (f i) := fun i ↦ mk_lt_aleph0_iff.1 ((h'f i).trans_lt ha)
     let u : Finset α := (f i).toFinset
     have I1 : s.card ≤ u.card := by
       have : s ⊆ u := fun x hx ↦ by simpa only [u, Set.mem_toFinset] using hi x hx
