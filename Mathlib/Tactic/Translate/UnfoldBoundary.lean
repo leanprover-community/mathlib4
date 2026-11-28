@@ -35,6 +35,12 @@ namespace Mathlib.Tactic.UnfoldBoundary
 
 open Lean Meta
 
+/-- Auxiliary lemmas that must be unfolded rather than translated by name. -/
+public def isSimpAuxLemma : Name → Bool
+  | .str _ s => "_simp_".isPrefixOf s || "_gcongr_".isPrefixOf s ||
+      isHCongrReservedNameSuffix s || s == congrSimpSuffix
+  | _ => false
+
 /-- `UnfoldBoundaries` stores abstraction boundaries for definitions that shouldn't be unfolded. -/
 public structure UnfoldBoundaries where
   /-- For propositions and terms of types, we store a rewrite theorem that unfolds it. -/
@@ -139,19 +145,36 @@ public def UnfoldBoundaries.cast (b : UnfoldBoundaries) (e expectedType : Expr) 
     throwError "@[{attr}] failed to insert a cast to make `{e}` \
       have type `{expectedType}`\n\n{ex.toMessageData}"
 
-/-- Modify `e` so that it is well typed if the constants in `b` cannot be unfolded. -/
-public def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : Name) :
+/-- Modify `e` so that it is well typed if the constants in `b` cannot be unfolded.
+If `expectedType?` is provided, also cast the result to that type. -/
+public def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : Name)
+    (expectedType? : Option Expr := none) :
     MetaM Expr :=
-  run b <| Meta.transform e (pre := fun e => do
-    let .const .. := e | return .continue
-    if ← isTypeCorrect (← inferType e) then return .continue
-    let some e' ← withoutExporting <| delta? e (allowOpaque := true) | return .continue
-    return .visit e') (post := fun e ↦ e.withApp fun f args =>
+  run b do
+    let post (e : Expr) : SimpM TransformStep := e.withApp fun f args =>
+      try
+        return .done <| ← args.foldlM (mkAppWithCast b) f
+      catch ex =>
+        throwError "@[{attr}] failed to insert a cast to make `{f}` applied to `{args.toList}` \
+          well typed\n\n{ex.toMessageData}"
+    let finish (e : Expr) : SimpM Expr := do
+      let some expectedType := expectedType? | return e
+      return ← b.cast e expectedType attr
+    -- Only expand referenced proofs if inserting casts into applications doesn't suffice.
+    -- Unnecessary expansion can prevent their types from matching definitionally.
     try
-      return .done <| ← args.foldlM (mkAppWithCast b) f
-    catch ex =>
-      throwError "@[{attr}] failed to insert a cast to make `{f}` applied to `{args.toList}` \
-        well typed\n\n{ex.toMessageData}")
+      finish (← Meta.transform e (post := post))
+    catch _ =>
+      finish (← Meta.transform e (pre := fun e => do
+        let .const c _ := e | return .continue
+        -- Preserve the registered abstraction boundaries and their conversion functions.
+        if b.unfolds.contains c || b.casts.contains c || b.insertionFuns.contains c then
+          return .continue
+        -- Newly exposed auxiliaries also need unfolding when they are visible in a private scope.
+        if !isPrivateName c && !isSimpAuxLemma c && (← getEnv).contains c then
+          if ← isTypeCorrect (← inferType e) then return .continue
+        let some e' ← withoutExporting <| delta? e (allowOpaque := true) | return .continue
+        return .visit e') (post := post))
 
 /-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
 public def UnfoldBoundaries.unfoldInsertions (e : Expr) (b : UnfoldBoundaries) : CoreM Expr :=

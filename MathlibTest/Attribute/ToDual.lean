@@ -253,7 +253,24 @@ theorem nested_le_max (a b : β) :
     (if (if a ≤ b then b else a) ≤ b then b else a) =
       (if (if a ≤ b then b else a) ≤ b then b else a) := rfl
 
+example (a b : β) :
+    (if b ≤ (if b ≤ a then b else a) then b else a) =
+      (if b ≤ (if b ≤ a then b else a) then b else a) :=
+  nested_le_min a b
+
 end
+
+-- Unfolding a referenced proof can expose private helpers, including `simp` auxlemmas.
+-- Boundary insertion must expand them before checking applications in the public scope.
+private theorem private_boundary_proof (a : α) : a ≤ a := le_refl a
+
+open Lean Meta Mathlib.Tactic.UnfoldBoundary in
+run_meta withExporting (isExporting := true) do
+  let info ← withoutExporting <| getConstInfo ``private_boundary_proof
+  forallTelescope info.type fun args _ => do
+    let e ← ({} : UnfoldBoundaries).insertBoundaries
+      (mkAppN (mkConst ``private_boundary_proof) args) `to_dual
+    check e
 
 -- The arguments to `h` have been introduced, and swapped:
 /--
