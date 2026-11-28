@@ -264,6 +264,27 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
       simpa using this
     exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
 
+theorem _root_.Ring.mem_jacobson_iff {x : R} :
+    x ∈ Ring.jacobson R ↔ ∀ y, IsUnit (x * y + 1) := by
+  have hx : x ∈ Ring.jacobson R ↔ ∀ a : R, ∃ b : R, b * (1 + a * x) = 1 := by
+    rw [← jacobson_bot, Ideal.mem_jacobson_iff]
+    simp [sub_eq_zero, mul_add, mul_assoc, add_comm]
+  rw [hx]
+  constructor
+  · intro h a
+    rw [add_comm, ← isUnit_one_add_mul_comm a x]
+    obtain ⟨b, hb⟩ := h a
+    have heq : b = 1 + (-b * a) * x := by
+      rw [neg_mul, neg_mul, ← hb, mul_add, mul_one, ← mul_assoc, add_neg_cancel_right]
+    obtain ⟨c, hc⟩ := h (-b * a)
+    rw [← heq] at hc
+    exact ⟨⟨1 + a * x, b, left_inv_eq_right_inv hc hb ▸ hc, hb⟩, rfl⟩
+  · intro h a
+    have ha : IsUnit (1 + a * x) := by
+      rw [isUnit_one_add_mul_comm a x, add_comm]
+      exact h a
+    exact ha.exists_left_inv
+
 end Ring
 
 section CommRing
@@ -290,20 +311,6 @@ theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ 
     IsUnit r := by
   rw [jacobson_bot] at h
   exact isUnit_of_sub_one_mem_jacobson r h
-
-theorem _root_.Ring.mem_jacobson_iff {x : R} :
-    x ∈ Ring.jacobson R ↔ ∀ y, IsUnit (x * y + 1) := by
-  rw [← jacobson_bot]
-  constructor
-  · intro hx y
-    obtain ⟨z, hz⟩ := Ideal.mem_jacobson_iff.mp hx y
-    exact isUnit_iff_exists_inv.2
-      ⟨z, by rwa [add_mul, one_mul, ← sub_eq_zero, mul_right_comm, mul_comm _ z, mul_right_comm]⟩
-  · intro h
-    apply Ideal.mem_jacobson_iff.mpr
-    intro y
-    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (h y)
-    exact ⟨b, (Submodule.mem_bot R).2 (hb ▸ by ring)⟩
 
 @[deprecated _root_.Ring.mem_jacobson_iff +typeChanged (since := "2026-10-12")]
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) := by
