@@ -689,6 +689,21 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
   right_inv := hF.map_injective <| by
     simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
 
+/-- Pullback a group object along a fully faithful monoidal functor as a bundled object. -/
+@[to_additive (attr := implicit_reducible)
+/-- Pullback an additive group object along a fully faithful monoidal functor as a bundled
+object. -/]
+def FullyFaithful.grp (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
+    Grp C where
+  X := X
+  grp := hF.grpObj X
+
+/-- Pullback a morphism between group objects along a fully faithful monoidal functor. -/
+@[simps!]
+def FullyFaithful.grpMap (hF : F.FullyFaithful) (X Y : C) [GrpObj (F.obj X)]
+    [GrpObj (F.obj Y)] (f : F.obj X ⟶ F.obj Y) [IsMonHom f] : hF.grp X ⟶ hF.grp Y :=
+  letI := hF.isMonHom X Y f; Grp.homMk (hF.preimage f)
+
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 /-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
