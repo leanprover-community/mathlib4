@@ -82,7 +82,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
     obtain ⟨g, hg⟩ := h
     constructor
     · rw [← hg, Equiv.Perm.sum_cycleType]
-      exact (Equiv.Perm.support g).card_le_univ
+      exact (Equiv.Perm.supportFinset g).card_le_univ
     · intro a
       rw [← hg]
       exact Equiv.Perm.two_le_of_mem_cycleType
@@ -104,7 +104,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       rw [List.map_map]; rw [← hp_length]
       apply List.map_congr_left
       intro x hx; simp only [Function.comp_apply]
-      rw [List.support_formPerm_of_nodup x (hp_nodup x hx)]
+      rw [List.supportFinset_formPerm_of_nodup x (hp_nodup x hx)]
       · -- length
         rw [List.toFinset_card_of_nodup (hp_nodup x hx)]
       · -- length >= 1

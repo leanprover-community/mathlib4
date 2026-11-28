@@ -336,15 +336,15 @@ variable [Fintype α] [DecidableEq α]
 
 theorem isPretransitive_of_isCycle_mem {g : Perm α}
     (hgc : g.IsCycle) (hg : g ∈ G) :
-    IsPretransitive (fixingSubgroup G (g.support : Set α)ᶜ)
-      (SubMulAction.ofFixingSubgroup G (g.support : Set α)ᶜ) := by
+    IsPretransitive (fixingSubgroup G (g.supportFinset : Set α)ᶜ)
+      (SubMulAction.ofFixingSubgroup G (g.supportFinset : Set α)ᶜ) := by
   obtain ⟨a, _, hgc⟩ := hgc
   have hs : ∀ x : α, g • x ≠ x ↔
-    x ∈ SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ) := by
+    x ∈ SubMulAction.ofFixingSubgroup G ((↑g.supportFinset : Set α)ᶜ) := by
     intro x
     simp [SubMulAction.mem_ofFixingSubgroup_iff]
-  suffices ∀ x ∈ SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ),
-      ∃ k : fixingSubgroup G ((↑g.support : Set α)ᶜ), x = k • a by
+  suffices ∀ x ∈ SubMulAction.ofFixingSubgroup G ((↑g.supportFinset : Set α)ᶜ),
+      ∃ k : fixingSubgroup G ((↑g.supportFinset : Set α)ᶜ), x = k • a by
     rw [isPretransitive_iff]
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     obtain ⟨k, hk⟩ := this x hx
@@ -354,11 +354,11 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
     simp only [SetLike.mk_smul_mk]
     rw [hk, hk', smul_smul, inv_mul_cancel_right]
   intro x hx
-  have hg' : (⟨g, hg⟩ : ↥G) ∈ fixingSubgroup G ((↑g.support : Set α)ᶜ) := by
+  have hg' : (⟨g, hg⟩ : ↥G) ∈ fixingSubgroup G ((↑g.supportFinset : Set α)ᶜ) := by
     simp_rw [mem_fixingSubgroup_iff G]
     intro y hy
-    simpa only [Set.mem_compl_iff, Finset.mem_coe, notMem_support] using! hy
-  let g' : fixingSubgroup (↥G) ((↑g.support : Set α)ᶜ) := ⟨(⟨g, hg⟩ : ↥G), hg'⟩
+    simpa only [Set.mem_compl_iff, Finset.mem_coe, notMem_supportFinset] using! hy
+  let g' : fixingSubgroup (↥G) ((↑g.supportFinset : Set α)ᶜ) := ⟨(⟨g, hg⟩ : ↥G), hg'⟩
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
@@ -386,10 +386,10 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     exact orderOf_dvd_card
   -- important case : Nat.card α ≥ 3
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
-  have hsc : Set.ncard ((g.support)ᶜ : Set α) = n + 1 := by
+  have hsc : Set.ncard ((g.supportFinset)ᶜ : Set α) = n + 1 := by
     apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
-      card_support_eq_two.mpr h2g, add_comm, hn]
+      card_supportFinset_eq_two.mpr h2g, add_comm, hn]
   apply eq_top_of_isMultiplyPretransitive
   suffices IsMultiplyPreprimitive G α (Nat.card α - 1) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
@@ -399,8 +399,8 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   have := isPretransitive_of_isCycle_mem h2g.isCycle hg
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_two
-  rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_support_eq_two.mpr h2g]
-  simp [SubMulAction.mem_ofFixingSubgroup_iff, support]
+  rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_supportFinset_eq_two.mpr h2g]
+  simp [SubMulAction.mem_ofFixingSubgroup_iff, supportFinset]
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
 contains the alternating group (Jordan). -/
@@ -428,15 +428,15 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   suffices IsMultiplyPreprimitive G α (Nat.card α - 2) from
     IsMultiplyPreprimitive.isMultiplyPretransitive ..
   rw [show Nat.card α - 2 = n + 2 by grind]
-  apply hG.isMultiplyPreprimitive (s := (g.supportᶜ : Set α))
+  apply hG.isMultiplyPreprimitive (s := (g.supportFinsetᶜ : Set α))
   · apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
-      h3g.card_support, add_comm, hn]
+      h3g.card_supportFinset, add_comm, hn]
   · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_three
-  rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← h3g.card_support]
+  rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← h3g.card_supportFinset]
   apply congr_arg
   ext x
   simp [SubMulAction.mem_ofFixingSubgroup_iff]

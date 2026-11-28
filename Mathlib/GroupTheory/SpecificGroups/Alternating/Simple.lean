@@ -111,7 +111,7 @@ def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Set.powerse
   is_generator := by
     rw [eq_top_iff, ← closure_isThreeCycles_eq_top, Subgroup.closure_le]
     intro g hg
-    apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, hg.card_support⟩
+    apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).supportFinset, hg.card_supportFinset⟩
     rw [mem_range_ofSubtype_iff]
 
 /-- If `α` has at least 5 elements, but not 6,
@@ -133,9 +133,9 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
 
 theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
-      (k : Perm α).support ⊆ s ∧ ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
+      (k : Perm α).supportFinset ⊆ s ∧ ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
   have hs : Nat.card s = 4 := by simpa
-  by_cases hk : (k : Perm α).support ⊆ s
+  by_cases hk : (k : Perm α).supportFinset ⊆ s
   · obtain ⟨σ, rfl⟩ := (mem_range_ofSubtype_iff s k).mpr hk
     simp_rw [and_iff_right hk, Subgroup.mem_map, ofSubtype_inj, existsAndEq, and_true,
       ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
@@ -149,7 +149,8 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs,
-    mk_smul, MulAut.smul_def, ← map_inv, MulAut.coe_conj_apply, support_conj_eq_smul_support,
+    mk_smul, MulAut.smul_def, ← map_inv, MulAut.coe_conj_apply,
+        supportFinset_conj_eq_smul_supportFinset,
     mem_map_kleinFour_ofSubtype (s := g • s) (by simpa), Finset.subset_smul_finset_iff,
     MulEquiv.map_eq_one_iff, Subgroup.coe_inv, MulAut.conj_apply, cycleType_conj]
 
@@ -167,7 +168,7 @@ def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
     rw [eq_top_iff, ← closure_cycleType_eq_two_two_eq_top h5, Subgroup.closure_le]
     intro g hg
     simp only [Set.mem_ofPred_eq] at hg
-    apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, by simp [← sum_cycleType, hg]⟩
+    apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).supportFinset, by simp [← sum_cycleType, hg]⟩
     rw [mem_map_kleinFour_ofSubtype] <;> simp [hg, ← sum_cycleType]
 
 /-- If `α` has at least 5 elements, but not 8,

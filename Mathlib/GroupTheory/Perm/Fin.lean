@@ -105,13 +105,18 @@ theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate n) = (-1) ^ (n - 1) := b
       simp [ih, pow_succ]
 
 @[simp]
-theorem support_finRotate {n : ℕ} : support (finRotate (n + 2)) = Finset.univ := by
+theorem supportFinset_finRotate {n : ℕ} : supportFinset (finRotate (n + 2)) = Finset.univ := by
   ext
   simp
 
-theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) = Finset.univ := by
+@[deprecated (since := "2026-11-16")] alias support_finRotate := supportFinset_finRotate
+
+theorem supportFinset_finRotate_of_le {n : ℕ} (h : 2 ≤ n) :
+    supportFinset (finRotate n) = Finset.univ := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h
-  rw [add_comm, support_finRotate]
+  rw [add_comm, supportFinset_finRotate]
+
+@[deprecated (since := "2026-11-16")] alias support_finRotate_of_le := supportFinset_finRotate_of_le
 
 theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   refine ⟨0, by simp, fun x hx' => ⟨x, ?_⟩⟩
@@ -132,7 +137,7 @@ theorem isCycle_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : IsCycle (finRotate n) 
 
 @[simp]
 theorem cycleType_finRotate {n : ℕ} : cycleType (finRotate (n + 2)) = {n + 2} := by
-  rw [isCycle_finRotate.cycleType, support_finRotate, ← Fintype.card, Fintype.card_fin]
+  rw [isCycle_finRotate.cycleType, supportFinset_finRotate, ← Fintype.card, Fintype.card_fin]
 
 theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate n) = {n} := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h

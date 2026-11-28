@@ -79,10 +79,10 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     (p.rootSet ℂ).toFinset.card =
       (p.rootSet ℝ).toFinset.card +
         (galActionHom p ℂ (restrict p ℂ
-        (AlgEquiv.restrictScalars ℚ Complex.conjAe))).support.card := by
+        (AlgEquiv.restrictScalars ℚ Complex.conjAe))).supportFinset.card := by
   by_cases hp : p = 0
   · have : IsEmpty (p.rootSet ℂ) := by rw [hp, rootSet_zero]; infer_instance
-    simp_rw [(galActionHom p ℂ _).support.eq_empty_of_isEmpty, hp, rootSet_zero,
+    simp_rw [(galActionHom p ℂ _).supportFinset.eq_empty_of_isEmpty, hp, rootSet_zero,
       Set.toFinset_empty, Finset.card_empty]
   have inj : Function.Injective (IsScalarTower.toAlgHom ℚ ℝ ℂ) := (algebraMap ℝ ℂ).injective
   rw [← Finset.card_image_of_injective _ Subtype.coe_injective, ←
@@ -116,9 +116,10 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     simp_rw [c, Finset.mem_image]
     constructor
     · rintro ⟨w, hw, rfl⟩
-      exact ⟨(mem_rootSet.mp w.property).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
+      exact ⟨(mem_rootSet.mp w.property).2, mt (hc0 w).mpr (Equiv.Perm.mem_supportFinset.mp hw)⟩
     · rintro ⟨hz1, hz2⟩
-      exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
+      exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_supportFinset.mpr (mt (hc0 _).mp hz2),
+          rfl⟩
   rw [← Finset.card_union_of_disjoint]
   · apply congr_arg Finset.card
     simp_rw [Finset.ext_iff, Finset.mem_union, ha, hb, hc]
@@ -149,7 +150,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
       Nat.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv.symm]
       using prime_degree_dvd_card p_irr p_deg
   · exact ⟨conj', rfl⟩
-  · rw [← Equiv.Perm.card_support_eq_two]
+  · rw [← Equiv.Perm.card_supportFinset_eq_two]
     apply Nat.add_left_cancel
     rw [← p_roots, ← Set.toFinset_card (rootSet p ℝ), ← Set.toFinset_card (rootSet p ℂ)]
     exact (card_complex_roots_eq_card_real_add_card_not_gal_inv p).symm
@@ -161,9 +162,9 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
     (p_roots2 : Fintype.card (p.rootSet ℂ) ≤ Fintype.card (p.rootSet ℝ) + 3) :
     Function.Bijective (galActionHom p ℂ) := by
   apply galActionHom_bijective_of_prime_degree p_irr p_deg
-  let n := (galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ))).support.card
+  let n := (galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ))).supportFinset.card
   have hn : 2 ∣ n :=
-    Equiv.Perm.two_dvd_card_support
+    Equiv.Perm.two_dvd_card_supportFinset
       (by
          rw [← map_pow, ← map_pow,
           show AlgEquiv.restrictScalars ℚ Complex.conjAe ^ 2 = 1 from
