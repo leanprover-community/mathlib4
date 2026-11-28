@@ -182,7 +182,7 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
   · have := lift_cof_congr_of_strictMono this ?_
     · rw [← Cardinal.lift_inj.{_, max (u + 1) v}, Cardinal.lift_lift.{_, _, v},
         Cardinal.lift_umax.{_, u + 1}, Cardinal.lift_umax.{_, u + 1}, this]
-      simp
+      simp only [lift_cof, cof_Iio, lift_lift]
     · intro ⟨b, hb⟩
       rw [mem_Iio, Ordinal.lt_iSup_add_one_iff] at hb
       obtain ⟨i, hi⟩ := hb

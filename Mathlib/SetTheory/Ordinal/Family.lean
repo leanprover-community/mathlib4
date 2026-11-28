@@ -29,6 +29,7 @@ variable {α β : Type*}
 
 /-! ### Supremum of a family of ordinals -/
 
+@[simp]
 theorem bddAbove_of_small {s : Set Ordinal.{u}} [Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := Cardinal.bddAbove_of_small (s := (succ ∘ card) '' s)
   refine ⟨a.ord, fun b hb ↦ le_of_lt ?_⟩
@@ -82,6 +83,15 @@ theorem iSup_add_one_le {ι} {f : ι → Ordinal.{u}} {a} (h : ∀ i, f i < a) :
 theorem lt_iSup_add_one_iff {ι} {f : ι → Ordinal.{u}} {a} [Small.{u} ι] :
     a < ⨆ i, f i + 1 ↔ ∃ i, a ≤ f i := by
   simp
+
+theorem lift_sSup {s : Set Ordinal.{u}} [Small.{u} s] :
+    lift.{v} (sSup s) = sSup (lift.{v} '' s) :=
+  liftInitialSeg.map_csSup bddAbove_of_small
+
+@[simp]
+theorem lift_iSup {ι : Type*} {f : ι → Ordinal.{u}} (hf : BddAbove (range f)) :
+    lift.{v} (⨆ i, f i) = ⨆ i, lift.{v} (f i) :=
+  liftInitialSeg.map_ciSup hf
 
 -- TODO: state in terms of `IsSuccLimit`.
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
