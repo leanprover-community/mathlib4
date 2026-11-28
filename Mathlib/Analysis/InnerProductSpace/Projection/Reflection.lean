@@ -99,6 +99,7 @@ theorem reflection_trans_reflection :
 @[simp]
 theorem reflection_mul_reflection : K.reflection * K.reflection = 1 :=
   reflection_trans_reflection _
+
 theorem reflection_orthogonal_apply (v : E) : Kᗮ.reflection v = -K.reflection v := by
   simp [reflection_apply]; abel
 
@@ -150,6 +151,35 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}
     (hv : v ∈ K) : Kᗮ.reflection v = -v :=
   reflection_mem_subspace_orthogonalComplement_eq_neg (K.le_orthogonal_orthogonal hv)
 
+variable (K) in
+/-- The reflection in `K` preserves `K`. -/
+@[simp]
+theorem mem_invtSubmodule_reflection : K ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
+  fun _ hx ↦ by simpa [reflection_mem_subspace_eq_self hx] using hx
+
+variable (K) in
+/-- The reflection in `K` preserves `Kᗮ`. -/
+@[simp]
+theorem orthogonalComplement_mem_invtSubmodule_reflection :
+    Kᗮ ∈ Module.End.invtSubmodule K.reflection.toLinearMap :=
+  fun _ hx ↦ by simpa [reflection_mem_subspace_orthogonalComplement_eq_neg hx] using hx
+
+variable (K) in
+/-- The restriction of the reflection in `K` to `K` is the identity. -/
+@[simp]
+theorem restrict_reflection_eq_id :
+    K.reflection.toLinearMap.restrict (mem_invtSubmodule_reflection K) = .id :=
+  LinearMap.ext fun ⟨_, hx⟩ ↦ Subtype.ext (reflection_mem_subspace_eq_self hx)
+
+variable (K) in
+/-- The restriction of the reflection in `K` to `Kᗮ` is minus the identity. -/
+@[simp]
+theorem restrict_reflection_orthogonalComplement_eq_neg_id :
+    K.reflection.toLinearMap.restrict (p := Kᗮ) (q := Kᗮ)
+      (orthogonalComplement_mem_invtSubmodule_reflection K) = -.id :=
+  LinearMap.ext fun ⟨_, hx⟩ ↦
+    Subtype.ext (reflection_mem_subspace_orthogonalComplement_eq_neg hx)
+
 /-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
 theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
@@ -162,12 +192,8 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
   have h₁ : R (v - w) = -(v - w) := reflection_orthogonalComplement_singleton_eq_neg (v - w)
   have h₂ : R (v + w) = v + w := by
     apply reflection_mem_subspace_eq_self
-    rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
-    rw [real_inner_add_sub_eq_zero_iff]
-    exact h
-  convert! congr($h₂ + $h₁) using 1
-  · simp
-  · abel
+    rwa [Submodule.mem_orthogonal_singleton_iff_inner_left, real_inner_add_sub_eq_zero_iff]
+  grind
 
 end reflection
 
