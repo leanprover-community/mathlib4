@@ -228,6 +228,12 @@ def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
 
+instance [Closed (𝟙_ C)] : (ihom (𝟙_ C)).IsEquivalence :=
+  Functor.isEquivalence_of_iso MonoidalClosed.unitNatIso
+
+instance isIso_ihom_ev_unit [Closed (𝟙_ C)] : IsIso (ihom.ev (𝟙_ C)) :=
+  inferInstanceAs (IsIso ((ihom.adjunction _).counit))
+
 /-- The internal hom object from the unit to any object is isomorphic to that object.
 The typeclass argument is explicit: any instance can be used. -/
 def unitIsoSelf [Closed (𝟙_ C)] : ((𝟙_ C) ⟶[C] X) ≅ X :=
