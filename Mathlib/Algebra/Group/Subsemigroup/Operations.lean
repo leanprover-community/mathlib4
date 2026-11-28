@@ -6,6 +6,7 @@ Amelia Livingston, Yury Kudryashov, Yakov Pechersky, Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
@@ -759,3 +760,14 @@ theorem map_comap_eq_self {f : M →ₙ* N} {S : Subsemigroup N} (h : S ≤ f.sr
   simpa only [inf_of_le_left h] using map_comap_eq f S
 
 end Subsemigroup
+
+namespace FunLike
+
+variable {F α : Type*} {β : α → Type*} [DFunLike F α β] {f : (a : α) → β a}
+
+@[to_additive (attr := simp high)]
+theorem mem_srange_coeMulHom [Mul F] [∀ a, Mul (β a)] [IsMulApply F] :
+    f ∈ (coeMulHom F α β).srange ↔ f ∈ Set.range ((⇑) : F → (a : α) → β a) :=
+  Iff.rfl
+
+end FunLike

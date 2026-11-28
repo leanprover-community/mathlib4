@@ -1198,3 +1198,15 @@ theorem map_comap_eq_self_of_surjective {f : F} (h : Function.Surjective f) {S :
   map_comap_eq_self (MonoidHom.mrange_eq_top_of_surjective _ h ▸ le_top)
 
 end Submonoid
+
+namespace FunLike
+
+variable {F α : Type*} {β : α → Type*} [DFunLike F α β] {f : (a : α) → β a}
+
+@[to_additive (attr := simp high)]
+theorem mem_mrange_coeMonoidHom [MulOneClass F] [∀ a, MulOneClass (β a)] [IsOneApply F]
+    [IsMulApply F] :
+    f ∈ MonoidHom.mrange (coeMonoidHom F α β) ↔ f ∈ Set.range ((⇑) : F → (a : α) → β a) :=
+  Iff.rfl
+
+end FunLike

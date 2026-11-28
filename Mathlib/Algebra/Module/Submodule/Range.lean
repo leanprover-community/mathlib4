@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.Submodule.Ker
 public import Mathlib.Data.Set.Finite.Range
 
@@ -503,3 +504,15 @@ end restrict
 end Semiring
 
 end LinearMap
+
+namespace FunLike
+
+variable {R F α : Type*} {β : α → Type*} [DFunLike F α β] {f : (a : α) → β a}
+
+@[simp high]
+theorem mem_range_coeLinearMap [Semiring R] [AddCommMonoid F] [∀ a, AddCommMonoid (β a)]
+    [Module R F] [∀ a, Module R (β a)] [IsAddApply F] [IsSMulApply R F] :
+    f ∈ (coeLinearMap R F α β).range ↔ f ∈ Set.range ((⇑) : F → (a : α) → β a) :=
+  Iff.rfl
+
+end FunLike
