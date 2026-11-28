@@ -573,3 +573,34 @@ example (a : Set ℕ) (h : a ≤ ∅) : a = ∅ := by grw [h]
 example (a : Set ℕ) (h : a ≤ ∅) : ∅ = a := by grw [h]
 example (a : Set ℕ) (h : .univ ≤ a) : a = .univ := by grw [← h]
 example (a : Set ℕ) (h : .univ ≤ a) : .univ = a := by grw [← h]
+
+section badGCongrLemma
+
+def myId : Nat → Nat := id
+
+/-
+This lemma has a type class that can't be synthesized.
+This test shows that the lemma can still be used by `grw`,
+leaving extra goals in the tactic state.
+-/
+@[gcongr]
+axiom myId_le_myId (a b : Nat) {α : Type} [LE α] : a ≤ b → myId a ≤ myId b
+
+/--
+error: unsolved goals
+case α
+a b : ℕ
+h : a ≤ b
+⊢ Type
+
+case inst
+a b : ℕ
+h : a ≤ b
+⊢ LE ?α✝
+-/
+#guard_msgs in
+example (a b : Nat) : a ≤ b → myId a ≤ myId b := by
+  intro h
+  grw [h]
+
+end badGCongrLemma
