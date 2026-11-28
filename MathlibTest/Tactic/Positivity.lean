@@ -42,6 +42,11 @@ example : (0 : ℝ≥0∞) ≤ 0 := by positivity
 example : (0 : EReal) ≤ 0 := by positivity
 example : 0 ≤ (2 : EReal) := by positivity
 
+example : (2 : ℂ) ≠ 0 := by positivity
+example : (-3 : ℂ) ≠ 0 := by positivity
+example : (0.5 : ℂ) ≠ 0 := by positivity
+example : (-0.5 : ℂ) ≠ 0 := by positivity
+
 /- ## Goals working directly from a hypothesis -/
 
 section FromHypothesis
