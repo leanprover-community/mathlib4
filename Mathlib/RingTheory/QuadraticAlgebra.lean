@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
+public import Mathlib.FieldTheory.Galois.Quadratic
 public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
@@ -27,6 +28,8 @@ This file collects ring-theoretic properties of `QuadraticAlgebra R a b` as an `
   `Algebra.trace` and `Algebra.norm` on `QuadraticAlgebra R a b` agree with
   `QuadraticAlgebra.trace` and `QuadraticAlgebra.norm`.
 * `Algebra.discr_quadraticAlgebra`: `Algebra.discr R (basis a b)` equals `discr a b`.
+* `Algebra.IsQuadraticExtension.map_conj`: the conjugation of a separable quadratic
+  extension `K/F` corresponds to `star` under an isomorphism `K ≃ₐ[F] QuadraticAlgebra F a b`.
 -/
 
 @[expose] public section
@@ -77,3 +80,12 @@ theorem Algebra.discr_quadraticAlgebra :
     Algebra.trace_quadraticAlgebra_apply, basis_apply_zero, basis_apply_one, one_mul, mul_one,
     omega_mul_omega_eq_mk, QuadraticAlgebra.trace_def, re_one, im_one, re_omega, im_omega]
   ring
+
+/-- The conjugation of `K` corresponds to `star` under an isomorphism with a quadratic algebra. -/
+@[simp]
+theorem Algebra.IsQuadraticExtension.map_conj {F K : Type*} [Field F] [Field K] [Algebra F K]
+    [IsQuadraticExtension F K] [Algebra.IsSeparable F K] {a b : F}
+    (e : K ≃ₐ[F] QuadraticAlgebra F a b) (x : K) :
+    e (conj F K x) = star (e x) := by
+  rw [← add_right_inj, ← algebraMap_trace_eq_add_star, ← map_add, add_conj, AlgEquiv.commutes,
+    ← Algebra.trace_quadraticAlgebra_apply, trace_eq_of_algEquiv]
