@@ -584,6 +584,31 @@ noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
 
 end AlgHom
 
+section fieldEqualizer
+
+namespace AlgHom
+variable {R : Type*} [Ring R] [Algebra K R]
+
+/-- The equalizer of two field homomorphisms both fixing `K`. -/
+@[simps toSubalgebra]
+def fieldEqualizer (ϕ ψ : L →ₐ[K] R) : IntermediateField K L where
+  toSubalgebra := ϕ.equalizer ψ
+  inv_mem' _ := eq_on_inv₀ _ _
+
+@[simp]
+theorem coe_fieldEqualizer (ϕ ψ : L →ₐ[K] R) : ϕ.fieldEqualizer ψ = {x | ϕ x = ψ x} := rfl
+
+@[simp]
+theorem mem_fieldEqualizer (φ ψ : L →ₐ[K] R) (x : L) : x ∈ fieldEqualizer φ ψ ↔ φ x = ψ x :=
+  Iff.rfl
+
+theorem le_fieldEqualizer {φ ψ : L →ₐ[K] R} {S : IntermediateField K L} :
+    S ≤ fieldEqualizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
+
+end AlgHom
+
+end fieldEqualizer
+
 variable (K L L') in
 theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
     (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
