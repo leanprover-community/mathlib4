@@ -54,7 +54,7 @@ lemma iIndepFun.map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i ↦ X 
     exact fun i ↦ mX.eval i
   any_goals fun_prop
   · exact mX
-  · exact .univ_pi fun i ↦ ht i
+  · exact .univ_pi (by simpa)
 
 /-- Random variables are independent iff their joint distribution is the product measure. This
 is a version where the random variable `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
