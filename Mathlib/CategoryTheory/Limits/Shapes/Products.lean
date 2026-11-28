@@ -6,6 +6,7 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.Tactic.Simps.Generalized
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -157,7 +158,7 @@ notation "∐ " f:60 => sigmaObj f
 insert_to_dual_translation CategoryTheory.Limits.Pi CategoryTheory.Limits.Sigma
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ᶜ f ⟶ f b`. -/
-@[to_dual ι
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp))) ι
 /-- The `b`-th inclusion into the sigma object over `f` has the form `f b ⟶ ∐ f`. -/]
 abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
   limit.π (Discrete.functor f) (Discrete.mk b)
@@ -186,7 +187,8 @@ theorem Pi.π_comp_eqToHom {J : Type*} (f : J → C) [HasProduct f] {j j' : J} (
 attribute [simp] Sigma.eqToHom_comp_ι Sigma.eqToHom_comp_ι_assoc
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ᶜ f`. -/
-@[to_dual desc /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/]
+@[to_dual (attr := simps_proj precomp noRecurse (attr := reassoc (attr := simp))) desc
+/-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/]
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
   limit.lift _ (Fan.mk P p)
 
@@ -202,6 +204,15 @@ instance {f : β → C} [HasProduct f] : IsIso (Pi.lift (Pi.π f)) := by
 theorem Pi.lift_comp_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_π_app]
+
+/-- The η-rule for morphisms into a product, used by `simps!!` to state the universal property of
+a product in terms of another limit (see `Mathlib.Tactic.Simps.Generalized`). -/
+@[to_dual (attr := simps_eta)
+/-- The η-rule for morphisms out of a coproduct, used by `simps!!` to state the universal property
+of a coproduct in terms of another colimit (see `Mathlib.Tactic.Simps.Generalized`). -/]
+theorem Pi.Simps.eta {f : β → C} [HasProduct f] {W : C} (h : W ⟶ ∏ᶜ f) :
+    h = Pi.lift fun b => h ≫ Pi.π f b := by
+  ext; simp
 
 @[deprecated (since := "2026-08-17")] alias Pi.lift_π_apply := Pi.lift_comp_π_apply
 @[deprecated (since := "2026-08-17")] alias Pi.lift_π_assoc := Pi.lift_comp_π_assoc

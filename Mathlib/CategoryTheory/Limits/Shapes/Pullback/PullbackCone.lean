@@ -6,6 +6,7 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Ca
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
+public import Mathlib.Tactic.Simps.Generalized
 
 /-!
 # PullbackCone
@@ -100,14 +101,20 @@ namespace PullbackCone
 variable {f : X ⟶ Z} {g : Y ⟶ Z}
 
 /-- The first projection of a pullback cone. -/
-@[to_dual (rename := Z → X, X → Y, Y → Z) /-- The first inclusion of a pushout cocone. -/]
+@[to_dual (attr := simps_proj) (rename := Z → X, X → Y, Y → Z)
+/-- The first inclusion of a pushout cocone. -/]
 abbrev fst (t : PullbackCone f g) : t.pt ⟶ X :=
   t.π.app WalkingCospan.left
 
 /-- The second projection of a pullback cone. -/
-@[to_dual (rename := Z → X, X → Y, Y → Z) /-- The second inclusion of a pushout cocone. -/]
+@[to_dual (attr := simps_proj) (rename := Z → X, X → Y, Y → Z)
+/-- The second inclusion of a pushout cocone. -/]
 abbrev snd (t : PullbackCone f g) : t.pt ⟶ Y :=
   t.π.app WalkingCospan.right
+
+/- `simps!!` generates lemmas about `fst` and `snd` (resp. `inl` and `inr`) instead of `π`
+(resp. `ι`). -/
+initialize_simps_projections!! PullbackCone (π → fst snd)
 
 @[to_dual]
 theorem π_app_left (c : PullbackCone f g) : c.π.app WalkingCospan.left = c.fst := rfl
@@ -255,13 +262,17 @@ theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
 `h ≫ f = k ≫ g`, then we get `l : W ⟶ t.pt`, which satisfies `l ≫ fst t = h`
 and `l ≫ snd t = k`, see `IsLimit.lift_fst` and `IsLimit.lift_snd`. -/
-@[to_dual
+@[to_dual (attr := simps_proj)
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
 morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
 `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`. -/]
 def IsLimit.lift {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : W ⟶ t.pt :=
   ht.lift <| PullbackCone.mk _ _ w
+
+/- `simps!!` generates lemmas about `PullbackCone.IsLimit.lift` (resp.
+`PushoutCocone.IsColimit.desc`) instead of `IsLimit.lift` (resp. `IsColimit.desc`). -/
+initialize_simps_projections!! IsLimit (lift → lift)
 
 @[to_dual (attr := reassoc (attr := simp)) inl_desc]
 lemma IsLimit.lift_fst {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)

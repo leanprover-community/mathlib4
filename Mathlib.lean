@@ -7949,6 +7949,7 @@ public import Mathlib.Tactic.Simproc.IsIndecomposable
 public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps.Generalized
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread

@@ -325,12 +325,15 @@ variable {f g : X ⟶ Y}
 /-- A fork `t` on the parallel pair `f g : X ⟶ Y` consists of two morphisms
 `t.π.app zero : t.pt ⟶ X` and `t.π.app one : t.pt ⟶ Y`. Of these,
 only the first one is interesting, and we give it the shorter name `Fork.ι t`. -/
-@[to_dual
+@[to_dual (attr := simps_proj)
 /-- A cofork `t` on the parallelPair `f g : X ⟶ Y` consists of two morphisms
 `t.ι.app zero : X ⟶ t.pt` and `t.ι.app one : Y ⟶ t.pt`. Of these, only the second one is
 interesting, and we give it the shorter name `Cofork.π t`. -/]
 def Fork.ι (t : Fork f g) : t.pt ⟶ X :=
   t.π.app zero
+
+/- `simps!!` generates lemmas about `Fork.ι` (resp. `Cofork.π`) instead of `π` (resp. `ι`). -/
+initialize_simps_projections!! Fork (π → ι)
 
 @[to_dual (attr := simp)]
 theorem Fork.app_zero_eq_ι (t : Fork f g) : t.π.app zero = t.ι :=
@@ -393,12 +396,16 @@ theorem Fork.IsLimit.lift_ι {s t : Fork f g} (hs : IsLimit s) : hs.lift t ≫ s
 
 /-- If `s` is a limit fork over `f` and `g`, then a morphism `k : W ⟶ X` satisfying
 `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
-@[to_dual desc
+@[to_dual (attr := simps_proj) desc
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
 `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/]
 def Fork.IsLimit.lift {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     W ⟶ s.pt :=
   hs.lift (Fork.ofι _ h)
+
+/- `simps!!` generates lemmas about `Fork.IsLimit.lift` (resp. `Cofork.IsColimit.desc`) instead of
+`IsLimit.lift` (resp. `IsColimit.desc`). -/
+initialize_simps_projections!! Fork.IsLimit (lift → lift)
 
 @[to_dual (attr := reassoc (attr := simp)) π_desc']
 lemma Fork.IsLimit.lift_ι' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
@@ -690,7 +697,7 @@ noncomputable abbrev equalizer : C :=
 
 /-- If an equalizer of `f` and `g` exists, we can access the inclusion
 `equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
-@[to_dual
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp)))
 /-- If a coequalizer of `f` and `g` exists, we can access the corresponding projection by
 saying `coequalizer.π f g`. -/]
 noncomputable abbrev equalizer.ι : equalizer f g ⟶ X :=
@@ -723,7 +730,7 @@ variable {f g}
 
 /-- A morphism `k : W ⟶ X` satisfying `k ≫ f = k ≫ g` factors through the equalizer of `f` and `g`
 via `equalizer.lift : W ⟶ equalizer f g`. -/
-@[to_dual desc
+@[to_dual (attr := simps_proj precomp noRecurse (attr := reassoc (attr := simp))) desc
 /-- Any morphism `k : Y ⟶ W` satisfying `f ≫ k = g ≫ k` factors through the coequalizer of `f`
 and `g` via `coequalizer.desc : coequalizer f g ⟶ W`. -/]
 noncomputable abbrev equalizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) : W ⟶ equalizer f g :=
@@ -760,6 +767,16 @@ theorem equalizer.existsUnique {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
 @[to_dual /-- A coequalizer morphism is an epimorphism -/]
 instance equalizer.ι_mono : Mono (equalizer.ι f g) where
   right_cancellation _ _ w := equalizer.hom_ext w
+
+/-- The η-rule for morphisms into an equalizer, used by `simps!!` to state the universal property
+of an equalizer in terms of another limit (see `Mathlib.Tactic.Simps.Generalized`). -/
+@[to_dual (attr := simps_eta)
+/-- The η-rule for morphisms out of a coequalizer, used by `simps!!` to state the universal
+property of a coequalizer in terms of another colimit (see `Mathlib.Tactic.Simps.Generalized`). -/]
+theorem equalizer.Simps.eta {W : C} (h : W ⟶ equalizer f g) :
+    h = equalizer.lift (h ≫ equalizer.ι f g)
+      (by rw [Category.assoc, Category.assoc, equalizer.condition]) := by
+  ext; simp
 
 end
 

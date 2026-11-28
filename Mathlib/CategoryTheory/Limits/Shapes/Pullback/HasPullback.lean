@@ -107,20 +107,23 @@ abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
   limit.cone (cospan f g)
 
 /-- The first projection of the pullback of `f` and `g`. -/
-@[to_dual (rename := Z → X, X → Y, Y → Z)
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp)))
+  (rename := Z → X, X → Y, Y → Z)
 /-- The first inclusion into the pushout of `f` and `g`. -/]
 abbrev pullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ X :=
   limit.π (cospan f g) WalkingCospan.left
 
 /-- The second projection of the pullback of `f` and `g`. -/
-@[to_dual (rename := Z → X, X → Y, Y → Z)
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp)))
+  (rename := Z → X, X → Y, Y → Z)
 /-- The second inclusion into the pushout of `f` and `g`. -/]
 abbrev pullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ Y :=
   limit.π (cospan f g) WalkingCospan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `pullback.lift : W ⟶ pullback f g`. -/
-@[to_dual (rename := Z → X, X → Y, Y → Z)
+@[to_dual (attr := simps_proj precomp noRecurse (attr := reassoc (attr := simp)))
+  (rename := Z → X, X → Y, Y → Z)
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `pushout.desc : pushout f g ⟶ W`. -/]
 abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
@@ -195,6 +198,17 @@ def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
 lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     lift (fst f g) (snd f g) condition = 𝟙 (pullback f g) := by
   apply hom_ext <;> simp
+
+/-- The η-rule for morphisms into a pullback, used by `simps!!` to state the universal property of
+a pullback in terms of another limit (see `Mathlib.Tactic.Simps.Generalized`). -/
+@[to_dual (attr := simps_eta)
+/-- The η-rule for morphisms out of a pushout, used by `simps!!` to state the universal property of
+a pushout in terms of another colimit (see `Mathlib.Tactic.Simps.Generalized`). -/]
+theorem pullback.Simps.eta {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] {W : C}
+    (h : W ⟶ pullback f g) :
+    h = pullback.lift (h ≫ pullback.fst f g) (h ≫ pullback.snd f g)
+      (by simp [pullback.condition]) := by
+  ext <;> simp
 
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
 

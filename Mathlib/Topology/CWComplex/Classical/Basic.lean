@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Tactic.Simps.Generalized
 public import Mathlib.Util.AliasIn
+
 
 /-!
 # CW complexes
@@ -202,15 +204,18 @@ variable {X : Type*} [t : TopologicalSpace X] {C D : Set X}
 
 /-- The open `n`-cell given by the index `i`. Use this instead of `map n i '' ball 0 1` whenever
 possible. -/
+@[simps_proj (self := 5)]
 def RelCWComplex.openCell [RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X := map n i '' ball 0 1
 
 /-- The closed `n`-cell given by the index `i`. Use this instead of `map n i '' closedBall 0 1`
 whenever possible. -/
+@[simps_proj (self := 5)]
 def RelCWComplex.closedCell [RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X :=
   map n i '' closedBall 0 1
 
 /-- The boundary of the `n`-cell given by the index `i`. Use this instead of `map n i '' sphere 0 1`
 whenever possible. -/
+@[simps_proj (self := 5)]
 def RelCWComplex.cellFrontier [RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X :=
   map n i '' sphere 0 1
 

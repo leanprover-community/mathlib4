@@ -59,12 +59,14 @@ notation:20 X " ⨯ " Y:20 => prod X Y
 notation:20 X " ⨿ " Y:20 => coprod X Y
 
 /-- The projection map to the first component of the product. -/
-@[to_dual inl /-- The inclusion map from the first component of the coproduct. -/]
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp))) inl
+/-- The inclusion map from the first component of the coproduct. -/]
 abbrev prod.fst {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ X :=
   limit.π (pair X Y) ⟨WalkingPair.left⟩
 
 /-- The projection map to the second component of the product. -/
-@[to_dual inr /-- The inclusion map from the second component of the coproduct. -/]
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp))) inr
+/-- The inclusion map from the second component of the coproduct. -/]
 abbrev prod.snd {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ Y :=
   limit.π (pair X Y) ⟨WalkingPair.right⟩
 
@@ -85,7 +87,7 @@ theorem prod.hom_ext {W X Y : C} [HasBinaryProduct X Y] {f g : W ⟶ X ⨯ Y}
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
 induces a morphism `prod.lift f g : W ⟶ X ⨯ Y`. -/
-@[to_dual desc
+@[to_dual (attr := simps_proj precomp noRecurse (attr := reassoc (attr := simp))) desc
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/]
 abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
@@ -106,6 +108,16 @@ theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W �
 theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.snd = g :=
   limit.lift_π _ _
+
+/-- The η-rule for morphisms into a binary product, used by `simps!!` to state the universal
+property of a binary product in terms of another limit (see `Mathlib.Tactic.Simps.Generalized`). -/
+@[to_dual (attr := simps_eta)
+/-- The η-rule for morphisms out of a binary coproduct, used by `simps!!` to state the universal
+property of a binary coproduct in terms of another colimit
+(see `Mathlib.Tactic.Simps.Generalized`). -/]
+theorem prod.Simps.eta {X Y : C} [HasBinaryProduct X Y] {W : C} (h : W ⟶ X ⨯ Y) :
+    h = prod.lift (h ≫ prod.fst) (h ≫ prod.snd) := by
+  ext <;> simp
 
 @[to_dual epi_desc_of_epi_left]
 instance prod.mono_lift_of_mono_left {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y)

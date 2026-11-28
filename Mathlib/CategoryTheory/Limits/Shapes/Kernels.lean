@@ -310,7 +310,8 @@ abbrev kernel (f : X ⟶ Y) [HasKernel f] : C :=
   equalizer f 0
 
 /-- The map from `kernel f` into the source of `f`. -/
-@[to_dual /-- The map from the target of `f` to `cokernel f`. -/]
+@[to_dual (attr := simps_proj comp (attr := reassoc (attr := simp)))
+/-- The map from the target of `f` to `cokernel f`. -/]
 abbrev kernel.ι : kernel f ⟶ X :=
   equalizer.ι f 0
 
@@ -328,7 +329,7 @@ def kernelIsKernel : IsLimit (Fork.ofι (kernel.ι f) ((kernel.condition f).tran
 
 /-- Given any morphism `k : W ⟶ X` satisfying `k ≫ f = 0`, `k` factors through `kernel.ι f`
 via `kernel.lift : W ⟶ kernel f`. -/
-@[to_dual
+@[to_dual (attr := simps_proj precomp noRecurse (attr := reassoc (attr := simp)))
 /-- Given any morphism `k : Y ⟶ W` such that `f ≫ k = 0`, `k` factors through `cokernel.π f`
 via `cokernel.desc : cokernel f ⟶ W`. -/]
 abbrev kernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ kernel f :=
@@ -356,6 +357,17 @@ instance kernel.lift_mono {W : C} (k : W ⟶ X) (h : k ≫ f = 0) [Mono k] : Mon
 `cokernel.π f ≫ l = k`. -/]
 def kernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : { l : W ⟶ kernel f // l ≫ kernel.ι f = k } :=
   ⟨kernel.lift f k h, kernel.lift_ι _ _ _⟩
+
+/-- The η-rule for morphisms into a kernel, used by `simps!!` to state the universal property of a
+kernel in terms of another limit. Like the generalized projections for kernels, it takes
+precedence over the one for equalizers (see `Mathlib.Tactic.Simps.Generalized`). -/
+@[to_dual (attr := simps_eta)
+/-- The η-rule for morphisms out of a cokernel, used by `simps!!` to state the universal property
+of a cokernel in terms of another colimit. Like the generalized projections for cokernels, it takes
+precedence over the one for coequalizers (see `Mathlib.Tactic.Simps.Generalized`). -/]
+theorem kernel.Simps.eta {W : C} (h : W ⟶ kernel f) :
+    h = kernel.lift f (h ≫ kernel.ι f) (by simp) := by
+  ext; simp
 
 /-- A commuting square induces a morphism of kernels. -/
 @[to_dual (reorder := f f', p q)
