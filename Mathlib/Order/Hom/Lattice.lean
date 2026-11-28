@@ -68,6 +68,11 @@ attribute [nolint docBlame] LatticeHom.toInfHom
 
 attribute [to_dual existing] LatticeHom.toInfHom
 
+/- `LatticeHom.mk` takes a whole `SupHom` but only the `⊓` condition, so it isn't self-dual up to
+reordering arguments; tell `to_dual` how to rebuild the dual from the translated arguments
+`toSupHom : InfHom α β` and `map_inf' : ∀ a b, toSupHom (a ⊔ b) = toSupHom a ⊔ toSupHom b`. -/
+to_dual_for LatticeHom.mk := ⟨⟨toSupHom.toFun, map_inf'⟩, toSupHom.map_inf'⟩
+
 section
 
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
@@ -91,6 +96,7 @@ You should extend this class when you extend `LatticeHom`. -/
 class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β] : Prop
   extends SupHomClass F α β, InfHomClass F α β where
 
+attribute [to_dual self (reorder := toSupHomClass toInfHomClass)] LatticeHomClass.mk
 attribute [to_dual existing] LatticeHomClass.toInfHomClass
 
 end
