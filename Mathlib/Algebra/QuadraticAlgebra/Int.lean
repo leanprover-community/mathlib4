@@ -42,9 +42,8 @@ For `a b : ℤ`, this file proves that `QuadraticAlgebra ℚ a b` is the fractio
   of `ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
 * `QuadraticAlgebra.Int.isIntegrallyClosed_iff`: `QuadraticAlgebra ℤ a b` is integrally closed iff
   `discr a b` is a fundamental discriminant.
-* `QuadraticAlgebra.Int.isUnit_iff_eq_one_or_neg_one`: if `d < 0` is a fundamental discriminant
-  different from `-3` and `-4`, the only units of `QuadraticAlgebra ℤ (d / 4) (d % 4)` are `1`
-  and `-1`.
+* `QuadraticAlgebra.Int.isUnit_iff_eq_one_or_neg_one`: if `discr a b < -4`, the only units of
+  `QuadraticAlgebra ℤ a b` are `1` and `-1`.
 
 ## Tags
 
@@ -307,33 +306,18 @@ theorem algebraMap_algEquivIntegralClosure_symm_apply (h : Int.IsFundamentalDisc
       ((algEquivIntegralClosure h).symm y) = y := by
   rw [← coe_algEquivIntegralClosure_apply h, AlgEquiv.apply_symm_apply]
 
-private theorem isUnit_iff_eq_one_or_neg_one_aux {d r s : ℤ}
-    (h₁ : d % 4 = 0 ∨ d % 4 = 1) (h₂ : d < 0) (h₃ : d ≠ -3) (h₄ : d ≠ -4)
-    (h : |r * r + d % 4 * r * s - d / 4 * s * s| = 1) :
-    s = 0 ∧ (r = 1 ∨ r = -1) := by
-  suffices |r * r + d % 4 * r * s - d / 4 * s * s| = 1 → s = 0 from
-    ⟨this h, by simpa [this h, mul_self_eq_one_iff] using h⟩
-  intro _
-  by_contra hs
-  replace hs : 1 ≤ s * s := by nlinarith [mul_self_pos.mpr hs]
-  have : d / 4 ≤ -2 := by lia
-  obtain _ | _ := (abs_eq zero_le_one).mp h <;>
-  obtain _ | _ := h₁ <;>
-  nlinarith [sq_nonneg (2 * r + s)]
-
-/-- If `d < 0` is a fundamental discriminant different from `-3` and `-4`, the only units of
-`QuadraticAlgebra ℤ (d / 4) (d % 4)` are `1` and `-1`. -/
-theorem isUnit_iff_eq_one_or_neg_one {d : ℤ} (h₁ : d.IsFundamentalDiscr)
-    (h₂ : d < 0) (h₃ : d ≠ -3) (h₄ : d ≠ -4) {x : QuadraticAlgebra ℤ (d / 4) (d % 4)} :
+/-- If `discr a b < -4`, the only units of `QuadraticAlgebra ℤ a b` are `1` and `-1`. -/
+theorem isUnit_iff_eq_one_or_neg_one (h : discr a b < -4) {x : QuadraticAlgebra ℤ a b} :
     IsUnit x ↔ x = 1 ∨ x = -1 := by
   rw [isUnit_iff_norm_isUnit, Int.isUnit_iff_abs_eq]
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · rw [← re_smul_add_im_smul x] at h ⊢
-    simp only [zsmul_eq_mul, mul_one, norm_def, re_add, re_intCast, Int.cast_eq, re_mul, re_omega,
-      mul_zero, im_intCast, im_omega, add_zero, im_add, im_mul, zero_add] at h
-    obtain ⟨him, (hre | hre)⟩ := isUnit_iff_eq_one_or_neg_one_aux
-      h₁.emod_four_eq_zero_or_one h₂ h₃ h₄ h <;> simp [him, hre]
-  · rintro (rfl | rfl) <;> simp
+  refine ⟨fun hx ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
+  have him : x.im = 0 := by
+    by_contra him
+    obtain _ | _ := (abs_eq zero_le_one).mp hx <;>
+    nlinarith [four_mul_norm_eq x, mul_self_pos.mpr him]
+  rw [← re_smul_add_im_smul x, him, zero_smul, add_zero, zsmul_eq_mul, mul_one, ← Int.cast_one,
+    ← Int.cast_neg, Int.cast_one, Int.cast_inj]
+  simpa [norm_def, him, ← pow_two] using hx
 
 end Int
 
