@@ -12,6 +12,13 @@ public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 # Quadratic characters of finite fields
 
 Further facts relying on Gauss sums.
+
+## Main results
+
+* `quadraticChar_two`: the value of the quadratic character at `2` in terms of `χ₈ (#F)`.
+* `quadraticChar_neg_two`: the value of the quadratic character at `-2` in terms of `χ₈' (#F)`.
+* `quadraticChar_card_card`: the relation between `quadraticChar F (#F')` and `quadraticChar F' (#F)`.
+* `quadraticChar_odd_prime`: the value of the quadratic character at an odd prime `p ≠ ringChar F`.
 -/
 
 public section
