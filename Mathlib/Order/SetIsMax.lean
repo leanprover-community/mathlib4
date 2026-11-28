@@ -24,7 +24,7 @@ universe u
 
 namespace Set
 
-variable {J : Type u} [Preorder J] {S : Set J} (m : S)
+variable {J : Type u} [LE J] {S : Set J} (m : S)
 
 lemma not_isMax_coe (hm : ¬ IsMax m) :
     ¬ IsMax m.val :=
